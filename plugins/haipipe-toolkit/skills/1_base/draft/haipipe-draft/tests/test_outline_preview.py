@@ -88,9 +88,12 @@ class OutlinePreviewTest(unittest.TestCase):
         self.assertEqual(seeds['C1.P1.B2']['shared'], 'C1.P1.B1')
         card = plan_card(self.page)
         self.assertIn('<span>Bullet</span><span>Draft</span>', card)
-        # Table, immersive reader and the Revise box are three projections of
-        # the same embedded Draft value; one is shown at a time by the view switch.
-        self.assertEqual(card.count('Existing prose.'), 3)
+        # Table, immersive reader and the Revise box are projections of the same
+        # embedded Draft value; one is shown at a time by the view switch. The
+        # Revise box holds it twice: the hidden textarea a Save compares and the
+        # one-row-per-sentence editor (outline_revise_view.revise_box).
+        self.assertEqual(card.count('Existing prose.'), 4)
+        self.assertEqual(card.count('<div data-b="C1.P1.B1" data-s="B1">Existing prose.</div>'), 1)
         # Only the note composer, the Scratch notes boxes and the Revise box
         # (Draft Space views) are text areas; no Bullet has its own editor.
         self.assertEqual(card.count('<textarea'),

@@ -45,7 +45,7 @@ The three levels
 ```text
           Description                  Idea Studio        Audience Report                 Work Details        Runs · Delivery
 Block     Map (releases × data         question map ·     Overall Report · then           the Jobs: All ·     soft · from below ·
-(Board)   versions) · Question Book ·      topics             Segment × Reading: Coverage · p1 · p2 …           Handoff
+(Board)   versions) · Question Book ·      topics             Segment × Reading: Coverage · question-v1 · v2 …  Handoff
           Dataset · Segments                            Tracks · Consistency · Findings
 Job       the Job's line (question-vN × data-vM ·    topics             Overall Report · then           its steps:          All · hard · soft ·
           state · moved) atop                             Segment × Period: Current ·   1 Launch · 2 Run ·  launch · power ·
@@ -162,8 +162,8 @@ The Runs panel
 
 Each Space's buttons are the run cards whose `<Level> › <Space>` matches, shown in the views the card names. A button
 shows its Run's name (`run-add-j<NN>`, `rNN_<segment>`) with its words in small under it, and copies the card's
-prompt with `{folder}` filled in. A button the shared frame also has keeps the frame's Run name (Add a topic:
-`run-draw-<sNN>`). The Guide's Runs (Add a method, Add a paper) are on every tab.
+prompt with `{folder}` filled in. Add a topic makes no Run: a Studio round is a pass inside its topic
+(`sNN-<topic>/passes/pNN-<MMDD>/`). The Guide's Runs (Add a method, Add a paper) are on every tab.
 
 Change a button by changing its card, then rerun `scripts/cards_table.py` and
 `haipipe-insight-workflow/scripts/run_cards.py --check`; the table and the check follow.
@@ -191,3 +191,15 @@ read-only host. Board files carry no names: "a person". Everything else on the s
 workbench never shows a row of data: counts, rates and the Runs' generated reports only.
 In a real browser: `servers/_host/checks/person_actions_browser.mjs`, on `person_actions_fixture.py`'s throwaway
 Projects.
+
+A change to this lane's code or to a skill script the pages import shows only after the host is restarted; the
+session that owns the running host restarts it. A Question Book (`board-kind: prototype`) opens in `/lab` as an
+insight lab (`skills/1_base/workbench/lab/cli/lab.py` `lab_theme`).
+
+This theme's topics (a problem, a missing step or a rule that was unclear, each with its state and the guard that
+keeps it fixed) are kept in `ref/topics.md`; a new one is added there before it is worked (the repository's
+AGENTS.md § Report).
+
+The question map draws the Executive questions on top in both styles, in number order, with the evidence levels
+under them (Data to Wisdom, left to right); in Dots an Executive question's lines stay faint until it is hovered
+or pinned. The phone shows one level at a time, Executive first.

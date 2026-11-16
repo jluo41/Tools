@@ -31,7 +31,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
         "Description": Space(html=head + (_question(q, root) if d_open == "Question" else _records(t, root)),
                              subspaces=d_views, open=d_open, run_types=(), page=True,
                              note="Read only: a change to the question is made in the Question Book."),
-        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."),)),
+        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (no Run: a pass in sNN-<topic>/passes/pNN-<MMDD>/): sNN-<topic>/, a pass per session."),)),
         "Audience Report": Space(html=head + (_task_table(t, q, root) if a_open == "Table" else _task_reading(t, q, root)),
                                  subspaces=a_views, open=a_open, page=True,
                                  run_types=(_kind(f"Write the {level} report", "Write the page of {folder}: a part per segment."),

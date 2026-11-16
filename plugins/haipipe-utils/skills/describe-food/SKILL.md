@@ -19,7 +19,7 @@ Until 260822 every name went to one place -- USDA FDC, fuzzy-matched -- and came
 back labelled GOOD / OK / ALIAS / WEAK / PARTIAL. Those words had never been
 checked against anything.
 
-They were checked on 260822, against 10,068 food names that WellDoc patients
+They were checked on 260822, against 10,068 food names that a partner app's patients
 logged with macros attached. GOOD is genuinely informative: carb-share MAE 0.122
 against a 0.258 mean-guess baseline, median carb error 2.0 g. It also has a tail
 that its own name denies:
@@ -86,7 +86,7 @@ in order:
     3. TIER QUALITY, as the tie-break.
 
 WHAT T0 IS NOT: laboratory truth. FatSecret supplied 86.1% of these numbers,
-Welldoc's own source 10.6%, Calorie Mama (a photo model) 2.0%, Nutritionix 1.3%.
+the partner app's own source 10.6%, Calorie Mama (a photo model) 2.0%, Nutritionix 1.3%.
 They are WHAT THE APP TOLD THE PATIENT -- arguably the better modelling target,
 since the patient dosed insulin against this figure and not against an assay,
 but never to be called measured-in-a-lab. That is why the word is MEASURED and
@@ -110,8 +110,8 @@ That last line is the point of the whole exercise. `per_100g` means "we can tell
 you what this food IS but not how much of it there was", and it used to be the
 majority answer. A serving is a DOSE.
 
-CIRCULARITY, stated plainly: T0 is built from WellDoc's own food log, so
-measuring T0's accuracy against WellDoc names would be circular and no such
+CIRCULARITY, stated plainly: T0 is built from the partner app's own food log, so
+measuring T0's accuracy against that app's names would be circular and no such
 number is published here. T0 is not a prediction; it is a JOIN that recovers
 per-item values the SourceFn discarded. The non-circular claim is the coverage
 table above.
@@ -120,10 +120,17 @@ table above.
 THE CONFIDENCE VOCABULARY
 ================================================================================
 
+One word per meal, in the `NutritionConf` field (foodnorm CONF_VALUES):
+
     MEASURED    the exact string was logged with these macros (T0/T1)
-    ESTIMATED   fuzzy-matched (T2). Median carb error 2.0 g, p90 15.0 g,
+    ESTIMATED   fuzzy-matched (T2, T_CN, T3). Median carb error 2.0 g, p90 15.0 g,
                 10.0% over 15 g, and that tail is not predictable.
     MISS        nothing trustworthy. Values are NULL.
+
+Inside T2 only, `classify()` grades one USDA candidate GOOD / OK / ALIAS / WEAK /
+MISS; only `TRUSTED` (GOOD, OK, ALIAS) may feed a meal's sum. That grade never
+reaches an output field. The event's `match.words.check` (PASS | PARTIAL | NONE,
+F6) is a word check, not a confidence word.
 
 `PARTIAL` is retired. It meant "some component did not resolve", folding
 completeness into the confidence word so that one column answered two questions.
@@ -135,8 +142,8 @@ REBUILD T0 with
     python code/scripts/haibuilder/0-external/e14_build_external_foodbank_observed.py
 
 
-Normalize a `Diet.parquet` `FoodName` column into `Calories / Carbs / Protein /
-Fat / Fiber`, whatever dialect it was written in.
+Normalize a `Diet.parquet` `FoodName` column into six nutrients, `Calories / Carbs /
+Protein / Fat / Fiber / Sugar`, whatever dialect it was written in.
 
 
 WHERE THE CODE LIVES
@@ -156,6 +163,7 @@ thing, in one folder, versioned together.
             imagename.py    stage 0, optional: photo -> food name
             llm_rerank.py   stage 3, optional: only what stage 2 could not resolve
             enrich.py       enrich_food_to_nutrition(), the DataFrame-shaped form
+            items.py        enrich_items(): one meal's items for POST /meal/event
         pipeline.py         CLI wrapper
         test_foodnorm.py    regression + benchmark suite
 
@@ -163,6 +171,12 @@ It used to live at `code/haiutils/food_enrichment/`, which split one thing acros
 two repositories: the docs said one thing and the code did another, and the
 skill's own CHANGELOG records the drift that followed. A normalizer belongs with
 the skill that documents it.
+
+Where the bank lives: `FOODNORM_DB` names the USDA sqlite outright; else the
+release's pinned `ext_food_bank`; else `$LOCAL_EXTERNAL_STORE/@v1215/usda_fdc/`
+(`LOCAL_EXTERNAL_STORE` unset: the SPACE's `_WorkSpace/ExternalStore`, found by
+walking up). The T0 table follows the same order (`FOODNORM_OBSERVED_DB` first).
+No bank found means `retrieve()` cannot open its database.
 
 
 HOW A CALLER REACHES IT
@@ -207,7 +221,7 @@ THE PROBLEM
 Eleven cohorts share one Diet column contract. The columns are uniform; what is
 inside `FoodName` is not:
 
-    WellDoc    "Toasted Whole Wheat Bread; Decaf Coffee"   item list, full macros
+    Partner    "Toasted Whole Wheat Bread; Decaf Coffee"   item list, full macros
     Shanghai   "Egg 50 g\nRice 25 g"                       free text + grams, NO macros
     CGMacros   "Unknown"                                   the food is a photo
     OhioT1DM   "Unknown"                                   carbs only
@@ -228,6 +242,9 @@ The door (what a SourceFn uses) -- batch, order-preserving, duplicates resolved 
     # -> one dict per input: Calories, Carbs, Protein, Fat, Fiber, Sugar,
     #    NutritionSource, NutritionConf, NutritionBasis, NutritionCoverage
     # Sugar (total sugars, g) is empty, never 0, where no table gave one.
+
+Which output: `normalize()` for a column of food names (one flat dict per row);
+POST /meal/event (haipipe-norm) for one meal as an event (F5-F11 below).
 
 The DataFrame-shaped form, for a caller that already holds one and wants the
 columns joined on. It exposes the stage sequence, so prefer the door:
@@ -276,7 +293,7 @@ b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
             prep, cook, amount, amount_from, food_zh, dish, dish_zh (eventnorm
             schema.py ITEM_KEYS). A split part's amount is an even share of the
             line's grams, and amount_from says it is a guess.
-    [ ] F3  meal_type comes from the source's own map (WellDoc ActivityTypeID 1
+    [ ] F3  meal_type comes from the source's own map (the partner app's ActivityTypeID 1
             breakfast, 3 lunch, 5 dinner, 12 snack; s01-D25).
     [ ] F4  A carb count ('Just Carbs') is the whole meal's carbs and nothing else:
             {"carbs": "111 g"}, never with a food row's calories (s01-D28, D33).
@@ -298,7 +315,7 @@ b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
         (times, all 14 and GL) when its unit is that serving's. A unit that differs
         is never converted: the numbers stay one serving and amount_note says so
         (haipipe-norm rule 4). total.amounts = {stated, applied} counts them.
-        WellDoc's input.total is rows x ServingsConsumed (t13 r05).
+        The partner app's input.total is rows x ServingsConsumed (t13 r05).
     [ ] F8  FatSecret's 14 nutrients, always in four groups with every name
             present: macros (calories, carbs, protein, fat), carb_parts (fiber,
             sugar, added_sugars), fat_parts (saturated, mono, poly, trans,
@@ -320,7 +337,7 @@ b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
 How to check: eventnorm's tests/test_eventnorm.py sends s01's 8 meals and wants
 them back; s01's assets/food-events-all.json is rewritten by
 result/first-drawing-builder/refresh_food_events.py. How good the answers are is
-b51 j01 t13 (match and carbs against the food each WellDoc patient picked).
+b51 j01 t13 (match and carbs against the food each partner-app patient picked).
 
 
 HOW RETRIEVAL WORKS
@@ -346,16 +363,17 @@ actually happened -- they are hand-weighted, so `test_foodnorm.py` pins all five
 THE CONTRACT
 --------------------------------------------------------------------------------
 
-Only GOOD / OK / ALIAS may be written into nutrition columns. WEAK and MISS stay
-NULL. **A confidently wrong food is worse than a missing one.**
+Only a TRUSTED candidate (GOOD / OK / ALIAS) may feed a nutrition column; WEAK
+and MISS stay NULL. **A confidently wrong food is worse than a missing one.**
 
     NutritionSource   bank_observed | bank_usda | bank_cn | bank_branded | none,
                       or several per-100 g banks joined by + (bank_usda+bank_cn)
-    NutritionConf     GOOD | PARTIAL | MISS
+    NutritionConf     MEASURED | ESTIMATED | MISS
+    NutritionCoverage share of the meal's components the totals cover (0-1)
 
-`PARTIAL` means some component of that meal did not resolve -- its totals
-UNDERSTATE the meal, and downstream must be able to exclude it. Nutrition without
-provenance is indistinguishable from measured nutrition.
+A meal under coverage 1.0 has totals that UNDERSTATE it, and downstream must be
+able to exclude it. Nutrition without provenance is indistinguishable from
+measured nutrition.
 
 
 MEASURED
@@ -371,14 +389,15 @@ Joinable coverage, per cohort (`python pipeline.py --lexicon`):
     ------------------------
     all cohorts       77.4%     22,977 components, 128,334 mentions
 
-Accuracy, graded against WellDoc's app-DB macros (`test_foodnorm.py --bench`):
+Accuracy, graded against the partner app's database macros (the corpus benchmark, `00_benchmark/run_bench.py`;
+`test_foodnorm.py --bench` is retired and points there):
 carb share of energy MAE 12.6 pp, r = 0.705.
 
-WellDoc is the only ground truth we have -- its rows carry FoodName AND all five
-macros, filled in by the WellDoc app's own food database. Hide the macros, feed
-only the name, and the normalizer can be graded. Shanghai can never be graded: it
-has no labels. **A resolver earns the right to run on Shanghai by passing on
-WellDoc.**
+The partner app's food log is the only ground truth we have -- its rows carry
+FoodName AND the macros, filled in by the app's own food database. Hide the
+macros, feed only the name, and the normalizer can be graded. Shanghai can never
+be graded: it has no labels. **A resolver earns the right to run on Shanghai by
+passing on the partner app's log.**
 
 
 STAGE 3 (LLM) IS USUALLY NOT THE ANSWER
@@ -399,8 +418,8 @@ CLOSED GAPS (2026-07-12)
 --------------------------------------------------------------------------------
 
 - `"just carbs"` -- was the lexicon's single biggest entry at 16,573 mentions, 11%
-  of everything, and NOT A FOOD: a WellDoc app entry mode where the user types a
-  carb count and names no food. Now in `PLACEHOLDERS`. Filtering it lifted WellDoc
+  of everything, and NOT A FOOD: a partner app entry mode where the user types a
+  carb count and names no food. Now in `PLACEHOLDERS`. Filtering it lifted the partner app's cohorts
   from ~70% to 83-91%. Its rows carry a true user-reported `Carbs` with
   Calories/Protein/Fat/Fiber = 0 in 100% of cases (vs 8-19% for real foods) --
   those zeros mean NOT MEASURED. A `NutritionSource="user_reported"` path that
@@ -432,7 +451,7 @@ OPEN GAPS
    through ext_food_bank_cn (T_CN, name_zh_col); Shanghai rows fully answered
    70.3% -> 73.5% (b51 j01 t19 r03).
 
-3. Six nutrients are answered; Sugar joined in 0.6.0. WellDoc rows carry eight
+3. Six nutrients are answered; Sugar joined in 0.6.0. The partner app's rows carry eight
    more (AddedSugars, Sodium, four kinds of fat, cholesterol, potassium) and no
    tier returns them yet. The China table gives no sugar, so a meal with a
    China-table food has an empty Sugar. A glycemic-index table is proposed but
@@ -443,7 +462,7 @@ TESTS
 --------------------------------------------------------------------------------
 
     python test_foodnorm.py           # L1 contract + L2 golden set
-    python test_foodnorm.py --bench   # + L3 WellDoc held-out benchmark
+    (the L3 held-out benchmark moved to 00_benchmark/run_bench.py; --bench only says so)
 
     L1  contract    retrieve() returns dicts; an absent food -> MISS, not a
                     nearest-neighbour guess; decompose() keeps the grams

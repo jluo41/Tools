@@ -94,6 +94,14 @@ def type_outline(kind: str, skills_root: pathlib.Path) -> dict:
     t = hits[0].read_text(encoding="utf-8", errors="replace")
     blk = re.search(r"(?ms)^  outline:\s*$(.*?)(?=^  \S|^---)", t)
     if not blk:
+        # A Folder owner that describes its page in `report: shape:` (the insight folder-kinds since Knowledge
+        # 2.3.0: one division per agreed need) has no fixed outline to enforce; its shape is read, not checked.
+        report = re.search(r"(?ms)^  report:\s*$(.*?)(?=^  \S|^---)", t)
+        if report:
+            shape = re.search(r"(?m)^\s+shape:\s*(.*?)\s*$", report.group(1))
+            return {"mode": "report", "shape": shape.group(1).strip().strip('"') if shape else "",
+                    "title_match": "", "source": "", "marker": "", "fallback": "", "words": [],
+                    "type_path": str(hits[0])}
         return {"no_block": str(hits[0])}
     body = blk.group(1)
 
@@ -184,7 +192,7 @@ def check(page_src: pathlib.Path, plan_text: str, skills_root: pathlib.Path):
     if decl.get("missing"):
         return ["%s `%s` names no Page Face contract on disk" % (key_name, kind)]
     if decl.get("no_block"):
-        return ["%s `%s` declares no `outline:` block" % (key_name, kind)]
+        return ["%s `%s` declares no `outline:` or `report:` block" % (key_name, kind)]
 
     if current and legacy:
         legacy_decl = type_outline(legacy, skills_root)

@@ -25,7 +25,7 @@ missing, ask only for the missing value.
 
 ```text
 examples/<id>/
-├── README.md
+├── project.md
 └── project.yaml
 ```
 

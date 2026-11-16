@@ -375,7 +375,7 @@ def check_steps(folder: Path, page: Path, plan: Path | None, out: list):
         out.append(Finding(WARN, "order", "§ 3 Draft is written on an unsigned plan: go back to 1 · Plan, show the "
                            "structure, propose 2 to 4 versions, and wait for the person's word before more writing"))
     check_row(folder, plan_text, approved, out)
-    check_narrative(folder, out)
+    check_narrative(folder, out, approved)
     if not missing:
         out.append(Finding(INFO, "steps", "every step has its file (Studio and Display optional); a person still signs, accepts and sends"))
 
@@ -436,25 +436,40 @@ def _norm(text: str) -> str:
     return re.sub(r"\s+", " ", text or "").strip()
 
 
-def check_narrative(folder: Path, out: list):
+def version_drafting(job: Path) -> bool:
+    """A version Job is drafting unless its face says it was sent or closed (M-D09: while it drafts, each Section's
+    own plan is the truth for that Section)."""
+    face = job / f"{job.name}.md"
+    head = _header(face.read_text(encoding="utf-8", errors="ignore")) if face.is_file() else ""
+    m = re.search(r"(?m)^state:\s*(.+)$", head)
+    return not (m and re.search(r"(?i)\b(sent|submitted|closed|done|published)\b", m.group(1)))
+
+
+def check_narrative(folder: Path, out: list, approved: bool = False):
     """A version's `## Narrative` is signed before its Sections are planned (JL 261111: whole-paper structure choices
     are the version's). The sign is `narrative-approved: ✅ …` on the version face's header, written by
-    `page.py sign-narrative`, which keeps the Story's § 8 it was signed against in the Job's records/narrative-sign.md."""
+    `page.py sign-narrative`. While the version drafts (M-D09, JL 261115 "now it is jumping, disturb things a lot"),
+    a Section is told only that the Narrative is unsigned, and only before its own plan is signed; a Story row or
+    Narrative row that moved since is one quiet note on the version Job (paper_health.job_report), never here."""
     face = folder.parent / f"{folder.parent.name}.md"
     if not face.is_file():
         return
     text = face.read_text(encoding="utf-8", errors="ignore")
     if not re.search(r"(?m)^## Narrative\b", text):
         return
+    drafting = version_drafting(folder.parent)
     if not re.search(r"(?m)^narrative-approved:\s*✅", _header(text)):
-        out.append(Finding(WARN, "narrative", f"the version's ## Narrative in {face.name} is not signed: the person "
-                           "signs it before a Section's plan (page.py sign-narrative)"))
+        if not (drafting and approved):
+            out.append(Finding(WARN, "narrative", f"the version's ## Narrative in {face.name} is not signed: the person "
+                               "signs it before a Section's plan (page.py sign-narrative)"))
+        return
+    if drafting:
         return
     kept = signed_against(folder.parent / NARRATIVE_SIGN)
     story, sface = story_narrative(folder)
     from .paper_health import story_row_findings
     rows = story_row_findings(folder, story, sface) if story is not None else None
-    if rows is not None:           # M-D09: name the changed row; only a Section that restates it is told
+    if rows is not None:           # after the send: name the changed row; only a Section that restates it is told
         out.extend(Finding(level, "narrative", msg) for level, msg in rows)
         return
     if kept is not None and story is not None and _norm(story) != kept:
@@ -464,10 +479,10 @@ def check_narrative(folder: Path, out: list):
 
 def check_row(folder: Path, plan_text: str, approved: bool, out: list):
     """A signed plan answers the row it was signed against (JL 261111: the Narrative moved v0.3 to v0.4 and the Section
-    never went back to Plan). `page.py sign` keeps that row in draft/records/<stem>-sign.md; a different row now is a
-    WARN."""
+    never went back to Plan). Only once the version is sent: while it drafts the Section's plan is the truth and the
+    Narrative is rebuilt from it at the end (page.py sync-narrative, M-D09 and M-D19)."""
     kept = signed_against(sign_record(folder, folder.name))
-    if not (approved and kept is not None):
+    if not (approved and kept is not None) or version_drafting(folder.parent):
         return
     row, face = governing_row(folder)
     if row is None:
@@ -477,7 +492,8 @@ def check_row(folder: Path, plan_text: str, approved: bool, out: list):
                            "re-propose, re-sign"))
 
 
-PERSON_STEPS = ("plan not signed", "sign the plan")   # a person's step stays a WARN even at the final gate
+# a person's step stays a WARN even at the final gate
+PERSON_STEPS = ("plan not signed", "sign the plan", "page.py sign-narrative", "Narrative was not rebuilt")
 
 
 def check_printed(folder: Path, page: Path, blocks: list, out: list):
@@ -525,7 +541,7 @@ def finalize(report: dict) -> dict:
 
 def folder_health(target: Path, final: bool = False) -> dict:
     from .paper_health import job_report
-    job = job_report(target)       # a version Job: its shared main-text budget (M-D11)
+    job = job_report(target, final)  # a version Job: its shared main-text budget (M-D11), its Narrative (M-D09)
     if job is not None:
         return finalize(job) if final else job
     page = _page_md(target)
@@ -541,6 +557,8 @@ def folder_health(target: Path, final: bool = False) -> dict:
         check_paragraphs(page, plan, plan_text, out)
         check_sync(page.read_text(encoding="utf-8"), blocks, plan_text, out)
         check_evidence(folder, stem, plan_text, out)
+        from .cite_health import check_cite_runs   # every CITE item names its Run (M-D20)
+        check_cite_runs(plan_dir(folder) / f"{stem}-evidence-items.md", folder, out, Finding, WARN)
     check_delivery(folder, page, out)
     check_steps(folder, page, plan, out)
     from .page_adopt import content_gap

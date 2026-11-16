@@ -143,8 +143,9 @@ needs:
       - {table: <file>.csv, kind: line, x: <col>, y: <col>, band: [<lo>, <hi>], group: <col>, hline: [<value>]}
       - {table: <file>.csv, kind: forest, label: <col>, x: <estimate>, lo: <low>, hi: <high>}
       # kinds: line · bar · forest · heat (x, y, value); facet: <col> makes a panel per value
+      - {table: <file>.csv, kind: none}  # this one table wants no figure (`figures: []`: none for the whole need)
   E2: {kind: cite, what: <what is borrowed>, from: D01.E1}
-  E3: {kind: judge, what: <the reading>, from: [E1, E2]}
+  E3: {kind: judge, what: <the reading>, from: [E1, E2], pass: <what the reading must contain to count>}
   E4: {kind: compute, what: …, retired: <why>}   # history: kept, never run, never cited
 agreed: ✅ 261002                  # ⬜ until an agent that did not draft the needs agrees them
 ---
@@ -164,8 +165,30 @@ name, ask, Why now and What would answer it are present; every live compute
 need has the nine spec fields; kinds are legal at the level (D compute; I
 compute, cite; K compute, cite, judge; W compute, cite, judge); a cite names a live need
 one level below (the same level only from a cross question); a judge reads live
-needs. A need is never edited once a result is bound to it: it gets
+needs and says in `pass:` what its reading must contain (a verdict word, the numbers it
+rests on, where it stops); a judge with no `pass:` is a note, since its reading has no test. A need is never edited once a result is bound to it: it gets
 `retired: <reason>` and a new id.
+
+**What a question delivers** is read from this file alone, before any Run
+(`ref/deliverables.py <question folder | Board Task>` prints it; the Task page's Needs
+section shows it):
+
+```text
+per compute need   its tables (output:) and one figure per csv: the need's own figures:,
+                   else the shape ref/figures.py knows from the columns; a csv with neither
+                   is a note (declare a figure, or say none is wanted: `kind: none` for that table,
+                   `figures: []` for the whole need)
+per judge need     a reading on the Task page, tested by its pass:
+the Task page      the answer in one line, how sure, one takeaway per segment asked
+the review         one verdict per need against its pass:, then the level's rule and the
+                   trace of every number to a Run's result/ (run-check-t<NN>)
+```
+
+Worked patterns (when a table wants no figure, a judge's `pass:` a reviewer can check, the order after
+editing an open version, reviewing a whole Job): `deliverables.md`.
+
+No second block restates this: `pass:` is the review test and `output:` and `figures:` are
+the deliverables, so the maker's target and the checker's test are the same lines.
 
 **A signed change** (the question review proposes, a person signs) is applied without
 editing any carried word in place:

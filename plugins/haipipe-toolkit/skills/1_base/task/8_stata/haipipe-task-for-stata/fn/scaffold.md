@@ -124,7 +124,7 @@ MUST NOT
 
 - Write heavy `.dta` files to a Run's `result/` -- they go to `_WorkSpace/{1..4}-*Store/` (exception: reg writes LIGHT .tex/.csv only).
 - Skip `_meta:` block in any config YAML.
-- Create `README.md` -- use `diagram/` for docs.
+- Create `README.md` -- use the Task face or a Block `studio/` topic for docs.
 - Use papermill or `.ipynb` -- this is Stata + PowerShell.
 - Use SSC packages in describe scripts (`egen tag` for distinct counts, NOT `distinct` which aborts r(199)).
 - For reg: collapse grid runs -- one run per (window x family), collapsing is forbidden.

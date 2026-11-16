@@ -118,7 +118,8 @@ Read it as: **TERM** — what it is. `the path it actually names`.
   renderer; the governed DISPLAY Result envelope points to the unit and records
   its source Run and resolved Result path. CHECK administers its later
   human `accepted:` gate. One per 🖼 mark.
-  `<resolved-result>/payload/<unit>/` holding the renderer payload and preview.
+  A draft Task keeps it at `display/Display<n>-<slug>/` and the person writes `accepted:` in its README at the
+  Display step; a Page made before 2026-10-16 keeps `<resolved-result>/payload/<unit>/`.
 - **intake** — the unit's FROZEN inputs with their source paths; a source file
   saved after the intake (newer file time) is caught rather than silently
   redrawn. `<unit>/intake/`
@@ -138,7 +139,8 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 ## 🗂 Evidence and Run presentation
 
 - **Evidence Space** — one minimal set of typed `Displays · Citations · Values`
-  cards. It reads only `results/**/result.yaml`; old `outline/*-evidence*.md` and `outline/evidence/*`
+  cards. A draft Task (since 2026-10-16) reads `evidence/cards.yaml`; a Page made before then reads only
+  `results/**/result.yaml`; old `outline/*-evidence*.md` and `outline/evidence/*`
   are migration blockers, not fallback inputs. It is read-only.
 - **Run Space** — the read-only Outline projection with four logical groups:
   **RP** for human/Page interaction, **RE** for Page-owned Evidence production,
@@ -177,22 +179,22 @@ Read it as: **TERM** — what it is. `the path it actually names`.
 
 ## ⏱️ Words for time, and none substitutes for another
 
-Defined once in `haipipe-draft-workflow` §🔤; repeated here only
-as pointers, because that section is the authority.
+Defined once in `haipipe-draft-workflow/SKILL.md` § Canonical ontology; repeated here
+only as pointers, because that file is the authority.
 
 - **Workflow** — a list of Runs: planned Specs with dependencies/routes and
   actual owner-native Instances. A runtime can execute or reuse selected work.
-- **Run** — retained controller/API dispatch label: `context` ·
-  `structure` · `evidence` · `writing` · `check`. It is not a
-  semantic owner, Run, Step, or additional authority layer.
+- **Run** — one unit of a Workflow, planned (its Spec) or done (its Instance): a Page Run or an evidence Run.
+  The old controller labels `context` · `structure` · `evidence` · `writing` · `check` are dispatch labels only:
+  none is a semantic owner, a Run, a Step, or an additional authority layer.
 - **cycle** — the named controller operation: PREPARE, SHAPE, SURVEY, LAND,
   EMBED, WRITE, or CHECK. Operations participate in commissioned Runs or
   control records; the label alone never allocates a Run.
 - **RP / Page Writing Run** — one independently commissioned Page writing
   session/round at a fixed scope. Its explicit kinds are
   `run-structure-<slug>`, `run-scratch-<slug>`, `run-section-<slug>`, and
-  `run-paragraph-<slug>`; the sequence starts
-  at `01` independently for each kind. It stores the typed Run record beside
+  `run-paragraph-<slug>`; a name carries no day and no
+  counter. It stores the typed Run record beside
   paired results and settles candidate structure or wording, not final Content
   or delivery.
 - **RE / Page Evidence Run** — one current Page evidence lineage for one
@@ -216,7 +218,7 @@ as pointers, because that section is the authority.
   `rNN` or global identity; the Page consumes its Result rather than its
   execution internals.
 - **Writing Version** — one append-only candidate snapshot/journal inside an RP
-  Run, stored as `results/<run>/vNNN.md`. It is not a Shape version or
+  Run, stored in its Run's pass `runs/<run>/passes/pNN-<MMDD>/` (an older Page: `results/<run>/vNNN.md`). It is not a Shape version or
   whole-Page CLOSE.
 - **Writing Step** — one complete scoped cycle, preserved as a `## Step sNNN`
   section inside that Version Markdown. For a Section Run this is

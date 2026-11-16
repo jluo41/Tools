@@ -20,7 +20,7 @@ def _revise_passes(path: Path) -> list:
 
     def cards(body: str) -> list:
         return [(m.group(1).strip(), {**{k.lower(): v.strip() for k, v in re.findall(
-                    r"(?m)^(?:[-*][^\S\n]+)?(Why|Original|Expected|State|By):[^\S\n]*(.*)$", m.group(2))},
+                    r"(?m)^(?:[-*][^\S\n]+)?(Why|Original|Expected|State|By|Detail):[^\S\n]*(.*)$", m.group(2))},
                  "body": m.group(2)})                     # "State: …" or "- State: …" (most records write the dash)
                 for m in re.finditer(r"(?ms)^### ([^\n]+)\n(.*?)(?=^### |^## |\Z)", body)]
     parts = [(t.strip(), b) for t, _, b in (x.partition("\n") for x in re.split(r"(?m)^## ", text)[1:])
@@ -209,7 +209,9 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
     # or the card rejected)
     choice = head.lower().startswith(("edit", "review"))
     buttons = ('<p class=rv-acts style="margin:6px 0 0">'
-               + ('<button type=button class="work-act rv-confirm" data-card-act=confirm>Confirm</button> ' if choice else
+               + ('<button type=button class="work-act rv-confirm" data-card-act=confirm>Confirm</button> '
+                  # throw the card away, the sentence keeps its words (JL 261115: "I think you should add a discard button")
+                  '<button type=button class=work-act data-card-act=reject>Discard</button> ' if choice else
                   '<button type=button class=work-act data-card-act=accept>✓ Accept</button> '
                   '<button type=button class=work-act data-card-act=reject>✗ Reject</button> ')
                + '<button type=button class=work-act data-card-act=edit>✎ Edit</button> '
@@ -237,13 +239,9 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
         f'<input type=radio name="{esc(group)}" value="{esc(k)}"{" checked" if k == pick else ""}> <b>{esc(k)}</b> '
         f'<span class=mut>{esc(why)}</span>'
         + (' <span class="st st-ok">✓ in the text</span>' if state == "written" and k == chosen else "")
-        + f'<div class=rv-opt-text><span class=rv-opt-diff>{_old_new(orig, text)}</span>'
+        + f'<div class=rv-opt-text><span class=rv-opt-diff>{_opt_diff(orig, text)}</span>'
         f'<span class=rv-opt-plain>{_inline(text, {})}</span></div></label>' for k, why, text in rows)
-        + f'<label class="rv-choice rv-drop{" sel" if pick == "drop" else ""}" data-opt="drop">'
-        f'<input type=radio name="{esc(group)}" value="drop"{" checked" if pick == "drop" else ""}> <b>{drop}</b> '
-        f'<span class=mut>drop it: keep the original</span>'
-        f'<div class=rv-opt-text>{_inline(orig, {}) if orig else "<span class=mut>no sentence: the new one goes</span>"}</div>'
-        '</label></div>')
+        + '</div>')                                      # no "drop it" option: Discard does that (JL 261115)
     # each item its own card, one light box (JL 261020: "I still want each of them to have a card"), and no box around
     # the pass, so never a box in a box ("I don't want this", of the cards inside the pass's frame)
     return (f'<div class="rv-card{" has-opts" if opts else ""}{" has-choice" if choice else ""}" data-task="{esc(task)}" '
@@ -251,10 +249,29 @@ def _revise_card(head: str, c: dict, task: str, title: str, at: str = "") -> str
             f'data-p="{esc(para)}" data-chosen="{esc(chosen)}">'
             f'<div><b class=rv-handle title="{esc(head)}">{esc(_short_head(head))}</b> {_by_badges(_by(c), _decided_by(c))} <span class=rv-chip>{STATE_CHIP.get(state, esc(state))}</span>'
             + (sim if same is not None and same < 100 else "") + f'{link}</div>'
-            f'<p class=mut style="margin:4px 0">{esc(c.get("why", ""))}</p>'
+            # the change first, then its reason laid out to scan: each "(1) … (2) …" point on its own row; a source's
+            # words or candidate papers sit in a Detail that starts closed (JL 261115: "this is not readable"; "the
+            # previous version and content is good, Just think about how to make it more readable")
             + (choices if choice else f'<div class=rv-change>{_change(head, orig, c.get("expected", ""))}</div>')
+            + _why(c.get("why", ""))
+            + (f'<details class=rv-detail><summary>Detail</summary><p class=mut>{_inline(c["detail"], {})}</p></details>'
+               if c.get("detail") else "")
             + f'<div class=rv-edit contenteditable=true spellcheck=false>{esc(c.get("expected", ""))}</div>'
             f'{buttons}</div>')
+
+
+def _why(why: str) -> str:
+    """A card's reason, whole: numbered points `(1) … (2) …` one per row, else one paragraph."""
+    why = (why or "").strip()
+    if not why:
+        return ""
+    parts = [x.strip() for x in re.split(r"\s*\((\d{1,2})\)\s+", " " + why)]
+    if len(parts) >= 5:                                   # at least two points: ["lead", "1", "...", "2", "..."]
+        lead, rows = parts[0], list(zip(parts[1::2], parts[2::2]))
+        return ('<div class="mut rv-why">' + (f'<p class=rv-why-lead>{esc(lead)}</p>' if lead else "")
+                + "".join(f'<div class=rv-pt><span class=rv-pn>{esc(n)}</span><span>{esc(t)}</span></div>' for n, t in rows)
+                + '</div>')
+    return f'<p class="mut rv-why">{esc(why)}</p>'
 
 
 def _short_head(head: str) -> str:
@@ -276,7 +293,7 @@ def _review_chips(c: dict) -> str:
     body = c.get("body", "")
     score = re.search(r"(?m)^(?:[-*][^\S\n]+)?Score:[^\S\n]*(\d+(?:\.\d+)?)\s*/\s*10", body)
     read = re.search(r"(?m)^(?:[-*][^\S\n]+)?Readable:[^\S\n]*(.+)$", body)
-    out = f' <span class=st title="sentence review score">{esc(score[1])}/10</span>' if score else ""
+    out = f' <span class=st title="sentence review score">★{esc(score[1])}/10</span>' if score else ""
     if read:
         line = read[1].strip()
         low = line.lower()
@@ -294,15 +311,22 @@ def _review_chips(c: dict) -> str:
     return out
 
 
+KEEP = re.compile(r"(?i)keep(?: it| as is| the original| unchanged)?\.?")
+
+
 def _options(c: dict) -> list:
-    """A card's options, [(letter, the approach, the sentence)], from its `Option A (<approach>): <sentence>` lines."""
-    return [(k, (why or "").strip(), text.strip()) for k, why, text in
+    """A card's options, [(letter, the approach, the sentence)], from its `Option A (<approach>): <sentence>` lines. An
+    option that only says Keep (Keep., Keep as is, Keep it) is the Original's words, so it reads "unchanged" and
+    Confirm writes the Original (JL 261115: "this is very confusing", a Keep drawn as a rewrite)."""
+    orig = c.get("original", "")
+    return [(k, (why or "").strip(), orig if orig and KEEP.fullmatch(text.strip()) else text.strip()) for k, why, text in
             re.findall(r"(?m)^Option ([A-Z])(?: \(([^)\n]*)\))?:[^\S\n]*(.*)$", c.get("body", ""))]
 
 
 def _chosen(c: dict, opts: list) -> str:
-    """The option the card holds: its `Chosen:` letter, else the option whose words are its Expected."""
-    m = re.search(r"(?m)^Chosen:[^\S\n]*([A-Z])\b", c.get("body", ""))
+    """The option the card holds: its `Chosen:` letter (`Chosen: B`, `B.`, `Option B`), else the option whose words
+    are its Expected."""
+    m = re.search(r"(?m)^Chosen:[^\S\n]*(?:Option[^\S\n]+)?([A-Z])\b", c.get("body", ""))
     if m:
         return m.group(1)
     return next((k for k, _, t in opts if " ".join(t.split()) == " ".join(c.get("expected", "").split())), "")
@@ -310,3 +334,11 @@ def _chosen(c: dict, opts: list) -> str:
 
 def _is_report(head: str) -> bool:
     return head.lower().startswith(("revise review report", "current draft review report"))
+
+
+def _opt_diff(orig: str, text: str) -> str:
+    """An option's change, shown picked or not; "unchanged" when it keeps the Original word for word (JL 261115: "if B
+    is unchanged, you say unchanged")."""
+    if orig and " ".join(text.split()) == " ".join(orig.split()):
+        return '<span class="mut rv-same">unchanged</span>'
+    return _old_new(orig, text)

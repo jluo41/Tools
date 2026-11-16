@@ -311,6 +311,9 @@ def render_page(context):
             # a reader sees each citation as name-year, never the LaTeX key (M-D02; src/cite_names.py)
             from .cite_names import name_year
             content = name_year(content, context.folder)
+            # each \ref reads "Figure N" and its DISPLAY Result is embedded (M-D18; src/result_displays.py)
+            from .result_displays import web_figures
+            content = web_figures(content, context.folder)
         finally:
             for key, value in old.items():
                 setattr(grammar, key, value)

@@ -31,7 +31,7 @@ Use `PAGE_SERVER_TOKEN` for a remotely reachable server with workbench writes en
 real token into command history, logs, or the reply. The server supports a
 login URL/session cookie. Add `--read-only` to disable workbench writes too; this does
 not make private content appropriate for public publishing. Respect repository
-hosting policy; in Physician-SPACE use the configured Tailscale origin, not a
+hosting policy; use the SPACE's configured origin (`DOMAIN` in its settings.env), not a
 reader-facing loopback link. Verify the exact public URL before sharing it.
 Do not occupy an existing server port or replace an unrelated listener.
 

@@ -5,6 +5,7 @@ against its CITE evidence, and one paper-wide check.
     python cite_tasks.py run       <claim Task> <result dir>   one Task's Run (its ticket calls this)
     python cite_tasks.py inventory <paper>/j03_evidence_cite   every printed key, its group, its status
     python cite_tasks.py apply     <paper>/j03_evidence_cite   write the proposed CITE card edits into each Section (by hand)
+    python cite_tasks.py bind      <Section Task> [--apply]   bind each CITE evidence item to the Run that checked it
 
 A paper's j03 holds only its claim groups: `tNN_<group>/scripts/claim_group.yaml`:
 
@@ -16,8 +17,9 @@ A paper's j03 holds only its claim groups: `tNN_<group>/scripts/claim_group.yaml
     writing: j11_writing_v1130_desk               optional: the writing Job (default: the Board's newest)
 
 `gen` writes each group's Run, `runs/r01_check_citations/` (config.yaml, run.yaml, ticket), and the paper-wide Task
-`t99_paper_citation_check/` (all keys at once; it also writes checks.md, proposed-cards/<section>.yaml and
-proposals/<section>.md). A Task face is written when missing, or rewritten when this script wrote it. A printed key no
+`t99_paper_citation_check/` (all keys at once; it also writes checks.md, and for a Section that still keeps
+evidence/cards.yaml, proposed-cards/<section>.yaml and proposals/<section>.md). A Section whose evidence lives in
+draft/<stem>-evidence-items.md gets no proposed cards: `bind` (cite_bind.py) writes each CITE item's Local Run. A Task face is written when missing, or rewritten when this script wrote it. A printed key no
 group holds is listed by `gen` and by t99, never dropped.
 
 What a Run reads, all read only: each printed Section's text (paper_text.py: `## Content`, sentence ids from the draft's
@@ -498,6 +500,9 @@ def write_check(out, paper, L, rows, pairs, fixes, ungrouped):
         n = defaultdict(int)
         for o in ops:
             n[o["op"]] += 1
+        if not (paper.job / s / "evidence" / "cards.yaml").is_file():   # evidence-items.md: bound, not carded
+            lines.append(f"- `{s}`: no evidence/cards.yaml; bind its CITE items: cite_tasks.py bind {paper.job.name}/{s}")
+            continue
         lines.append(f"- `{s}`: " + ", ".join(f"{v} {k}" for k, v in n.items()))
         (out / "proposed-cards").mkdir(exist_ok=True)
         (out / "proposed-cards" / f"{s}.yaml").write_text(
@@ -596,7 +601,10 @@ def apply(j03, writing=None):
     L = ledger(paper)
     for s, ops in L["fixes"].items():
         f = paper.job / s / "evidence" / "cards.yaml"
-        text = f.read_text(encoding="utf-8") if f.is_file() else "evidence: []\n"
+        if not f.is_file():                  # never start a cards.yaml: the Section's evidence is its items file
+            print(f"{s}: no evidence/cards.yaml; run cite_tasks.py bind {paper.job / s}")
+            continue
+        text = f.read_text(encoding="utf-8")
         head = "".join(ln + "\n" for ln in text.splitlines() if ln.startswith("#")) if text.startswith("#") else ""
         doc = yaml.safe_load(text) or {"evidence": []}
         ev = doc.setdefault("evidence", [])
@@ -643,13 +651,17 @@ def inventory(j03, writing=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    ap.add_argument("cmd", choices=["gen", "run", "apply", "inventory"])
-    ap.add_argument("path", type=Path, help="the j03_evidence_cite Job (run: a claim Task)")
+    ap.add_argument("cmd", choices=["gen", "run", "apply", "inventory", "bind"])
+    ap.add_argument("path", type=Path, help="the j03_evidence_cite Job (run: a claim Task; bind: a Section Task)")
     ap.add_argument("out", type=Path, nargs="?", help="run: the result dir")
     ap.add_argument("--writing", help="the writing Job (default: the Board's newest)")
     ap.add_argument("--started-by", default="cite_tasks.py gen: the citation Job's Runs, made from its claim groups")
+    ap.add_argument("--apply", action="store_true", help="bind: write the items file (default: print the diff)")
     a = ap.parse_args(argv)
-    if a.cmd == "run":
+    if a.cmd == "bind":
+        from cite_bind import bind
+        bind(a.path, a.apply)
+    elif a.cmd == "run":
         if a.out is None:
             ap.error("run needs <claim Task> <result dir>")
         run(a.path, a.out)

@@ -28,7 +28,7 @@ paper, three evidence Jobs (j01-j03), one writing Job per version (one send to o
 that make and check them. On screen every level shows the shared frame's two rows (b10_project_workbench s02,
 s01, s04-D05): the top row `Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, whose Studio
 (with Related folded under its topic cards) and Delivery are the Board's alone and open the same from every
-level; and each level's own work row, `Description | Report | Work | Runs`. The paper workbench fills them (servers/workbench-paper/paper_theme.py).
+level; and each level's own work row, `Description | Report | Runs` (Work is retired, JL 261111; workbench-paper). The paper workbench fills them (servers/workbench-paper/paper_theme.py).
 `scripts/paper_ladder.py` makes each folder.
 
 Read this reference when creating, naming or auditing a paper folder. `haipipe-paper` keeps only the routing in
@@ -65,19 +65,19 @@ paper/Paper-<Slug>/                  Board: one paper (a grant: paper/Grant-<Slu
 │                                    its subfolder first, then its group cell, comma-separated, a paper's
 │                                    research questions among them (b10 s04-D07, D08)
 ├── delivery/                        Block-owned: delivery/<writing Job>/ manuscript, Task outputs, receipt
-├── j01_evidence_display/            evidence Job: one Task per figure or table (t01-t19 main, t51-t59 appendix),
+├── j01_evidence_display/            evidence Job: one Task per figure or table (tNN_display-<letter>-<slug>),
 │                                    each drawn by its own Run from returned, aggregated Results
 ├── j02_evidence_value/              evidence Job: the printed numbers, one Task per value group
 ├── j03_evidence_cite/               evidence Job: the citations, one Task per claim group (verified CITE Results)
 └── j11_writing_v<MMDD>_<desk>/      writing Job: one version, one send to one venue, named for the day it is sent
     ├── j11_writing_v<MMDD>_<desk>.md  its face (haipipe-job): send · desk · venue · state · tells · from · goal ·
-    │                                close · responds-to (the comments report it answers) · ## Tasks (in order) ·
+    │                                close · responds-to (the review Job it answers) · ## Tasks (in order) ·
     │                                ## Narrative (the layout: points at the Story §8, claims to displays,
     │                                one row per Section, the compile order; copies no claim) · ## Questions
     ├── reports/ · runs/             the version's own Questions (the standing J1-J5 first) and Runs; its
     │                                drawings are Board topics (sNN-<topic>/, b10 s09-D01)
-    │   └── reports/qNN_<kind>-<MMDD>/   a comments batch: page-type: comments, in the version that answers it
-    │                                (haipipe-paper-comments); feedback/ · sent/ inside; a meeting's
+    │   └── reports/qNN_<kind>-<MMDD>/   an older Board's comments batch; now a review Job on the Board,
+    │                                jNN_review_<kind>_v<MMDD>/ (haipipe-paper-comments); feedback/ · sent/ inside; a meeting's
     │                                notes sit once in the Board's related/meetings/ (b10 s04-D01)
     ├── t00_abstract/                Task: the Abstract
     ├── t0N_<title>/                 Task: a Main Section, in reading order (t01-t19)
@@ -114,7 +114,7 @@ Run       runs/run-<type>-<target>/  run.yaml · ticket          paper_ladder.py
 A Space folder (`reports/`, `runs/`, `venues/`, `related/`, `delivery/`) comes with its first item,
 never ahead of it (haipipe-block, haipipe-job): `paper_ladder.py` writes faces only. Topics (`sNN-<topic>/`),
 `related/` and `delivery/` exist only at the Board; every level keeps its own `reports/` and `runs/` (b10 s09-D01, D02, D05). `answers:` on a face names a
-Question id it answers (haipipe-report); a version that answers a comments report says `responds-to:` instead.
+Question id it answers (haipipe-report); a version that answers a review Job says `responds-to:` instead.
 
 Every Run is `run-<type>-<target>`, with no date (JL 261007). Where a paper button does a base button's job it
 makes the base Run (run-face-*, run-add-<jNN>, run-add-<tNN>, run-draw-<sNN>, run-ask-<qNN>, run-report-<qNN>,
@@ -134,8 +134,8 @@ Naming and routing invariants
 - A Task is named by series (JL 261007: "no more S-xxx"): `t00_abstract`; `t0N_<title>` for the Main Sections in
   reading order; `t2N_<title>` for the Appendix (A = t21); `t3N_<title>` for letters (t31 cover letter, t32
   response). The number band says the part; the title is lowercase-kebab.
-- A comments batch is not a Task: it is a report of type comments, `reports/qNN_<kind>-<MMDD>/`, in the version
-  that answers it (JL 261007).
+- A comments batch is not a Task: it is a review Job on the Board, `jNN_review_<kind>_v<MMDD>/`, its face `for:` the
+  version it serves (JL 261110; an older Board: a report `reports/qNN_<kind>-<MMDD>/` in the version that answers it).
 - Group headings in board.md name their folder: `### J11 · j11_writing_v<MMDD>_<desk>`, not a display title. The Paper
   Workbench binds the token after `·` to disk.
 - A Section's story-row is its row in its version face's `## Narrative`; the row is recognized only when the
@@ -162,7 +162,7 @@ evidence sources.
 
 Assembly may run early, but its manifest stays `DRAFT` until the intended Sections have current outlines,
 evidence, display previews, Page delivery and Page CHECK closure. A send freezes the current build in the
-comments report's `sent/`; the answering build is frozen in `released/`.
+comments batch's `sent/`; the answering build is frozen in `released/`.
 
 
 Older layouts

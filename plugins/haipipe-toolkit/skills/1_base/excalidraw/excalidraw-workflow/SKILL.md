@@ -1,20 +1,15 @@
 ---
 name: excalidraw-workflow
 description: >-
-  A study's workflow drawn as one building map, read left to right: the finished data, its sources or inputs, the
-  tests, the analysis each sub-question needs, the sub-question with its guess and claim, and where the answer lands
-  in the paper; a light version on top, one row per sub-question below. With a version's comments report it carries
-  the review overlay: a red border and ❗ line on what the reviewers asked to change, a green border and 🛠 line on the
-  work that fixes it, read from each Review Item's hits and fixed by cells. Words in the topic's
-  <topic>-drawing.yaml; the topic's builder forwards to scripts/workflow_drawing.py; everything else (the telling,
-  the Board Questions' reports, the Task folders, the Review Items) is read on every build. haipipe-paper-story calls
-  it for a paper's workflow topic whenever it is installed. Use to draw or redraw a paper's workflow, to see what
-  the reviewers hit and what answers each point, or to give a new paper the same building map. Trigger: draw the
-  paper workflow, building map, workflow drawing, paper structure map, what did the reviewers hit, review overlay,
-  /excalidraw-workflow. Its second drawer, scripts/paperflow_drawing.py, draws a paper's s04-paper-workflow: the
-  Sections in reader order with their questions, words and displays, the Run that makes each display, and the dated
-  steps to the send (haipipe-paper-plan owns both faces; the map is that skill's s03-paper-dataflow). Trigger also:
-  paper flow, s04 drawing, sections and displays, timeline to the send.
+  A study's workflow drawn as one building map, left to right: the finished data, its sources, the tests, each
+  sub-question's analysis, its guess and claim, and where the answer lands in the paper. With a version's
+  comments report it adds the review overlay: red ❗ on what the reviewers asked to change, green 🛠 on the work
+  that fixes it. scripts/workflow_drawing.py builds it from the topic's <topic>-drawing.yaml;
+  scripts/paperflow_drawing.py draws the s04-paper-workflow (Sections, displays, dated steps to the send). Use
+  to draw or redraw a paper's workflow, see what the reviewers hit and what answers each point, or give a new
+  paper the same map. Trigger: draw the paper workflow, building map, workflow drawing, paper structure map,
+  what did the reviewers hit, review overlay, paper flow, s04 drawing, sections and displays, timeline to the
+  send, /excalidraw-workflow.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -32,7 +27,8 @@ to the themes/paper skills set"; "or call it /excalidraw-workflow, saying how do
 
 The map was a script each paper copied (haipipe-paper-story: "copy an existing builder and change only its SPEC");
 five copies had drifted apart and all still read the retired `A1-Story/` Page. This skill is that script once, with
-the review overlay added, so every paper draws its building map the same way.
+the review overlay added, so every paper draws its building map the same way. haipipe-paper-story calls it for a
+paper's workflow topic whenever it is installed.
 
 ```text
 THE DATA ─▶ THE SOURCES ─▶ THE TESTS ─▶ ANALYSIS ─▶ SUB-QUESTION → CLAIM ─▶ IN THE PAPER     light version

@@ -8,10 +8,10 @@ wrapper is wanted, the approved caption/label/placement fields. The renderer fil
 `assets/`; it may serialize `float.tex` only from those explicit caller-owned fields, compiles
 `preview.pdf`, and updates `README.md`.
 
-For a Page DISPLAY Result, the caller-supplied unit is
-`<page>/results/<re-run>/payload/<unit>/`. The Result envelope owns this address; a renderer never
-creates a parallel `outline/evidence/display/` or flat `display/` copy. Paper adapters consume the
-Page Result unit and may project files into generated delivery output.
+For a draft Task, the caller-supplied unit is `<task>/display/Display<n>-<slug>/`, beside `draft/` and
+`evidence/` (JL 261016; an older Page: a DISPLAY Result's `<page>/results/<re-run>/payload/<unit>/`, owned by its
+Result envelope). A renderer never creates a parallel `outline/evidence/display/` or a second copy. Paper adapters
+consume the unit and may project files into generated delivery output.
 
 This is what makes a rendered asset a first-class, reusable, inspectable display instead of a
 loose file.
@@ -191,7 +191,8 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
   labels and axis text stay black (`display-revise-loop.md`, the colour rule). It must also read in
   grayscale and be colorblind-safe: encode the key contrast with position, shape, or weight as well,
   never with hue alone. No title baked inside the image; the title lives only in the caller-owned
-  `\caption{}` in `float.tex`, and the caption title is followed by the unit's `question:`.
+  `\caption{}` in `float.tex`; the unit's `question:` stays in its README, never in the printed caption
+  (`display-revise-loop.md`, the question rule and the caption rule).
 - **Refuse rather than guess.** Stop when the brief is incomplete, the named intake source or its
   snapshot file is missing, the snapshot is stale, or a numeric display has no verified aggregate.
   Do not search for data, invent it, or guess placement.
@@ -215,7 +216,7 @@ input; a concept unit that displays verified figures declares a separate `role: 
 ## Notes
 
 - The poster and slides renderers retired 2026-08-16 (JL), with the `content-plan-spec.md` that
-  fed them; both are parked under `_todo/`. A board page's talk is the slide workbench's deck.
+  fed them; they are no longer on disk (git history), and `_parts/slide/` is a newer, different renderer. A board page's talk is the slide workbench's deck.
 - `haipipe-task-for-display` produces a canonical display-ready aggregate and its provenance.
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
   they are not canonical assets until a display unit accepts and renders them. For a Board Page,

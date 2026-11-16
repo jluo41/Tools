@@ -9,7 +9,24 @@ from pathlib import Path
 
 
 SKILLS = next(p for p in Path(__file__).resolve().parents if p.name == "skills")
+RUN = SKILLS / "1_base/project/haipipe-run"
+
+
+def run_contract_text():
+    """haipipe-run keeps its Page Run identity rules in two ref files beside SKILL.md."""
+    return "\n".join(
+        (RUN / name).read_text()
+        for name in ("SKILL.md", "ref/identity-and-history.md", "ref/run-catalog.md")
+    )
 WORKFLOW = SKILLS / "1_base/draft/haipipe-draft-workflow"
+
+
+def workflow_text():
+    """SKILL.md plus the refs its interactive-writing and Run-identity sections moved into."""
+    return "\n".join(
+        (WORKFLOW / name).read_text()
+        for name in ("SKILL.md", "ref/interactive-page-runs.md", "ref/run-identity.md")
+    )
 
 
 class InteractiveSkillContractTest(unittest.TestCase):
@@ -33,6 +50,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
             WORKFLOW / "SKILL.md",
             WORKFLOW / "ref/structure-run.md",
             WORKFLOW / "ref/interactive-writing-run.md",
+            WORKFLOW / "ref/interactive-page-runs.md",
             WORKFLOW / "ref/workflow-table.md",
             SKILLS / "1_base/draft/haipipe-draft-writing/SKILL.md",
             SKILLS / "1_base/draft/haipipe-draft-writing/ref/paragraph-run.md",
@@ -52,7 +70,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
             "1_base/draft/haipipe-draft-writing/SKILL.md",
             "1_base/draft/haipipe-draft-logic/ref/structure.md",
             "1_base/draft/haipipe-draft-writing/ref/writing.md",
-            "1_base/project/haipipe-run/SKILL.md",
+            "1_base/project/haipipe-run/ref/identity-and-history.md",
         ):
             with self.subTest(skill=relative):
                 self.assertIn("interactive-writing-run.md", (SKILLS / relative).read_text())
@@ -148,7 +166,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_heavy_inter_run_work_requires_scoped_approval(self):
         policy = (WORKFLOW / "ref/interactive-execution-policy.md").read_text()
         page = (SKILLS / "1_base/draft/haipipe-draft/SKILL.md").read_text()
-        workflow = (WORKFLOW / "SKILL.md").read_text()
+        workflow = workflow_text()
         self.assertIn("explicit approval", policy)
         self.assertIn("between", policy)
         self.assertIn("explicit scoped approval", page)
@@ -161,7 +179,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_fast_foreground_step_has_a_hard_small_scope(self):
         policy = (WORKFLOW / "ref/interactive-execution-policy.md").read_text()
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
-        workflow = (WORKFLOW / "SKILL.md").read_text()
+        workflow = workflow_text()
         page = (SKILLS / "1_base/draft/haipipe-draft/SKILL.md").read_text()
         for text in (policy, contract, workflow, page):
             with self.subTest(source=text[:40]):
@@ -185,11 +203,11 @@ class InteractiveSkillContractTest(unittest.TestCase):
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         self.assertIn("not a newly implemented CLI", contract)
         self.assertIn("waiting-for-feedback", contract)
-        self.assertIn("Closed records", (SKILLS / "1_base/project/haipipe-run/SKILL.md").read_text())
+        self.assertIn("closed passes are immutable", run_contract_text())
 
     def test_step_run_close_and_page_release_have_distinct_write_boundaries(self):
         page = (SKILLS / "1_base/draft/haipipe-draft/SKILL.md").read_text()
-        workflow = (WORKFLOW / "SKILL.md").read_text()
+        workflow = workflow_text()
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         content = (SKILLS / "1_base/draft/haipipe-draft-writing/SKILL.md").read_text()
         template = (WORKFLOW / "ref/writing-step-template.md").read_text()
@@ -211,7 +229,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
 
     def test_page_run_identity_is_separate_from_task_run_identity(self):
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
-        run_contract = (SKILLS / "1_base/project/haipipe-run/SKILL.md").read_text()
+        run_contract = run_contract_text()
         presenter = (SKILLS / "1_base/workbench/workbench-task-draft/ref/run-space.md").read_text()
         for text in (contract, run_contract, presenter):
             with self.subTest(source=text[:40]):
@@ -228,8 +246,8 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_runs_function_proposes_only_human_interaction(self):
         runs_fn = (SKILLS / "1_base/draft/haipipe-draft/fn/runs.md").read_text()
         page = (SKILLS / "1_base/draft/haipipe-draft/SKILL.md").read_text()
-        workflow = (WORKFLOW / "SKILL.md").read_text()
-        run_contract = (SKILLS / "1_base/project/haipipe-run/SKILL.md").read_text()
+        workflow = workflow_text()
+        run_contract = run_contract_text()
 
         self.assertIn("fn/runs.md", page)
         self.assertIn("../haipipe-draft/fn/runs.md", workflow)
@@ -238,20 +256,25 @@ class InteractiveSkillContractTest(unittest.TestCase):
         self.assertIn("Resume an existing matching\n   open Page Run", runs_fn)
         self.assertIn("code/search/data/build produces output", runs_fn)
         self.assertIn("normal Task Run", runs_fn)
-        self.assertIn("A Page-owned `fn/Runs` candidate is also planning", run_contract)
+        self.assertIn("Planning candidates and reserved names stay outside actual inventory", run_contract)
 
     def test_page_has_explicit_structure_section_and_paragraph_run_ids(self):
         runs_fn = (SKILLS / "1_base/draft/haipipe-draft/fn/runs.md").read_text()
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
-        workflow = (WORKFLOW / "SKILL.md").read_text()
-        run_contract = (SKILLS / "1_base/project/haipipe-run/SKILL.md").read_text()
+        workflow = workflow_text()
+        run_contract = run_contract_text()
 
-        for text in (runs_fn, contract, workflow, run_contract):
+        for text in (runs_fn, contract, workflow):
             with self.subTest(source=text[:40]):
                 self.assertIn("run-structure-", text)          # full names (JL 261001)
                 self.assertIn("P01..PN", text)
                 self.assertIn("1 <= K <= N", text)
                 self.assertIn("sibling", text)
+        # haipipe-run names the P index and lists the sibling Page Run kinds in its catalogue
+        self.assertIn("run-structure-", run_contract)
+        self.assertIn("Page-global P index", run_contract)
+        self.assertIn("1 <= K <= N", run_contract)
+        self.assertIn("`run-section-<slug>`, `run-paragraph-<slug>`", run_contract)
 
         self.assertIn("Ten paragraphs may therefore produce 10, 8, or 6", runs_fn)
         self.assertIn("run-section-0906-c2", runs_fn)
@@ -280,7 +303,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
         self.assertIn("same paired Structure Result", runs_fn)
 
     def test_draft_paragraph_header_does_not_reserve_bullet_gutter(self):
-        outline = (SKILLS.parent / "servers/workbench/workbench-task-draft/outline.py").read_text()
+        outline = (SKILLS.parent / "servers/workbench/workbench-task-draft/outline_page.py").read_text()
         self.assertIn(
             "details.paragraph-group>summary .addr{{min-width:0;margin-right:0}}",
             outline,
@@ -288,7 +311,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
 
     def test_evidence_labels_use_generic_display_namespace(self):
         families = (SKILLS / "1_base/draft/haipipe-draft/ref/page-run-families.md").read_text()
-        page = (SKILLS / "1_base/draft/haipipe-draft/SKILL.md").read_text()
+        page = (SKILLS / "1_base/draft/haipipe-draft/ref/page-runs.md").read_text()   # the label grammar moved out of SKILL.md
         evidence = (SKILLS / "1_base/evidence/haipipe-evidence/ref/page-evidence.md").read_text()
         displays = (SKILLS / "1_base/workbench/workbench-task-draft/ref/evidence/displays.md").read_text()
         citations = (SKILLS / "1_base/workbench/workbench-task-draft/ref/evidence/citations.md").read_text()

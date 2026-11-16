@@ -127,7 +127,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             self.assertEqual(snap["insight"]["status"], "bound")
             self.assertEqual(snap["insight_names"], ["DesignWorkbench-Demo-260916-InsightBoard"])
             pages = snap["insight_space"][0]["pages"]
-            self.assertEqual(pages[0]["name"], "FW01-send-salience.md")
+            self.assertEqual(pages[0]["name"], "W01-full-send-salience.md")
             self.assertEqual([(name, item) for name, _rel, item in pages[0]["used_by"]],
                              [("Design-01-all-patients-prescription-review-sms", "ITEM01"),
                               ("Design-01-all-patients-prescription-review-sms", "ITEM02")])

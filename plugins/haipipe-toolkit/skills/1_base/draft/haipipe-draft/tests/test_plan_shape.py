@@ -50,29 +50,32 @@ class ResolvedSectionShapeTest(unittest.TestCase):
         )
 
     def test_run_owned_folder_kind_resolves_its_page_face(self):
+        # Knowledge 2.3.0 dropped the fixed Claim → … → Boundary outline: `report: shape:` says one division per
+        # agreed need, the judge need last, so the shape is read from its owner and any division list passes.
+        declaration = type_outline("knowledge", SKILLS_ROOT)
+        self.assertEqual("report", declaration["mode"])
+        self.assertTrue(declaration["type_path"].endswith("haipipe-insight-knowledge/SKILL.md"))
+        self.assertIn("one division per need", declaration["shape"])
         with tempfile.TemporaryDirectory() as temporary:
             page = Path(temporary) / "K01-claim.md"
             page.write_text(
                 "# Fixture\nfolder-kind: knowledge\n",
                 encoding="utf-8",
             )
-            complete = "\n".join(
-                f"## C{i} · {title}" for i, title in enumerate(
-                    ("Claim", "Information Cited", "Strength", "Rivals", "Boundary"), 1
-                )
-            )
-            self.assertEqual([], check(page, complete, SKILLS_ROOT))
+            per_need = "## C1 · Does the effect hold\n## C2 · How strong, against what rivals, where it stops\n"
+            self.assertEqual([], check(page, per_need, SKILLS_ROOT))
 
     def test_legacy_application_page_type_resolves_the_same_phase(self):
         with tempfile.TemporaryDirectory() as temporary:
-            page = Path(temporary) / "K01-claim.md"
-            page.write_text(
-                "# Fixture\npage-type: knowledge\n",
-                encoding="utf-8",
-            )
-            broken = "## C1 · Claim\n## C2 · Strength\n"
-            findings = check(page, broken, SKILLS_ROOT)
-            self.assertTrue(any("5 declared divisions" in item for item in findings))
+            current = Path(temporary) / "K01-current.md"
+            current.write_text("# Fixture\nfolder-kind: knowledge\n", encoding="utf-8")
+            legacy = Path(temporary) / "K01-claim.md"
+            legacy.write_text("# Fixture\npage-type: knowledge\n", encoding="utf-8")
+            plan = "## C1 · Claim\n## C2 · Strength\n"
+            self.assertEqual(check(current, plan, SKILLS_ROOT), check(legacy, plan, SKILLS_ROOT))
+            both = Path(temporary) / "K01-both.md"          # both keys name one owner: no "different owners"
+            both.write_text("# Fixture\nfolder-kind: knowledge\npage-type: knowledge\n", encoding="utf-8")
+            self.assertEqual([], check(both, plan, SKILLS_ROOT))
 
     def test_task_folder_kind_resolves_to_canonical_task_owner(self):
         declaration = type_outline("task", SKILLS_ROOT)

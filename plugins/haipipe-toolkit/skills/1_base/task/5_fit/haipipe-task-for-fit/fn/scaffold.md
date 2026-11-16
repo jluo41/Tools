@@ -38,8 +38,8 @@ work/bNN_<block>/
     ├── src/                         shared code + config-defaults.yaml
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.py
         └── runs/rNN_<run>/              one folder per Run
             ├── rNN_<run>.sh             the ticket
@@ -105,11 +105,11 @@ MUST NOT
 First-run gate
 ---------------
 
-`runs/<RUN>/<RUN>.sh` blocks execution if `CODE_REVIEW.md` is missing or stale (gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
+`runs/<RUN>/<RUN>.sh` stops only when `CODE_REVIEW.md` says `overall_verdict: fail` or `revise`; a missing review prints a warning and the Run goes ahead (advisory gate inherited from `../../../haipipe-task/ref/run-sh-template.sh`).
 For the first run after this scaffold, do ONE of:
 
   1. **Recommended** — run the haipipe-task-reviewer-agent (Gate 1) on this
-     job to produce a fresh `CODE_REVIEW.md`:
+     job; it returns a fresh `CODE_REVIEW.md` text and the orchestrator saves it:
      `Tools/plugins/haipipe-toolkit/skills/1_base/task/agents/haipipe-task-reviewer-agent.md`
 
   2. **Temporary bypass** — set env var at launch:

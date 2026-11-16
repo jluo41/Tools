@@ -13,8 +13,8 @@ A ladder Run has no separate Ticket file. It is the Run folder the caller made a
 ```text
 <Task>/runs/run-<type>-<target>/run.yaml    run · kind · type · scope · target · skill · agent · signs · status ·
                                             by · started_at · finished_at · usage
-<Job>/<Job>.md                              front matter: goal · method (MNN m<k>) · method-sha · inputs (i<N>) · n
-<Job>/inputs/                               goal.md · method.md · links into ../inputs/i<N>/ · manifest.yaml
+<Job>/<Job>.md                              front matter: goal · method (MNN m<k>) · method-sha · inputs (inputs-vN) · n
+<Job>/inputs/                               goal.md · method.md · links into ../inputs/inputs-vN/ · manifest.yaml
 ```
 
 `type` is one of `reason` (t00), `generate`, `verify` (a design Task), `rank` (t99), all `kind: hard`, and `revise`
@@ -25,7 +25,7 @@ The worker reads `inputs/method.md` (front matter `method · version · steps` w
 each of ① – ⑤) for its step, and only the fence's files. `manifest.yaml` lists every fence file:
 
 ```yaml
-inputs: i2
+inputs: inputs-v2
 frozen: '<YYMMDD>'
 method: method.md
 parts:                       # step ①'s parts: which file serves which
@@ -33,7 +33,7 @@ parts:                       # step ①'s parts: which file serves which
 files:
 - {path: goal.md, source: written, sha256: <sha>}
 - {path: method.md, source: <registry version, e.g. haipipe-design-method M04 m2>, sha256: <sha>}
-- {path: rules.md, source: ../../inputs/i2/rules.md, sha256: <sha>}
+- {path: rules.md, source: ../../inputs/inputs-v2/rules.md, sha256: <sha>}
 ```
 
 `sha256` holds the first 12 hex of the file's sha256.

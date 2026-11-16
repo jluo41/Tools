@@ -3,6 +3,7 @@
 Part of `ExportMixin` (export.py), which composes it; see export.py for the
 writer/door division and where each export lands."""
 import os
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -91,8 +92,50 @@ class ExportLatexMixin:
             # Insert from the last first-reference toward the first. If one
             # paragraph cites Display2 and then Display4, both follow it, and
             # reverse source-order placement keeps them in citation order.
+            # LEGEND SECTIONS (JL 261115: "why the displays are not embeded in
+            # the draft?"): an Extended Data or Supplementary unit prints
+            # right under the heading that names it, "Extended Data Fig. 1 |
+            # <title>", and the Section's paragraph under it is its legend.
+            # The display's own caption and note are not printed, so the
+            # legend never prints twice.
+            legend_placed = set()
+            for short, u in units:
+                name = u.get("legend_name")
+                if not name:
+                    continue
+                hm = re.search(r"(?m)^\\(?:sub)*section\*?\{%s(?:\s*\||\})[^\n]*$"
+                               % re.escape(name), body)
+                if not hm:
+                    continue
+                rel = os.path.relpath(u["dir"], out_dir).replace(os.sep, "/")
+                lab = "\\label{%s}\n" % u["label"] if u["label"] else ""
+                if u["kind"] == "table" and (u["dir"] / "assets" / "table-body.tex").is_file():
+                    inner = "\\input{%s/assets/table-body}" % rel
+                elif u["kind"] == "table" and u.get("inline_table"):
+                    inner = u["inline_table"]
+                else:
+                    asset = next((f for f in ("figure.pdf", "figure.png", "figure.jpg")
+                                  if (u["dir"] / "assets" / f).is_file()), None)
+                    if not asset:
+                        continue
+                    inner = ("\\includegraphics[width=%s,height=.6\\textheight,"
+                             "keepaspectratio]{%s/assets/%s}"
+                             % (u.get("width") or "\\linewidth", rel, asset))
+                # the unit's folder name in a comment: the paper build counts a unit as cited when its
+                # fragment names it, and an inline table carries no path that would
+                block = ("\n%% display unit: %s\n%s\\begin{center}\n\\begingroup\n%s\n\\endgroup\n"
+                         "\\end{center}\n" % (u["dir"].name, lab, inner))
+                # one Extended Data item per page, as NMI prints them: a heading
+                # never sits alone at a page foot with its display overleaf
+                earlier = re.search(r"(?m)^\\(?:sub)*section\*?\{(?:Extended Data|Supplementary) ",
+                                    body[:hm.start()])
+                brk = "\\clearpage\n" if earlier else ""
+                body = body[:hm.start()] + brk + body[hm.start():hm.end()] + "\n" + block + body[hm.end():]
+                legend_placed.add(id(u))
             ranked = []
             for short, u in units:
+                if id(u) in legend_placed:
+                    continue
                 mention = self._first_unit_mention(body, u)
                 if mention:
                     ranked.append((mention.start(), short, u))

@@ -48,7 +48,7 @@ RUN_NAMES = {lane: delivery_name(lane) for lane in ("web", "latex", "word")}
 _TICKET = """#!/usr/bin/env bash
 # {run} · build {destination}/{lane}/ from this Page. Every rebuild reruns this same Run;
 # the files in {destination}/{lane}/ are its result and their file time says when it last ran.
-# Written by `page.py export`; never edited by hand (AGENTS.md rule 6).
+# Written by `page.py export`; never edited by hand (the SPACE's AGENTS.md § Working rules).
 set -euo pipefail
 page="$(cd "$(dirname "$0")/{up}" && pwd)"
 root="$page"

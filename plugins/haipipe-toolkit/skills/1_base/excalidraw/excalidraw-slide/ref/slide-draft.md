@@ -30,7 +30,7 @@ later (not now), and open.
 ## The folder
 
 ```text
-<job>/studio/
+<job>/                           topics sit beside the Job's Tasks (an older Job: in its studio/)
 ├── s01-what-they-want/          the ask (above)
 └── s6N-<deck>/
     ├── s6N-<deck>.md            face: audience, length, when it is shown · Decided · Open

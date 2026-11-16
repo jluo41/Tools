@@ -114,9 +114,14 @@ def test_a_changed_story_row_is_named_only_to_the_sections_that_restate_it(tmp_p
     assert "## Story rows it was signed against" in (results / "draft" / "records" / "t02_results-sign.md").read_text()
     assert [f for f in folder_health(results)["findings"] if f["check"] == "narrative"] == []
     story.write_text(STORY.replace("does not close the gap.", "does not close the gap in general."), encoding="utf-8")
-    sign_narrative(job, "re-sign")                      # the version re-signs; the Section still learns of C6
+    sign_narrative(job, "re-sign")
+    # M-D09 (JL 261115): while the version drafts, neither Section is told
+    assert [f for f in folder_health(results)["findings"] if f["check"] == "narrative"] == []
+    assert [f for f in folder_health(abstract)["findings"] if f["check"] == "narrative"] == []
+    face = job / "j11_writing_v1.md"
+    face.write_text(face.read_text().replace("# j11\n", "# j11\nstate: sent\n"), encoding="utf-8")
     told = [f for f in folder_health(results)["findings"] if f["check"] == "narrative"]
-    assert [f["level"] for f in told] == [WARN]
+    assert [f["level"] for f in told] == [WARN]     # after the send, the Section that restates C6 learns of it
     assert told[0]["message"].startswith("Story row C6 in s02-story.md § 8 changed since this Section's plan was signed; "
                                          "t02_results restates it")
     quiet = [f for f in folder_health(abstract)["findings"] if f["check"] == "narrative"]

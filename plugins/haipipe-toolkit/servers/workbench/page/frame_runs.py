@@ -12,7 +12,7 @@ from live.frame_base import _e, _empty_view
 _HARD_RUN = re.compile(r"^r\d{2,3}_")
 _RUN_SKIP = {"history", "_old", "_archive", "results", "result", "node_modules"}
 RUN_MARK = {"complete": "✅", "completed": "✅", "done": "✅", "failed": "❌", "error": "❌", "blocked": "🟧",
-            "running": "▶️", "queued": "⏳", "queued_conditional": "⏳", "planned": "⬜", "not run": "⬜",
+            "running": "🏃", "queued": "⏳", "queued_conditional": "⏳", "planned": "⬜", "not run": "⬜",
             "no receipt": "⬜"}
 
 
@@ -101,7 +101,7 @@ def runs_list(rows: list) -> str:
     return f'<div class=rn-rows>{"".join(cards)}</div>'
 
 
-RUN_LEGEND = "✅ complete · ❌ failed · 🟧 blocked · ▶️ running, since when · ⏳ queued · ⬜ not run or no receipt here"
+RUN_LEGEND = "✅ complete · ❌ failed · 🟧 blocked · 🏃 running, since when · ⏳ queued · ⬜ not run or no receipt here"
 RUN_CSS = (".rn-rows{display:grid;gap:6px}.rn-card{border:1px solid var(--line);border-radius:10px;background:var(--bg);overflow:hidden}"
            ".rn-card>summary{display:flex;gap:10px;align-items:baseline;cursor:pointer;padding:8px 12px;list-style:none}"
            ".rn-card>summary::-webkit-details-marker{display:none}.rn-card>summary::before{content:'▸';color:var(--mut)}"
@@ -118,7 +118,7 @@ RUN_CSS = (".rn-rows{display:grid;gap:6px}.rn-card{border:1px solid var(--line);
 def _tally(rows: list) -> str:
     from collections import Counter
     c = Counter(RUN_MARK.get(r[3], "⬜") for r in rows)
-    return " ".join(f"{m}{c[m]}" for m in ("✅", "❌", "🟧", "▶️", "⏳", "⬜") if c[m])
+    return " ".join(f"{m}{c[m]}" for m in ("✅", "❌", "🟧", "🏃", "⏳", "⬜") if c[m])
 
 
 def studio_runs(block: Path, root: Path, theme=None) -> str:

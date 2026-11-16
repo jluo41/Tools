@@ -27,7 +27,7 @@ its Tasks; building each Task is `haipipe-task`'s, the folder's shape `haipipe-p
 ```text
 bNN_<block>/jNN_<job>/
 ├── jNN_<job>.md      the face: # jNN · <title> · goal · close · emoji · answers: · Topic · ## Tasks · ## Deliverables
-├── runs/ studio/     soft Runs (haipipe-run) · its own topics (haipipe-studio)
+├── runs/ sNN-<topic>/  soft Runs (haipipe-run) · its own topics, beside its Tasks (haipipe-studio)
 ├── src/ sbatch/      code its Tasks share
 └── tNN_<task>/       its Tasks, in the order ## Tasks lists them
 ```
@@ -47,7 +47,7 @@ Create a Job, add its Tasks
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-job/scripts
 python $S/new_job.py job  <block> --slug <job>  --title '<title>' [--answers Q01]
-python $S/new_job.py task <job>   --slug <task> --title '<title>' [--kind page] [--answers Q01.E1]
+python $S/new_job.py task <job>   --slug <task> --title '<title>' [--kind <task-type>] [--answers Q01.E1]
 python $S/new_job.py check <job>
 ```
 

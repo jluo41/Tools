@@ -23,6 +23,12 @@ metadata:
 
 # /haipipe-insight-meta · establish what the board can know
 
+> **Older layout (261008) below.** The Meta Folder `0-MT-meta/MT00-meta/` and "a second extract is a second board"
+> are the register board's (`insight/<Dataset>-InsightBoard/`). On the insight ladder
+> (`../../haipipe-insight/ref/insight-ladder.md`) a Board `insight/Insight-<name>/` holds its dataset in `board.md`
+> `versions:` and `meta/meta.md`, and a new extract is the next data version of the same Board
+> (`run-add-version-data-v<M>`: `{version, folder, frozen, new}`). What Meta must establish still holds.
+
 Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and
 `haipipe-insight-workflow`. Existing folders may retain `page-type: meta`;
 new owner-authored folders use `folder-kind: meta`.
@@ -53,7 +59,7 @@ Folders owned by Question, not divisions of Meta.
 - accepted Task/Discovery Run Results, bound through full Supporting Run ids,
   or governed page-local static sources frozen in Local Input;
 - source versions, unit/grain, population, time window, and refresh clocks;
-- the optional segment proposal and shared thresholds from `../../haipipe-insight/ref/partition.md`.
+- the optional segment proposal and shared thresholds from `../../haipipe-insight/ref/segment.md`.
 
 ## Page Face
 
@@ -110,6 +116,6 @@ segment register plus shared thresholds. Do not hand it a preferred question.
 ## Files
 
 - Folder Page: `0-MT-meta/MT00-meta/MT00-meta.md`
-- Shared segment law: `../../haipipe-insight/ref/partition.md`
+- Shared segment law: `../../haipipe-insight/ref/segment.md`
 - Page adapter: `../../haipipe-insight/ref/page-v2-adapter.md`
 - This Folder owns no private scripts.

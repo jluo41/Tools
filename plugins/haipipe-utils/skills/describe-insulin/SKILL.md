@@ -79,7 +79,7 @@ FIXED and the seam is a string.
                                        "basal insulin"
 ```
 
-When a WellDoc `MedicationID` reaches this door directly, the same E2_LEXICON
+When a partner app's `MedicationID` reaches this door directly, the same E2_LEXICON
 hop is applied before the PK table. For example, `612997` resolves to the
 Lyumjev/lispro-aabc product and `553838` to Humalog/lispro; `PKSource` keeps
 the `lexicon:<id>` hop visible. An input that explicitly names alternatives,
@@ -171,7 +171,7 @@ temperature and body composition; a 4-hour rapid-analogue duration is a
 3-to-5-hour range wearing one number. Nothing from the table may be stamped
 GOOD.
 
-WellDoc's `MedPrescription` carries `DIA` -- a duration of insulin action
+The partner app's `MedPrescription` carries `DIA` -- a duration of insulin action
 measured per patient -- on 15.7% of prescriptions, values 5.0 / 7.0 / 2.0 hours.
 Pass it as `dia_hours` and it overrides the DURATION only; onset and peak stay
 the table's, and `PKSource` keeps both halves visible
@@ -250,4 +250,4 @@ INSNORM_URL=http://127.0.0.1:8070/insulin python servers/api-insulin/tests/test_
 `INSNORM_URL` (default `http://127.0.0.1:8070/insulin`), `INSNORM_TRANSPORT`,
 `INSNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
-NOT authenticated, binds 127.0.0.1. Insulin logs are PHI.
+NOT authenticated; it listens on one address, `$HAIPIPE_UTILS_HOST` (the SPACE's env.sh sets it; 127.0.0.1 when unset). Insulin logs are PHI.

@@ -1,9 +1,8 @@
 # Block numbers in a staged pipeline Project
 
 Read this only for a Project built as the haipipe pipeline, raw → source → record → case → aidata →
-model → evaluation → endpoint (the WellDoc, DrFirst and REACH SPACEs). There the Block number says
-the stage, so one number means one stage in every such Project. A topic Project (LLMRec, OpioidRx,
-PhyReview) numbers its Blocks by topic and ignores this file. The Task folder itself is the same in
+model → evaluation → endpoint. There the Block number says
+the stage, so one number means one stage in every such Project. A topic Project numbers its Blocks by topic and ignores this file. The Task folder itself is the same in
 both: `ref/task-folder.md`. The type skills that build these stages are `haipipe-task-for-raw`,
 `-data`, `-description`, `-algo`, `-fit`, `-eval` and `-endpoint` (`ref/types.md`).
 
@@ -75,13 +74,13 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   Job number alone says whether a Job is built once or once per dataset.
   Datasets take numbers in extraction-date order (the `v<yymmdd>`). A Project
   that grouped datasets by family under the old numbering keeps its family
-  digits by adding 50 (WellDoc Proj01: WellDoc `j51`-`j57`, AI-READI `j72`,
+  digits by adding 50 (for example one family `j51`-`j57`, another `j72`,
   external `j91`-`j96`).
 - A raw dataset is named `<cohort>-v<yymmdd>`, the day its extraction was
   launched (`haipipe-data raw` § Dataset naming); the Job drops the hyphens.
 - A range above the data stages starts at `x1`: `b11` is the first model
   Block, `b12` the next question, `b31` the first endpoint Block, as `b51`
-  already is in WellDoc and DrFirst. `b10` is the one exception: it is the
+  already is in the pipeline SPACEs. `b10` is the one exception: it is the
   AIData Block, just before the models it feeds. `b20`, `b30`, `b50` stay
   unused. A range with no work has no Block.
 - A topic Job groups the Fns that change together: the ProcName contracts of
@@ -109,15 +108,15 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
 - In a dataset Job, `t01`-`t09` cover the whole dataset (build, materialize,
   conformance) and `t11` onward are its tables in ONE fixed topic order;
   `t91`+ close the dataset (routing, hand-off). When raw tables map one to
-  one onto ProcNames (REACH), b00 and b01 share the numbers: b00 `t14`
+  one onto ProcNames, b00 and b01 share the numbers: b00 `t14`
   profile and b01 `j51/t14` card are the same table. When several raw tables
-  feed one ProcName (WellDoc: 50 raw tables, 16 ProcNames), b00 numbers raw
+  feed one ProcName (for example 50 raw tables, 16 ProcNames), b00 numbers raw
   tables and b01 numbers ProcNames, and the numbers do not line up.
 - A dataset version is a Job in `b00`, `b01`, `b02` and `b03`, with the same
   `jNN` in all (`b02/j51_reachpd2d_v260922_record`). Its per-item Tasks exist
   only where items differ by dataset: `b01`'s per-table cards, yes; `b02`'s
   per-record cards, no. A `b02` dataset Job is one Task with one Run that
-  builds and counts the RecordSet. (DrFirst still makes each dataset a
+  builds and counts the RecordSet. (One SPACE still makes each dataset a
   Run of one materialize Task; both shapes are one ticket per dataset.)
 - Case Block: one topic Job per Fn family with one Task per Fn
   (`j01_triggerfn_visit`, `j02_casefn_diab_event`, `j03_casefn_feature`),

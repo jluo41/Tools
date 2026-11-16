@@ -21,9 +21,9 @@ one function serves every question that writes that shape:
 
 A need may also declare its own figures (`figures:` in the question file, block-contract.md § The question
 file): kind line, bar, forest or heat over one of its output tables; those are drawn first, then any
-known shape. A table of no known shape and no declared figure gets no figure and no lead line. Same message, same colour, in every
+known shape; `{table: <file>.csv, kind: none}` says that one table wants no figure. A table of no known shape and no declared figure gets no figure and no lead line. Same message, same colour, in every
 figure (sorted names). The PNG carries no timestamp, so a rerun on the same tables writes the same
-bytes. Generated files are never edited by hand (AGENTS.md rule 0): rerun the ticket.
+bytes. Generated files are never edited by hand (the SPACE's AGENTS.md § Working rules): rerun the ticket.
 """
 import math
 import traceback
@@ -516,15 +516,17 @@ def _declared_draw(df, spec, path, title):
                         off = (gi * len(ys) + yi - (k - 1) / 2) * w
                         ax.bar([p + off for p in pos], part[ycol], width=w, color=c, label=name or None)
                         ax.set_xticks(pos)
-                        ax.set_xticklabels([_label(v) for v in part[spec["x"]]], fontsize=7,
-                                           rotation=45 if len(pos) > 8 else 0, ha="right" if len(pos) > 8 else "center")
+                        names = [_label(v) for v in part[spec["x"]]]
+                        tilt = len(pos) > 8 or sum(len(x) + 2 for x in names) > 70      # long names would print over each other
+                        ax.set_xticklabels(names, fontsize=7, rotation=45 if tilt else 0, ha="right" if tilt else "center")
             if fv is not None:
                 ax.set_title(str(fv), fontsize=9, loc="left", fontweight="bold")     # a panel title in full, never segment
             ax.set_ylabel(spec.get("ylabel") or ", ".join(ys), fontsize=8)
             ax.grid(axis="y", color="#e4e4e7", lw=.6)
             ax.set_axisbelow(True)                # grid lines behind the bars
-            if len(groups) > 1 or len(ys) > 1:
-                ax.legend(fontsize=7, frameon=False, ncol=min(4, len(groups) * len(ys)))
+            if len(groups) > 1 or len(ys) > 1:                    # beside the panel, never on the marks; named for its column
+                ax.legend(fontsize=7, frameon=False, loc="upper left", bbox_to_anchor=(1.01, 1), borderaxespad=0,
+                          title=spec.get("group") or None, title_fontsize=7)
         axes[-1].set_xlabel(spec.get("xlabel") or spec["x"], fontsize=8)
     for ax in axes:
         for h in spec.get("hline") or []:
@@ -562,6 +564,8 @@ def draw(out, needs, margin=None):
         if "figures" in n and not n["figures"]:              # `figures: []` says no figure at all for this need
             continue
         for i, spec in enumerate(n.get("figures") or [], 1):          # the figures the need declares, first
+            if spec.get("kind") == "none":                            # this table wants no figure; the need's others stand
+                continue
             path = out / spec.get("table", "")
             if not spec.get("table") or not path.is_file():
                 made.append({"need": nid, "table": spec.get("table", ""), "file": "", "kind": spec.get("kind", ""),

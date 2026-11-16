@@ -28,9 +28,9 @@ import design_fixture as F  # noqa: E402
 # (Space, views, run types), as b12's s11 · s12 · s13 SCREENS draw them (a red "?" run is left out).
 # Idea Studio is the Block's, shared by its Jobs and Tasks (frame, 261010, b03 s02-D09).
 BLOCK = {"Description": (["Map", "Goals", "Methods", "Inputs"], ["run-add-job-<jNN>"]),
-         "Idea Studio": ([], ["run-draw-<sNN>"]),
+         "Idea Studio": ([], ["Add a topic"]),
          "Audience Report": (["Summary", "Rounds", "Questions", "Predicted vs observed", "Method scorecard", "Cost"],
-                             ["run-build-summary"]),                  # Summary opens first: its one-page PDF
+                             []),                                     # Summary opens first: summary.py, no Run
          "Work Details": (["All", "G01", "G02"], ["run-add-job-<jNN>"]),
          "Runs": (["All", "Set up", "Launch a Job", "Report"],
                   ["run-add-goal-<goal>", "run-add-job-<jNN>", "run-propose-questions"]),
@@ -40,9 +40,9 @@ BLOCK_VIEWS = {("Description", "Goals"): ["run-add-goal-<goal>"], ("Description"
                ("Audience Report", "Predicted vs observed"): ["run-add-observed-<eNN>", "run-score-<eNN>"],
                ("Audience Report", "Method scorecard"): [], ("Audience Report", "Rounds"): ["run-add-inputs-<vN>"],
                ("Audience Report", "Questions"): ["run-propose-questions", "run-report-<qNN>"],
-               ("Audience Report", "Summary"): ["run-build-summary"]}
+               ("Audience Report", "Summary"): []}
 JOB = {"Description": (["Goal", "Method", "Inputs"], ["run-setup-goal-j03", "run-close-j03"]),
-       "Idea Studio": ([], ["run-draw-<sNN>"]),
+       "Idea Studio": ([], ["Add a topic"]),
        "Audience Report": (["Reason ideas", "Design display", "Review whole", "Predicted vs observed", "Performance"],
                            ["run-reason-t00"]),
        "Work Details": (["Reason ideas", "Conduct & review", "Review whole"], ["run-reason-t00", "run-open-designs-j03"]),
@@ -59,14 +59,14 @@ JOB_VIEWS = {("Description", "Method"): ["run-setup-method-j03"], ("Description"
              ("Runs", "Reason ideas"): ["run-reason-t00"],
              ("Runs", "Conduct & review"): ["run-generate-dNN", "run-verify-dNN-v1", "run-revise-dNN"],
              ("Runs", "Review whole"): ["run-rank-t99", "run-release-j03"]}
-T00 = {"Description": (["Task"], ["run-reason-t00"]), "Idea Studio": ([], ["run-draw-<sNN>"]),
+T00 = {"Description": (["Task"], ["run-reason-t00"]), "Idea Studio": ([], ["Add a topic"]),
        "Audience Report": (["Topics", "Ideas"], ["run-reason-t00"]), "Work Details": (["1 · See input", "2 · Reason", "3 · Fence check"], ["run-open-designs-j03"]),
        "Runs": (["All", "hard", "soft"], ["run-reason-t00"]), "Delivery": ([], [])}
-DESIGN = {"Description": (["Design", "Evaluation"], []), "Idea Studio": ([], ["run-draw-<sNN>"]),
+DESIGN = {"Description": (["Design", "Evaluation"], []), "Idea Studio": ([], ["Add a topic"]),
           "Audience Report": (["Tests", "Drafts", "Performance"], ["run-verify-d04"]),
           "Work Details": (["1 · Generate", "2 · Verify", "3 · Revise", "4 · Predict"], []),   # all done: 4 · Predict
           "Runs": (["All", "hard", "soft"], ["run-generate-d04", "run-verify-d04", "run-revise-d04"]), "Delivery": ([], [])}
-T99 = {"Description": (["Task"], ["run-rank-t99"]), "Idea Studio": ([], ["run-draw-<sNN>"]),
+T99 = {"Description": (["Task"], ["run-rank-t99"]), "Idea Studio": ([], ["Add a topic"]),
        "Audience Report": (["Ranking", "Coverage"], ["run-rank-t99"]), "Work Details": (["1 · Rank", "2 · Keep", "3 · Release"], []),   # ranked, none kept on its faces: 2 · Keep
        "Runs": (["All", "hard", "soft"], ["run-rank-t99"]), "Delivery": ([], [])}
 

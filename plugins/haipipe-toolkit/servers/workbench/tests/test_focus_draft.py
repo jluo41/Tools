@@ -100,9 +100,9 @@ class FocusDraftTest(unittest.TestCase):
             self.assertNotIn('⚙️ Process', page)
             self.assertNotIn('📊 Results', page)
         plan = self.page('work', 'work-plan')
-        self.assertLess(plan.index('§1 Structure'), plan.index('Where this step stands'))
-        self.assertIn('Sign the plan', plan)
-        self.assertIn('fd-copy', plan)
+        self.assertIn('§1 Structure', plan)          # Plan keeps Structure and Examples only (JL 261115: "others can drop")
+        self.assertNotIn('Where this step stands', plan)
+        self.assertNotIn('🗂 Records', plan)
         self.assertIn('fd-copy', self.page('studio'))
 
     def test_draft_context_respects_explicit_run_ownership_and_keeps_source_files(self):

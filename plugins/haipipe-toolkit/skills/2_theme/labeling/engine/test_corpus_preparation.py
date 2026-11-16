@@ -230,7 +230,7 @@ def test_contract_refuses_tampered_preparation_before_writing_page(tmp_path: Pat
 
 
 def test_inside_a_space_records_keep_relative_paths_and_private_text_leaves_the_project(tmp_path: Path) -> None:
-    """AGENTS.md rule 7: no absolute path in a record; corpus text never in a git-tracked folder."""
+    """the SPACE's AGENTS.md § Working rules: no absolute path in a record; corpus text never in a git-tracked folder."""
     space = tmp_path / "space"
     space.mkdir()
     (space / "env.sh").write_text("# the SPACE root\n", encoding="utf-8")

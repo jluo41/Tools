@@ -71,7 +71,7 @@ render at the contract path `assets/figure.pdf`:
 ```bash
 UNIT_DIR=/absolute/path/to/unit
 mkdir -p "$UNIT_DIR/assets"
-(cd "$UNIT_DIR" && pdflatex -interaction=nonstopmode preview.tex)
+python3 <haipipe-display>/scripts/build_preview.py "$UNIT_DIR"   # the door's one preview recipe; keeps preview.tex's head
 (cd "$UNIT_DIR/recipe" && pdflatex -jobname=figure -output-directory=../assets -interaction=nonstopmode asset.tex)
 ```
 

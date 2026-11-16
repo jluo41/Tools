@@ -2,7 +2,7 @@
 name: workbench-work
 description: "Open and interpret current work focus pages at Block, Job and Task level: Overview, Plan + Results, Findings, Delivery and view-scoped Around the Work. Distinguish Work Block and Blueprint Block with configured UI views. Read-only; /haipipe-work update aligns existing records. Classic layouts remain supported. Trigger: work workbench, work Block view, /workbench-work."
 metadata:
-  version: "0.10.2"
+  version: "0.10.3"
   last_updated: "2026-11-11"
 ---
 
@@ -41,6 +41,15 @@ Task UI · Run UI. The ordinary Work example is `b90_example_paper_results`; the
 example is `b17_theme_work`, both under `blueprints/Project-Ladder/work/` in Tools.
 The type/view matrices and `view-guide.json` in b17's `ui/` are the current comparison.
 
+**A Question Book is a work page in an insight folder.** The work theme also claims every Block whose `board.md`
+says `board-kind: prototype` (`servers/workbench-work/work_theme.py` `claims()`), wherever it sits. That Block is
+an insight Question Book (`insight/InsightQuestionBook-<Topic>/`, the questions and scripts of the Board it
+`serves:`), kept since JL 261109 beside that Board. So `frame_base.theme_of` returns `work` and its page is the
+work page with insight's `prototype_` parts (`focus_page.page_module`). Everything that is not the page treats it
+as insight: `/lab` runs it under insight (`lab.py` `lab_theme()`), and its questions, runs and handoff belong to
+`haipipe-insight`. A tool that branches on `theme_of` must check `board-kind: prototype` first, or it refuses the
+Book as "a work Block".
+
 Each main view has numbered **📋 Review Content**, then the same eight unnumbered
 **🧭 Around the Work** sections: Studio, Interactions, Decisions, Things to Know,
 Checklist, Timeline, Skills, Files. The right rail uses those same names and
@@ -52,6 +61,11 @@ does not replace those records with a generic Next Steps list. Findings reads, o
 Block first 🗄️ Data (its stores, board.md `data:`), then 🔢 Values (tables.json, values.json;
 haipipe-evidence), 🖼️ Displays (preview.pdf; haipipe-display), and 🧠 Maps when the work
 drew maps; Studio topics are Around the Work's Studio, not Findings (JL 261111). The other views read their own source records and retain theme-specific parts.
+
+A work Block's Overview draws 🗺️ Work map after Goal when it has two or more Runs (JL 261114): one coloured line per
+Job, one station per Run in time order, a shaded band per day; a click opens the Run's page in the pop-out
+(`servers/workbench/page/work_map.py`, the method of trace-canvas). A Block's own build can draw other entries with
+the same `work_map.transit_svg` (b41 draws its decisions; a station without a page opens its card in the pop-out).
 
 A face may name its own sections instead (JL 261114): `## Review Content` replaces the Overview's Goal ·
 Requirements · MindMap, `## Plan + Results` adds sections after the Jobs, and `## Findings` replaces Data · Values ·
@@ -136,7 +150,7 @@ available. Preserve the existing host's authentication settings.
 | Scope › Block | The spine, close condition, Jobs and board.md, as label and value rows | `board.md` |
 | Scope › Questions | The Question register: id, group, topic, question, linked Tasks | `board.md` Questions |
 | Scope › Resources | Workspace data: each `_WorkSpace` folder a Job declares (`raw_store` + `cohort`, or a `_WorkSpace/` path, in `src/config-defaults.yaml`) and the Block's ProjectResult folder, its files by kind (data named and sized only; documents, figures, drawings and scripts pop out); then the Related resources and the add form | Job defaults; `board.md` Related resources |
-| Scope › RoadMap Draw | The question map first (generated, view only), then freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `sNN-<topic>/`, `jNN_*/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
+| Scope › RoadMap Draw | Freeform drawings, then the studio topics (the Block's, then each Job's under its name) with their sessions and previews, each a folding row | Block `studio/*.excalidraw`, `sNN-<topic>/`, `jNN_*/sNN-<topic>/`, `runs/run-draw-<sNN>/passes/` |
 | Task › each group | One table per register `group:` (one, Questions, when there is none): a row per Question, **Logic │ Task Work │ Report** | `board.md` Questions; native Tasks; report Pages |
 | Check › Runs | Every Run and its receipt status | Native Ticket/Result reader |
 | Check › Tasks | Each Task Folder's run counts and audit findings | Native Task reader |

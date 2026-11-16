@@ -32,6 +32,10 @@ cite-rules.md      📚 a BIBEX entry, before it is verified
 value-rules.md     🧮 a VALUE Evidence Item's accepted Result
 ```
 
+Semantic readers (2026-11-15): value R4 is read by `haipipe-draft-evidence-value-agent`, cite R6 by
+`haipipe-draft-evidence-cite-agent`, display R11 and R12 by `haipipe-draft-evidence-display-agent`; the approver keeps
+the deterministic rules and marks these `moved`.
+
 ## How they grow
 
 Every 🛑 remains a durable, artifact-scoped steer and preserves the person's

@@ -43,7 +43,7 @@ from pathlib import Path
 
 PLAIN = r"""\documentclass[11pt]{article}
 \usepackage[letterpaper,margin=1in]{geometry}
-\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor,colortbl,adjustbox}
+\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,float,caption,amsmath,amssymb,xcolor,colortbl,adjustbox,threeparttable,siunitx}
 \usepackage[T1]{fontenc}
 """
 # the paper's default head, as haipipe-paper-assemble build_delivery.write_master writes it before a paper has a
@@ -53,7 +53,7 @@ PAPER = r"""\documentclass[12pt]{article}
 \usepackage{fontspec}
 \IfFontExistsTF{TeX Gyre Termes}{\setmainfont{TeX Gyre Termes}}{\IfFontExistsTF{Times New Roman}{\setmainfont{Times New Roman}}{}}
 \usepackage{microtype}
-\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,amsmath,amssymb,setspace,caption,float,xcolor,adjustbox}
+\usepackage{graphicx,booktabs,tabularx,multirow,array,longtable,amsmath,amssymb,setspace,caption,float,xcolor,adjustbox,threeparttable,siunitx}
 \usepackage{fancyhdr}
 \onehalfspacing
 \setlength{\parindent}{0.25in}
@@ -273,6 +273,8 @@ def _compile(unit: Path, old: Path, body: str) -> Path:
 
 if __name__ == "__main__":
     args = sys.argv[1:]
+    if args[:1] in (["-h"], ["--help"]):
+        sys.exit(print(__doc__))
     opt = {}
     for flag in ("--method-from", "--look", "--preamble-from"):
         if flag in args:

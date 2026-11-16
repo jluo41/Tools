@@ -19,6 +19,10 @@ WHERE = {"Block": "Block › runs/", "Job": "Job › runs/", "Task": "Task › r
 def rows():
     out, card = [], None
     for line in CARDS.read_text(encoding="utf-8").splitlines():
+        if line.startswith("## Older board"):                # the older board's cards are not rows here
+            break
+        if line.startswith(("🔘 BUTTON", "## ")):            # a new card or section ends the card before it
+            card = None
         m = BUTTON.match(line)
         if m:
             label, level, space, pattern, views = m.groups()

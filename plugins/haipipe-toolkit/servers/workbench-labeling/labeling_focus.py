@@ -15,7 +15,6 @@ Today's one labeling Page (building and scanning at once) keeps the single-secti
 """
 from __future__ import annotations
 
-import re
 from pathlib import Path
 from live import focus_page as F, frame
 from live import task_labeling as TL
@@ -78,29 +77,9 @@ def findings_html(folder: Path, root: Path) -> str:
 
 
 def status_html(folder: Path, root: Path, level: str, topics: list, outputs: bool = False, html: str | None = None) -> str:
-    """Status, focus_page's, with each Job's row on a Block marked by where the Job stands, read from its Tasks
-    (🙋 ✅ 🏃 ⬜): a mark, never a state word or a done-of-total count; the Job's own page shows each Task."""
-    html = F.status_now_html(folder, root, level, topics, outputs) if html is None else html
-    if level != "Block":
-        return html
-    for job in _jobs_of(folder, root):
-        kinds = [F.state_kind(F.state_label(F.read_face(t, root)["state"]))
-                 for t in frame.children(job, "Job") if F.inside(t, root)]
-        at = html.find(f'data-pop="{frame.esc(job.name)}"')
-        end = html.find("</summary>", at) if at >= 0 else -1
-        m = re.compile(r"<small>[^<]*</small>").search(html, at, end) if end > at else None
-        if m:                                                # its own row's words only, in its closed bar
-            html = html[:m.start()] + f"<small>{job_word(kinds)}</small>" + html[m.end():]
-    return html
-
-
-def job_word(kinds: list) -> str:
-    """One mark for a Job from its Tasks' kinds of state: what needs the person first, then what runs, then done."""
-    if "🙋 waiting on you" in kinds:
-        return "🙋"
-    if "⏳ running" in kinds:
-        return "🏃"
-    return "✅" if kinds and all(k == "✅ done" for k in kinds) else "⬜"
+    """Status, focus_page's as it is: a Block's Job rows carry the shared mark beside their bar (✅ 🔶 🏃 🙋 ⬜,
+    focus_plan_results.JOB_MARK), never a state word or a done-of-total count."""
+    return F.status_now_html(folder, root, level, topics, outputs) if html is None else html
 
 
 def level_page(theme, root, folder, section="", group=""):

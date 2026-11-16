@@ -26,7 +26,7 @@ haipipe-project `update` moves them.
 | Page interactive writing | soft | `run-structure-` · `run-scratch-` · `run-section-` · `run-paragraph-` · `run-revise-<target>` | `run-<kind>-<slug>` |
 | Delegated paragraph | soft | `run-paragraph-cNN-pNN` | `rNN_page-writing_cNN-pNN` |
 | Page post-run analysis | soft | `run-analysis-<target>` | `rNN_page-run-analysis` |
-| Page evidence (RE) | soft | `run-value-` · `run-display-` · `run-cite-<target>` | `re-<kind>-NN_<slug>` |
+| Page evidence (RE) | soft | `run-value-` · `run-display-` · `run-citation-<target>` | `re-<kind>-NN_<slug>` |
 | Independent display | soft | `run-display-<fig>` | `rNN_page-display_…` |
 | Page delivery (RD) | soft | `run-delivery-<lane>` | `rdNN_<target>` |
 | Design, every Run (ladder) | soft or hard (`kind:` in run.yaml) | `run-<type>-<target>` (`run-generate-d04`, `run-verify-d04-v2`) | `rNN_<type>_<target>` · `run-design-<step>-<MMDD>-<slug>` · `rdNN_<operation>_<slug>` |
@@ -34,7 +34,7 @@ haipipe-project `update` moves them.
 | Paper compile | soft | `run-delivery-latex` | `rNN_compile-<slug>` |
 | Paper response | soft | `run-response-<batch>` | `rresponse-NN_<batch>` |
 | Insight item | hard | `<dataset>_<partition>`, `vNNN` as passes (proposed) | `<instance>#riNN_<slug>@vNNN` |
-| Labeling | hard | `rlNN_<operation>_<target>` (owner: subjective-label) | unchanged |
+| Labeling | hard | `rlNN_<operation>_<target>` (owner: haipipe-labeling) | unchanged |
 
 Each family's own naming reference moves to these names as its owner updates; until
 then that reference governs its older Runs.

@@ -168,75 +168,19 @@ print("review", len(areas) + 3)
 # one station per decision in time order, a decision two sessions share joins their lines, a shaded band per day.
 # Drawn as a picture in the workbench's Overview, never a separate site.
 def transit_map():
-    order = sorted({n for d in data["decisions"] for n in [x.strip() for x in d["session"].split(",")]},
+    """The week as a transit map, drawn by the workbench's own work_map.transit_svg: one line per session, a station
+    per decision; a click opens the decision in the workbench pop-out."""
+    import sys
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../../../../plugins/haipipe-toolkit/servers/workbench/page"))
+    from work_map import transit_svg
+    names = sorted({n.strip() for d in data["decisions"] for n in d["session"].split(",")},
                    key=lambda n: (0 if n.startswith("Pp-") else 99 if n == "WorkBench-Paper-UI" else 50
                                   if n.endswith("Appendix") else 10 + int((re.search(r"t(\d\d)", n) or [0, 40])[1])))
-    colours = ["#e4002b", "#0072ce", "#00a651", "#f68b1f", "#8e3a96", "#00a0b0", "#a6192e", "#5b6b7f", "#c99700",
-               "#d0006f", "#2e7d32", "#6d4c41"]
-    decs = data["decisions"]
-    left, step, top, lane = 150, 9, 46, 34
-    height = top + lane * len(order) + 44
-    y = {n: top + lane * i + lane // 2 for i, n in enumerate(order)}
-    x, at = [], left + 20
-    for i, d in enumerate(decs):                             # a day is at least 84 px, so its name never overlaps
-        if i and d["time"][:10] != decs[i - 1]["time"][:10]:
-            first = next(k for k in range(i - 1, -1, -1) if k == 0 or decs[k - 1]["time"][:10] != decs[i - 1]["time"][:10])
-            at = max(at + step, x[first] + 84)
-        elif i:
-            at += step
-        x.append(at)
-    width = x[-1] + 40
-    out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
-           'font-family="-apple-system,Segoe UI,sans-serif" font-size="12">']
-    day_of = [d["time"][:10] for d in decs]
-    k = 0
-    while k < len(decs):                                     # one band per day, its name on top
-        j = k
-        while j < len(decs) and day_of[j] == day_of[k]:
-            j += 1
-        dt = datetime.date.fromisoformat(day_of[k])
-        x0, x1 = x[k] - step / 2, (x[j] if j < len(decs) else x[j - 1] + step) - step / 2   # up to the next day
-        shade = "#f3f5f8" if dt.day % 2 == 0 else "#ffffff"
-        out.append(f'<rect x="{x0:.0f}" y="24" width="{x1 - x0:.0f}" height="{height - 24}" fill="{shade}"/>')
-        out.append(f'<text x="{x0 + 4:.0f}" y="16" fill="#5f6368" font-weight="600">{dt.strftime("%a %b")} {dt.day}</text>')
-        k = j
-    for i, n in enumerate(order):                            # each session's line, from its first decision to its last
-        xs = [x[t] for t, d in enumerate(decs) if n in [s.strip() for s in d["session"].split(",")]]
-        c = colours[i % len(colours)]
-        out.append(f'<text x="{left - 8}" y="{y[n] + 4}" text-anchor="end" fill="{c}" font-weight="600">'
-                   f'{html.escape(short(n))}</text>')
-        out.append(f'<line x1="{min(xs)}" y1="{y[n]}" x2="{max(xs)}" y2="{y[n]}" stroke="{c}" stroke-width="5" '
-                   'stroke-linecap="round"/>')
-    for i, n in enumerate(order):                            # its name again at its first station of each day, so a
-        seen = set()                                         # reader scrolled to Friday still knows which line is which
-        for t, d in enumerate(decs):
-            if n in [s.strip() for s in d["session"].split(",")] and day_of[t] not in seen:
-                seen.add(day_of[t])
-                out.append(f'<text x="{x[t] - 3}" y="{y[n] - 8}" fill="{colours[i % len(colours)]}" font-size="10" '
-                           f'font-weight="600">{html.escape(short(n))}</text>')
-    for t, d in enumerate(decs):                             # a station per decision; a shared one is an interchange
-        names = [s.strip() for s in d["session"].split(",") if s.strip() in y]
-        tip = html.escape(f"{d['time'][5:]} · {d['title']}: {d['decided']}")
-        card = html.escape(json.dumps({"tm": d["time"][5:], "ti": d["title"],               # a click shows the whole card
-                                       "chips": [short(x.strip()) for x in d["session"].split(",")] + [d["area"]],
-                                       "blocks": [["Decided", d["decided"]], ["JL asked", d["asked"]],
-                                                  ["Built", d["done"]]]}, ensure_ascii=False), quote=True)
-        if len(names) > 1:
-            ys = sorted(y[n] for n in names)
-            out.append(f'<rect x="{x[t] - 4}" y="{ys[0] - 5}" width="8" height="{ys[-1] - ys[0] + 10}" rx="4" '
-                       f'fill="#fff" stroke="#1b1c1f" stroke-width="1.5" data-card="{card}"><title>{tip}</title></rect>')
-        for n in names:
-            out.append(f'<circle cx="{x[t]}" cy="{y[n]}" r="3.6" fill="#fff" stroke="#1b1c1f" stroke-width="1.3" '
-                       f'data-card="{card}">'
-                       f'<title>{tip}</title></circle>')
-    ly = height - 14                                         # the legend: what a line and a station mean
-    out.append(f'<g font-size="12" fill="#5f6368"><line x1="{left - 120}" y1="{ly - 4}" x2="{left - 96}" y2="{ly - 4}" '
-               'stroke="#0072ce" stroke-width="5" stroke-linecap="round"/>'
-               f'<text x="{left - 88}" y="{ly}">one session</text>'
-               f'<circle cx="{left + 10}" cy="{ly - 4}" r="3.6" fill="#fff" stroke="#1b1c1f" stroke-width="1.3"/>'
-               f'<text x="{left + 20}" y="{ly}">one decision (click it)</text>'
-               f'<rect x="{left + 176}" y="{ly - 13}" width="8" height="18" rx="4" fill="#fff" stroke="#1b1c1f" '
-               f'stroke-width="1.5"/><text x="{left + 192}" y="{ly}">a decision sessions shared</text></g>')
-    out.append("</svg>")
-    return "\n".join(out)
+    entries = [{"time": d["time"], "lanes": [n.strip() for n in d["session"].split(",")],
+                "tip": f"{d['time'][5:]} · {d['title']}: {d['decided']}",
+                "card": {"tm": d["time"][5:], "ti": d["title"],
+                         "chips": [short(n.strip()) for n in d["session"].split(",")] + [d["area"]],
+                         "blocks": [["Decided", d["decided"]], ["JL asked", d["asked"]], ["Built", d["done"]]]}}
+               for d in data["decisions"]]
+    return transit_svg([(n, short(n)) for n in names], entries, noun="decision", lane_noun="session")
 open("review/map.svg", "w", encoding="utf-8").write(transit_map())

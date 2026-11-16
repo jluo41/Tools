@@ -127,7 +127,6 @@ Start from a template based on the diagram type:
 
 ```bash
 UNIT_DIR=/path/to/caller-supplied-unit
-WORK_ROOT=/path/to/caller-asset-reference-base
 
 # Validate first (the FigureSpec lives in the unit's recipe/)
 python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate "$UNIT_DIR/recipe/spec.json"
@@ -138,8 +137,8 @@ python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render "$UNIT_DIR/re
 # Convert to PDF for LaTeX inclusion
 rsvg-convert -f pdf "$UNIT_DIR/assets/figure.svg" -o "$UNIT_DIR/assets/figure.pdf"
 
-# Compile and inspect the complete display unit, including its caption.
-(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
+# Compile and inspect the complete display unit, including its caption (the door's one preview recipe).
+python3 <haipipe-display>/scripts/build_preview.py "$UNIT_DIR"
 ```
 
 For an explicit comparison, keep the variant spec and render outside the active asset paths:
@@ -177,7 +176,9 @@ If issues found, edit the JSON spec (never the generated SVG) and re-render.
 
 ### Step 5: Iterate with Codex Review (Optional, for High-Stakes Figures)
 
-For paper architecture figures, invoke cross-model review:
+The review that counts is the door's revise loop (`SKILL.md`, **Revise loop**: a fresh blind
+agent). When `mcp__codex__codex` is available, it may add a second opinion for paper
+architecture figures:
 
 ```
 mcp__codex__codex:

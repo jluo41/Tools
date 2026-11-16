@@ -24,8 +24,8 @@ and Level-4 contract. Do not substitute historical flat sources.md behavior.
 
 Treat each `bNN_` Block as a live Discovery Board from creation onward. The
 creator calls `scripts/board_sync.py` after structural changes; the orchestrator
-must require a rebuilt, strict Board check before returning a user-facing
-completion state. `board/` is derived and never hand-edited.
+must require a strict Board check before returning a user-facing
+completion state. The workbench reads the Block live; nothing is built.
 
 ## Boundary
 
@@ -88,7 +88,7 @@ owns relevance, Subject resolution, deduplication, Run allocation, and writes.
 7. After Page `04 CHECK` closes the Page, creator runs D1 CLOSE and reconciles
    the Task Face; any hard failure routes backward and CLOSE cannot claim ok;
    Reviewer runs the final gate. The final packet includes `<block>/board.md`
-   and the rebuilt `<block>/board/` projection.
+   and its strict Board check result.
 
 ## Question routing
 
@@ -127,7 +127,6 @@ address_compact:<bNNjNNtNN>
 mode:          full | enrich
 page:          <root Page path>
 board_source:  <bNN Block>/board.md
-board_generated:<bNN Block>/board/
 discovery_type:<canonical Page Type>
 runs:          {planned, running, complete, blocked, unresolved}
 typed_record:  <path | none>

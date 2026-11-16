@@ -89,3 +89,25 @@ def blind_refusal(revise: Path, words: str, card_body: str = "") -> str:
             return (f"not written: the blind A/B readers said this rewrite changes the meaning (pair {pid}, "
                     f"meaning: no, in {res.parent.name}/result)")
     return ""
+
+
+POINTER = re.compile(r"(?i)\s*(see|as)\b|\s*(split|keep|merge|cut|drop|none|n/?a|tbd|same)\b\W*$")
+
+
+def not_a_sentence(new: str, orig: str = "") -> str:
+    """Why a review line's `Fix:` is not a sentence that may replace `orig`, or "" (JL 261115: "the editing card is very
+    bad": "Fix: see the card" was offered as the new sentence). A sentence ends in . ? or ! (a closing quote, bracket or
+    citation after it is fine), is not a pointer ("see the card", "split", "keep", "as above"), is at least 40 percent
+    of the original's length, and shares at least one word of four letters or more with it."""
+    t = " ".join((new or "").split())
+    if not t or POINTER.match(t):
+        return "the suggestion is a note, not a sentence"
+    if not re.search(r"[.?!][\"'”’)\]]*(?:\s*\\cite[tp]?\{[^}]*\}[.?!]?)?\s*$", t):
+        return "the suggestion is not a whole sentence"
+    o = " ".join((orig or "").split())
+    if o and len(t) < 0.4 * len(o):
+        return "the suggestion is much shorter than the sentence"
+    words = lambda s: {w.lower() for w in re.findall(r"[A-Za-z]{4,}", s)}
+    if o and len(o.split()) >= 8 and not (words(t) & words(o)):
+        return "the suggestion shares no words with the sentence"
+    return ""

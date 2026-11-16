@@ -42,6 +42,9 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .s-tx>.sx-marks{display:inline;vertical-align:1px}   /* right after the sentence's last word, as a footnote mark */
 .sx-marks span{margin-left:8px}.sx-marks .w{color:#b35c00;font-weight:600}
 .sx-row:not(.sx-fold) .sx-marks>span:not(.sx-clk){display:none}
+.sx-row:not(.sx-open) .sx-marks .sx-clk{display:none}   /* earlier wordings: inside the opened sentence only (JL 261115) */
+/* both numbers, always shown: its place in the paragraph (1, 2, 3) and under it the fixed id (s28) the cards use
+   (JL 261115: "I get this 1, 2, 3, 4, where is the sNN"; the screenshot JL wants shows "1" over "s28") */
 /* the clock is the History switch (JL 261113: "when I click the clock, could I hide the History button"): one control */
 .rv-board .sx-hb,.rv-board .sx-sum{display:none!important}
 /* the cards are the pen after the clock (JL 261113: "like it should be things like the pen?"); orange while one waits */
@@ -84,7 +87,9 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 /* no coloured edge on a card, and a decided edit shows its change, not its A/B choices (JL 261113: "I don't want this") */
 .sx-row>.rv-right .rv-card.sx-old .rv-choices,.sx-row>.rv-right .rv-card.sx-old .rv-acts{display:none}
 /* quiet marks, so the eye stays on the sentence (JL 261113: "I don't want this to be too colorful") */
-.sx-ai{font-weight:400;color:var(--mut)}.sx-ai.old{opacity:.55}.sx-ai.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}
+.sx-ai{font-weight:400;color:var(--mut)}.sx-ai.pass{font-size:10.5px;opacity:.6}
+.sx-board .sx-marks>.sx-pscore{display:inline!important}.sx-board .sx-marks>.sx-pmap{display:inline!important;cursor:pointer;margin-left:6px;font-size:12px}   /* a paragraph's score shows open or folded */
+.sx-pscore{cursor:pointer;margin-left:8px;font:500 11.5px system-ui,-apple-system,sans-serif;color:var(--mut)}.sx-pscore.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}.sx-pscore:hover{color:var(--acc)}.sx-ai.old{opacity:.55}.sx-ai.low{color:color-mix(in srgb,var(--mut) 70%,#8a3b2b)}
 .sx-ok{cursor:pointer;color:color-mix(in srgb,var(--mut) 55%,transparent);font-weight:600;padding:0 2px}
 .sx-ok:hover{color:var(--ink,#333)}.sx-ok.on{color:var(--ink,#333)}
 .sx-board .sx-ok.stale{color:#b06d1a;background:color-mix(in srgb,#e8a33d 16%,transparent);border-radius:9px;padding:0 6px}
@@ -101,7 +106,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
 .sx-row.sx-cm-on>.rv-right>.rv-note{display:block!important}
 .sx-row.sx-cm-on .sx-cmt{opacity:1;color:var(--ink,#333)}
 .sx-wc{color:var(--mut);font-size:11.5px}
-.sx-evm{font-family:"Source Serif 4",Georgia,serif}   /* the ❝ citation mark in one colour (JL 261113) */
+.sx-evm{font-family:"Source Serif 4",Georgia,serif}.sx-okmsg{font-size:11.5px;color:#9a3412;margin-left:6px}.sx-evm.unv{color:#b45309;text-decoration:underline dotted 1px;text-underline-offset:3px}   /* waits on a person: soft, not an alarm (JL 261115) */   /* the ❝ citation mark in one colour (JL 261113) */
 .sx-row:not(.sx-fold) .sx-marks>.sx-wc{display:inline!important}
 /* one card look beside the sentences (JL 261113: "the card style here is not fit well"): a thin grey line, white, the
    page's sans at one size; hover darkens the line, never orange; an edit keeps a muted left edge */
@@ -150,7 +155,7 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
  position:relative;align-items:baseline}
 .sx-board .rv-left li[data-s]>.sx-tog{grid-column:1;grid-row:1;width:0;overflow:visible;flex:none}
 .sx-board .rv-left li[data-s]>.s-ord{grid-column:2;grid-row:1;flex:none;padding:0;text-align:right}
-.sx-board .rv-left li[data-s]>.s-no{grid-column:2;grid-row:2;flex:none;padding:0;text-align:right;font-size:10px;line-height:1.2}
+.sx-board .rv-left li[data-s]>.s-no{grid-column:2;grid-row:2;flex:none;padding:0;text-align:right;font-size:11px;line-height:1.2}
 .sx-board .rv-left li[data-s]>.s-tx{grid-column:3;grid-row:1/span 3;margin-left:34px}   /* air after the number (JL 261113: "this is too close") */
 .sx-board .rv-left li[data-s]>.sx-marks{grid-column:4;grid-row:1}
 .sx-board .rv-left li[data-s]>.nt-gut{position:absolute;right:-30px;top:2px;margin:0;padding:0}
@@ -170,16 +175,22 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   var sum=function(k){var t=0;g.querySelectorAll('.rv-ev').forEach(function(c){t+=+(c.dataset[k]||0);});return t;};
   var nv=sum('value'),nc=sum('cite'),nd=sum('display'),ek='<span class=sx-evm role=button tabindex=0 title="';
   /* one mark per kind of evidence, each opening the sentence's cards (JL 261113: "how to add the things like the citation?") */
-  var evm=(nv?ek+nv+' value'+(nv>1?'s':'')+'">📊'+nv+'</span>':'')+(nc?ek+nc+' citation'+(nc>1?'s':'')+'">❝︎'+nc+'</span>':'')
+  /* a mark lights while its evidence waits on a person: ❝ when a citation is not verified, 📊 when a value does not
+     resolve (JL 261115: "if it is not check, you should highlight that") */
+  var li=r.querySelector('.rv-left li[data-s]'),cu=li&&li.querySelector('.cite-unv'),vb=li&&li.querySelector('.ev-chip.miss[title$=" VALUE"]');
+  var ekv=vb?'<span class="sx-evm unv" role=button tabindex=0 title="a value does not resolve · ':ek,ekc=cu?'<span class="sx-evm unv" role=button tabindex=0 title="not verified by a person · ':ek;
+  var evm=(nv?ekv+nv+' value'+(nv>1?'s':'')+'">📊'+nv+'</span>':'')+(nc?ekc+nc+' citation'+(nc>1?'s':'')+'">❝︎'+nc+'</span>':'')
    +(nd?ek+nd+' display'+(nd>1?'s':'')+'">🖼️'+nd+'</span>':'')+(ev&&!(nv||nc||nd)?ek+'evidence">📎'+ev+'</span>':'');
   /* the reviewer's score, the lowest of logic, read and AI (JL 261113: "another icon should be AI rating"), and 💬 to
      comment on the sentence, with how many comments it has (JL 261113: "where is the things like the comments icon") */
   /* only a sentence's own review card carries a score; the paragraph Flow card (.rv-flow) has none and gave ★NaN (JL 261115) */var rv=g.querySelector('.rv-rev[data-low]'),lo=rv?+rv.dataset.low:0,nt=g.querySelectorAll('.rv-note:not(.nt-new)').length;
   var fx=rv&&rv.dataset.fixed,so=rv&&rv.dataset.stale;  /* fixed by the reviewer's words, or changed since: the score is old */
-  var ai=rv?'<span class="sx-ai '+(so?'old':fx||lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(fx?'fixed since the review; ':so?'scored before the last change; ':'')+(rv.dataset.scores||'')+'">★'+(fx?'✓':so?'–':lo)+'</span>':'';
+  /* every sentence shows its score (JL 261115: "why I didn't see the AI eval score"): under 8 the coloured ★, 8+ a
+     small grey number, so the eye still goes first to the sentences that need work */
+  var ai=rv&&!fx&&lo>=8&&!so?'<span class="sx-ai pass" role=button tabindex=0 title="'+(rv.dataset.scores||'')+'">★'+lo+'</span>':rv&&!fx?'<span class="sx-ai '+(so?'old':fx||lo>=8?'ok':lo>=7?'mid':'low')+'" role=button tabindex=0 title="'+(fx?'fixed since the review; ':so?'scored before the last change; ':'')+(rv.dataset.scores||'')+'">★'+(fx?'✓':so?'–':lo)+'</span>':'';
   /* the sentence's length in words, its citations left out (JL 261113: "could you also show the number of words") */
   var tx=r.querySelector('.rv-left li[data-s] .s-tx'),nw=0;
-  if(tx){var cl=tx.cloneNode(true);cl.querySelectorAll('.cite,.sx-marks').forEach(function(x){x.remove();});
+  if(tx){var cl=tx.cloneNode(true);cl.querySelectorAll('.cite,.sx-marks,.ev-sup').forEach(function(x){x.remove();});
    nw=(cl.textContent.match(/[A-Za-z0-9][A-Za-z0-9'’.,%-]*/g)||[]).length;}
   /* the word count lives in the ★ card, not in the row (JL 261113: "I want the wc just in the star, I click it and see it") */
   /* 💬 only where there are comments (JL 261113: "if there are no comments, we can hide this icon"); a new one starts
@@ -201,7 +212,9 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   var li=k.closest('li[data-s]'),bd=k.closest('.rv-board'),on=!k.classList.contains('on');if(!li||!bd)return;
   fetch('/_board/draft-comment',{method:'POST',headers:{'Content-Type':'application/json'},
    body:JSON.stringify({task:bd.dataset.task,act:on?'check':'uncheck',s:li.dataset.a||li.dataset.s})})
-   .then(function(r){return r.json();}).then(function(j){if(!j.ok){k.title=j.err||'not saved';return;}
+   .then(function(r){return r.json();}).then(function(j){if(!j.ok){   /* a refused check says why, beside the ✓ (JL 261115: "the check doesn't work") */
+     var w=li.querySelector('.sx-okmsg')||document.createElement('span');w.className='sx-okmsg';w.textContent='✓ not saved: '+(j.err||'try again');
+     k.after(w);setTimeout(function(){w.remove();},6000);k.title=j.err||'not saved';return;}
     k.classList.toggle('on',j.checked);k.classList.remove('stale');k.textContent='✓';li.dataset.checked=j.checked?'1':'';
     k.title=j.checked?'you checked this sentence; click to take it back':'check: this sentence passes, leave it as it is';});},true);
  /* 💬 opens the sentence's comments: the earlier ones, then a box for a new one under them; a second click closes them
@@ -246,7 +259,23 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
    else if(r.classList.contains('sx-p')||r.classList.contains('sx-c')){h=h||r.querySelector('.rv-left h3[data-p]');if(!h)return;
     var p=document.createElement('button');p.type='button';p.className='sx-ptog';
     p.title=r.classList.contains('sx-c')?'fold or open this Section':'fold or open this paragraph';h.insertBefore(p,h.firstChild);
-    var pm=marks(r),ps=document.createElement('span');ps.className='sx-marks';ps.innerHTML=pm?pm[1]:'';h.appendChild(ps);}})();});order();}
+    var pm=marks(r),ps=document.createElement('span');ps.className='sx-marks';ps.innerHTML=pm?pm[1]:'';h.appendChild(ps);
+    }})();});pscore();order();}
+ /* a paragraph's own score from its Flow line, on its heading row (JL 261115: "why no ... per paragraph eval?"); run
+    after every setup, since the flow card sits in the paragraph's last row, which streams in after the heading */
+ function pscore(){document.querySelectorAll('.sx-board .sx-row').forEach(function(r){
+  var h=r.querySelector('.rv-left h4[data-p]');if(!h||h.querySelector('.sx-pscore'))return;
+  var fc=document.querySelector('.rv-flow[data-p="'+h.dataset.p+'"][data-plow]');if(!fc)return;
+  var v=+fc.dataset.plow,b=document.createElement('span');b.className='sx-pscore'+(v<8?' low':'');b.setAttribute('role','button');b.tabIndex=0;
+  b.title='paragraph logic '+v+'/10; open its flow card';b.textContent='★'+v+'/10';
+  (h.querySelector(':scope>.sx-marks')||h).appendChild(b);
+  /* 🧩 opens the paragraph's logic as a small map under its heading (JL 261115) */
+  var tp=fc.querySelector('template.lg-maptpl');if(tp){var mm=document.createElement('span');mm.className='sx-pmap';mm.setAttribute('role','button');mm.tabIndex=0;
+   mm.title='the logic of this paragraph, as a map';mm.textContent='🧩';(h.querySelector(':scope>.sx-marks')||h).appendChild(mm);
+   mm.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();var bx=h.parentNode.querySelector(':scope>.pmap-box');
+    if(bx){bx.remove();return;}bx=document.createElement('div');bx.className='pmap-box';bx.innerHTML=tp.innerHTML;h.after(bx);if(window.pmDraw)setTimeout(window.pmDraw,0);});}
+  b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();if(r.classList.contains('sx-pfold'))pfold(r,false);
+   var fr=fc.closest('.sx-row');if(fr){fold(fr,false);fr.scrollIntoView({block:'center'});}});});}
  /* each sentence's place in reading order, counted again in each part (C1 title, C2 text, C3 keywords) */
  /* a paragraph is numbered as a sentence is (JL 261113: "it should be just like the sentences"): its place in reading
     order large, its fixed id (C1.P30) small after its title, so P30 no longer reads as if P4 to P29 were missing */
@@ -329,9 +358,23 @@ SX_ROWS = """<link rel=stylesheet href="https://fonts.googleapis.com/css2?family
   function inView(){var best=null,d=1e9,mid=innerHeight/2;document.querySelectorAll('.sx-board .rv-left li[data-s]').forEach(function(li){
    var r=li.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight)return;var x=Math.abs((r.top+r.bottom)/2-mid);if(x<d){d=x;best=li;}});return best;}
   function reload(){var li=inView();if(li&&window.sxKeep)window.sxKeep(li);location.reload();}
+  /* the changed rows only, in place, at once (JL 261115: "why the old edit didn't faded away?"): the page is fetched
+     again, and each row whose cards or checks differ is swapped for the new one; a row being edited is left alone.
+     Rows added or removed (a split) fall back to the reload */
+  function rkey(r){var x=r.querySelector('.rv-left li[data-s],.rv-left h4[data-p],.rv-left h3[data-p]');return x?(x.dataset.a||x.dataset.s||x.dataset.p):'';}
+  function rsig(r){return [].map.call(r.querySelectorAll('.rv-right .rv-card'),function(c){return (c.dataset.card||c.className)+'|'+(c.dataset.state||'');}).join(';')
+   +'#'+[].map.call(r.querySelectorAll('.rv-left li[data-s]'),function(l){return l.dataset.s+':'+(l.dataset.checked||'');}).join(',');}
+  function swap(){return fetch(location.href,{cache:'no-store'}).then(function(x){return x.text();}).then(function(h){
+   var nb=new DOMParser().parseFromString(h,'text/html').querySelector('.sx-board'),ob=document.querySelector('.sx-board');
+   if(!nb||!ob)return false;var nr=nb.querySelectorAll('.sx-row'),or=ob.querySelectorAll('.sx-row');
+   if(nr.length!==or.length)return false;for(var i=0;i<nr.length;i++)if(rkey(nr[i])!==rkey(or[i]))return false;
+   for(var k=0;k<nr.length;k++){var o=or[k];if(o.querySelector('.editing,.writing,.nt-new'))continue;
+    if(rsig(nr[k])!==rsig(o)){var open=o.classList.contains('sx-open'),hid=o.classList.contains('sx-hide');var n=document.importNode(nr[k],true);
+     o.replaceWith(n);if(open)n.classList.add('sx-open');if(hid)n.classList.add('sx-hide');}}
+   return true;}).catch(function(){return false;});}window.sxSwap=swap;
   function tick(){if(document.hidden)return;fetch(url,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
    if(last===null||Date.now()<(window.sxQuiet||0)){last=j.stamp;due=false;return;}if(j.stamp!==last){last=j.stamp;due=true;}
-   if(due&&window.sxPill)window.sxPill(reload);else if(due&&!busy())reload();}).catch(function(){});}
+   if(due&&!busy()){due=false;swap().then(function(ok){if(ok)return;if(window.sxPill)window.sxPill(reload);else reload();});}}).catch(function(){});}
   setInterval(tick,4000);tick();})();
  window.sxRemark=function(){remark();};
  function remark(){document.querySelectorAll('.sx-board .sx-row[data-sx]').forEach(function(r){

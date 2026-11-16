@@ -360,7 +360,7 @@ holds five: `build_embedding`, `embedding_status`, `embedding_item`,
 `group_examples`, `embedding_item_text`; `Data → Preparation` holds `item_page`. Quality and Delivery have no
 write control, and a Runs panel only copies prompts. The checks behind each action are the
 write-and-authority law in
-`../../workbench-labeling/SKILL.md`.
+`../../workbench-task-labeling/SKILL.md`.
 
 ## Projection law
 

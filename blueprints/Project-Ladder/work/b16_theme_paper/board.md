@@ -189,3 +189,8 @@ runs/run-draw-s32      runs/run-draw-s33
 This Theme is an independent blueprint Block under `blueprints/Project-Ladder/work/b16_theme_paper/`
 since 261010. Its studio topics, questions, reports and Runs keep their existing
 identities. Shared toolkit foundations remain in [b01](../../../Project-Packages/work/b01_haipipe-toolkit/board.md).
+
+## Design
+
+### 🧭 High-level design
+embed: design.md

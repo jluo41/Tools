@@ -12,11 +12,17 @@ tNN_<section>/display/Display<n>-<slug>/. The page head comes from the paper its
 
 Then haipipe-display scripts/build_preview.py writes preview.tex and compiles preview.pdf: page 1 the display (its
 float.tex, with the paper's fonts, caption style, preamble.tex and header), pages 2 and on how it was made (method.md).
+
+Beside it, float.pdf: float.tex alone in the same preamble, no header, no page number, no method pages, cropped tight by
+pdfcrop: only the figure (or table) and its caption, the picture a workbench shows for the display. preview.pdf is
+unchanged by it.
 """
 from __future__ import annotations
 
 import importlib.util
 import re
+import shutil
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -66,6 +72,59 @@ def earlier_versions(unit: Path) -> list[dict]:
     return out
 
 
+def float_pdf(unit: Path) -> Path | None:
+    """float.pdf beside preview.pdf: the unit's float.tex in preview.tex's own preamble (so the paper's fonts and
+    caption style), set in a text-width box on a page cut to that box (LaTeX's preview package, tightpage: no header,
+    no page number, a 4 pt border). Without that package, a full page cropped by pdfcrop (which needs Ghostscript).
+    None, with a note, when neither works."""
+    unit = Path(unit).resolve()
+    head = (unit / "preview.tex").read_text(encoding="utf-8", errors="ignore").split(r"\begin{document}")[0]
+    head = head.replace(bp.MARK, "")
+    engine = "xelatex" if shutil.which("xelatex") else "pdflatex"
+    if not shutil.which(engine):
+        print("note: no LaTeX engine on PATH; float.pdf not written")
+        return None
+    # fit_page sets a page-sized float to `p`; a float cannot sit inside the tight box (a tabularx table, Extended Data
+    # Table 2: "Not in outer par mode"), so float.pdf keeps every float in place (H)
+    to_h = lambda t: re.sub(r"\\renewcommand\{\\fps@(figure|table)\}\{p\}", r"\\renewcommand{\\fps@\1}{H}", t)
+    # the float exactly as preview.pdf set it: preview.tex's own lines from \begin{document} through its
+    # \input{float.tex} (its name and number, "Extended Data Table 2"), never recomputed apart from it
+    body = (unit / "preview.tex").read_text(encoding="utf-8", errors="ignore").split(r"\begin{document}", 1)[-1]
+    upto = re.search(r"(?s)\A(.*?\\input\{float\.tex\}\}?)", body)
+    here = to_h(upto.group(1).strip() + "\n") if upto else (
+        "\\makeatletter\\renewcommand{\\fps@figure}{H}\\renewcommand{\\fps@table}{H}\\makeatother\n"
+        + bp.numbering(unit) + to_h(bp.fit_page(unit)))
+    tight = (head + "\\usepackage[active,tightpage]{preview}\\setlength\\PreviewBorder{4pt}\n\\begin{document}\n"
+             "\\begin{preview}\\begin{minipage}{\\textwidth}\n" + here + "\\end{minipage}\\end{preview}\n\\end{document}\n")
+    page = head + "\\begin{document}\n\\pagestyle{empty}\\thispagestyle{empty}\n" + here + "\\end{document}\n"
+    crop = shutil.which("pdfcrop") or next((x for x in ("/Library/TeX/texbin/pdfcrop",) if Path(x).is_file()), None)
+    stem, out, log = "float-only", unit / "float.pdf", ""
+    try:
+        for body, cut in ((tight, False), (page, True)):
+            if cut and not crop:
+                break
+            (unit / f"{stem}.tex").write_text(body, encoding="utf-8")
+            (unit / f"{stem}.aux").unlink(missing_ok=True)
+            for _ in range(2):
+                r = subprocess.run([engine, "-interaction=nonstopmode", "-halt-on-error", f"{stem}.tex"], cwd=unit,
+                                   capture_output=True, text=True)
+            log = r.stdout
+            if r.returncode != 0 or not (unit / f"{stem}.pdf").is_file():
+                continue
+            if not cut:
+                shutil.move(str(unit / f"{stem}.pdf"), out)
+                return out
+            c = subprocess.run([crop, "--margins", "4", f"{stem}.pdf", "float.pdf"], cwd=unit, capture_output=True, text=True)
+            if c.returncode == 0 and out.is_file():
+                return out
+            log = c.stdout + c.stderr
+        print("note: float.pdf not written:\n" + "\n".join(log.splitlines()[-12:]))
+        return None
+    finally:
+        for ext in (".tex", ".aux", ".log", ".out", ".pdf"):
+            (unit / f"{stem}{ext}").unlink(missing_ok=True)
+
+
 def main(argv: list[str]) -> None:
     src = None
     if "--method-from" in argv:
@@ -86,6 +145,7 @@ def main(argv: list[str]) -> None:
     else:
         print(f"page 1 uses the built paper's head (fonts, captions, header) from: {master}")
         print(bp.build(unit, src, preamble_from=master, earlier=earlier))
+    print(float_pdf(unit) or "")
 
 
 if __name__ == "__main__":

@@ -19,8 +19,8 @@ Each stage scaffolds a different pipeline stage; all share one engine contract (
 
 Two modes: **BUILD** (scaffold job folders) and **SERVER CHECK** (validate before/after CMS server migration).
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the worker `.do` files).
-Always end with the structured return block (status / task_folder / run_name / files).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during the Build command, then authors the worker `.do` files).
+Always end with the structured return block of `../../haipipe-task/ref/types.md` § Asked or silent (see Return contract below).
 
 
 ## Type contract
@@ -39,7 +39,7 @@ companions: [haipipe-task, haipipe-run, remote-error, haipipe-task-reviewer-agen
 plan_sample: ref/workflow-plan-sample-<stage>.yaml (cms, case, data, reg)
 ```
 
-`trial` is a synth Run on the laptop (Gate 1), `make` a cms year, case cohort x source x year, data spec
+`trial` is a synth Run on the laptop (Stata gate 1, § Server check mode), `make` a cms year, case cohort x source x year, data spec
 or reg window x family, and `describe` a separately commissioned describe-only Run.
 
 
@@ -47,7 +47,7 @@ Stage dispatch table
 --------------------
 
 ```
-stage   task-type     {LNN} letter   Output store
+stage   task-type     legacy letter  Output store
 -----   -----------   ------------   -----------------------
 cms     stata-cms      A              1-CMS-Store   (heavy)
 case    stata-case     B              2-Case-Store  (heavy)
@@ -55,7 +55,8 @@ data    stata-data     C              *-Data-Store  (heavy)
 reg     stata-reg      D              runs/<run>/result/ (LIGHT)
 ```
 
-The `{LNN}` letter encodes the stage so a job sorts in pipeline order (`A`cms -> `B`case -> `C`data -> `D`reg).
+The `{LNN}` letter is the legacy Job stage letter of older trees (`A`cms -> `B`case -> `C`data -> `D`reg): read it there, never scaffold it and never detect a stage from it.
+A new Job is `jNN_<noun>_<qualifier>` with the stage word in the suffix (`haipipe-task/ref/task-folder.md` § Names).
 Full definition: the "Job `{LNN}` stage-letter alphabet" section in `ref/stata-dialect.md`.
 
 
@@ -100,8 +101,8 @@ work/bNN_<block>/
     ├── src/                         run_cms_year.ps1 (the shared runner), libraries, config-defaults.do
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/<cfg>.do  the Task's shared globals; every Run's config.do loads them
         └── runs/rNN_<run>/          one folder per Run
@@ -133,8 +134,8 @@ work/bNN_<block>/
     ├── src/                         run_case_year.ps1 (the shared runner), _source_{synth|full}.do, libraries
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/<cfg>.do  the Task's shared globals; every Run's config.do loads them
         └── runs/rNN_<run>/          one folder per Run
@@ -168,8 +169,8 @@ work/bNN_<block>/
     ├── src/                         run-data-pipeline.ps1 (the shared runner, when the Job has one), libraries
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/<cfg>.do  the Task's shared globals; every Run's config.do loads them
         └── runs/rNN_<run>/          one folder per Run
@@ -205,8 +206,8 @@ work/bNN_<block>/
     ├── src/                         0-libs/run-regression-pipeline.ps1 (the shared runner), cohort config
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.do
         ├── scripts/config/<cfg>.do  the Task's shared globals; every Run's config.do loads them
         └── runs/rNN_<run>/          one folder per Run
@@ -243,7 +244,9 @@ This is the OUTBOUND leg only: everything done BEFORE the code reaches the serve
 When an error comes BACK from a run, hand off to `remote-error` (in `skills/0_utils/`, because that loop is engine-neutral), which owns the return leg: reason, fix the canonical, name the lines, land the lesson in the issue register.
 It reads this folder's `ref/cms-server-checklist.md` through its own `ref/profile-cms-stata.md`, so the gate numbering and the issue-ID grammar stay identical across the two.
 
-Three gates -- each catches different failure modes:
+Three gates -- each catches different failure modes. These are the Stata gates 1 to 3 ("Stata gate N"
+wherever this skill says Gate N); they are not haipipe-task's review gates (Gate 1 code review, Gate 2
+Result audit):
 
 ```
   Gate 1: LOCAL SYNTH RUN     run with synth config on laptop   (logic, wiring, paths)
@@ -302,7 +305,7 @@ For a NEW job folder, only `fn/scaffold.md` runs.
 Routing protocol
 ----------------
 
-Step 0: Read `ref/stata-dialect.md` (the engine contract) -- the three CWD/location-independence rules (Stata auto-detect, run-from-`$PSScriptRoot`, `ws_root`-anchored output) and the `{LNN}` alphabet.
+Step 0: Read `ref/stata-dialect.md` (the engine contract) -- the three CWD/location-independence rules (Stata auto-detect, run-from-`$PSScriptRoot`, `ws_root`-anchored output) and the legacy `{LNN}` alphabet (for reading older trees only).
 
 Step 1: Detect AUTO_MODE (same triggers as `/haipipe-task`: `--auto`, env, or parent passed `--auto`).
 
@@ -315,7 +318,7 @@ Step 4: Branch by scope:
   - NEW job folder → read `fn/scaffold.md`, execute
   - EXISTING job folder → dispatch to lifecycle fn/:
     (a) `fn/audit-stata.md` — Stata-aware pre-flight (extends generic four-sister)
-    (b) `fn/plan-stata.md` — generate IPO plan.yaml + plan-script-*.yaml using `ref/workflow-plan-sample-<stage>.yaml`
+    (b) `fn/plan-stata.md` — write the sole `workflow/plan.yaml` Run Spec roster (per-script detail only as a read-only projection) using `ref/workflow-plan-sample-<stage>.yaml`
     (c) `fn/build-stata.md` — author .do/.ps1 code (extends scaffold into full authoring)
     (d) `fn/execute-stata.md` — two-mode: local synth or CMS server hand-copy
     (e) `fn/report-stata.md` — generate report.yaml mirroring plan (binds runtime.yaml to original Stata logs and Results)
@@ -397,6 +400,9 @@ This closes the gap where the old skill only had `fn/scaffold.md` (new task crea
 
 Return contract
 ---------------
+
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
 
 ```
 status:    ok | blocked | failed

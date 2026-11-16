@@ -27,7 +27,8 @@ The table goes into the caller-supplied unit directory per the shared contract:
 supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other caller
 supplies its own unit path.
 THIS renderer's row: asset -> `assets/table-body.tex` (the `tabular`/`threeparttable`
-block), with caller-owned `float.tex` the wrapper that `\input`s it (caption + label + placement); rebuild recipe
+block), with `float.tex` the wrapper that `\input`s it (who writes it: the door's `SKILL.md`, **Who writes
+`float.tex`**); rebuild recipe
 -> `recipe/gen_*.py`, reading only the approved aggregate in `intake/inputs/`.
 
 One invocation that produces one bounded table unit may be one Run in the parent Workflow.
@@ -69,8 +70,7 @@ rows, panels, table notes) can be done properly.
 - **SE_STYLE = `paren-below`** — Standard errors in parentheses on the line below each coefficient.
 - **DECIMALS = 3** — Default decimal places for coefficients; 0-2 for counts/N.
 - **NOTES = `threeparttable`** — Table notes go in a `threeparttable` `tablenotes` block, not in `\caption{}`.
-- **FORMAT = `tex`** — Output is `assets/table-body.tex`; the caller-owned `float.tex` wraps it.
-- **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for table quality review.
+- **FORMAT = `tex`** — Output is `assets/table-body.tex`; `float.tex` wraps it.
 
 ## Inputs
 
@@ -79,7 +79,8 @@ rows, panels, table notes) can be done properly.
    Never raw PHI data.
 3. **Optional table spec** — column order, which models, star thresholds, decimals, transpose (variables-as-rows vs models-as-columns), rows to bold
 
-If no display contract or verified intake exists, stop and ask the caller to create one.
+If the input is a bare CSV or JSON with no unit, make the unit where the door's `SKILL.md` says
+(**A bare input**: `<input folder>/display/Display<n>-<slug>/`) and go on; do not stop to ask.
 
 ## Procedure
 
@@ -193,18 +194,16 @@ These commands are for a single active render. In candidate mode, do not compile
 the unit's canonical `preview.pdf`; use the candidate-specific preview procedure below.
 
 ```bash
-UNIT_DIR=/path/to/caller-supplied-unit
-WORK_ROOT=/path/to/caller-asset-reference-base
+UNIT_DIR=/path/to/the-unit
 python "$UNIT_DIR/recipe/gen_table2_main_regression.py"
-(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
+python <haipipe-display>/scripts/build_preview.py "$UNIT_DIR"   # the door's one preview recipe
 ```
 
 Confirm `assets/table-body.tex` exists and the numbers match the declared Intake
 snapshot by spot-check. Open `preview.pdf` and check clipping, alignment, readability,
-and the caption/body pairing. Compilation failure or a visible defect is a HOLD. The
-caller supplies and approves `float.tex` (caption, label, placement); it `\input`s
-the body asset. Do not create `latex_include.tex` or write a self-contained wrapper:
-a table renderer never invents or changes paper-facing caption semantics.
+and the caption/body pairing. Compilation failure or a visible defect is a HOLD. `float.tex`
+`\input`s the body asset (`\input{assets/table-body.tex}`); its owner is the door's rule. Do not
+create `latex_include.tex` or a second self-contained wrapper.
 
 For an explicit comparison, copy the active generator to a candidate-suffixed recipe, edit the
 copy for that alternative, and render it without touching the active body:
@@ -214,33 +213,17 @@ cp "$UNIT_DIR/recipe/gen_table2_main_regression.py" "$UNIT_DIR/recipe/gen_table2
 DISPLAY_CANDIDATE=A python "$UNIT_DIR/recipe/gen_table2_main_regression-A.py"
 ```
 
-This writes `candidates/A-table-body.tex`. Build a candidate-named preview under `candidates/`
-using that body and the unchanged caller-owned caption, label, placement, and preview preamble.
-Do not replace `float.tex` or `preview.pdf`. Inspect and return that candidate preview with its id;
+This writes `candidates/A-table-body.tex`. Build its preview the door's way (`SKILL.md`, a
+candidate preview), with the unchanged caption, label and placement. Do not replace `float.tex`
+or `preview.pdf`. Inspect and return that candidate preview with its id;
 only after the caller chooses it, copy its body to `assets/table-body.tex` and rebuild the canonical
 unit preview.
 
-### Step 6: Table Quality Review with REVIEWER_MODEL
+### Step 6: Blind Review
 
-Send the matching compiled preview and table body with its approved claim and
-caption to GPT-5.5 (via Codex MCP) for advisory review. In candidate mode, use
-the candidate-named preview and `candidates/<id>-table-body.tex`, never the
-unit's existing `preview.pdf`. A score does not accept or promote a unit; that
-decision belongs to the caller.
-
-```
-mcp__codex__codex:
-  model: gpt-5.5
-  config: {"model_reasoning_effort": "xhigh"}
-  prompt: |
-    Review this LaTeX table for a [VENUE] submission.
-    1. Is the caption self-contained and the header unambiguous?
-    2. Are significance stars defined in a note, and consistent with the p-values?
-    3. Is numeric alignment correct (decimal-aligned)?
-    4. Does the table exceed column/text width?
-    5. Any missing rows (Observations, R^2, controls indicator)?
-    [paste active or candidate table body + caller-approved caption; attach its matching preview]
-```
+The door's revise loop (`SKILL.md`, **Revise loop**): a fresh blind agent reviews `preview.pdf`
+page 1 (a table has no `figure.png`); a Codex reviewer is only an optional second opinion. A score
+never accepts or promotes a unit. Before each round, self-check the list below.
 
 ### Step 7: Quality Checklist
 

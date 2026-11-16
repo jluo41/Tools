@@ -156,14 +156,21 @@ PAPER_CAPTIONS.update({"structure": VERSION_CAPTIONS["structure"],
                        "citations": "The citations, one Task per claim group, each paper checked."})
 
 
+def step_mark(cls: str) -> str:
+    """A step's state as its mark, never a word (AGENTS.md § Page words): ✅ done, 🙋 waits on you, ⬜ not yet."""
+    return "🙋" if cls == "fd-you" else "✅" if cls == "fd-ok" else "⬜"
+
+
 def section_row(task: Path, root: Path) -> str:
-    """A Section: its name, then its five step words, each opening that step (s36-D01)."""
+    """A Section: its name, then its steps, each its name and its mark (the state's word in the hover), each opening
+    that step (s36-D01). A Section whose steps cannot be read says why, the one place words stay."""
     try:
         f, st, k = _facts(task, root)
-        chips = "".join(f'<a class="fd-step {cls}" href="{esc(_task_url(task, root, key))}">{esc(step.split(" · ")[1])} '
-                        f'<b>{esc(w)}</b></a>' for key, step in WORK for w, cls in [word(st[step], k)])
-    except Exception:
-        chips = '<span class=mut>its steps do not read yet</span>'
+        chips = "".join(f'<a class="fd-step {cls}" href="{esc(_task_url(task, root, key))}" title="{esc(w)}">'
+                        f'{esc(step.split(" · ")[1])} <b>{step_mark(cls)}</b></a>'
+                        for key, step in WORK for w, cls in [word(st[step], k)])
+    except Exception as e:
+        chips = f'<span class=mut title="{esc(str(e))}">❗ its steps could not be read</span>'
     return (f'<div class=fd-row><a class=n href="{esc(_task_url(task, root))}">{esc(task.name)}</a>'
             f'<span class="d fd-steps">{chips}</span></div>')
 

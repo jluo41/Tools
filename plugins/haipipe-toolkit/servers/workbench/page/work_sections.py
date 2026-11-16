@@ -9,6 +9,7 @@ names its own sections on its face (JL 261114: "If I give you the random things 
 
     ## Plan + Results              sections after its Jobs, the same way (a replay's days, a plan's steps)
     ## Findings                    the Findings view's sections, the same way
+    ## Design                      a Design view of its own, after Overview (the person's high-level design)
     each: src/review/area-*.md     one section per file, titled by the file's `# ` line
 
 A face without these sections keeps the fixed frame. Viewing writes nothing.
@@ -18,7 +19,7 @@ import re
 
 from live import frame
 
-KEYS = {'overview': 'review content', 'standing': 'plan + results', 'findings': 'findings'}
+KEYS = {'overview': 'review content', 'standing': 'plan + results', 'findings': 'findings', 'design': 'design'}
 _HEAD = re.compile(r'^###\s+(.+?)\s*#*\s*$')
 _LINE = re.compile(r'^(embed|each):\s*(\S.*?)\s*$')
 
@@ -42,8 +43,58 @@ def _embed(path, folder, root):
         svg = re.sub(r'(?is)<script.*?</script>|<foreignObject.*?</foreignObject>', '', svg)
         svg = re.sub(r'(?i)\son\w+\s*=\s*("[^"]*"|\'[^\']*\')', '', svg)    # no event handlers
         svg = re.sub(r'\A.*?(?=<svg)', '', svg, flags=re.S)
-        return f'<div class=ws-pic style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">{svg}</div>'
+        return (f'<div class=ws-pic style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">{svg}</div>'
+                + PICK_JS)                                   # a click on a station opens it in the pop-out
     return f.markdown(_titled(path)[1], path.parent, root)     # the section already carries the title
+
+
+# A drawing's station that carries `data-card` (JSON: tm, ti, chips, blocks) opens as a card under the drawing on a
+# click (JL 261114: "I can just see but cannot click it"), drawn as the timeline's cards; the station it came from rings.
+PICK_JS = """<script>(function(){if(window.__wsPick)return;window.__wsPick=1;
+var T={'Asked':'ask','Decided':'dd','Built':'done','Done':'done','Returned':'done'};
+function e(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function cardDoc(d){var b=(d.blocks||[]).filter(function(k){return k[1]}).map(function(k){
+var w=/^\S+ asked$/.test(k[0])?'Asked':k[0];return '<div class="blk '+(T[w]||'')+'"><span class=ov>'+e(w)+'</span><p>'+e(k[1])+'</p></div>'}).join('');
+var c=(d.chips||[]).filter(Boolean).map(function(x){return '<span class=chip>'+e(x)+'</span>'}).join('');
+return '<!doctype html><meta charset=utf-8><style>body{margin:0;padding:18px 20px;font:15px/1.55 -apple-system,Segoe UI,'+
+'sans-serif;color:#1b1c1f;background:#fff}h1{font-size:18px;margin:0 0 4px}.tm{color:#5f6368;font-size:13px}'+
+'.chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 14px}.chip{font-size:12px;padding:3px 9px;border-radius:8px;'+
+'background:#eef2f7;color:#5f6368}.blk{border-radius:10px;padding:10px 14px;margin:0 0 10px;background:#f6f6f7}'+
+'.blk p{margin:0}.ov{display:block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;'+
+'color:#5f6368;margin-bottom:2px}.ask{background:#fff1e0}.ask .ov{color:#8a4b08}.ask p{font-style:italic}'+
+'.dd{background:#e7f5ff}.dd .ov{color:#1864ab}.done{background:#e8f6ec}.done .ov{color:#1e7b34}</style>'+
+'<div class=tm>'+e(d.tm)+'</div><h1>'+e(d.ti)+'</h1><div class=chips>'+c+'</div>'+b}
+document.addEventListener('click',function(ev){var s=ev.target.closest&&ev.target.closest('.ws-pic [data-card]');if(!s)return;
+var d;try{d=JSON.parse(s.getAttribute('data-card'))}catch(x){return}
+var dlg=document.querySelector('#focus-viewer');if(!dlg)return;ev.preventDefault();
+document.querySelectorAll('.ws-pic .ws-on').forEach(function(x){x.classList.remove('ws-on')});s.classList.add('ws-on');
+var f=dlg.querySelector('iframe'),go=dlg.querySelector('[data-viewer-go]'),href=s.getAttribute('data-href');
+dlg.querySelector('[data-viewer-title]').textContent=(d.tm?d.tm+' · ':'')+(d.ti||'');
+if(href){f.removeAttribute('srcdoc');f.src=href;if(go){go.href=href;go.hidden=false}}
+else{f.removeAttribute('src');f.srcdoc=cardDoc(d);if(go)go.hidden=true}
+dlg.showModal();if(!dlg.__ws){dlg.__ws=1;dlg.addEventListener('close',function(){f.removeAttribute('srcdoc');if(go)go.hidden=false})}
+});
+/* hover: a small hint at once (time, title, first line), the click above opens the whole thing (JL 261115: "keep both") */
+var tip=null;function hide(){if(tip){tip.remove();tip=null}}
+document.addEventListener('mouseover',function(ev){var s=ev.target.closest&&ev.target.closest('.ws-pic [data-card]');if(!s){hide();return}
+var t=s.querySelector('title');if(t){s.setAttribute('aria-label',t.textContent);t.remove()}   /* no slow native tooltip on top */
+var d;try{d=JSON.parse(s.getAttribute('data-card'))}catch(x){return}hide();
+var first=(d.blocks||[]).filter(function(k){return k[1]})[0];
+tip=document.createElement('div');tip.className='ws-tip';
+tip.innerHTML='<div class=ws-tip-h><span>'+e(d.tm)+'</span> <b>'+e(d.ti)+'</b></div>'+
+(first?'<div class=ws-tip-b>'+e(first[1]).slice(0,180)+'</div>':'')+'<div class=ws-tip-f>click to open</div>';
+document.body.appendChild(tip);var r=s.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
+var L=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8),Y=r.top-h-10;if(Y<8)Y=r.bottom+10;
+tip.style.left=L+'px';tip.style.top=Y+'px'});
+addEventListener('scroll',hide,true);document.addEventListener('click',hide,true);
+})();</script>"""
+
+
+def drawing_html(svg: str) -> str:
+    """A drawing in a section: inline (its stations' hover titles show), scrolling sideways, a click opening a station
+    in the workbench pop-out."""
+    return (CSS + f'<div class=ws-pic style="overflow-x:auto;border:1px solid var(--line);border-radius:12px">{svg}</div>'
+            + PICK_JS) if svg else ''
 
 
 def _titled(path):
@@ -105,7 +156,7 @@ def declared(folder, root, data, view):
 # How an entry reads (the look of the replay page JL accepted, src/page.tpl.html in b41): a card per entry, its time in a
 # column, chips on the right, the labelled lines as tinted blocks, phases as tonal milestones on one vertical line.
 CHIPS = ('Session', 'Area')
-TINTS = {'JL asked': 'ask', 'Asked': 'ask', 'Decided': 'dd', 'Built': 'done', 'Done': 'done'}
+TINTS = {'Asked': 'ask', 'Decided': 'dd', 'Built': 'done', 'Done': 'done'}
 _LABEL = re.compile(r'^\s*([A-Z][A-Za-z ]{1,18}):\s*(.*)$', re.S)
 _TIME = re.compile(r'^<b>((?:\d\d-\d\d )?\d\d:\d\d)</b>\s*·\s*(.*)$', re.S)
 _PHASE = re.compile(r'^<b>([^·<]*\d\d:\d\d[^·<]*?)\s*·\s*([^<]*)</b>$', re.S)   # `**12:39 → 13:51 · title**`
@@ -139,6 +190,11 @@ CSS = ('<style>'
        '.ws-pt{padding-left:16px;text-indent:-16px}.ws-pt::before{content:"•";display:inline-block;width:16px;'
        'text-indent:0;color:var(--muted)}.ws-tl>li.ws-pt::before{display:none}'
        '.ws-body>.ws-tl,.ws-body>.ws-plain{margin-top:6px}'
+       '.ws-tip{position:fixed;z-index:60;max-width:320px;pointer-events:none;background:var(--paper,#fff);'
+       'border:1px solid var(--line);border-radius:10px;padding:8px 10px;box-shadow:0 4px 14px #00000026;font-size:13px;'
+       'line-height:1.45}.ws-tip-h span{color:var(--muted)}.ws-tip-b{margin-top:3px}'
+       '.ws-tip-f{margin-top:4px;font-size:11px;color:var(--accent)}'
+       '.ws-pic [data-card]{cursor:pointer}.ws-pic [data-card]:hover,.ws-pic .ws-on{stroke:var(--accent);stroke-width:3}'
        '@media(max-width:600px){.ws-chips{grid-column:1/-1}}</style>')
 
 
@@ -148,11 +204,12 @@ def _card(head, subs):
     chips, blocks = [], []
     for sub in subs:
         m = _LABEL.match(re.sub(r'<[^>]+>', '', sub)) if ':' in sub[:24] else None
+        label = 'Asked' if m and re.fullmatch(r'\S+ asked', m.group(1)) else m.group(1) if m else ''   # an old `<name> asked:` reads as Asked
         if m and m.group(1) in CHIPS:
             chips += [f'<span class=ws-chip>{c.strip()}</span>' for c in m.group(2).split(',') if c.strip()]
-        elif m and m.group(1) in TINTS:
+        elif m and label in TINTS:
             text = sub.split(':', 1)[1].strip()
-            blocks.append(f'<div class="ws-blk {TINTS[m.group(1)]}"><span class=ws-ov>{m.group(1)}</span><p>{text}</p></div>')
+            blocks.append(f'<div class="ws-blk {TINTS[label]}"><span class=ws-ov>{label}</span><p>{text}</p></div>')
         else:
             blocks.append(f'<p>{sub}</p>')
     header = phase or _HEADER.match(head)
@@ -192,7 +249,7 @@ def _list(items, timed):
 
 def folded(body):
     """A list item with sub-items reads as one card that opens: its line is the summary, its sub-items the detail.
-    `Session:` and `Area:` lines become chips, `JL asked:`, `Decided:` and `Built:` tinted blocks; a list whose items
+    `Session:` and `Area:` lines become chips, `Asked:`, `Decided:` and `Built:` tinted blocks; a list whose items
     start with a bold time is a timeline. An item bold all through (`**12:39 → 13:51 · title**`, `**The decisions**`) is
     a header: it collects the items after it, up to the next header, so a long list opens as a few headers (JL 261114,
     the AI-eval: "walls of 100+ cards")."""
@@ -230,7 +287,7 @@ def folded(body):
             out.append(card)
         return _list(out, timed)
     out = re.sub(r'<ul( [^>]*)?>(.*?)</ul>', ul, body, flags=re.S)
-    return (CSS + out) if 'ws-card' in out else out
+    return (CSS + out) if ('ws-card' in out or 'ws-pic' in out) else out
 
 
 def view_html(folder, root, data, view, section, start=1):

@@ -1,21 +1,14 @@
 ---
 name: haipipe-design
 description: >-
-  The one door for the design theme on the ladder: a design Block (one application,
-  one channel), a Job (one goal × one registered method version × one inputs
-  version → N designs), a Task per method step (t00 reason ideas, one per design,
-  t99 review whole), and their run-<type>-<target> Runs. Owns the ladder contract
-  and its scaffold (design_ladder.py), sets up Blocks, launches Jobs and opens
-  their design Tasks, and routes everything else to the goal, method, unit,
-  workflow and delivery owners. `/haipipe-design update <Block>` brings an older
-  design Block onto the current names (Jobs `M0x-<slug>-mK_inputs-vM`,
-  `inputs/inputs-vN`) and makes its Design Method Book. Use to set up a design
-  Block, launch a Job, open its design Tasks, audit or update a design folder's
-  names and faces, find who owns a design Run, or read an older Design Folder board; where a Job stands and which
-  Run is next is haipipe-design-workflow's. Ends at a person's release; sending,
-  the experiment and its measurement belong downstream. Trigger: design Block,
-  set up a design Block, launch a design Job, open the design Tasks, design
-  ladder, update design block, update the old design Block, Design Method Book,
+  The one door for the design theme on the ladder: a design Block (one application, one channel), a Job (one
+  goal × one method version × one inputs version → N designs), a Task per method step, and their Runs. Owns
+  the ladder contract and scaffold (design_ladder.py); routes the rest to the goal, method, unit, workflow and
+  delivery owners. `/haipipe-design update <Block>` brings an older design Block onto the current names and
+  makes its Design Method Book. Use to set up a design Block, launch a Job, open its design Tasks, audit or
+  update a design folder, find who owns a design Run, or read an older Design Folder board; where a Job stands
+  is haipipe-design-workflow's. Trigger: design Block, set up a design Block, launch a design Job, open the
+  design Tasks, design ladder, update design block, update the old design Block, Design Method Book,
   /haipipe-design, /haipipe-design update.
 metadata:
   version: "0.4.2"
@@ -32,6 +25,8 @@ metadata:
 
 # /haipipe-design · the design ladder's door
 
+> Scripts here need Python 3.10+: where a command says `python3`, run it as `uv run --python 3.13 --with pyyaml python ...` (or a SPACE `.venv/bin/python`); see `plugins/haipipe-toolkit/skills/README.md` § Running a skill's scripts.
+
 > **Hidden helpers** (JL 261026: not in the skill listing, `disable-model-invocation: true`): when this door names one below, read its SKILL.md by path; the Skill tool cannot load it. A person can still type its `/name`.
 >
 > - `haipipe-design-brief` → `../haipipe-design-brief/SKILL.md`
@@ -40,7 +35,7 @@ metadata:
 
 ## Version governance
 
-Each design skill keeps its own current version (this one `0.4.0`; `haipipe-design-unit` `0.4.1`, `workbench-design`
+Each design skill keeps its own current version (this one `0.4.2`; `haipipe-design-unit` `0.4.1`, `workbench-design`
 its own); none changes without a person's explicit approval. The move onto the ladder (261007) is recorded in each
 CHANGELOG under the current version and does not by itself authorize a new one.
 
@@ -69,9 +64,13 @@ version. One Board designs in one channel: it names its Book (`method-book:`), a
 version (`method: M01 m2`). Example: `blueprints/Project-Ladder/design/DesignMethodBook-Example/` beside `Design-Example/`.
 
 ```bash
-python scripts/design_ladder.py book design/DesignMethodBook-<Topic> --serves design/Design-<name>
-python scripts/design_ladder.py release design/DesignMethodBook-<Topic>/j01_M01-goal-only --from "M01 m2"
+python scripts/design_ladder.py block  design/Design-<name> --title "<application>" --channel sms
+python scripts/design_ladder.py book   design/DesignMethodBook-<Topic> --serves design/Design-<name>
+python scripts/design_ladder.py method design/DesignMethodBook-<Topic>/j01_M01-goal-only --version m2   # m2.md frozen beside the type; m2 must be registered in haipipe-design-method first
 ```
+
+There is no `release` level in `design_ladder.py`: freezing a method version is `method --version mK` above;
+releasing a design Job's designs is `haipipe-design-delivery`'s `scripts/release.py <job folder>`.
 
 A design method is the recipe that turns a goal and its inputs into N designs in five steps (① See input · ② Reason
 ideas · ③ Conduct process · ④ Review item · ⑤ Review whole). It is registered and versioned in

@@ -52,8 +52,8 @@ work/bNN_<block>/
     ├── src/                               shared by two or more Tasks
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/
+        ├── draft/                         only when the Task writes
+        ├── workflow/                      optional: plan.yaml + report.yaml
         ├── scripts/<worker>.py
         ├── runs/rNN_<run>/                one folder per Run
         │   ├── rNN_<run>.sh               the Ticket (.cmd on a PHI server)
@@ -66,7 +66,7 @@ work/bNN_<block>/
 Heavy outputs land in: `_WorkSpace/{1..4}-*Store/`.
 
 
-Findings: what a data Task shows (REACH 261111)
+Findings: what a data Task shows (261111)
 ------------------------------------------------
 
 The work focus page builds a page's Findings from files, never from typed text. A data Task feeds five
@@ -104,10 +104,10 @@ The `.ipynb` is auto-generated at runtime — it is NOT source.
 ```
 Template (generic)                         Task .py (exact copy)
 ──────────────────                         ──────────────────────────────────────
-code/scripts/haistepnb/a1_source_nb.py →   {task}/1_source_<project>.py
-code/scripts/haistepnb/a2_record_nb.py →   {task}/2_record_<project>.py
-code/scripts/haistepnb/a3_case_nb.py   →   {task}/3_case_<project>.py
-code/scripts/haistepnb/a4_aidata_nb.py →   {task}/4_aidata_<project>.py
+code/scripts/haistepnb/a1_source_nb.py →   {task}/scripts/<worker>.py   (e.g. 1_source_<project>.py)
+code/scripts/haistepnb/a2_record_nb.py →   {task}/scripts/<worker>.py   (e.g. 2_record_<project>.py)
+code/scripts/haistepnb/a3_case_nb.py   →   {task}/scripts/<worker>.py   (e.g. 3_case_<project>.py)
+code/scripts/haistepnb/a4_aidata_nb.py →   {task}/scripts/<worker>.py   (e.g. 4_aidata_<project>.py)
 ```
 
 Scaffold step: exact copy of template → rename file.
@@ -135,7 +135,7 @@ Two execution paths:
 
 See `fn/execute.md` for the detailed stage-aware execution protocol.
 
-Config binding (DrFirst 260923). A Ticket exports `RUN_CONFIG` (its own
+Config binding (260923). A Ticket exports `RUN_CONFIG` (its own
 config). The worker MUST read it: `CONFIG = os.environ.get("RUN_CONFIG",
 CONFIG)` right after the `# %% [parameters]` cell, so the hard-coded default
 only serves plain `python` runs. A worker that ignores `RUN_CONFIG` silently
@@ -188,9 +188,9 @@ SourceFn Block pattern
 
 Source is Block `b01` (see `haipipe-task/ref/pipeline-blocks.md` § Block number
 ranges). Its output is `ProcName_to_ProcDf`: one table (ProcDf) per ProcName.
-Reference implementation: REACH-SPACE
-`examples/Project-REACH-PD2D/work/b01_sourcestore/` (one dataset) and WellDoc-SPACE
-`examples-1-data/Proj01-CGM-RawData/work/b01_sourcestore/` (11 datasets, five
+Reference implementations: a PHI SPACE's
+`examples/<Project>/work/b01_sourcestore/` (one dataset) and a partner-data SPACE's
+`examples-1-data/<Project>/work/b01_sourcestore/` (11 datasets, five
 topic Jobs, a fixed card number per ProcName `t11`-`t26`, cross-dataset checks
 in `j49_procdf_coverage`; migrated 260923).
 
@@ -230,8 +230,8 @@ b01_sourcestore/
   first dataset Job it serves, never a new Task or Job. Name it
   `<Family>V<yymmdd>`, e.g. `WellDocDataV251226`. Older versions stay as Runs.
 - Ticket suffix says where a Run executes: `.sh` on the local machine, `.cmd`
-  on a remote server. In a PHI SPACE (REACH) EVERY Run is a `.cmd` Databricks
-  ticket, as in Project-0 J21: the ticket deploys, runs the Task's ONE entry
+  on a remote server. In a PHI SPACE EVERY Run is a `.cmd` Databricks
+  ticket: the ticket deploys, runs the Task's ONE entry
   `scripts/run_<task>.py` (first line `# Databricks notebook source`, a `RUNS`
   map, then `code/haiutils/haistep/task_entry.py` `pick_run` + `run_task`)
   inline on the cluster, and fetches `runs/<run>/result/`. Workers are
@@ -280,7 +280,7 @@ b01_sourcestore/
   present in EVERY RawName a RecordFn lists, so a RecordFn over two tables
   silently drops patients. Signal tables kept apart in Source become one
   RecordFn each; the TriggerFn or CaseFn combines them.
-- A cluster the stages never ran on gets a probe Run FIRST (PD2D
+- A cluster the stages never ran on gets a probe Run FIRST (for example
   `b00/j01_probe_cluster/t01_probe_cluster_env`, about two minutes): runtime and
   package versions in `probe.json`, a `datasets` save/load round-trip on the
   Volume, and whether the raw dataset is `_FROZEN`. Every receipt also records
@@ -296,7 +296,7 @@ b01_sourcestore/
 - Prove the wiring on the laptop with a selftest, not a Run: drive every entry
   through `safer/cluster/run_inline.py` with stand-in dbutils and Spark against
   a scratch Volume holding a synthetic twin of the dataset (real stems and
-  columns from `b00`, invented values). REACH:
+  columns from `b00`, invented values). Example:
   `safer/selftest/pd2d_inline_contract.py`.
 
 Source Tasks attach external data through the asset model
@@ -376,6 +376,9 @@ Summary:
 Return contract
 ---------------
 
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold or execute call also gives:
+
 ```
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was done
@@ -387,10 +390,10 @@ next:      suggested next command
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the sole `workflow/plan.yaml` Run Spec roster (`../../haipipe-task/fn/stage-plan.md`) follows the type-specific sample:
 
 ```
-ref/workflow-plan-sample.yaml     ← script-level phases for this type
+ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps
 ../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 

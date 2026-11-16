@@ -89,7 +89,7 @@ If the target population, sampling protocol, executor, or semantic construct cha
 
 ## 5. Stopping contract
 
-Calibration may stop only when all four gates pass for `K` consecutive comparable checkpoints:
+Calibration may stop only when all five gates pass for `K` consecutive comparable checkpoints:
 
 ```text
 quality floor

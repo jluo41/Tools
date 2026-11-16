@@ -56,7 +56,7 @@ class SpaceHomeTest(unittest.TestCase):
             self.assertIn('<span class="home-folder">project/diagram/01-topic</span>', page)
             self.assertNotIn("Open board", page)
             self.assertNotIn("JJ-LUO", page)
-            self.assertNotIn("Physician-SPACE", page)
+            self.assertNotIn("Example-SPACE", page)
             self.assertNotIn('class="summary"', page)
             self.assertNotIn('class="kind-section"', page)
             self.assertNotIn('class="row-status"', page)
@@ -66,11 +66,11 @@ class SpaceHomeTest(unittest.TestCase):
 
     def test_home_can_be_branded_for_a_space(self):
         with tempfile.TemporaryDirectory() as tmp:
-            page = render_home(Path(tmp), "Physician-SPACE", "https://physician.jjluo.com")
-            self.assertIn("<h1>Physician-SPACE</h1>", page)
+            page = render_home(Path(tmp), "Example-SPACE", "https://space.example.test")
+            self.assertIn("<h1>Example-SPACE</h1>", page)
             self.assertNotIn('class="workspace-title"', page)
             self.assertNotIn("Fusion Space", page)
-            self.assertNotIn("https://physician.jjluo.com", page)
+            self.assertNotIn("https://space.example.test", page)
 
     def test_project_owner_survives_a_server_started_in_a_project_subroot(self):
         with tempfile.TemporaryDirectory() as tmp:

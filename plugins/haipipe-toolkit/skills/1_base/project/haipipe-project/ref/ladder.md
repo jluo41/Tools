@@ -98,7 +98,7 @@ families:
     job: [emails, meetings, materials, design]  # a cowork Job's lanes (haipipe-cowork), text only
   labeling:
     task: [labeling]
-    hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by subjective-label
+    hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by haipipe-labeling
 
 today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
   topic: '^s\d{2}[-_][A-Za-z0-9]'        # sNN-<topic>/ sits beside the Jobs or Tasks (JL 261030); studio/ keeps _groups.txt, _build/, dot names
@@ -118,10 +118,10 @@ today:                                   # b10's rules since 261012: `audit --to
     stand_in: true                       # a receipt that only stands in (status: blocked + repair:) is rebuilt from the files
 
 checks:
-  heavy_mb: 10                           # AGENTS rule 10: a Result is light
+  heavy_mb: 10                           # the SPACE's AGENTS.md § Working rules: a Result is light
   heavy_exempt:                          # a discovery Paper Run keeps its source PDF beside its Result,
     discovery: [paper.pdf]               # only when project.yaml says visibility: private (JL 261009)
-  absolute_path: '/(Users|home)/[^/\s]+/' # AGENTS rule 7
+  absolute_path: '/(Users|home)/[^/\s]+/' # the SPACE's AGENTS.md § Working rules
 ```
 
 ## What the audit reports
@@ -144,7 +144,7 @@ are not checked (JL 261009). Tickets, run.yaml and every receipt written since s
 ## Today's rules (`audit --today`)
 
 The shape above passes a Block made before the studio topics, the Questions and the Block-only
-Delivery existed (b00_rawdata: 1 Block, 14 Jobs, 310 Tasks, all ok). `audit --today` adds the
+`related/` existed (b00_rawdata: 1 Block, 14 Jobs, 310 Tasks, all ok). `audit --today` adds the
 `today:` rules, as debt, at the Block it is given (b10 s10, JL 261012). `/wb update <block>` runs
 both and plans the fix.
 
@@ -157,8 +157,9 @@ debt   the level has no sNN-<topic>/ topic                  proposed by /wb upda
        studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
        a Job's or Task's studio/sNN: move it into the Job or Task   studio_move.py, beside its Tasks or Runs
        the face has no ## Questions register                proposed by /wb update step 6
-       a registered Block Question has no reports/qNN_*/      haipipe-report makes it
-       a Job's or Task's related/ or delivery/               haipipe-delivery moves it to the Block
+       reports/ still here (an older Block)                 fold each answer into its Studio topic (haipipe-studio
+                                                             reports_to_topics.py); it then moves to _old/reports/
+       a Job's or Task's related/                            haipipe-related moves it to the Block
 debt   (a work Block, family task)
        the face has no workbench-layout: workflow line       add it: Goal · Plan · Execution · Results
        a Job face has no ## Deliverables, or no emoji:       write them: haipipe-job ref/job-contract.md

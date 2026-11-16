@@ -70,7 +70,7 @@ not_searched:
 candidates:
   - trigger:
     subject: {title, authors, venue, year, doi, arxiv, canonical_url}
-    verification: VERIFIED | NEEDS-VERIFICATION
+    resolution: RESOLVED | NEEDS-VERIFICATION   # never VERIFIED: only a person confirms a citation
     bibtex: <verbatim entry | unavailable>
 notes:
 ~~~

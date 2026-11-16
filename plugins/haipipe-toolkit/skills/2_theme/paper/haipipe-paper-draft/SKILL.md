@@ -37,7 +37,7 @@ haipipe-display    ─▶   (in paper-evidence)    ─┘   └── evidence/ 
 Was `haipipe-paper-section` until 261019; that name is an alias, and a face's `page-type: section` resolves here
 through `legacy_page_type: section` above.
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the Section's `delivery/latex/` and `delivery/word/` files: fix the Page, its Draft or the exporter, then rebuild.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). Here that means the Section's `delivery/latex/` and `delivery/word/` files: fix the Page, its Draft or the exporter, then rebuild.
 
 For a Section Page update, load `haipipe-draft`, `haipipe-draft-workflow`, the
 current Run Workflow/Spec owner, `haipipe-paper-workflow`, this PageType and
@@ -58,7 +58,7 @@ claims and no Section rows, and only an older Board still keeps Section rows the
 Narrative first (`page.py sign-narrative`), then releases each row independently (the Release a Section card). A new Section is made by `haipipe-paper/scripts/paper_ladder.py task <version>
 t0N_<title>` (the Add a Section card), with its reader-contract header; its `reports/` come with their first item.
 Gate G4 marks the assembled build SUBMISSION-READY versus DRAFT; assemble
-is a separately commissioned build, and runs anytime from `delivery/` on the Story's
+is a separately commissioned build, and runs anytime from `delivery/` on the version face's
 compile-order block. `haipipe-paper-workflow` holds the full gate assertions; this block only
 binds the Page owner. The page itself always runs through `/haipipe-draft` and
 `haipipe-draft-workflow` (CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT → CHECK),
@@ -112,7 +112,7 @@ Paper-<Slug>/
     ├── t0N_<title>/         a Main Section, in reading order (t01-t19) · N = the H1's §N
     ├── t2N_<title>/         an Appendix Section, A = t21 (t20-t29) · its letter = the H1's Appendix L
     ├── t3N_<title>/         a letter (t30-t39): t31_cover-letter · t32_response; section_kind: letter
-    └── reports/qNN_<kind>-<MMDD>/   a comments batch: a report of type comments, never a Task
+    └── reports/qNN_<kind>-<MMDD>/   an older Board's comments batch (now a review Job on the Board, jNN_review_<kind>_v<MMDD>/); never a Task
 ```
 
 Each Section Task holds its face, the Page workflow's `draft/`, `runs/` and `results/`, and its own
@@ -176,81 +176,9 @@ Name the measured quantity instead ("how error changes with scale for each task"
 rule `title-metaphor` (category title), which reads heading lines, `arc:` lines and `[Label]` bullet labels, never
 body prose; `in-group-shorthand` reads the same lines, and `money-metaphor` reads the prose.
 
-## 📝 Writing patterns found on ScalingGlucose (261111-261112)
+## 📝 Writing patterns found on ScalingGlucose (261111-261112) → [`ref/writing-patterns.md`](ref/writing-patterns.md)
 
-Each came from JL on Paper-ScalingGlucose-NatSeries2026, in the shape of a Board's `writing-patterns.md`: the
-pattern, JL's words, our sentence, the fix, and the check that holds it where one can.
-
-1. **Paragraphs of 4 to 7 sentences.** JL: "unless having good reason, we might make sure they are between 4~7
-   sentences". Ours: Introduction P3 had 10, P5 had 13. Fix: split at the natural turn (10 into 4 + 6, 13 into
-   6 + 6); the Abstract is exempt, and a `reason:` line under the heading accepts an exception (§ Paragraphs of 4
-   to 7 sentences). Check: `page.py health` row `paragraph`, checklist W7, anti_slop `paragraph-length`.
-2. **Titles reviewed blind.** JL: "you should call the subagent to review them to make sure they are academic and
-   human understandable". Ours: 50 of 80 titles rewritten after review. Fix: a blind reviewer scores each title,
-   label, arc and reader question; under 8 is rewritten in § 1 and § 3 together (§ Titles read like the text).
-3. **No money metaphors.** JL: "I don't know why here we use the word of 'buy'". Ours: "Here we measure what scale
-   buys for each use". Fix: name the measured quantity, "where scale reduces error", "how scale changes error for
-   each task". Check: anti_slop `title-metaphor` (titles, labels, arcs) and `money-metaphor` (prose; a literal paid
-   claim is not flagged).
-4. **No in-group shorthand in titles.** Ours: "rolled forward", "head", "route", "grid", "roadmap", "use". Fix:
-   "recursive rollout", "linear head on the frozen model", "the way data were added", "model sizes and
-   configurations", "study design", "downstream task". Check: anti_slop `in-group-shorthand` (titles only).
-5. **The research questions stated together.** JL: "where are the two questions? i didn't see it." Fix: ask them
-   as questions with "?", one right after the other ("First, …? Second, …?"), never split by other sentences.
-   No automatic check; the cold read looks for it.
-6. **No post-hoc "We expected …" in the Introduction.** JL: "do we really have evidence for this?" Ours: an
-   `[Expect]` Bullet with `Evidence: none`. Fix: ask the question, give the known prior result with its citation,
-   leave the answer to the Results. Check: `page.py health` row `expect` (an Introduction's `[Expect]` Bullet whose
-   Evidence line says none).
-7. **The title paragraph holds the title.** JL: "could you put the title here?" Ours: C1.P0's Bullet read "The
-   paper's title." Fix: write the paper's title in the `[Title]` Bullet. Check: `page.py health` row `title`.
-8. **The whole paper's structure before a Section's plan.** The version's `## Narrative` is signed (`page.py
-   sign-narrative`) and shown in Report › Structure beside the Board Story § 8 (the shared title, story and
-   claims); a Section's plan follows its row. Check: `page.py health` rows `narrative` and `row`.
-9. **Examples as one drawing per Section.** Each example paper is one area of the examples drawing (its screenshot,
-   then its logic as a mind map), drawn by `excalidraw-read ref/section_screens.py draw <topic>` and read beside
-   our own plan in Report › Structure (frame jump per paper).
-
-## 🧑‍🤝‍🧑 Co-authors' patterns, every sentence, and the easier-to-read check (JL 261110)
-
-JL 261110: "will you add it and update it to the /haipipe-paper?"; "ask the agent to read each sentences to see
-whether it is easier to understand". When co-authors return a round (a Word file pulled by `word_round.py pull`,
-their comments, a meeting), the paper keeps what they want and checks every sentence against it:
-
-1. **The patterns live on the Board**: `<Board>/writing-patterns.md`, numbered `### N. <pattern>` with their own
-   words, our sentence, theirs, the fix and its support; the Writing view shows it as "Writing patterns to avoid".
-   The generic tells are `haipipe-draft-review` `ref/ai-tells.md` § 5; this file holds the paper's own.
-2. **Their text is theirs**: a sentence that carries a co-author's tracked insertion is never rewritten; it gets a
-   Review card with a suggestion. Their own sentences keep their register (a semicolon included); our rewrites still
-   follow the house rules: no semicolons, no transition set off by commas, no longer than the original. Run
-   `haipipe-draft-review` `cli/anti_slop.py audit` on the rewrites, before the easier-to-read check (JL 261110:
-   the first round's kept rewrites scored worse than the originals on it, 26 against 19, and ran 9% longer).
-3. **Every paragraph, then every sentence, is reviewed** (JL 261115: "review the paragraph level logics, to check
-   whether the logic is correct or not"). First one blind reviewer per Section reads each paragraph as an argument
-   (`haipipe-draft-review` `ref/paragraph-logic.md`: order with no A-B-A return, every conclusion resting on named
-   sentences, no claim wider than its findings, no missing step); a move or a missing step is a Section question the
-   person signs before any sentence changes. Then one blind reviewer per Section (never the writer), reading the round's newest
-   text, scores each sentence 1 to 10 against `ai-tells.md` § 5, the Board's patterns and the comments in that
-   Section; under 8 gets a rewrite that keeps every number, citation and claim. A round is a Job on the Board, not a
-   `reports/` folder (JL 261110: "we will no long using the reports/ plesae use the job or studio"):
-   `jNN_review_<who>_v<MMDD>/` (face `for: <writing Job>`), its Tasks `t01_sentence_review` (the comments as
-   received in `result/feedback/`, the reviews in `result/review/review-<section>.md`), `t02_readability_check`,
-   `t03_paragraph_logic` (`result/logic-<section>.md`, run before the sentence review although numbered after it,
-   since it was added later) and `t04_tracked_word` (a round made before 261115 may hold it as `t03_tracked_word`). A Job named with "review" is never read as a writing version.
-4. **The easier-to-read check**: before a rewrite becomes a Revise card's default, a fresh reader (not the
-   reviewer, not the writer) reads it in place: the sentence before, then the original and the rewrite in random
-   order as A and B, then the sentence after. It answers two questions per pair: which one is easier to
-   understand on a first read, and do both say the same thing (numbers, citations, claim strength). A rewrite
-   that is not easier, or that changes the meaning, is not proposed as written: it goes back to the reviewer, or the
-   original stays. The pairs, the readers' verdicts, the key and the unblinded verdict per sentence are
-   `t02_readability_check`'s Result.
-5. **Back to the co-authors as tracked changes**: accepted cards are adopted into the Section, and the same edits
-   go onto a copy of the co-authors' own latest file as tracked changes by the person who answers them
-   (`excalidraw-draft/ref/track_changes.py` `write_tracked`): their comments and tracked changes stay. The edits are
-   `t04_tracked_word/scripts/edits.yaml` (find, new, why), its Run writes `delivery/<writing Job>/word-tracked/`, the
-   send's third paper beside the PDF and the Word file (JL 261110: "the Word-Change-Track, which is based on the
-   previous change tracks from professors and you add the changes as well"). It is written locally;
-   `word_round.py push` sends it only on the person's word.
+## 🧑‍🤝‍🧑 Co-authors' patterns, every sentence, and the easier-to-read check (JL 261110) → [`ref/writing-patterns.md`](ref/writing-patterns.md)
 
 ## 🏷 The Abstract carries the title (JL 261111)
 
@@ -298,7 +226,7 @@ A letter's Sections each get their own topic and face, and may read the same pap
 | 1 Topic | `sNN-<task>-<venue>-examples` beside the Jobs, its face (For, Delivery type, Covers, Excluded, Topic) and its `related:` yaml filled; its first line names `<job>/<task>` | `/haipipe-studio` `new_topic.py topic` |
 | 2 Screenshots | one picture per paper of **that Section and nothing else**, whole and readable: `reads/pNN-<author><year>/shots/section.jpg`; `reading.yaml` beside it with its size and moves | `read_paper.py paras` from the PDF; the article's page if no PDF is free |
 | 3 Drawing | the screenshots one under the other, the shared pattern on top, where ours departs in red. No logic chains, no reference cards | `excalidraw-read ref/section_screens.py draw <topic>` |
-| 4 The card | Work › Plan › 📚 Examples shows the drawing **embedded**; open the page and look | the Task's page |
+| 4 The card | the Plan step's 📚 Examples shows the drawing **embedded**; open the page and look | the Task's page |
 | 5 The face | the Task's `examples:` names the topic | `page.py health`, `paper_check.py` W6 |
 
 Counts or a list of papers without the screenshots is not ready.
@@ -314,11 +242,11 @@ After the Examples, a Section starts at 1 · Plan and stays there until the pers
 versions are proposed against the examples and the Section's `## Narrative` row, the person's word is written by
 `page.py sign --quote`, and Write, Evidence and Revise refuse an unsigned plan (haipipe-draft § The Plan gate). The
 sign keeps the Section's Narrative row as text in `draft/records/<stem>-sign.md`; when that row changes after the
-sign, `page.py health` gives `row` and the Section goes back to Plan.
+sign while Sections draft, the Section keeps its own plan: no FAIL, no re-sign (must-check M-D09; `ref/section-method.md`).
 The version's `## Narrative` is signed before that (`page.py sign-narrative <version> --quote "…"` writes
 `narrative-approved:` and `story-at-sign:` on the version face and keeps the Story's § 8 as text in
-`<version>/records/narrative-sign.md`). Health's `narrative` row warns while the version's Narrative is unsigned or
-the Story's § 8 has changed since; `row` and `narrative` WARN, and FAIL with `--final`. Whole-paper structure choices
+`<version>/records/narrative-sign.md`). An unsigned Narrative names the sign; a Narrative or Story row that moved since is one quiet note on the version
+Job page, a WARN at the final gate, never a Section FAIL (M-D09; `page.py sync-narrative` then one sign, M-D19). Whole-paper structure choices
 are the version's, seen in the version Job's Report › Structure view beside the Story's § 8 (workbench-paper); the
 structure is a view, never a Task.
 
@@ -332,10 +260,9 @@ topics by paper (`pNN-<author><year>`). Nothing is copied; a paper read for one 
 ## ⚙️ Paper Section Run profile
 
 Read [`../haipipe-paper/ref/run-naming.md`](../haipipe-paper/ref/run-naming.md)
-and the shared Page Run names. New local Evidence uses full names such as
-`run-citation-<slug>` or `run-value-<slug>`.
-The Page owns the Evidence Item; the selected Task/Display worker does not
-change that owner. Independent Supporting Runs keep their native Task or
+and the shared Page Run names. A Section keeps no evidence Runs of its own (JL 261113): the Board's evidence
+Jobs check its values, citations and displays (haipipe-paper-evidence, The chain, rule 9). An older Section's local
+Evidence uses full names such as `run-citation-<slug>` or `run-value-<slug>`, the Page owning the Evidence Item. Independent Supporting Runs keep their native Task or
 Discovery identity and full path.
 
 Human interaction uses a `run-structure-…` Run for SHAPE + SURVEY, then the
@@ -350,9 +277,9 @@ these native Runs, without a wrapper Section Run.
 compiles its own deliverable through the page-level delivery workbench,
 `delivery/latex/<page>-master.tex` compiled to `<page>.pdf`, with its Bib at `selected-bibliography/<page>.bib`,
 wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
-`\input`s; its `\includegraphics` paths resolve to its own accepted display units
-(`results/<re-run>/payload/Display<n>-<slug>/assets/figure.pdf`; the stable Page id
-owns the unit independently of printed section order; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
+`\input`s; its `\includegraphics` paths resolve to the displays it cites, each the Board's display Task
+(its one home, JL 261113; an older Board: the Section's own unit,
+`results/<re-run>/payload/Display<n>-<slug>/assets/figure.pdf` or `display/Display<n>-<slug>/`, still read; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
 retired, JL 260908) and its citation keys to
 its own `selected-bibliography/<page>.bib`. The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
@@ -361,7 +288,7 @@ into this page and the paper folder is rebuilt whole. The old desk room
 
 **Mechanical assembly milestone**: this Page can supply a fragment to a draft
 build when three things exist: the current outline table is explicitly approved
-(`draft/<page>-draft-v*.md`, ticked), every display unit has its
+(`draft/<page>-draft-v*.md`, ticked), every display it cites has its
 `preview.pdf`, and the page PDF compiles under `delivery/latex/`. A page
 missing any of the three is not ready, and the paper build says so.
 Those files do not make the Section DONE. Only current Page CHECK closure under
@@ -402,136 +329,7 @@ authority is missing or stale, it returns `HOLD` to
 Section resumes at CONTEXT/PREPARE. Section work never repairs upstream
 Story or Venue policy itself.
 
-## 🧱 Content outline
-
-**Outline mode (also in this file's frontmatter, which the Skill tool strips):**
-`mode: resolved` · source = the bound QBv desk division (`structure-source:` +
-`structure-division:`, via `cli/resolve-structure.py`) · fallback =
-`ref/generic-template.md` · one `## C<n>` per Content division of the page, so a
-flat section is `C1` with one paragraph group per move · one bullet per
-sentence slot.
-
-Resolve paragraph or move divisions from the QBv Venue Page named by the
-governing Story §8 row's `target` column. **Address the division by grep, never by a
-remembered name or number** (0.5.0):
-
-```bash
-grep -n '^### [0-9]* · Sec-' <venue-bank>/QBv<n>-<desk>/QBv<n>-<desk>.md
-```
-
-The heading is `### <n> · Sec-<n>-<Kind>: <tagline>`, so the token is followed
-by a colon and prose; match the token, never the whole line. Its NUMBER moves
-between desks: MISQ's abstract is §4, Nature Communications' is §3, and PNAS §3
-is Sec-0-Significance with the abstract at §4. Cite the whole address in
-`structure-source`, both the number and the `Sec-` token, so a re-read can
-prove it.
-
-**`cli/resolve-structure.py` does this and prints the verdict**, so no page has
-to trust a remembered mapping:
-
-```bash
-python3 <skill>/cli/resolve-structure.py <QBv page>.md <section page>.md
-python3 <skill>/cli/resolve-structure.py <QBv page>.md --all <group>/   # a board
-```
-
-### The kind-to-token map · not derivable by casing
-
-Two of the nine differ from their kind by more than capitalization, which is
-why an agent must read this table and never transform the string itself:
-
-```text
-section_kind        Sec- token              note
-────────────────────────────────────────────────────────────────────────────
-abstract            Sec-0-Abstract
-introduction        Sec-1-Introduction
-literature-review   Sec-2-Related-Work      ⚠️ different word · absent at MISQ,
-                                            present at QBv9/10/12
-theory              Sec-2-Theory            shares the number 2 with
-                                            Related-Work across desks
-methods             Sec-3-Methods
-results             Sec-4-Results
-discussion          Sec-5-Discussion
-conclusion          Sec-6-Conclusion
-appendix            Sec-A-Appendix          ⚠️ letter, not a digit
-```
-
-Raw pack `style.md` files and stage-era playbook material stay informative: they
-may feed a typed PACK OBSERVATION on the QBv page, but they may not become
-`structure-source`.
-
-### The kind-to-division map · four relations, not one
-
-`section_kind` does not equal a `Sec-` token, and the mismatch has four
-different remedies. Naming only one of them is what made every Section fall
-silently to the fallback:
-
-```text
-relation            what it looks like                     what to do
-──────────────────────────────────────────────────────────────────────────────
-EXACT               one kind, one Sec- division            resolve · cite the
-                    abstract → Sec-0-Abstract              address
-SHARED              one division serves several Pages      resolve · SPLIT the
-                    methods → Sec-3-Methods (2 Pages)      division's word and
-                    appendix → Sec-A-Appendix (6 Pages)    move budget on the
-                                                           Story §8 row, never
-                                                           give each Page the
-                                                           whole budget
-ABSENT BY DESIGN    the desk HAS no such unit and the      fallback · record the
-                    paper keeps the section anyway         DEVIATION on the
-                    literature-review at MISQ              Story §8 row · do NOT
-                                                           raise a QBv gap
-MISSING             the desk should have the division      fallback · raise the
-                    but the page has not been written      gap on the QBv page
-                    8 of 17 desks carry zero Sec- rows     · the desk owes it
-```
-
-**The ABSENT BY DESIGN row is the one 0.4.0 lacked.** MISQ publishes no
-related-work unit, and a paper may still keep one as a deliberate deviation a
-person ruled. Raising that as a gap tells the venue bank to invent a division
-the desk does not have, which corrupts a consumer-neutral asset to suit one
-paper. The deviation belongs on the Story's §8 row, where the target decision lives.
-
-**Eight desks resolve to nothing today** (QBv5-jama, QBv7-jama-network-open,
-QBv8-npj-digital-medicine, QBv9 partially, QBv11-nature-human-behaviour,
-QBv14-diabetes-care, QBv15-grant, QBv16-patent, QBv17-wise carry zero `Sec-`
-divisions). For those, `mode: resolved` is aspirational: every Section takes the
-generic fallback and the gap is real. Say so in `structure-source` rather than
-letting the page read as venue-resolved.
-
-Each Content division states:
-
-```text
-reader move
-claim ids advanced
-evidence/citation/value/display bindings
-expected prose or display placement
-transition to the next move
-known limitation or unresolved need
-```
-
-**A Section quotes, it never computes (0.20.0, JL 261110).** Every number in its prose is a value id of the value
-Job, bound by id, and the Section names the value Run it quotes (its VALUE card or binding says the Run, never "the
-newest"). A number with no id gets one in the value Job first; a binding goes stale when an id it quotes moves or leaves
-in a newer value Run, and stays current when that Run only adds ids (haipipe-paper-evidence, The chain; `chain_check.py` says where it breaks).
-
-**The plan is a list of sentence slots (0.5.3, JL 260831).** One bullet is one
-sentence slot, `s<n> · <what the sentence does>` in 4 to 11 plain words;
-paragraphs group by move (`### C2.P1 · Problem and question · s1 to s3`); a
-finding carries its claim id plus a word (`s6 · C1: <the number and its unit>,
-comparison owed`); one `Cut:` bullet names what leaves the section and where it
-goes; a Note is one line and never the drafted sentence, which lives on the
-page. The approved specimen is quoted in `workbench-task-draft` §✂️.
-
-**Structure and Draft move together (JL 261102: "when you update the draft, you should also udpate teh structure as
-well")**. A Draft Markdown's `## 1 · Structure` is the plan of its `## 3 · Draft`, so every edit to the sentences
-makes the same change to the plan in that edit: a sentence added or cut adds or cuts its Bullet (`- B<k> · s<n> ·
-[Role] what it does`, with its `Evidence:` line), a sentence moved moves its Bullet, a paragraph added, split, merged
-or renamed changes its `### C<n>.P<m> · <title> · s<a> to s<b>` heading in sections 1, 2 and 3 and its entry in the
-Structure Overview, and the S numbers and spans are renumbered to match. A new structure is a new draft version
-(`draft-v<G>.<S+1>`, the older one moved to `draft/previous/`), never a section 3 rewritten under the old plan; its
-Evidence Items and the face's `evidence-allowlist:` follow their sentences. `page.py health <Task>` checks it
-(`structure`: `plan_layout.structure_draft_mismatches`, the paragraphs, titles, sentences and Overview spans of
-sections 1 and 3) and fails until both agree.
+## 🧱 Content outline → [`ref/content-outline.md`](ref/content-outline.md)
 
 ## 🏷 Reader-facing subsection titles
 
@@ -585,39 +383,7 @@ On a venue change:
    OUTLINE/SURVEY, and stale Results to EVIDENCE/LAND.
 5. Run CONTENT/WRITE and CHECK the new built version.
 
-## 🧾 Reworking a sent Section (0.12.0)
-
-When a version follows a sent one whose review came back (its comments report, `haipipe-paper-comments`, holds
-the Review Items), each Section first reads itself as sent, before OUTLINE/SHAPE, so the person sees how much
-changes and why (JL 261014: "How much we will chnage them ... could you use /excalidraw read to work on each of
-the section, and make each section (main section) to be a sNN tNN from the new job ... we can put thing there to
-discuss").
-
-```text
-sent PDF (its delivery) ─▶ sNN-tNN-<section>/reading.yaml ─▶ the drawing: how much changes ·
-                           section · parts · key · a verdict          your call · one frame a subsection
-                           and next per passage                       (pages left, short notes right)
-                                      │
-                                      ▼
-face "How much changes" (every paragraph) ─▶ CONTEXT cites it ─▶ SHAPE: KEEP carried, REWRITE redone,
-                                                                  MOVE sent on, CUT never back
-```
-
-1. **One Board topic per Main Section**, `sNN-tNN-<section>/` beside the Jobs, tagged with the sent version
-   (`draft-v<MMDD>`) and the Task stem; its **Feeds:** names the new Task and the comments report.
-2. **Its `reading.yaml`** (excalidraw-read 0.7.0) reads the sent PDF: `section:` with `name`, `pages`, `from`,
-   `until`, `parts` (the subsection headings) and `key` (the count line); each passage's `comment` begins with
-   `KEEP`, `REWRITE`, `CUT` or `MOVE`, its `link` goes to the Review Item that hits it (`how` begins with the
-   point ids) or to `new-<task>`, and its `next` says in 10 words what the new Section does with it.
-3. **Its face's How much changes table** gives every paragraph of the sent Section a row (`¶ · page · starts
-   with · verdict · why`), then the count line and an estimate of the words that survive, said as an estimate.
-4. **The new Section uses it.** CONTEXT cites the topic as a bounded related link; SHAPE carries a KEEP row as a
-   slot, rewrites a REWRITE row, sends a MOVE row to the Section it names, and never brings a CUT row back.
-5. **Routes agree.** Every Review Item a reading links lands on this Section in the comments report's `lands on`
-   column; a missing route is fixed in the report, never only in the reading.
-
-Worked example: Paper-TestToLearn-MS2026, S10 to S16, the sent `j01_v0429_mansci` read for `j02_v1007_mansci`:
-107 rows, 13 KEEP · 47 REWRITE · 26 CUT · 21 MOVE.
+## 🧾 Reworking a sent Section (0.12.0) → [`ref/rework-sent-section.md`](ref/rework-sent-section.md)
 
 ## ✉️ A cover letter's words (JL 261104)
 

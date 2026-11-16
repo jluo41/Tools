@@ -28,9 +28,8 @@ def base_rail(folder, root) -> list:
             else "its steps" if S.kind(folder) or is_items(folder) else "its Runs")
     words = {"report": "read the results and check the progress", "work": work,
              "studio": "drawings, mind maps, slides",
-             "interactions": ("🙋 waits on you" if any(r["state"] == "waiting" for r in inbox)
-                              else "nothing waits on you" if inbox else "nothing asked yet"),
-             "delivery": "what it has handed over" if delivery else "nothing handed over yet",
+             "interactions": "🙋 waits on you" if any(r["state"] == "waiting" for r in inbox) else "",
+             "delivery": "what it has handed over" if delivery else "",   # no empty-state words
              "related": "what came in: meetings, papers, emails", "timeline": "what happened when",
              "files": "the folder itself", "skills": "the skills that work on it"}
     return [(key, name, words[key]) for key, name in rail]

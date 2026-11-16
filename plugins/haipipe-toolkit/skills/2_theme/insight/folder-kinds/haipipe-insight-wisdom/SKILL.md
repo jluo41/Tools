@@ -22,6 +22,12 @@ metadata:
 
 # /haipipe-insight-wisdom · counsel, then hand off
 
+> **Older layout (261008) below.** The page folder, its Design Handoff division and the signature form here are the
+> register board's. On the insight ladder (`../../haipipe-insight/ref/insight-ladder.md`) the counsel is the Board's
+> `run-write-counsel`, the handoff is `delivery/handoff-<W>.md` naming its pair (question-vN × data-vM) from
+> `run-draft-handoff`, and a person signs it `signed: ✅ <YYMMDD>`, never a name or initials. What counsel may say
+> still holds.
+
 Load `haipipe-draft` (its `ref/folder.md`), `haipipe-insight`, and the workflow.
 Read `../../haipipe-insight/ref/page-v2-adapter.md` before authoring counsel or
 exporting the handoff.
@@ -117,7 +123,7 @@ Folder's GI conditions still govern citation and register settlement.
 GI5 passes only for an exported W handoff after the Page reaches CHECK/CLOSE,
 `haipipe-insight-check` finds no overclaim on its cell, counsel stays inside
 its exact current Knowledge pages, forbidden overreach is
-visible, the handoff reads standalone, and `signed: ✅ <initials> <YYMMDD>`
+visible, the handoff reads standalone, and `signed: ✅ <YYMMDD>` (an older board: with initials)
 records a person's decision. `signed: ⬜` is a clean stop, not permission to
 infer approval. A bridge also requires the external-parent assertion to remain
 current; RF settlement alone cannot pass GI5. A valid POOL deferral and a

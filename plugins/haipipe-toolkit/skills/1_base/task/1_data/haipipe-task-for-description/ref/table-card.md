@@ -114,6 +114,6 @@ Cost
 ----
 
 One column is read at a time, so a wide table never has to fit in memory.
-The duplicate check reads batches of 250,000 rows. DrFirst OptTimeR1Extended
+The duplicate check reads batches of 250,000 rows. A partner's widest table
 (2.0 M rows × 107 columns, 790 MB) takes about 40 seconds, and twice that
 with the executed notebook.

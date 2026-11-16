@@ -1,6 +1,6 @@
 # Writing lab · terminal windows that open the Section sessions
 
-`/haipipe-paper lab [paper]` ("start the paper writing lab") opens the paper's Section sessions side by side:
+`/haipipe-paper lab [paper]` ("start the paper writing lab"), or `/lab <paper>` (the `lab` skill, which also opens insight, design and labeling Blocks), opens the paper's Section sessions side by side:
 one window per group of up to four Sections, one pane per Section, each running that Section's own Claude
 session. By default a window is a VS Code window: each Section's draft page (its workbench view) side by side on top,
 and below them, in the terminal panel, each Section's session, split side by side in the same order; `--terminal tmux` makes it a tmux session `<Short>-Lab-<A|B|…>` shown in a Terminal window instead. It reads the units and `session:` lines that `/haipipe-paper sessions`
@@ -16,6 +16,7 @@ From the repository root with the workspace Python:
     [--prefix <Short>]   session names <Short>-<unit>; default board.md `session-prefix:`, recorded on --apply
     [--per-window 4]     terminals per window
     [--appendix]         add the Appendix unit (default: Main Sections only)
+    [--sizes 5 2]        units per window, in order; kept with --appendix in layout.json for the next lab
     [--no-board]         leave out the Board session (default: it opens first)
     [--pages <id> ...]   only these units
     [--terminal vscode]  vscode (default) or tmux

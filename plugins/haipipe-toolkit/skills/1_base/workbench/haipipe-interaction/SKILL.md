@@ -48,9 +48,9 @@ try to make it as compact as possible".
 
 ```text
 kind                      status       Run                     reader sees
-questions and choices     built        rNN_collect_<slug>/     "Questions for you"
+questions and choices     built        rNN_collect_<slug>/     "Questions for you", "Choose a version" (rule 2b)
 what you should know      built        rNN_collect_<slug>/     "📌 What you should know", state "to know"
-review, clarification     not yet      (a later kind)          "Review this design", "Choose a version"
+review, clarification     not yet      (a later kind)          "Review this design"
 ```
 
 Reader-facing words stay concrete: the form's head says "Questions for you". On a workbench page a row that holds
@@ -361,7 +361,7 @@ After a trial press Back to my picks: the agent's browser is often the person's 
 ## ✅ Before sending the link
 
 1. `check` prints `ok`; `build` writes the form; the card says `waiting`.
-2. The form opens on the SPACE's host (the Tailscale origin, never localhost), every card and detail drawn.
+2. The form opens on the SPACE's host (its configured origin, `DOMAIN` in settings.env, never localhost), every card and detail drawn.
 3. A changed option marks its card `changed`; Copy feedback fills the text; Back to my picks clears the trial.
 4. The reply holds only the link: nothing in it that the form does not already say.
 

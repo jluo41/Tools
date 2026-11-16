@@ -2,7 +2,7 @@
 
 Use this reference when the canonical Task executes on a Databricks cluster.
 The Block/Job/Task/Run hierarchy does not change. Every rule marked *proven*
-was hit and fixed on a live workspace (REACH-SPACE, SAFER desktop, 260907 to
+was hit and fixed on a live workspace (a PHI SPACE on a locked-down desktop, 260907 to
 260918); the project's own `safer/README.md` holds the evidence.
 
 ```text
@@ -229,7 +229,7 @@ Run config/Ticket stem pair, and verify that cluster output resolves to the
 same `<task>/<run>` Result identity used locally.
 
 A project that runs this way keeps two laptop-side guards, because the desktop
-may have no working Python. REACH-SPACE's are the pattern:
+may have no working Python. These two are the pattern:
 
 - `safer/scripts/check_run_tickets.py`: every ticket has its config, its bundle
   job, its uploaded notebook, no `.py`/`.ipynb` twin, and every batch is a flat

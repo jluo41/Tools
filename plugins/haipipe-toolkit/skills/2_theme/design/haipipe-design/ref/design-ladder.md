@@ -39,11 +39,12 @@ design/Design-<name>/                      Block: one application, one channel
     ├── jNN_<goal>_M0x-<slug>-mK_inputs-vM.md   its face (front matter): goal · method · method-sha ·
     │                                       inputs · n · state · moved
     ├── inputs/                             the fence: goal.md · method.md · links into ../inputs/inputs-vM/ ·
-    │                                       manifest.yaml (each file, its source, its sha256 as its first 12 hex)
+    │                                       manifest.yaml (each file, its source, its sha256 as its first 12 hex;
+    │                                       with method-sha, a decided exception to the SPACE no-hash rule)
     ├── studio/ · reports/                  optional
     ├── runs/                               soft: run-setup-goal · run-setup-method · run-setup-inputs ·
     │                                       run-open-designs · run-freeze-predictions · run-release · run-close
-    ├── delivery/                           designs.json · designs.md · screens/<dNN>.<ext>: the released, word for word
+    ├── (delivery in Block)                 <Block>/delivery/jNN_<job>/: designs.json · designs.md · screens/<dNN>.<ext>, word for word
     ├── t00_reason-ideas/                   ② reason ideas, one per Job
     │   ├── t00_reason-ideas.md             state · step: ②
     │   └── runs/run-reason-t00/result/     hard: ideas.yaml · chains.yaml · topics.md
@@ -187,8 +188,9 @@ The six Spaces at each level
 
 ```text
         Description              Audience Report                        Work Details               Runs                Delivery
-Block   Map · Goals · Methods ·  Questions · Cost · Predicted vs        one card per Job           set up · launch ·   every released design
-        Inputs                   observed · Method scorecard                                       report
+Block   Map · Goals · Methods ·  Summary · Rounds · Questions ·         one card per Job           set up · launch ·   every released design
+        Inputs                   Predicted vs observed ·                                           report
+                                 Method scorecard · Cost
 Job     Goal · Method · Inputs   Reason ideas · Design display ·        Reason ideas · Conduct &   Setup · Reason ·    designs.md ·
                                  Review whole · Predicted vs            review · Review whole      Conduct · Whole     designs.json
                                  observed · Performance

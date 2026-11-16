@@ -77,7 +77,7 @@ class PlanCTest(unittest.TestCase):
                     self.assertEqual(got[space]["subspaces"], subs)
                     self.assertEqual(got[space]["run_doing"], runs)          # each button's words
                     for name in got[space]["run_types"]:                         # named by the Run it makes
-                        self.assertRegex(name, r"^(run-|rNN_)|↗$")
+                        self.assertRegex(name, r"^(run-|rNN_|sNN-)|↗$")   # sNN-: a Studio round is a pass in its topic, no Run
 
     def test_the_second_rows(self):
         board = frame.render(THEME, self.root, self.board, "Audience Report", "part-a/Consistency")
@@ -276,6 +276,21 @@ class TodaysLayoutTest(unittest.TestCase):
             block.mkdir(parents=True)
             (block / "board.md").write_text("# b52 · demo\n\nboard-kind: task-block\nworkbench: insight\n", encoding="utf-8")
             self.assertEqual(frame.theme_of(block, root), "insight")
+
+
+class RefusedRunTest(unittest.TestCase):
+    def test_a_refused_run_keeps_its_reason_even_when_its_card_has_none(self):
+        """A refusal is an answer: the Task page shows why where the answer would sit, read from the receipt
+        when the card was written before run_job.py kept `reason:` on it."""
+        from live import insight_plan_c as P
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / "r02_young"
+            (run / "result").mkdir(parents=True)
+            (run / "run.yaml").write_text("run: r02_young\nkind: hard\nstatus: refused\n")
+            (run / "result" / "runtime.yaml").write_text("status: refused\nreason: 'thin: too few rows'\n")
+            self.assertEqual(P.run_card(run)["reason"], "thin: too few rows")
+            (run / "run.yaml").write_text("run: r02_young\nkind: hard\nstatus: refused\nreason: underpowered\n")
+            self.assertEqual(P.run_card(run)["reason"], "underpowered")
 
 
 if __name__ == "__main__":

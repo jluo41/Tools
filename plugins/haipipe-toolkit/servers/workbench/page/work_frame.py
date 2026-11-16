@@ -161,9 +161,12 @@ def overview(folder, root, data, questions, groups):
     # Both maps are live: Topic navigation and the original complete work map.
     maps = '<div class=wk-map>' + _side_tabs('work-overview-map', [('Topics', ''), ('Work Structure', '')],
                                              [map_html(folder, root, groups), f.parts_mindmap(folder, root)]) + '</div>'
-    return (OV_CSS + section(1, '🎯 Goal', goal(folder, root, data))
-            + section(2, '📋 Requirements', requirements(folder, root, data, questions))
-            + section(3, '🧠 MindMap', maps))
+    # 🗺️ the Block's work as a transit map, one line per Job, a station per Run (JL 261114), when it has Runs to draw
+    from live import work_map
+    drawn = work_sections.drawing_html(work_map.block_map(folder, root)) if f.page_level(folder) == 'Block' else ''
+    parts = [('🎯 Goal', goal(folder, root, data))] + ([('🗺️ Work map', drawn)] if drawn else []) + [
+        ('📋 Requirements', requirements(folder, root, data, questions)), ('🧠 MindMap', maps)]
+    return OV_CSS + ''.join(section(n, t, b) for n, (t, b) in enumerate(parts, 1))
 
 
 def status(folder, root, data, groups):
@@ -197,6 +200,17 @@ def delivery(folder, root, data):
             if entries:
                 listing = '<ul>' + ''.join(f'<li><a href="{frame.esc(frame._file_url(p, root))}">{frame.esc(p.name)}</a></li>' for p in entries) + '</ul>'
                 tabs.append((where + ' · Files', '', listing))
+        # a website handed over (a folder with its index.html) shows as itself, in a frame (JL 261115: "the delivery
+        # will be the website we will use")
+        for site in sorted(p for p in directory.iterdir() if (p / 'index.html').is_file() and f.inside(p, root)):
+            page = site / 'index.html'
+            m = re.search(r'<title>(.*?)</title>', page.read_text(encoding='utf-8', errors='ignore')[:4000], re.S | re.I)
+            url = frame.esc(frame._file_url(page, root))
+            tabs.insert(0, ((m.group(1).strip() if m else site.name), '',
+                            f'<iframe title="{frame.esc(site.name)}" src="{url}" loading=lazy '
+                            f'style="width:100%;height:85vh;border:1px solid var(--line,#ddd);border-radius:6px"></iframe>'
+                            f'<div class="focus-actions"><a class="row-verb" href="{url}" target="_blank" rel="noopener">'
+                            f'Open in its own tab ↗</a></div>'))
     if any(not n.endswith((' · Files', ' · Record')) for n, *_ in tabs):   # the lanes already list the files
         tabs = [t for t in tabs if not t[0].endswith(' · Files')]
     # no "ready" beside a lane: a lane that is shown holds something (JL 261113: no state words)

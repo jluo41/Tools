@@ -21,7 +21,7 @@ The task `.py` is an exact copy of `code/scripts/haistepnb/c_endpoint_nb.py`.
 CONFIG is overridden at runtime by papermill, NOT by editing the file.
 
 **Invocation modes:** interactive (human steers) OR headless
-(`haipipe-task-creator-agent` calls this skill during Phase 2: Build). Legacy
+(`haipipe-task-creator-agent` calls this skill during the Build command). Legacy
 flat endpoint jobs remain readable; every new scaffold uses the nested
 `jNN_*/tNN_*/` Task shape owned by `haipipe-task`.
 
@@ -249,6 +249,9 @@ MUST NOT
 
 Return contract
 ---------------
+
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note); for this type it reads:
 
 ```
 status:     ok | blocked | failed

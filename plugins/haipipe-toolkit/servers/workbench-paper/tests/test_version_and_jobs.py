@@ -166,7 +166,9 @@ class VersionAndJobsTest(unittest.TestCase):
         page = self.render(self.version, "report", "structure")
         self.assertIn('in chat: &quot;this order&quot;', page)
         story.write_text(story.read_text().replace("then C2", "then C3"), encoding="utf-8")
-        self.assertIn("changed since", self.render(self.version, "report", "structure"))
+        html = self.render(self.version, "report", "structure")   # drafting: a quiet note, never a re-sign (M-D09)
+        self.assertIn("sync-narrative", html)
+        self.assertNotIn("sign again", html)
 
     def test_the_structure_view_shows_the_examples_as_one_live_drawing(self):
         # JL 261111: "one draw should be okay": the Section's examples topic as its live drawing, a jump per frame

@@ -29,7 +29,7 @@ haipipe-task
 ```
 
 > ⛔ **Generated files: never modify them directly; change the code that writes them, then rerun it**
-> (JL 260928; AGENTS.md rule 6). Here: a ticket a `gen_*.py` writes, a notebook, a figure, a Table
+> (JL 260928; the SPACE's AGENTS.md § Working rules). Here: a ticket a `gen_*.py` writes, a notebook, a figure, a Table
 > Card, everything in a Run's `result/`.
 
 ## Who owns what around a Task
@@ -47,6 +47,13 @@ skill is what that door reads for the Task level. Delivery belongs to the Block 
 Block only; haipipe-delivery).
 
 ## A · The Task level
+
+### New Task
+
+1. **Scaffold**: `python Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-job/scripts/new_job.py task <job> --slug <task> --title '<what it delivers>' --type <task-type> [--nn NN] [--answers Q01.E1]`.
+2. **What it makes**: the next `tNN_<task>/` with the face below, `scripts/config/`, `runs/`, and its line in the Job's `## Tasks`.
+3. **Fill the face**: `goal:`, `close:`, `owner:`; `task-type:` is a value from `ref/types.md`, which names the type skill that builds it.
+4. **First Run**: `/haipipe-task run <task-folder> r01_<noun>_first` (`fn/run.md` scaffolds its ticket, config and receipt).
 
 ### The folder
 
@@ -93,7 +100,7 @@ and figures Runs, reading ─▶ close: true and the Job's items tick
 ```
 
 `ref/lifecycle.md` says what each step leaves on disk and who writes it. A paid, long or shared-store
-Run waits for a person to press Run (AGENTS rule 2); a quick local unpaid one is run and reported.
+Run waits for a person to press Run (the SPACE's AGENTS.md § Working rules); a quick local unpaid one is run and reported.
 
 ### Commands
 
@@ -113,7 +120,7 @@ The whole-life command runs the Workflow script `ref/task-lifecycle.workflow.js`
 `{task_folder, type, stages, autoExecute}`, once per Task at Job or Block scope, continuing after a
 failure and gathering every verdict. Three agents keep the duties apart:
 `haipipe-task-orchestrator-agent` coordinates, `haipipe-task-creator-agent` writes the plan, code and
-report, `haipipe-task-reviewer-agent` judges them (`pass`, `warn`, `revise`, `fail`); creator and
+report, `haipipe-task-reviewer-agent` judges them (`pass`, `warn`, `revise`, `blocked`, `fail`); creator and
 reviewer are never the same agent.
 
 ## B · The type door

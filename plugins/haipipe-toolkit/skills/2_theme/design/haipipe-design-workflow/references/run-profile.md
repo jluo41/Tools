@@ -8,7 +8,7 @@ profile is [legacy/run-profile-older.md](legacy/run-profile-older.md).
 
 Every Run is a folder `run-<type>-<target>/` (JL 261007: "unify the name to be run-xxx-xxx"), no date: the date is
 in its passes. `<type>` is lowercase words joined by `-`; `<target>` is the object it works on, lowercased (`g01`,
-`i2`, `j03`, `e01`, `q01`, `s01`, `t00`, `t99`, `d04`). A Run whose type already names its object drops the target
+`v2` (an inputs version), `j03`, `e01`, `q01`, `s01`, `t00`, `t99`, `d04`). A Run whose type already names its object drops the target
 (`run-setup-rules`, `run-propose-questions`).
 
 A repeat on the same target names what it reads, never a counter: the verify of d04's second draft is
@@ -35,8 +35,8 @@ board).
 | Job | `run-setup-method-j<NN>` | soft | pin a method version; `inputs/method.md`, `method-sha` | designer agent | — | none | haipipe-design-method |
 | Job | `run-setup-inputs-j<NN>` | soft | build `inputs/goal.md`, the links and `manifest.yaml` (step ①), after `inputs/method.md` | designer agent | manifest sha256 | none | haipipe-design-goal |
 | Job | `run-open-designs-j<NN>` | soft | pass 1: the reviewer's `fence-check.md`; on pass, one design Task per idea, then t99 | designer agent | reviewer agent (the fence check) | none | haipipe-design |
-| Job | `run-freeze-predictions-j<NN>` | soft | freeze the kept designs' predictions | a person | — | a person | haipipe-design-delivery |
-| Job | `run-release-j<NN>` | soft | the kept designs into `delivery/` | designer agent | — | a person | haipipe-design-delivery |
+| Job | `run-freeze-predictions-j<NN>` | soft | freeze the kept designs' predictions | designer agent | — | a person (one sign, with the release) | haipipe-design-delivery |
+| Job | `run-release-j<NN>` | soft | the kept designs into the Block's `delivery/jNN_<job>/` | designer agent | — | a person | haipipe-design-delivery |
 | Job | `run-close-j<NN>` | soft | close the Job; frozen | designer agent | every design terminal | a person | haipipe-design-workflow |
 | Task | `run-reason-t00` | hard | ② `ideas.yaml` · `chains.yaml` · `topics.md` | designer agent | the fence check | none | haipipe-design-unit |
 | Task | `run-generate-d<NN>` | hard | ③ one design, its `elements.yaml` | designer agent | its own self-check | none | haipipe-design-unit |
@@ -48,6 +48,9 @@ A closed hard Run's Result reaches its level's files only through `haipipe-desig
 `project_draft.py draft` (a draft into the Task's face and `elements.yaml`), `project_draft.py verdict` (the
 verify's status into `state:`), `project_predictions.py` (t99's ranking into each `prediction.yaml` and `state:`).
 These are Steps of the workflow, not Runs.
+
+Outside the 22: the one-page summary is built by `scripts/summary.py` (`haipipe-design-delivery`) with no Run
+folder; `design_ladder.py` has no `build-summary` type and the page draws no Run button for it.
 
 ## Hard and soft
 

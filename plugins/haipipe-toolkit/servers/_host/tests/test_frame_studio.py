@@ -289,7 +289,7 @@ class FrameStudioTest(unittest.TestCase):
                 ("j04_job", "t01_task", "r01_done", "complete", "2026-10-10"),
                 ("j04_job", "t01_task", "r02_going", "running", "since 10-19 13:02 · 1200/5000 steps"),
                 ("j04_job", "t01_task", "r03_elsewhere", "no receipt", "")])
-            self.assertEqual(frame.runs_tally(frame.hard_runs(block)), "✅1 ▶️1 ⬜1")
+            self.assertEqual(frame.runs_tally(frame.hard_runs(block)), "✅1 🏃1 ⬜1")
 
     def test_studio_tags_are_explicit_shared_and_keep_untyped_topics_visible(self):
         with tempfile.TemporaryDirectory() as tmp:

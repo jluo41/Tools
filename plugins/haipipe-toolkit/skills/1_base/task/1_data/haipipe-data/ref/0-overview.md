@@ -64,7 +64,7 @@ The Kitchen (Pipeline) does the rest.
 Builder pattern -- generated code, never edited directly**
 
 All domain-specific functions (SourceFn, HumanFn, RecordFn, TriggerFn, CaseFn, TfmFn, SplitFn, EndpointFn) live in code/haifn/ as generated Python files.
-The source of truth is each Fn's Run config in a topic Job of its stage Block (`bNN_<stage>/j0N_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/config/r01_build.yaml`) plus the Block's shared generator in `bNN_<stage>/src/`; the build Run regenerates the Fn and fails unless the committed file matches (legacy workspaces: code-dev/1-PIPELINE/).
+The source of truth is each Fn's Run config in a topic Job of its stage Block (`bNN_<stage>/j0N_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/runs/r01_build/config.yaml`; an older Block: `scripts/config/r01_build.yaml`) plus the Block's shared generator in `bNN_<stage>/src/`; the build Run regenerates the Fn and fails unless the committed file matches (legacy workspaces: code-dev/1-PIPELINE/).
 
 ```
 Developer edits builder -> runs builder -> production Fn is regenerated
@@ -341,10 +341,9 @@ examples/Project-REACH-ADHD/work/
 ```
 
 Do not scaffold that legacy shape. Canonical Tasks keep builders in `scripts/`,
-Run configs in `scripts/config/`, Tickets in `runs/`, and receipts in
-`results/rNN_<run>/`.
-Legacy workspaces (e.g.
-WellDoc-SPACE) may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
+and each Run in its own folder `runs/rNN_<run>/`: its Ticket, its `config.yaml`, and its receipt in
+`result/` (an older Block: `scripts/config/rNN_<run>.yaml`, flat `runs/rNN_<run>.sh`, `results/rNN_<run>/`).
+Legacy workspaces may still keep builders in a central `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/` — same builder pattern, different home.
 
 ---
 

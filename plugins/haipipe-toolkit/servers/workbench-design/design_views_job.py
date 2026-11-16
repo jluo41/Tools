@@ -78,8 +78,9 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
     return {
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Job", d_open, jdir)),
-        "Idea Studio": Space(run_types=(k(f"run-draw-s01", "draw", "Draw a studio topic of {folder}: sNN-<topic>/ beside "
-                                          "its Tasks and its builder (run-draw-<sNN>)."),), page=True),
+        "Idea Studio": Space(run_types=(k("Add a topic", "draw", "Add or redraw a studio topic of {folder} with "
+                                          "/haipipe-studio: sNN-<topic>/ beside its Tasks (new_topic.py topic); save each "
+                                          "working session as a round, sNN-<topic>/passes/pNN-<MMDD>/."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Job", a_open, jdir)),
         "Work Details": Space(html=w_html, subspaces=wd, open=w_open, run_types=w_runs, page=True,

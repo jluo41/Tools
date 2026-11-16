@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight
-description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, data version, DIKW, segment, pooling, Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
+description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, data version, DIKW, segment, pooling, signed Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "3.9.0"
@@ -62,7 +62,8 @@ Update
 
 ```text
 /haipipe-insight update <Board path>            audit, dry run, apply, rerun, verify
-/haipipe-insight update <Board path> --check    audit and dry run only; nothing is written
+/haipipe-insight update <Board path> --check    audit and dry run only; nothing is written (an instruction to
+                                                stop after ref/update.md step 2, not a script flag)
 /haipipe-insight update <Project path>          every insight Board in it, each with its Question Book
 ```
 
@@ -92,7 +93,7 @@ Who owns what
 
 ```text
 haipipe-insight                the door; the ladder contract and scaffold; open a version, set the segments, add a Job,
-                               the hard Runs' runner (ref/run_job.py, ref/run_question.py), the question map, carry-over;
+                               the hard Runs' runner (ref/run_job.py, ref/run_question.py), what a question delivers and how it is reviewed (ref/deliverables.py, ref/deliverables.md; scripts/insight_ladder.py review), the question map, carry-over;
                                the Executive level X, read as the Overall Report (ref/overall_report.py, figures ref/overall_figures.py)
 haipipe-insight-question       proposals and their triage; asking a question into a version; Q1-Q7 with
                                haipipe-report
@@ -102,7 +103,7 @@ haipipe-insight-data · -information · -knowledge   what an answering page may 
                                compares Jobs, checks consistency, pools or splits on Cross
 haipipe-insight-wisdom         the counsel and the Design handoff a person signs
 haipipe-insight-check          readings across Jobs (coverage, tracks), each answer against its question, the status grid
-haipipe-insight-workflow       run cards by level and Space, signing a release, launching and closing a Job, dispatch
+haipipe-insight-workflow       run cards by level and Space, the gates, the next Run, dispatch (it is no card's skill)
 workbench-insight              the insight theme on the shared workbench frame
 haipipe-report · haipipe-draft-review   a Board question's report; another agent's CHECK of any page
 haipipe-insight-bind           answers.yaml, for register boards only (no ladder Run binds)
@@ -127,7 +128,7 @@ a Task      rNN_<segment> (hard) · write · check (another agent) · pool · ch
 ```
 
 `insight_ladder.py run <folder> <type> [<target>]` makes a Run's folder and card with its owner skill, agent and
-sign; `insight_ladder.py run <Task> segment <name|all>` makes a hard Run's ticket.
+sign; `insight_ladder.py run <Task> partition <name|all>` makes a hard Run's ticket (`partition` is the machine key; a person reads segment).
 
 
 Laws

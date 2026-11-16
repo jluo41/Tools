@@ -277,7 +277,7 @@ class LabelingSurfaceTest(unittest.TestCase):
         items = self.job / "corpus" / "items.jsonl"
         items.write_bytes(items.read_bytes() + b'{"tampered":true}\n')
         tampered = inspect(self.page)
-        # no hash (AGENTS.md rule 9): a row with no item_id is caught by reading the rows
+        # no hash (the SPACE's AGENTS.md § Working rules): a row with no item_id is caught by reading the rows
         self.assertTrue(any("has no item_id" in e for e in tampered["canonical_integrity_errors"]),
                         tampered["canonical_integrity_errors"])
         self.assertEqual(tampered["phase_i"], 0)

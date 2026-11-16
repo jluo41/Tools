@@ -345,7 +345,7 @@ def test_opaque_legacy_seal_rows_are_rebound_to_id_hash_custody(tmp_path: Path) 
 
 
 def test_shipped_mini_fixture_is_a_valid_p0_source_fence() -> None:
-    fixture = HERE.parent / "fixtures" / "job-mini"
+    fixture = HERE / "fixtures" / "job-mini"
     status = job.load_mapping(fixture / "test" / "sealed" / "status.json")
     protected = job.find_protected_manifest(fixture / "test" / "sealed")
 

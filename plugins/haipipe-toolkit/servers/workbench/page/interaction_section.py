@@ -116,8 +116,8 @@ function flip(){var o=b.hidden;set(o);shut[k]=o?0:1;try{localStorage.setItem(at,
 h.addEventListener('click',function(e){if(e.target.closest('a,button'))return;flip();});h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();flip();}});
 },0);});</script>"""
 
-NONE_YET = '<p class=mut>Nothing asked yet.</p>'   # one plain line; how a form is made lives in haipipe-interaction (261105:
-                                                    # every reviewer read the old how-to sentence as an instruction paragraph)
+NONE_YET = ''   # an empty Interaction draws nothing, no empty-state words (AGENTS.md § Page words); how a form is
+               # made lives in haipipe-interaction
 
 
 def view_section(rows: list, root: Path, n: int = 0, foot=None) -> str:

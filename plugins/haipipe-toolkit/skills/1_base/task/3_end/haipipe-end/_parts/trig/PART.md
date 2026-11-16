@@ -92,10 +92,11 @@ Builder templates (code/scripts/haibuilder/)
 Copy-and-customize starting point for new TrigFn builders:
 
 ```
-code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← WellDoc weight trigger
+code/scripts/haibuilder/6-endpoint/b1_build_trigfn_weightdayentry.py   ← a weight-entry trigger
 ```
 
-Project-specific builders live in the task folder:
+Project-specific builders live in the Fn's Task folder (`endpointset/PART.md` § layout):
 ```
-examples/<project>/work/C01_*/00_endpoint_set_fn_develop/b1_build_trigfn*.py
+examples/<project>/work/bNN_<endpoint_block>/j01_endpoint_functions_<qualifier>/t02_trigfn_<qualifier>/scripts/b1_build_trigfn*.py
 ```
+An older tree keeps them in `work/C01_*/00_endpoint_set_fn_develop/`.

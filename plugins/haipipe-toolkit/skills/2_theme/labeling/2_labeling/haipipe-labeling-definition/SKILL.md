@@ -131,7 +131,7 @@ reduces cross-origin writes but does not authenticate the caller. Both channels
 refuse before writing a byte when the submitted id differs from the configured
 id, when the job is on HOLD, or when P0 integrity fails. The
 door's own checks are in
-`../../workbench-labeling/SKILL.md` §Write and authority law.
+`../../workbench-task-labeling/SKILL.md` §Write and authority law.
 
 A discussion Run covers every label: `close` refuses until each label is
 settled. To change one label, settle the others with `decide --keep`.

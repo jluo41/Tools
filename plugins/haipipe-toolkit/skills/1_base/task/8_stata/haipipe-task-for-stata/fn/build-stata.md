@@ -41,7 +41,7 @@ Procedure
 
 ### Step 0 — Read the plan
 
-Read `workflow/plan.yaml` and all `workflow/plan-script-*.yaml`.
+Read `workflow/plan.yaml` (the only roster) and any `workflow/plan-script-*.yaml` read-only projections that exist.
 These define WHAT to build.
 The plan's Run Specs and internal steps map to:
 - Dispatcher `.do` branches (one `else if` per step)

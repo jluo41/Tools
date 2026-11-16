@@ -15,9 +15,8 @@ The person opens the link, types that email, and signs in with the code it recei
 
 The share root is the folder the share host serves: the nearest folder above the shared one that holds
 `.server_config/access.yaml`, else this SPACE's root; `--share-root` names it outright. The folder must sit inside
-it. One door per SPACE (JL 261012: "physician.jjluo.com, welldoc.jjluo.com, drfirst.jjluo.com, reach.jjluo.com,
-jluo41.jjluo.com, knowledge.jjluo.com"; Tools-SPACE's block.jjluo.com was dropped the same day): each SPACE's table
-names its door, `public_url:` and `port:` (127.0.0.1 only; the tunnel reaches it), and `--serve` starts it. A SPACE
+it. One door per SPACE (JL 261012; for example `<space>.<DOMAIN>`, kept in that SPACE's git-ignored
+`.server_config/`, never in this repo): each SPACE's table names its door, `public_url:` and `port:` (127.0.0.1 only; the tunnel reaches it), and `--serve` starts it. A SPACE
 with no table has no door, so nothing is shared there and nothing is written.
 """
 from __future__ import annotations
@@ -89,7 +88,7 @@ def serve(root: Path) -> int:
     log = f"/tmp/{name}-share-{cfg.port}.log"
     args = ["--root", str(root), "--host", "127.0.0.1", "--port", str(cfg.port), "--share", "--no-terminal",
             "--space-name", root.name, "--public-url", cfg.public_url, "--daemon", log]
-    subprocess.Popen([wb._python(root), str(wb.SERVERS / "_host" / "serve.py"), *args], cwd=root,
+    subprocess.Popen([*wb.launcher(root), str(wb.SERVERS / "_host" / "serve.py"), *args], cwd=root,
                      stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
     if not wb._until(lambda: wb._answers(f"http://127.0.0.1:{cfg.port}"), 40):
         raise SystemExit(f"wb share: the door on {cfg.port} did not answer; see {log}")
@@ -100,13 +99,13 @@ def serve(root: Path) -> int:
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="wb.py share", description=__doc__.split("\n\n")[0])
     ap.add_argument("folder", nargs="?")
-    ap.add_argument("who", nargs="?", help="a JHU email (jhu.edu, jh.edu, jhmi.edu), group:<name>, or anyone@jhu (every JHU email)")
+    ap.add_argument("who", nargs="?", help="an email in the share host's allowed domains, group:<name>, or the anyone@ keyword (every allowed email)")
     ap.add_argument("--level", default="view", choices=["view", "comment", "edit"])
     ap.add_argument("--share-root")
     ap.add_argument("--list", action="store_true", help="print the grants, one per line")
     ap.add_argument("--serve", action="store_true", help="start this SPACE's door (its table's port and public_url)")
     ap.add_argument("--people", metavar="NAME", help="share with everyone in .server_config/people/NAME.txt "
-                    "(made if missing): one JHU email per line, edits apply at the next click")
+                    "(made if missing): one allowed email per line, edits apply at the next click")
     a = ap.parse_args(argv)
     start = Path(a.folder).expanduser().resolve() if a.folder else Path.cwd().resolve()
     root = share_root(a.share_root, start)

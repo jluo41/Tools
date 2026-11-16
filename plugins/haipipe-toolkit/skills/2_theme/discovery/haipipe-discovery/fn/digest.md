@@ -14,7 +14,7 @@ into the right bucket-unit inbox. A digest is, by definition, deduped and
 condensed -- the same discipline as the merge-or-create capture.
 
 Typical usage: from a FRESH session (clean context), name the PAST session to
-harvest -- `/haipipe-discovery digest "Display-for-Opioid-MISQ"`. With no argument
+harvest -- `/haipipe-discovery digest "<session name>"`. With no argument
 it digests the CURRENT session instead. Running from a fresh session is what keeps
 the digest's judgment uncontaminated by the work it is reviewing.
 

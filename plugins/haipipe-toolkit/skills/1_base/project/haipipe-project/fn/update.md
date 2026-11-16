@@ -13,8 +13,8 @@ Always `audit` first (fn/audit.md): it names the step that fixes each finding. T
 
 ## Safe mutations
 
-- Add a missing `project.yaml` from observable facts and the Project README.
-- Add a missing `README.md` with a short mission and real current entry points.
+- Add a missing `project.yaml` from observable facts and the Project face.
+- Add a missing `project.md` with a short mission and real current entry points.
 - Correct manifest id or Git mode when disk evidence is decisive.
 - Add explicit migration debt for legacy root paths.
 - Remove stale root-layout prose from README when it points to retired worlds.
@@ -78,7 +78,7 @@ What it may do, in each `runs/` below the path:
    not moved: its owner maps it (haipipe-run `ref/run-catalog.md`). A destination that
    exists is never overwritten.
 
-A move never edits a file inside a Result (AGENTS rule 0): folders move whole, and a
+A move never edits a file inside a Result (the SPACE's AGENTS.md § Working rules): folders move whole, and a
 receipt keeps the old path it recorded as history, with `run.yaml` `moved_from:` pointing
 back. Move one Block at a time, only after the owning skill's ticket template writes the
 new layout (a ticket that still writes `results/<run>/` would recreate it). Run the ladder

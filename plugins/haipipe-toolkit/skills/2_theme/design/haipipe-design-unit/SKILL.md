@@ -28,7 +28,7 @@ There is no separate Ticket file. A Run's ticket is three things the caller froz
 
 ```text
 <Task>/runs/run-<type>-<target>/run.yaml   the Run: type · kind: hard · target · status · by
-<Job>/<Job>.md                             the pins: goal · method (M04 m2) · method-sha · inputs (i2) · n
+<Job>/<Job>.md                             the pins: goal · method (M04 m2) · method-sha · inputs (inputs-v2) · n
 <Job>/inputs/                              the fence: goal.md · method.md · links · manifest.yaml
 ```
 

@@ -92,7 +92,7 @@ for free.
 4. BASIS IS A COLUMN, NOT A FOOTNOTE
    Never invent the quantity the log did not state. When it is absent, say so in
    a `<X>Basis` column and report on the reference scale instead:
-       food      per_meal | per_100g | None
+       food      per_meal | per_serving | per_100g | None
        exercise  per_session | per_minute | None
    Basis is a SCALE, so it is a property of the whole record: mixing one scaled
    component with one unscaled yields a number that is neither.
@@ -120,11 +120,11 @@ describe-exercise. A third member gets them for free.
 
 6. AN IDENTIFIER IS A NAMESPACE PLUS A CODE
    A cohort's code means nothing without the key that says whose code it is.
-   `EntrySourceID` partitions 129 WellDoc exercise codes into four disjoint
+   `EntrySourceID` partitions 129 partner-app exercise codes into four disjoint
    vendor spaces; a SourceFn whitelist had been dropping it, so no codebook
    could ever be applied. And the BANK has its own code space, which overlaps
    the cohort's by coincidence: PA Compendium 20050 is 'Eating at church',
-   MET 1.5, while WellDoc 20050 is a 42-minute, 242 kcal workout. Never join on
+   MET 1.5, while the partner app's 20050 is a 42-minute, 242 kcal workout. Never join on
    a bare integer, and make the wrong join RAISE rather than warn.
 
    `_FoodInfo/README.md` records the same shape from the other direction:
@@ -341,10 +341,10 @@ hard-coded folder:
     paths.py release_file(asset, filename=None)   the pinned file, sha256 checked
     <noun>norm/_release.py                        loads paths.py beside the skill; no PYTHONPATH
 
-The release is `$EVENTNORM_RELEASE` (default `EventNormV6`, the release the newest WellDoc SourceFn, `WellDocDataExtV260930`, reads); `EVENTNORM_RELEASE=none`, or a
+The release is `$EVENTNORM_RELEASE` (default `EventNormV6`, the release the newest partner-app SourceFn, `WellDocDataExtV260930`, reads); `EVENTNORM_RELEASE=none`, or a
 release that does not pin the asset, falls back to the old flat folder. Each member's
 answers are also frozen there as `ext_<noun>_resolved`, one row per distinct request
-in the WellDoc Source tables, so a SourceFn looks an answer up and never calls a
+in the partner app's Source tables, so a SourceFn looks an answer up and never calls a
 member during a build. After changing a member or its tables, freeze a new version
 and write a new release; that Block's parity Runs say whether anything moved.
 

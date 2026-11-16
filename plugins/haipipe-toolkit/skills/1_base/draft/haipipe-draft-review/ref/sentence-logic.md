@@ -3,7 +3,7 @@
 A text reads well only when every sentence follows from the one before it and leads to the one after (JL 261021: "主要是
 review 逻辑关系：每句话都要看一下上下文，review 它的逻辑关系是否通顺，并且给每句话打分或评估"; "我觉得这个东西一定要读起来顺才行，
 而且要有逻辑"). This method reviews a paragraph or a Section one sentence at a time, each in its context, and gives
-each sentence two scores: how well its logic holds (logic) and how smoothly it reads (read). The Coherence row of the
+each sentence three scores: how well its logic holds (logic), how smoothly it reads (read) and how free it is of AI-writing patterns (ai). The Coherence row of the
 Revise review overlay (`evaluation-rubric.md`) is the Section's summary of these lines.
 
 It is a review, so its reviewer never wrote the text (SKILL.md, independence) and never edits it.
@@ -81,9 +81,32 @@ three, with no broken link.
 The ai score uses the anti-AI evaluator's patterns (`haipipe-draft-review`, Mode 1); the problem names the pattern.
 
 **Topic check (JL 261111).** Name each sentence's topic in two or three words before scoring. A sentence with two
-topics scores at most 7 on read ("too packed": split it); a sentence that carries only half of the topic its neighbour
+topics scores at most 7 on read ("too packed": cut it to one topic; a split adds a sentence and its Bullet, so it is proposed to the writer as a plan change); a sentence that carries only half of the topic its neighbour
 started scores at most 7 on read ("fragmented": merge it with that neighbour). One topic with one or two points is
 the target (`plain-rules.md` §3).
+
+**Natural phrasing (JL 261115: "one rule is to identify the weird non-human expression").** Read each sentence aloud
+and quote any phrase a working scientist would not say to a colleague or write in a paper: stiff, bookish or
+translated-sounding wording, a verb doing an odd job, a noun where a plain verb fits. Name the phrase and give the plain
+one in the problem field (`"need not mean" → "does not always mean"`). One such phrase scores ai at most 7, even when
+no AI-writing pattern is present. Worked examples (ScalingGlucose t01 v1.7, all missed by three readers):
+
+| Written | Plain |
+| --- | --- |
+| A lower loss need not mean a better forecast | does not always mean |
+| cannot say by itself which uses scale will improve | cannot tell us which uses will improve with scale |
+| the readings already held | the readings they already have |
+| Patients never seen in pretraining keep more error | have higher error |
+| each reading sits in several overlapping training windows | appears in |
+
+**Point count (JL 261115: "one sentence one topic, usually one or two points, at most three points").** A point is
+one separate claim, result, definition or reason; a clause that only qualifies another (a time, a place, a condition)
+is not a point of its own. One or two points is the target; three is the most a sentence carries. Four or more scores
+at most 7 on read, like two topics ("too many points": split it). Count before scoring, and write the count on the line
+(the problem field opens with it, below), so the person sees why a sentence passed or failed. Example: "A lower loss
+need not mean a better forecast, patient description or clinical answer, and foundation models in health care need new
+ways to judge whether they are reliable" is `topics 2, points 2`: loss against use, and how to judge health models,
+joined by "and"; read at most 7.
 
 ## The line, one per sentence
 
@@ -91,8 +114,20 @@ The id is the Draft's own, written `s<n>`; an older report's `S<n>` is read as t
 
 ```
 Sentences:
-- s<n> · logic <0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · <the specific problem> · Fix: <none | the rewritten sentence>
+- <address> · logic <0-10>/10 · read <0-10>/10 · ai <0-10>/10 · link: <relation>, <carried | weak | broken> · topics <n>, points <m>: <topic in 2-3 words>; <the specific problem> · Fix: <none | the rewritten sentence>
 ```
+
+- **A problem always comes with a cure (JL 261115: "for the sentences with problem, please show the editing card with
+  reasoning and suggestion options").** A sentence under 8 on any score, with a weak or broken link, or over the point
+  rule never ends `Fix: none`: give the rewritten sentence, or, when the cure is a choice (a split, a cut, which claim
+  to keep), `Fix: A <option> | B <option>`. The writer turns each into an Edit card (haipipe-draft-writing
+  `ref/revise.md`); must-check M-D22.
+- **`Fix:` holds the sentence itself, never a pointer (JL 261115: "the editing card is very bad").** Draft Lab
+  shows the Fix text as the suggested replacement, strikes the old sentence through and offers ✓ Use this, so
+  `Fix: see the card` put the words "see the card" up as the new sentence. When the sentence has an Edit card, copy
+  the card's Expected (its Chosen option) into `Fix:`; when the Chosen option is keep, write `Fix: none`.
+- **The count** opens the problem field: `topics 1, points 2: loss against use;` then the problem. Draft Lab shows it
+  on the sentence's review card, and marks it when there are two topics or more than three points.
 
 - **The specific problem** names the words and the check that fails, in at most 25 words: "'this' points to coverage
   in s8, but the second half is about wrong names" (setup and payoff), not "flows poorly". It answers the question a

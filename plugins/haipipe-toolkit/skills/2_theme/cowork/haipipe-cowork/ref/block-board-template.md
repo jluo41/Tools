@@ -19,4 +19,5 @@ questions: []
 
 <!-- Add Questions with haipipe-report's ref/block_questions.py add-question;
 in a cowork Block, --work names a file inside the Block (a job page or a
-design note inside a Job). Reports live in reports/qNN_<topic>/qNN_<topic>.md. -->
+design note inside a Job). A Question's answer lives in the Studio topic its
+report: points at; a Block keeps no reports/ folder. -->

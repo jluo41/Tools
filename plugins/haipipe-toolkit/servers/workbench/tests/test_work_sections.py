@@ -45,6 +45,14 @@ class WorkSectionsTest(fixtures.FocusPageCase):
         ((_, body),) = work_sections.declared(self.block, self.root, focus_page.read_face(self.block, self.root), 'overview')
         self.assertNotIn('localhost', body)
 
+    def test_a_design_section_is_its_own_view(self):
+        # JL 261115: the person's high-level design, written in one file, as a view of the Block
+        (self.block / 'design.md').write_text('# High-level design\n\nEach city is a page.\n')
+        self.face.write_text('# R\n\n## Design\n\n### High-level design\n\nembed: design.md\n')
+        ((title, body),) = work_sections.declared(self.block, self.root, focus_page.read_face(self.block, self.root), 'design')
+        self.assertEqual(title, 'High-level design')
+        self.assertIn('Each city is a page', body)
+
     def test_an_html_file_is_never_framed(self):
         (self.block / 'site.html').write_text('<p>site</p>')
         self.face.write_text('# R\n\n## Review Content\n\n### Site\n\nembed: site.html\n')
@@ -64,7 +72,7 @@ class WorkSectionsTest(fixtures.FocusPageCase):
         self.assertIn('<span class=ws-tm>12:53</span><span class=ws-ti>A decision</span><span class=ws-chips>'
                       '<span class=ws-chip>Main paper</span><span class=ws-chip>t01 Intro</span>', html)
         self.assertIn('<div class="ws-blk dd"><span class=ws-ov>Decided</span><p>add them</p></div>', html)
-        self.assertIn('<div class="ws-blk ask"><span class=ws-ov>JL asked</span><p>why</p></div>', html)
+        self.assertIn('<div class="ws-blk ask"><span class=ws-ov>Asked</span><p>why</p></div>', html)
         self.assertIn('<li class=ws-pt>Plain line</li>', html)
         self.assertEqual(html.count('<style>'), 1)
 
@@ -85,8 +93,9 @@ class WorkSectionsTest(fixtures.FocusPageCase):
         self.face.write_text('# R\n\n## Review Content\n\n### 🗺️ The map\n\nembed: map.svg\n')
         ((_, body),) = work_sections.declared(self.block, self.root, focus_page.read_face(self.block, self.root), 'overview')
         self.assertIn('<title>12:53 · A</title>', body)
-        self.assertNotIn('<script', body)
+        self.assertNotIn('x()', body)                # the file's own script and handler are gone
         self.assertNotIn('onload', body)
+        self.assertIn('#focus-viewer', body)         # a click on a station opens it in the workbench pop-out
         self.assertNotIn('<?xml', body)
 
     def test_a_header_collects_the_entries_after_it(self):
@@ -109,6 +118,20 @@ class WorkSectionsTest(fixtures.FocusPageCase):
         self.assertEqual(state_mark('In progress'), '<span class=st title="In progress">⏳</span>')
         self.assertEqual(state_mark('🙋 waiting for you'), '<span class=st>🙋 waiting for you</span>')   # asks for an act
         self.assertEqual(state_mark(''), '')
+
+    def test_a_block_with_runs_draws_its_work_map(self):
+        """JL 261114: every work Block's Overview has the transit map: a line per Job, a station per Run."""
+        for job, task, run, when in (('j01_data', 't01_cut', 'r01_cut', '2026-11-05T10:00:00Z'),
+                                     ('j02_fit', 't01_fit', 'r01_fit', '2026-11-06T11:00:00Z')):
+            res = self.block / job / task / 'runs' / run / 'result'
+            res.mkdir(parents=True)
+            (res / 'runtime.yaml').write_text(f"status: completed\nstarted_at: '{when}'\n")
+            (self.block / job / task / f'{task}.md').write_text(f'# {task}\nstate: ✅ DONE\n')
+            (self.block / job / f'{job}.md').write_text(f'# {job}\ngoal: g\n')
+        html = work_frame.overview(self.block, self.root, focus_page.read_face(self.block, self.root), [], [])
+        self.assertIn('2 · 🗺️ Work map', html)
+        self.assertIn('data-href="', html)             # a station opens its Run's page
+        self.assertIn('Thu Nov 5', html)
 
 
 if __name__ == '__main__':

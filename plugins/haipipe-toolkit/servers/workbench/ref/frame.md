@@ -57,7 +57,7 @@ pictures from `&media=`).
 Runs is the Studio's fourth folding part, under Delivery (JL 261019: "list another one to show the Hard Run, for
 each task, and just show their status"; b10 s06-D07): every hard Run (`runs/rNN_*`) of every Task under the Block,
 grouped Job → Task, one line each: its mark, its status and the day it finished (`frame.hard_runs`,
-`frame.studio_runs`). A Job and a Task each carry a tally (✅ complete · ❌ failed · 🟧 blocked · ▶️ running · ⏳ queued
+`frame.studio_runs`). A Job and a Task each carry a tally (✅ complete · ❌ failed · 🟧 blocked · 🏃 running · ⏳ queued
 · ⬜ planned or not run). It reads each Run's `result/runtime.yaml`, else its `run.yaml`; soft Runs (`run-*`) and
 `history/` copies are left out, and nothing is written. SPACE Home uses the same reader (`frame.runs_tally`,
 `frame.run_cells`): a Project's line and each Block row count their Runs, and an opened Block row shows each

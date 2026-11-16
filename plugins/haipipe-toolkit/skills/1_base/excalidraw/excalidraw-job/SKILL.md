@@ -285,7 +285,7 @@ python Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/
 3. **Write the words**: per Task `found`; per Run `says` and one 📌 `current`; then `charts:` for what a reader must
    see at a glance, `tables:` for exact rows, `figures:` when the Task's own pictures are not the first two found.
 4. **Check**: `check.py` after every build (no ❌); open the preview and read the whole picture, not a crop.
-5. **Save the session**: haipipe-studio's `new_topic.py session <block> sNN`, a pass of `run-draw-<sNN>`.
+5. **Save the session**: haipipe-studio's `new_topic.py session <block> sNN`, a round in the topic's `passes/pNN-<MMDD>/` (no Run).
 
 
 Propose the tree, then evaluate the drawing

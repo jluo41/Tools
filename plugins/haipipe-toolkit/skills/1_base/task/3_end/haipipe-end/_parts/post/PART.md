@@ -148,10 +148,11 @@ Builder templates (code/scripts/haibuilder/)
 Copy-and-customize starting point for new PostFn builders:
 
 ```
-code/scripts/haibuilder/6-endpoint/c1_build_postfn_weight_multilabel.py  ← WellDoc weight PostFn
+code/scripts/haibuilder/6-endpoint/c1_build_postfn_weight_multilabel.py  ← a weight multilabel PostFn
 ```
 
-Project-specific builders live in the task folder:
+Project-specific builders live in the Fn's Task folder (`endpointset/PART.md` § layout):
 ```
-examples/<project>/work/C01_*/00_endpoint_set_fn_develop/c1_build_postfn.py
+examples/<project>/work/bNN_<endpoint_block>/j01_endpoint_functions_<qualifier>/t03_postfn_<qualifier>/scripts/c1_build_postfn.py
 ```
+An older tree keeps them in `work/C01_*/00_endpoint_set_fn_develop/`.

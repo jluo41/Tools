@@ -9,7 +9,7 @@ from live.work_progress_records import (
 )
 
 
-TICKS = {"done": "✅", "running": "🚧", "failed": "❌", "partly": "🔶", "todo": "⬜"}
+TICKS = {"done": "✅", "running": "🏃", "failed": "❌", "partly": "🔶", "todo": "⬜"}
 
 
 TREE_CSS = """<style>
@@ -92,7 +92,7 @@ def run_mark(row):
         return "🔶 partial" + (f", {counted}" if counted else "")
     if state == "blocked" and isinstance(rec.get("repair"), dict):
         return f"📦 ran {str(rec['repair'].get('newest_file_at') or '')[:10]}, no receipt"
-    return {"running": "🚧 running", "failed": "❌ failed", "blocked": "⛔ blocked", "waiting": "◌ planned"}.get(state, "⚪ no record")
+    return {"running": "🏃 running", "failed": "❌ failed", "blocked": "⛔ blocked", "waiting": "◌ planned"}.get(state, "⚪ no record")
 
 
 def means_html(means, cls="means"):
@@ -164,20 +164,20 @@ def card(title, body, tag="", open_=False, key=""):
             + f'</span></summary><div class=work-body>{body}</div></details>')
 
 
-RUN_MARKS = ("✅", "🔶", "🚧", "❌", "📦", "⛔", "◌", "⚪")
+RUN_MARKS = ("✅", "🔶", "🏃", "❌", "📦", "⛔", "◌", "⚪")
 RUN_LEGEND = ("<p class=mut style='font-size:12px'>✅ finished · 🔶 finished, some searches unanswered or its gate missed · "
-              "🚧 running · ❌ failed · 📦 ran, no receipt · ⛔ blocked · ◌ planned · ⚪ no record. From each Run's receipt "
+              "🏃 running · ❌ failed · 📦 ran, no receipt · ⛔ blocked · ◌ planned · ⚪ no record. From each Run's receipt "
               "(runtime.yaml), else its card; an old Run's receipt is rebuilt from the files it left (work/_tools/"
               "rebuild_receipts.py). A finished Run is not the goal accepted.</p>")
 
 
-RUN_WORDS = {"✅": "finished", "🔶": "finished with gaps", "🚧": "running", "❌": "failed", "📦": "ran, no receipt",
+RUN_WORDS = {"✅": "finished", "🔶": "finished with gaps", "🏃": "running", "❌": "failed", "📦": "ran, no receipt",
              "⛔": "blocked", "◌": "planned", "⚪": "no record"}
-RUN_URGENCY = ("❌", "⛔", "🚧", "🔶", "📦", "◌", "⚪", "✅")   # the word a group of Runs shows: its most pressing one
+RUN_URGENCY = ("❌", "⛔", "🏃", "🔶", "📦", "◌", "⚪", "✅")   # the word a group of Runs shows: its most pressing one
 
 
 def run_tally(rows):
-    """One state word for a group of Runs, its most pressing mark ("🚧 running", "✅ finished"), never a count: a page
+    """One state word for a group of Runs, its most pressing mark ("🏃 running", "✅ finished"), never a count: a page
     carries no tally (AGENTS.md Page words, JL 261113); each Run shows its own mark where it sits."""
     marks = {run_mark(r).split(" ")[0] for r in rows}
     m = next((m for m in RUN_URGENCY if m in marks), "")

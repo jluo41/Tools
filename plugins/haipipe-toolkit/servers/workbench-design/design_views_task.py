@@ -18,7 +18,8 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     kind = R.kind_of(tdir)
     rs = R.runs(tdir)
     rows = lambda *t: _rows(rs, root, *t)
-    draw = _kind("run-draw-s01", "Draw a studio topic about this Task: {folder}/sNN-<topic>/ (run-draw-<sNN>).",
+    draw = _kind("Add a topic", "Add or redraw a studio topic about this Task with /haipipe-studio: {folder}/sNN-<topic>/ "
+                 "(new_topic.py topic); save each working session as a round, sNN-<topic>/passes/pNN-<MMDD>/.",
                  "haipipe-studio")
     if kind == "t00":
         r = _kind("run-reason-t00", "Reason ideas for the Job (② run-reason-t00): inputs/ only, topic by topic, to N + 5 "

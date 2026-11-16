@@ -55,6 +55,11 @@ applies to a question that has no needs yet.
    and boundary (or the counsel) is a `judge` need `from:` the needs above it.
 6. **Write `pass:` so a null passes.** It names what the result must contain
    (an interval, an adjustment, a held-out split, a size), never the answer.
+   A `judge` need carries one too: what its reading must contain (a verdict
+   word, the numbers it rests on, where it stops), never which verdict. It is
+   the test the page's checker applies, so a judge without it has no test. Name
+   a number, a table, a need or a word the page must carry; "a clear, well
+   supported conclusion" is returned (`haipipe-insight` `ref/deliverables.md`).
 7. **Write the work spec of every compute need, from the ask alone.** On the
    indented lines under the need: `cut:` (a segment, `the cell's
    partition`, or `cross`), `unit:` (what one row is), `measure:`, `by:` (the
@@ -66,6 +71,11 @@ applies to a question that has no needs yet.
    task. This is the run proposal, written from the register and the
    extract's column list alone: the drafter has not read the tasks, configs or
    results, and binding decides afterwards whether code already computes it.
+   A csv whose columns `ref/figures.py` does not know as a shape gets no figure:
+   name the figure that answers the ask under the need's `figures:`, or say
+   none is wanted (`{table: <file>.csv, kind: none}` for one table, `figures: []`
+   for the whole need) (`ref/deliverables.py <question folder>`
+   lists what the question delivers and notes each gap).
 8. **Write the lines and leave agreement open.** Under the paragraph:
    `- E<n> · <kind> · <what> · pass: <…> | from: <…>` with its spec lines, then
    `**Needs agreed**: ⬜` (on a Question Book, the `needs:` map and `agreed: ⬜`). A different agent that did not draft them reviews and
@@ -84,8 +94,9 @@ applies to a question that has no needs yet.
   answer.
 - A refusal is planned as a compute need too: its spec is the probe that
   would show the absence (a column inventory, a classification of the text).
-- A compute need on a Wisdom question is misrouted: propose a Knowledge
-  successor (`haipipe-insight-question`) instead of planning it.
+- On a register board, a compute need on a Wisdom question is misrouted: propose a Knowledge
+  successor (`haipipe-insight-question`) instead of planning it. A Question Book's `question.md`
+  may carry one (W: compute, cite, judge; `haipipe-insight` `ref/block-contract.md`).
 - Frozen once bound: after a bound result exists, change a need by appending
   `· retired: <reason>` and adding a new id, never by editing it.
 - Backfill on an old board: plan from the existing prose, keep the prose, and
@@ -95,5 +106,5 @@ applies to a question that has no needs yet.
 
 The edited register division and one log line in
 `<register>/draft/records/<register-stem>-log.md` naming the question, the
-needs added and who asked. Return the need lines in chat for the person to
-agree.
+needs added, with no name or initials. Return the need lines in chat; another agent
+that did not draft them agrees them (`run-review-plan`), never a person and never this skill.

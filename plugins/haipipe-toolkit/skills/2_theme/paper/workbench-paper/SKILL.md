@@ -74,13 +74,13 @@ Two numbered sections, no wide table, no sideways scroll at 390 px:
 **A paragraph out of range is marked** (JL 261112, haipipe-paper-draft § Paragraphs of 4 to 7 sentences): on the
 Plan mind map, both in Structure and in the draft Task's Plan view (one renderer, `draft_steps._plan_map`), an off
 paragraph's box shows "❗ <n> sentences (4 to 7)" in red, and one with a `reason:` line shows "<n> sentences · reason
-given" muted; a Section's tab in Structure reads "<N> paragraphs · <k> off".
+given" muted; a Section's tab in Structure carries no tally.
 
 **Every Run address is a link** (JL 261103: "b52.j01.t01.r01 <--- how could you make this to be clickable"). A
-`bNN.jNN[.tNN[.rNN]]`, or `bNN jNN tNN` with spaces, in a paper Board's views, a version's Work views and a draft
+`bNN.jNN[.tNN[.rNN]]`, or `bNN jNN tNN` with spaces, in a paper Board's views, a version's Report views and a draft
 Section's step pages opens that folder's focus page (`?path=<folder>&layout=focus`, `target=_top`), found in the
 address's own Project, `work/` first, then `discovery/`; a Run number that is shared or missing opens its Task (then
-Job, Block). A Section name `tNN_<name>` of a writing Job opens that Section's Work › Write view. An address that
+Job, Block). A Section name `tNN_<name>` of a writing Job opens that Section's Write step. An address that
 finds no folder stays plain text, and a page never links to itself. One helper does it,
 `servers/workbench/page/address_links.py` (`live.address_links`: `resolve`, `href`, `linkify`, `page_linker`,
 `linked_views`; standard library only), applied where the views are built (`board_views`, `paper_version`,

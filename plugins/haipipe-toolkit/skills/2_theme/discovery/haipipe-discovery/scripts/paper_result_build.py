@@ -34,6 +34,7 @@ the Task folder. Nothing here judges relevance: the readout and reuse are inputs
 
 from __future__ import annotations
 
+import os
 import argparse
 import datetime as dt
 import html
@@ -49,7 +50,8 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-UA = {"User-Agent": "haipipe-discovery (paper result build; mailto:jjluo211@gmail.com)"}
+# the contact some APIs ask for comes from CONTACT_EMAIL; none set sends no address
+UA = {"User-Agent": "haipipe-discovery (paper result build" + (f"; mailto:{os.environ['CONTACT_EMAIL']}" if os.environ.get("CONTACT_EMAIL") else "") + ")"}
 
 
 def fetch(url, timeout=30):

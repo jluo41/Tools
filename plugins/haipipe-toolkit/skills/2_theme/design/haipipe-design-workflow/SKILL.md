@@ -49,7 +49,7 @@ Block  set up      run-add-goal-<goal> (a person signs) · run-setup-rules (a pe
        also        run-propose-method-<slug> · run-draw-s<NN>
 Job    set up      run-setup-goal-j<NN> · run-setup-method-j<NN> · run-setup-inputs-j<NN>   (set up = all three closed)
        open        run-open-designs-j<NN>
-       release     run-freeze-predictions-j<NN> · run-release-j<NN> · run-close-j<NN>   (a person signs each)
+       release     run-freeze-predictions-j<NN> · run-release-j<NN> · run-close-j<NN>   (a person signs the first two once, then the close)
 Task   t00         run-reason-t00                                   hard · ②
        a design    run-generate-d<NN> · run-verify-d<NN>-v<k> · run-revise-d<NN>   hard · hard (another agent) · soft
        t99         run-rank-t99                                     hard (another agent) · ⑤
@@ -99,7 +99,7 @@ asks for it, runs once per Job on the kept designs, inside t99's rank Run.
 **A fix that needs a new input is not a revise.** A revise may use only the Job's `inputs/`. When the review says the
 design needs something the fence does not hold (a sender, a fact, a newer handoff), the design is dropped by a
 person (`state: dropped`, its reason on the face), or the goal owner adds a new inputs version and a new Job reruns
-it (`run-add-inputs-i<N+1>`, `run-add-job`, `moved: inputs`). The Job's fence never changes after `run-reason-t00`.
+it (`run-add-inputs-v<N+1>`, `run-add-job`, `moved: inputs`). The Job's fence never changes after `run-reason-t00`.
 
 ## Gates and who signs
 

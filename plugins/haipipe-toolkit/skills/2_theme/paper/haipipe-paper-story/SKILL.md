@@ -51,7 +51,7 @@ the folders that show them, and this skill writes each one there:
 | §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Jobs | focused Report › Story: Identity and Pitch; §4 Stakes stays in the file (no Story section since 261111: the RQ table's Why we ask column says why each question matters) |
 | the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
 | §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | focused Report › Story: one table, a row per question (Question · Why we ask · Asked before · New here · Expected, the report link at its end) |
-| §5 · §6 · §7 | the topic face, and each report's Work as the work lands | §5 stays in the file (no Story section since 261111); §6 · §7 in focused Work › Data + Paper Plan, Roadmaps |
+| §5 · §6 · §7 | the topic face, and each report's Work as the work lands | §5 stays in the file (no Story section since 261111); §6 · §7 in focused Report › Data + Paper Plan, Roadmaps (Work is retired) |
 | version layout: one row per Section, claims to displays, compile order | each version face's `## Narrative` (points at § 8, copies no claim); before a version, `s04-paper-workflow/`'s Sections table (haipipe-paper-plan) | the version Job's Report › Structure · the build |
 | § 8 Section Narrative: title, story, explanation, claims C1..Cn | the selected Story topic face (`story-current:`) | focused Report › Story and Displays, the same Story by Section; the version's Structure view beside its Narrative |
 | related papers | `related/related.md` | focused Report › Idea and Story; classic Studio › Related |
@@ -218,114 +218,7 @@ Cover:
 - **Question logic** — which questions depend on others and how their answers
   jointly resolve the paper's puzzle.
 
-Open §3 with **the story, question by question**: `**The paper's question**: …`, then a numbered list of the
-research questions in reading order, each a plain question with its answer so far and its mark. Read top to bottom
-the list is the paper's narrative, and each question's Section is where the paper answers it (JL 261019: "the
-quesiton can be the narrative as well"). excalidraw-story titles its steps from this list. Then
-`**The narrative, if the questions are answered**`: a numbered list of what the paper can say, step by step, once each
-question is answered as expected, item n saying what question n lets the paper say (the Story view pairs them by
-number). The face also keeps a `**G0:**` line (JL's mark, ✅ or ⬜) and a `**Desk:**` line
-under its studio marks, and §5 ends with a `**We will not claim**:` list; excalidraw-story reads all of these labels
-as written.
-
-§3 may then carry **why each question is asked, and how others asked it** (0.30.0, Paper-CMS-AI-Usage 261111): a
-table whose header names `why we ask it`, `how others asked it` and `what is new here`, one row per question, its
-first cell starting with the question's number (`1 · how many physicians`). The workbench shows the questions as one
-table, these three columns between the question and what it lets the paper say (no State column); keep each cell to a few words
-and name the prior work (Wu et al., NEJM AI 2024).
-
-```markdown
-| RQ | why we ask it | how others asked it | what is new here |
-|---|---|---|---|
-| 1 · <short name> | <who needs the answer, and why> | <prior work: how it asked it> | <what this paper adds> |
-```
-
-Write each research question as one long, plain sentence a patient or a reader could ask out loud, not a short
-label (JL 261019: "你不能太简短，你要说得像人话 ... 一个 research question，肯定是相对比较长，然后比较 straightforward、比较易懂的"):
-say who asks, what, and against what; follow a factor question with its plain consequence ("What factors influence
-whether an AI agent recommends a doctor ..., and is the result fair to doctors?"); keep the sub-questions in
-parentheses after it. The `Name` stays the short label.
-
-**Two papers from one study are two Boards** (JL 261019: "我觉得你可以说我们有两篇文章嘛 ... MISQ version"; "for this
-one, we want to make it quick and most short"; "we don't need to list all of them"). The ladder keeps one paper per
-Board, so a quick, short paper gets its own `paper/Paper-<Slug>/` with its own telling. It lists only the few
-questions already answered on disk, and it never takes the long paper's headline; each face names the other as its
-companion. First: Project-Example-B's `Paper-Example-B` (a JAMA Network Open Original Investigation, three
-questions, the project's original research; first planned as a letter) and its MIS Quarterly companion (four
-questions) on a Board of its own.
-
-Write one block per question (JL 260929: "the question is the main block"): a
-`#### 3.N · Question N · RQn` heading, the question's own fields, then four
-groups, each a bold label and one line per item. Every link is written once,
-pointing up the chain, so the block reads as a narrative: the question, the
-guesses at its answer, what the paper would claim, why a reader would care,
-and the work that tests each guess.
-
-```markdown
-#### 3.1 · Question 1 · RQ1
-- **Name**: <a short phrase, five words or fewer>
-- **Research question**: <one long, plain sentence a reader could ask out loud> (RQ1a: <a smaller question>? RQ1b: <…>?)
-- **Question**: <one plain sentence: what we do to answer it>
-- **Why it matters**: <its job in the paper, and why a reader cares>
-- **Answer form**: <what evidence would answer it>
-- **Answer state**: <its mark ✅ 🔶 ⬜, then where the answer stands>
-- **If answered**: <what the paper can say if the answer comes out as expected, and what it says if not>
-- **Section**: Results, Discussion
-
-**Hypotheses**
-- **1a** · <Short name>: <one plain sentence> · tested by Ework01
-- **1b** · <Short name>: <one plain sentence> · tested by Ework02
-
-**Potential claims**
-- **1a** · C1 · from 1a · <Short name>: <the statement the paper would make>
-  - **Role**: <primary · mechanism · scope …>
-  - **Now**: <where it stands and what gates it>
-  - **If it fails**: <what the paper becomes>
-
-**Potential contributions**
-- rests on 1a, 1b · <Short name>: <what the reader gains>
-
-**Potential work**
-- **T1** · for 1a, 1b
-- **T9** · for 1a · b04.j03.t01, b04.j03.t02
-- **D1** · for 1a, 1b
-```
-
-The **Research question** is the long, plain sentence (JL 261019, above); its smaller questions follow it in
-parentheses, each opening `RQ1a:`, `RQ1b:`, so excalidraw-story can move them to the card. A face written before
-261019 may lack it; the Name and the Question then stand in. A question's **Name** is a short phrase of five words or fewer, often itself a question ("Model or data?", "Different Prediction Horizon"), the words the Paper Workbench prints beside "Question N"; the **Question** below it is one plain sentence saying what the paper does to answer it, with no field terms ("We make the model bigger, or give it more training data, and see which one lowers the forecast error."). The precise, technical wording belongs in the hypotheses and claims, not here (JL 260930: "the question here we have are just too long"). Items are coded by question: 1a, 1b under Question 1, 2a under Question 2 (JL 260929).
-
-A question that sets the study's tasks instead of testing a guess (the pretraining task and
-the downstream tasks every other question is scored on) comes first, as `#### 3.0 · Question 0
-· RQ0`, and opens with a **Tasks** group, one line per task: `- Pretraining · Next reading:
-<what the model reads, what it predicts, how it learns>` and `- Downstream · <Short name>:
-<what it predicts and how it is scored>`. Its other groups say `- none: <why>` (JL 260930:
-"we missed one important question about what is the task we used here … what is the
-pretraining task, and also the downstream task"). The Paper Workbench draws the Tasks
-first and leaves out the groups that are empty.
-A hypothesis and the claim it yields share a code; a claim keeps its paper-wide id
-(C1, C2, …, used by the Pitch, §8 and the Section Pages) right after its code. Every
-item is a short name, a colon, and one plain sentence (JL 260929: "short-phrase-name:
-explanation"), so the bold names alone read as the argument. A hypothesis guesses an
-answer and names the §5 evidence rows (Ework01, Ecite01, …) that test it. A claim says which
-hypothesis it comes from; a hypothesis may yield no claim (a corollary the paper will
-never claim says so as `- none: <why>`). A contribution names the claims it rests on.
-A work item names a §7 Task or §6 Discovery row and the hypotheses it tests;
-addresses after it narrow a row several questions use to the folders this question
-needs. The foundation every question stands on (the training set, the model runs,
-their scores) is not listed: its §7 row says `every question`, and it belongs to
-every block. The Paper Workbench reads these blocks for its High-level logic +
-Low-level work tab; the older one-row-per-RQ table is still read (`RQ | question |
-why the paper needs it | answer form | Discovery | Task | intended claim/Section |
-answer state`), with one hypothesis per §5 evidence row.
-
-The RQ text describes the paper's inquiry. State and cross-references keep the
-inquiry traceable, but they are secondary to the question and answer logic.
-An RQ asks; a hypothesis anticipates an answer; an evidence proposition states
-what is or could be supported. Operational checks need not become separate
-RQs. One RQ can need several propositions and several inquiries or analyses.
-“Answered” describes a supported answer, including a null or adverse answer;
-it does not mean the hoped-for proposition was confirmed.
+Writing §3 (the story question by question, why we ask it, one block per question, Question 0): [ref/research-questions.md](ref/research-questions.md)
 
 ### 4 · Stakes
 
@@ -429,131 +322,11 @@ branch rather than assume success.
 
 ### 6 · Discovery Roadmap
 
-**The Roadmap is question first (JL 260928).** §6 opens with a few general
-questions; each D row (here) and each T row (§7) serves one of them and names
-the BJTR folder (Block › Job › Task › Run) that answers it. Read top down:
-general question → its T and D questions → their folders.
-
-```text
-Q | general question | serves        a few rows (about five), each a short plain question;
-                                     `serves` names the RQs, or `the whole paper`
-```
-
-Every D and T row leads with a **short plain question** a reader understands
-without the paper ("Has anyone shown this link before?"), carries a `folder`
-cell with its BJTR address (`b01.j05`, `b03.j02.t06`, a range such as
-`b03.j02.t01–t03`, or `none yet`), and ends with a `Q` cell. Row ids are `D<n>`
-and `T<n>`; never `B<n>` (a leftover Block Board id that reads as a Block).
-A new T or D starts as a question; its folder is created from it by
-haipipe-task or haipipe-discovery, which then writes the address into the
-row. A folder the paper uses that no row names is a missing question: add one.
-
-Describe the knowledge the paper must obtain from literature, external sources,
-or source interpretation before its claims and framing are defensible. Cover:
-
-- **Discovery gaps** — what the team does not yet understand about novelty,
-  theory, construct validity, mechanism, context, counterevidence, method, or
-  interpretation.
-- **Discovery questions** — the specific questions each inquiry must answer.
-- **Source universe and boundary** — which literatures, corpora, policy records,
-  precedents, or external materials must be covered, and what falls outside the
-  inquiry.
-- **Expected synthesis** — the form of knowledge the paper needs back: a
-  landscape, closest-prior comparison, theory bridge, construct boundary,
-  counterargument, method precedent, citation set, or venue reading.
-- **Story consequence** — how each possible discovery could confirm, narrow,
-  reposition, or preempt an RQ, claim, boundary, or contribution.
-- **Order and coverage** — what must be understood first and which RQ, E-row,
-  and Section each discovery will inform.
-
-Use one row per discovery need:
-
-```text
-D | name | question | folder | what it must settle | source scope | expected synthesis | possible story consequence | feeds RQ/E/Section | Q
-```
-
-Distinguish essential inquiries from useful extensions and state dependencies
-that affect the paper's feasibility. Reuse inspected existing syntheses when
-they already answer the question; the roadmap covers the paper's knowledge
-needs, not only new searches. Venue-related discovery can be included when it
-informs §8; it must not rewrite the Seed's factual identity.
-
-The roadmap states **what must become known and why it matters to the paper**.
-Owner, folder, run, and status may be linked in a compact suffix; they do not
-replace the substantive cells above. Discovery completion means the Story can
-make a bounded intellectual decision, not merely that a search was run.
+The question-first Roadmap, D rows and what discovery must settle: [ref/roadmaps.md](ref/roadmaps.md)
 
 ### 7 · Task Roadmap
 
-Describe the evidence-producing study work required to answer the RQs. Cover:
-
-- **Evidence needs** — the empirical, computational, qualitative,
-  measurement, validation, or robustness evidence each claim requires.
-- **Analytical questions** — what each task must determine for the paper.
-- **Study material and design** — the relevant data, cohort, variables,
-  comparison, model, experiment, or evaluation at Story-level resolution.
-- **Required contrasts and checks** — the comparisons that separate the
-  paper's interpretation from plausible alternatives.
-- **Expected result form** — the table, estimate, pattern, model comparison,
-  case synthesis, or validation result needed to answer the question; this is
-  an output shape, not a preferred outcome.
-- **Interpretation and failure branches** — what positive, null,
-  contradictory, or infeasible outcomes would allow the paper to claim, force
-  it to narrow, or require it to drop.
-- **Dependency and destination** — what must precede the task and which RQ,
-  E-row, claim, display, and Section its result will serve.
-
-Use one row per coherent paper-level evidence block, named as the question it
-answers and tagged with its stage, and order the work as it runs (JL 260929:
-"the work should follow the logics"; name it "in the question format"):
-
-```text
-T | name | question | stage | study material and design | required contrast | result form | interpretation branches | depends on | feeds
-```
-
-Stages, in run order: `data` (build or profile the data), `training` (train the
-models), `evaluation` (score them, or add a new readout), `results` (collect the
-scores and fit), `analysis` (one contrast or refit per row), `figures` (draw the
-displays). Include the upstream work (data, training, evaluation) even when it
-already ran: a paper whose Task Roadmap starts at analysis hides what its
-numbers stand on. A row every research question needs says `every question` in
-its feeds cell; the others are named by the §3 question blocks. Like a §3 question,
-a T or D row has a `name`, a short phrase of five words or fewer ("Still true
-without the cap?"), and a `question`, one plain sentence saying what we do ("We refit
-the law without the upper limit we set on it, and check whether bigger models still
-stop helping."), not "Refit α with the bound relaxed"; the Paper Workbench prints the
-name beside the stage and the sentence below (JL 260930). Write its folders in full in the feeds or
-design cell (`Task: b04.j01.t01, b04.j01.t02.`); work built in another project
-names that project's path.
-
-Distinguish the evidence needed for a sufficient paper from optional analyses.
-Describe meaningful dependencies and feasibility limits (available data,
-required access or prohibitive cost) where they change the study's scope.
-Bind existing accepted results before proposing new computation. Study
-completion is judged by interpretable evidence and reported uncertainty, not
-by obtaining the desired sign or statistical significance.
-
-The Task Roadmap says **what the study must produce for the paper to be
-answerable**. Detailed jobs, configurations, commands, budgets, retries, and
-run receipts belong in the Task layer. A compact task id or result link is
-traceability, not Story content.
-
-A telling drawn by excalidraw-story keeps a short table instead, one row per Run it waits on: `| T | work |
-where | state | starts |`, where `state` is done, ticket next or not started, and `starts` says who presses Run, or
-`<person> starts` when the Run costs new model calls (drawn red). The rows stay here; `s03-paper-dataflow/`
-(haipipe-paper-plan) draws how the data flows through them to each question, without copying them.
-
-After §7 the telling's face keeps **§9 · Venues**, its venue list from the target down to the fallbacks: one row per
-venue (`| V | venue | kind | editor's test | why it fits | leads with | still needs | desk record |`; the `editor's test`
-cell is the short decision of that venue's editor's test, shown as the first row of its venue card, JL 261111; the
-detail, a fresh-context desk screen with its decision, biggest risk, verdicts and changes, is a Board Question report
-`reports/qNN_editor_test_<venue slug without hyphens>/`, which the card opens; the report keeps a
-`**To raise the odds**` numbered list, each item's first sentence one plain change, which the card shows as "To pass
-the desk"). A venue changes which questions
-lead, not the questions; each venue's rules stay in its haipipe-paper-venue desk record (JL 261019: "我们要不要把这个 venue 直接塞到这个 story 里面去？ ... 也要想想它适合什么样的 journal，然后搞出来一个 journal list or conference list"). §8, the Section
-Narrative, lives on the selected Story topic. Each writing version's `## Narrative`
-records that send's layout (one row per Section, claims to displays, compile order), linked to its Story
-through `tells:`; it is not a second authoring location for the title, story or claims.
+T rows in run order, stages, the short Run table, and §9 · Venues: [ref/roadmaps.md](ref/roadmaps.md)
 
 ### 8 · Section Narrative
 
@@ -761,7 +534,7 @@ additional Story Content divisions.
 
 ## 🛑 Draft and human version gate
 
-This Story skill remains the `v0.9.1` design draft. Both the skill contract and
+This Story skill remains a `v0.x` design draft (its number is the metadata `version` above). Both the skill contract and
 new Story outlines remain `v0.x` until the user explicitly authorizes the
 respective promotion. Preserve existing genuine approvals; never copy them
 onto a changed structure. New or structurally revised outlines carry

@@ -2,7 +2,8 @@
 
 Every skill that draws on an Excalidraw canvas, in one folder (JL 261016: "we also need a
 1_base/excalidraw to put the excalidraw-xxx skills into here"); moved out of `../display/` on 2026-10-16.
-A Studio topic's drawing is built by a script on `excalidraw-studio/scripts/draw.py` and written through
+A Studio topic's drawing is the five-part drawing by default (haipipe-studio's `scripts/five_parts.py`); a special
+shape (a screen, a report, a slide draft) is built on `excalidraw-studio/scripts/draw.py`. Both are written through
 haipipe-studio's `canvas.write`, so a rebuild keeps a person's marks.
 
 One door is listed: `/excalidraw` (`excalidraw/`, JL 261026). The ten `excalidraw-<kind>` skills stay
@@ -12,7 +13,7 @@ path, and a person can still type `/excalidraw-<kind>`. Nothing moved, so builde
 
 ```
 excalidraw/            🚪 THE DOOR · picks the kind, reads ../excalidraw-<kind>/SKILL.md
-excalidraw-studio/     🧭 THE LOOK · nine principles, draw.py (the helpers every builder imports), check.py
+excalidraw-studio/     🧭 THE LOOK · nine principles, draw.py (the helpers a special-shape builder imports), check.py
 excalidraw-report/     🗺 a scratch packed with real material, or a report's answer and its evidence
 excalidraw-draft/    🗺 a draft drawn: Map (Sections → paragraphs → Bullets → evidence) or Revise (a file's changes, the tracked Word file)
 excalidraw-read/       🗺 one paper on a canvas: its logic, key passages shot, links to our paper
@@ -21,6 +22,7 @@ excalidraw-job/        🪜 a Job as a staircase of Tasks and Runs, with each Ta
 excalidraw-task/       🪜 a Task as a staircase of Runs or videos, with each step's results
 excalidraw-slide/      🎞 a deck proposed on one canvas before it is built (s61-s69)
 excalidraw-ideation/   💡 a paper's ideas as steps down from its question
+excalidraw-story/      💡 a paper's story: its research questions, each with what answers it
 ```
 
 A Studio topic's structured side, its mind map `sNN-<topic>.mindmap.md`, is not a canvas: haipipe-mindmap

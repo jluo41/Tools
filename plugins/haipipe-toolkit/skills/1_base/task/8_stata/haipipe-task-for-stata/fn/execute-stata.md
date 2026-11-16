@@ -44,7 +44,7 @@ Claude edits code locally; the user hand-copies to the server and runs.
 ```
 Step 1 — Pre-flight (local, before shipping)
   - Run fn/audit-stata.md
-  - Run the SERVER CHECK mode (ref/cms-server-checklist.md) (Gate 1 + Gate 2)
+  - Run the SERVER CHECK mode (ref/cms-server-checklist.md) (Stata gate 1 + Stata gate 2, not the review gates)
   - Fix any FAIL items
   - Generate CODE_REVIEW.md and SERVER_CHECK.md
 

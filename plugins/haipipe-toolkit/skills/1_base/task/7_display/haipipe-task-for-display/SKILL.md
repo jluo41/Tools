@@ -56,8 +56,8 @@ paper Display stage may snapshot the CSV.
 The snapshot manifest repeats the task holder, Run, and artifact path so the paper can be audited
 even when the task folder is remote or later changes.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
-Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during the Build command, then authors the `<TASK>.py` body).
+Always end with the structured return block of `../../haipipe-task/ref/types.md` § Asked or silent (see Return contract below).
 
 
 
@@ -121,6 +121,9 @@ Summary:
 Return contract
 ---------------
 
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
+
 ```
 status:    ok | blocked | failed
 summary:   2-3 sentences on what was scaffolded
@@ -133,10 +136,10 @@ next:      suggested next command (usually bash <task>/runs/<run>/<run>.sh)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the sole `workflow/plan.yaml` Run Spec roster (`../../haipipe-task/fn/stage-plan.md`) follows the type-specific sample:
 
 ```
-ref/workflow-plan-sample.yaml     ← script-level phases for this type
+ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps
 ../../haipipe-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
 ```
 

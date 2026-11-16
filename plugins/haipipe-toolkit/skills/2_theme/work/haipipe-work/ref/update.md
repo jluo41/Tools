@@ -33,7 +33,7 @@ Resolve these installed skills or their package locations; never guess their sch
 ## 2. Compare with the current contract
 
 Use `../workbench-work/SKILL.md` relative to the **haipipe-work skill directory**
-and the current `servers/workbench/{focus_page,work_frame,work_files}.py` readers.
+and the current `servers/workbench/page/{focus_page,work_frame,work_files}.py` readers.
 From the Tools root, the b17 `ui/block-views.md`, `job-views.md`, `task-views.md`,
 `run-views.md` and `view-guide.json` document the views. Do not copy their illustrative content.
 The shared UI determines the layout; the Block's records determine what it says.

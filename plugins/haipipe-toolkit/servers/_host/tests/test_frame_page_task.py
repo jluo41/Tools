@@ -366,7 +366,7 @@ class PageTaskTest(unittest.TestCase):
             html = task_draft.draft_task_spaces(task, root, "5 · Revise")["Work Details"].html
             self.assertIn('data-pass="Pass 1 · 261020 · on draft v0.1"', html)   # the pass's title went 261115; its cards keep it
             self.assertIn("data-card-act=confirm", html)                         # a choice, then Confirm (JL 261021)
-            self.assertIn("drop it: keep the original", html)
+            self.assertIn("data-card-act=reject>Discard</button>", html)   # Discard, not a drop-it option (JL 261115)
             self.assertIn('<li data-s="s1"', html)                               # a card lights its sentence
             rel = task.relative_to(root).as_posix()
             ask = {"task": rel, "pass": "Pass 1 · 261020 · on draft v0.1", "card": "Edit · S1 · a number"}
@@ -404,6 +404,11 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual((code, res["n"], res["state"]), (200, "1", "open"))
             self.assertIn("### Comment 1 · s2\nQuote: costs\nState: open\n- Note · ", notes.read_text())
             self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S9; rm", "text": "x"})[0], 400)
+            # 🤔 on selected words (JL 261115): an issue saved at once, no reason typed, read by the Section session
+            code, res = draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S1", "quote": "grows", "text": "🤔 issue"})
+            self.assertEqual(code, 200)
+            self.assertRegex(notes.read_text(), r"### Comment 2 · s1\nQuote: grows\nState: open\n- Note · [^\n]*: 🤔 issue\n")
+            self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "delete", "n": "2"})[1]["html"], "")
             draft_steps.note_act(root, {"task": rel, "act": "add", "s": "S1", "text": "fine"})
             self.assertEqual(draft_steps.note_act(root, {"task": rel, "act": "delete", "n": "2"})[1]["html"], "")
             # a pass answers it: a card that names it, a Reply line, State: answered
@@ -453,7 +458,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn('data-opt="B"', html)                                   # every option listed (JL 261021); the chip went 261113
             self.assertIn('value="B"', html)
             self.assertIn('<label class="rv-choice sel" data-opt="A"', html)
-            self.assertIn('<label class="rv-choice rv-drop" data-opt="drop">', html)  # C: drop it
+            self.assertNotIn('data-opt="drop"', html)                     # Discard replaces the drop-it option
             self.assertNotIn("Show the 1 finished", html)                       # a choice still open is not finished
             ask = {"task": task.relative_to(root).as_posix(), "pass": "Pass 2 · 261021 · on draft v0.1",
                    "card": "Edit · S1 · the number", "was": "written", "state": "accepted",
@@ -507,7 +512,7 @@ class PageTaskTest(unittest.TestCase):
                             "cost · Fix: It costs $5 a year.\nFlow P1: S1 the need → S2 its cost · weakest join S1 to S2\n")
             html = draft_steps._review_report(path)
             self.assertIn("Each sentence, in its context:", html)
-            self.assertIn("logic 7.5 · read 8.5 of 10 · 1 of 2 pass (8 or more on both, no broken link)", html)
+            self.assertIn("logic ★7.5 · read ★8.5/10 · 1 of 2 pass (8 or more on both, no broken link)", html)
             # beside the text, a sentence with a problem gets the reviewer's card; one with none gets no card
             task = Path(tmp) / "Project-X/work/b01_topic/j01_job/t01_note"
             (task / "draft" / "records").mkdir(parents=True)
@@ -523,12 +528,12 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn('class="rv-card rv-rev" data-s="s1" data-state="review"', html)
             self.assertIn("It costs $5 a year.", html)
             self.assertIn("The logic needs work", html)                     # the link said in plain words (261113)
-            self.assertIn("weakest join S1 to S2", html)
+            self.assertIn("✂ weakest join", html)                            # drawn between S1 and S2 (JL 261115)
             self.assertIn('data-p="C1.P1"', html)
             self.assertNotIn("data-cards-kind=", html)                          # no filter chips (JL 261113)
             # an older pass's line has one score
             path.write_text(path.read_text().split("Sentences:")[0] + "Sentences:\n- S1 · 6/10 · link: weak · odd · Fix: X.\n")
-            self.assertIn("read 6.0 of 10 · 0 of 1 pass (8 or more, no broken link)", draft_steps._review_report(path))
+            self.assertIn("read ★6.0/10 · 0 of 1 pass (8 or more, no broken link)", draft_steps._review_report(path))
 
     def test_a_theme_may_add_its_own_views_after_the_pages(self):
         # b16 s13 (JL 261007): paper adds Reviews after Table · Reading · Questions; the Space stays the

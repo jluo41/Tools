@@ -95,19 +95,17 @@ WORK_SHAPE = frozenset({"work", "discovery", "cowork"})
 
 
 def page_module(theme: str, folder: Path, root: Path) -> tuple:
-    """(module, prefix) that adds a page's own parts: a work-shaped theme's live.<theme>_focus (discovery, cowork); a
-    Question Book Block (`board-kind: prototype`, the insight questions and their scripts, a work Block) insight's
-    live.insight_focus with its `prototype_` functions (round 1, 261106: "should a Prototype get its own state words?");
+    """(module, prefix) that adds a page's own parts: a Question Book Block's (`board-kind: prototype`, the insight
+    questions and their scripts, a work Block) insight's live.insight_focus with its `prototype_` functions (round 1, 261106: "should a Prototype get its own state words?");
     (None, "") otherwise."""
     import importlib
     block = frame.chain(folder, root).get("Block", folder)
     face = block / "board.md"
     kind = (re.search(r"(?m)^board-kind:\s*(\S+)", face.read_text(encoding="utf-8", errors="ignore")) or [None, ""])[1] \
         if face.is_file() else ""
-    name, prefix = (("insight_focus", "prototype_") if kind == "prototype"
-                    else (f"{theme}_focus", "") if theme in WORK_SHAPE and theme != "work" else ("", ""))
-    if not name:
+    if kind != "prototype":                     # cowork and discovery take the shared frame (their modules are in _old/)
         return None, ""
+    name, prefix = "insight_focus", "prototype_"
     try:
         return importlib.import_module(f"live.{name}"), prefix
     except ImportError:

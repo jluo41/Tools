@@ -64,13 +64,14 @@ New Page interaction and evidence follow the shared Page Run names:
 run-structure-<slug>    whole-Page SHAPE + SURVEY
 run-section-<slug>      one Section writing session
 run-paragraph-<slug>    fixed paragraph-group goal
-run-citation-<slug>     local citation Evidence Item
-run-display-<slug>      local display Evidence Item
+run-citation-<slug>     local citation Evidence Item (an older Section only: see below)
+run-display-<slug>      local display Evidence Item (an older Section only)
 run-delivery-latex             one lane's fixed Delivery Run, rerun in place
 ```
 
-Local Evidence/Display work is Page-owned; its selected Task/Display worker
-does not change that ownership. Independent Supporting Runs remain with their
+A paper Section keeps no evidence Runs of its own (JL 261113): the Board's evidence Jobs check its values,
+citations and displays (haipipe-paper-evidence, The chain, rule 9). On an older Section, local Evidence/Display
+work is Page-owned; its selected Task/Display worker does not change that ownership. Independent Supporting Runs remain with their
 Task/Discovery owner and full native identity. Older short names are retired.
 See `run-naming.md` beside this file for the
 ownership table and Paper judgment profile. Evidence does not satisfy human
@@ -100,7 +101,7 @@ that released version.
 
 The Page Markdown and its `draft/` records are authoritative. A Section's
 `delivery/latex/<page>.tex` is the Paper assembly input; the Paper-level
-`delivery/` tree is generated from those fragments and the Story compile order.
+`delivery/` tree is generated from those fragments and the version face's compile order.
 No generated Word/PDF, retired room, or frozen send becomes a wording
 source.
 

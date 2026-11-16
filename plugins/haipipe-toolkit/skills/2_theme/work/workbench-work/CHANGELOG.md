@@ -1,3 +1,7 @@
+## 0.10.3 · 2026-11-15 · a Question Book opens as a work page
+
+- Wrote down that the work theme claims every `board-kind: prototype` Block (an insight Question Book) for its page only; `/lab` and the insight skills treat it as insight (`lab.py` `lab_theme()`). Reported by Insight-QB-SMS.
+
 ## 0.10.2 · 2026-11-11 · Findings is Values and Displays
 
 - 🧠 Maps returns to Findings, after Displays and only when the work drew maps (JL 261111).

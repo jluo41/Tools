@@ -1,17 +1,13 @@
 ---
 name: haipipe-studio
 description: >-
-  Owns Studio topics at every level (Project, Block, Job, Task; a page shows its own and its children's; one sNN numbering per Block): their faces,
-  numbering, drawings, builders that preserve human marks, and session passes.
-  Use to add or redraw a Studio topic, preview a drawing, or save a Studio session. Also covers
-  proposal topics and s61-s69 slide drafts under their specific contracts.
-  A topic's drawing is the five-part drawing by default (five_parts.py: Idea, Now,
-  Design with its A B C sketches, Process, Delivery; icons, coloured tables, stickies);
-  excalidraw-studio's draw.py stays for special shapes (a screen, a report, a slide
-  draft); load /excalidraw studio before drawing (check.py checks both). Scripts: canvas.py, render_png.py, new_topic.py and topic_slides.py. Also the Page's Studio screen: one tab with the live drawing above
-  the chat, and its lane contracts (ref/screen.md, chat.md, draw.md). Trigger: studio
-  workbench, studio tab, page chat, keep this session, autodraw, chat and draw
-  together, /workbench-studio (the retired name of this screen).
+  Owns Studio topics at every level (Project, Block, Job, Task; one sNN numbering per Block): their faces,
+  numbering, drawings, builders that keep human marks, and session passes, plus proposal topics and s61-s69
+  slide drafts. A topic's drawing is the five-part drawing by default (five_parts.py); excalidraw-studio's
+  draw.py stays for special shapes; load /excalidraw studio before drawing. Also the Page's Studio screen: one
+  tab with the live drawing above the chat (ref/screen.md). Use to add or redraw a Studio topic, preview a
+  drawing, or save a Studio session. Trigger: studio workbench, studio tab, page chat, keep this session,
+  autodraw, chat and draw together, /workbench-studio (the retired name of this screen).
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.29.0"
@@ -169,7 +165,7 @@ its row's `group` cell of `related/related.md`, and `related/_groups.txt` keeps 
 261011); `haipipe-related` owns that folder.
 
 Runs, folded under Delivery, lists every hard Run (`runs/rNN_*`) of every Task under the Block, Job → Task, each
-with its mark, status and finish day, and a tally per Job and Task (JL 261019; b10 s06-D07). It reads the Runs'
+with its own mark and finish day, and no count or tally (JL 261019; b10 s06-D07; AGENTS.md Page words, 261113). It reads the Runs'
 receipts; nothing is written for it.
 
 Timeline, folded under Runs, shows what moved when on one axis down the page, the oldest day at the
@@ -293,8 +289,8 @@ A Job's current results (s21-s29)
 ---------------------------------
 
 Each Job gets a topic that shows what its Runs have produced so far (JL 261012: "for each jNN, make the sNN to
-show what are the current results"). It lives in the Job's own `studio/` (JL 261028; excalidraw-job `make` writes it there), in the runs band, and the
-Block's page shows it with the Job marked; older ones in the Block's `studio/` still work. `scripts/job_results.py` makes it and its builder redraws it:
+show what are the current results"). It is an `sNN-<topic>/` beside the Jobs, in the runs band (excalidraw-job `make` writes it there), and the
+Block's page shows it with the Job marked; older ones in a `studio/` folder still work. `scripts/job_results.py` makes it and its builder redraws it:
 
 ```bash
 python $S/job_results.py <block>                                 # one topic per Job not drawn yet
@@ -306,7 +302,7 @@ python $S/job_results.py <block> --jobs j11_x,j12_y --slug <s> --title '<t>'   #
 2. **Words in the face**: the `results:` yaml holds per Job its `reading` (the frame's key point), per Run the
    values to `show` (`at: <file>:<key>`), and the `open` points; the face's "Runs on disk" list is generated.
 3. **More Jobs than the band**: group the Jobs that share their Tasks into one topic, one frame per Job and a
-   first frame with a row per Job (Proj10 b03: 31 Jobs in five topics).
+   first frame with a row per Job (one Block: 31 Jobs in five topics).
 4. **The whole Job**: to show why the Job exists, what goes in and out, what it concluded and its tables and
    pictures (asked 261012), draw it with `excalidraw-job` (`job_drawing.py make <job>`), or `adopt` a one-Job
    results topic: its builder then calls excalidraw-job, and its `results:` words move into a `job:` yaml.
@@ -328,12 +324,12 @@ python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--su
 ```
 
 0. **Draw the five parts**: a new builder (`--builder`) writes `build_sNN_<topic>.py` on `five_parts.py` and
-   `sketch_<topic>.py` with its Design's A · B · C stubs (the shape of b63-s04 in the Physician example); fill the
+   `sketch_<topic>.py` with its Design's A · B · C stubs (the shape of a worked five-part topic); a topic made without `--builder` gets `quick_draw.py`'s light quick drawing; fill the
    SPEC from the face and the sketches from the topic, rerun, and `check.py` says which parts or placeholders are
    missing. Only a special shape (a screen, a report, a slide draft) takes `--builder draw`, the draw.py builder,
    and follows `/excalidraw studio`'s "Redraw a topic with the principles". Existing topics keep their drawing
    until someone redraws them. This skill keeps the folder, the face and the sessions.
-1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** qNN_<topic>`,
+1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** Q01` (an older face: `qNN_<topic>`),
    `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-contract.md` § The face.
 2. **Builder**: draws through `canvas.write`; never hand-edit its output, change the builder.
 3. **Marks kept**: what a person adds, edits or deletes survives a rebuild (the seed snapshot).
@@ -534,7 +530,7 @@ Boundary
 | `excalidraw-studio` | how a topic's drawing looks and reads: its principles, `draw.py`, `check.py`; loaded before drawing |
 | `excalidraw-job` | a Job as one topic: why, in and out, what it concluded, its tables; reads `job_results.py`'s readers |
 | `excalidraw-report` | a report's drawing and a scratch: their modes, elements, plot kit, pictures |
-| `haipipe-report` | a report's own drawing, built from studio frames its `## Figures` lists |
+| `haipipe-report` | the Questions a topic answers (its `Q01 · Answer` part); an older Block's report drawing, built from studio frames its `## Figures` lists |
 
 
 The Studio screen

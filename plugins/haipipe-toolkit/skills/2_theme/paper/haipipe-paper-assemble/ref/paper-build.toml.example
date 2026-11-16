@@ -5,10 +5,12 @@ source_format = "latex-room"
 venue_profile = "<venue-profile>"
 
 [pages]
-# Authored inputs, outside the generated room. Omit appendix when unused.
-main = "../Ba-<desk>-Main"
-appendix = "../Bb-<desk>-Appendix"
-order = "../A1-Story/StoryA-<desk>-<idea>/StoryA-<desk>-<idea>.md"
+# Authored inputs, outside the generated room. Omit appendix when unused. The version Job
+# face's ## Narrative holds the `haipipe:compile-order` block that fixes the reading order
+# (an older Board names its Ba-/Bb- groups and its Story Page here instead).
+main = "../../j11_writing_v<MMDD>_<desk>"
+appendix = "../../j11_writing_v<MMDD>_<desk>"
+order = "../../j11_writing_v<MMDD>_<desk>/j11_writing_v<MMDD>_<desk>.md"
 
 [source]
 # Generated output only. The builder rejects other rooms and symlink escapes.

@@ -1,14 +1,11 @@
 ---
 name: workbench-discovery
 description: >-
-  Open and interpret a Discovery Block Workbench, in the same style as the Task and
-  CoWork workbenches: Scope (Block, Questions, Resources, RoadMap Draw), Work (Papers:
-  every Paper Run with its Result card; Tasks: each Task Page and its synthesis;
-  Questions as Logic │ Work │ Report rows), Check (Runs, Citations, Reports) and
-  Delivery (Reports, BibTeX), each with the shared Runs panel, and the shared Guide.
-  Also the Project view: every Discovery Block of a Project in one table. Use to see
-  which papers a Block has read, which Runs are blocked, which citations still need a
-  person, or a Block's Questions. The Block contract and the Runs belong to
+  Open and interpret a Discovery Block on the shared workbench frame (the work shape
+  every Block, Job and Task page takes). Use to see which papers a Block has read,
+  which Runs are blocked, which citations still need a person, or a Block's Questions.
+  The older discovery-board page (Scope, Work, Check, Delivery) is retired and described
+  only for reading old links. The Block contract and the Runs belong to
   haipipe-discovery; report writing to haipipe-draft.
 metadata:
   version: "0.3.2"
@@ -18,33 +15,33 @@ metadata:
 # Discovery Block Workbench
 
 One `discovery/bNN_*/board.md` declaring `board-kind: discovery-block` opens one
-Workbench (`haipipe-discovery` owns the Block, its Jobs, Task Pages and Paper Runs). It is
-drawn as the Task and CoWork workbenches are (JL 261004: separate workbenches, one style):
-the title alone in the header, the Block band, the Spaces Guide · Scope · Work · Check ·
-Delivery, every View opened by a heading and one lead line, and each Space's content in
-one box beside its Runs panel. Guide lives with the server: `servers/workbench-discovery/guide/`
-(`guide.yaml`, `method.md` with its cards in `methods/`, `methods.excalidraw`) and `related/papers.md`
-(Guide › Related Paper); `workbench/guide/guide_families.py` loads it. This skill keeps only the run-type
-contract, `ref/workbench-table.md`.
+Workbench (`haipipe-discovery` owns the Block, its Jobs, Task Pages and Paper Runs). It opens
+on the shared focus page every work-shaped theme uses (`servers/workbench/page/focus_page.py`;
+`focus_base.py` `WORK_SHAPE` holds work, discovery and cowork): the views Overview · Plan + Results ·
+Findings · Delivery, as `workbench-work` describes them. The theme's own page (the Spaces Guide ·
+Scope · Work · Check · Delivery) is retired: its server folder is now
+`servers/_old/workbench-discovery/` (presenter, `guide/`, `related/papers.md`) and nothing loads it.
+This skill keeps the run-type contract, `ref/workbench-table.md`.
 
 ## Open
 
 Use the existing shared host; do not start another when one is running.
 
 ```text
-/_board/discovery-board?path=<Block>/board.md        one Block
-/w/<block-folder>                                    the same, short
-/_board/discovery-board?path=<Project>/discoveries   every Block of a Project
-/_board/discovery-board                              every Discovery Block under the root
+/wb <Block | Job | Task>                             the focus page (the `workbench` skill's door)
+/w/<block-folder>                                    the same Block, short
 ```
 
-The host is `<plugin>/servers/_host/serve.py`; the presenter is
-`<plugin>/servers/workbench-discovery/` (`discoveryboard.py` reads, `discovery_views.py`
-draws). It reads the Block on every open and stores nothing. Task Pages and their Runs are
-read with the Task Workbench's reader (`live.taskboard.task_snapshot`), so a Paper Run's
-status is its receipt's status exactly as for a Task Run.
+The host is `<plugin>/servers/_host/serve.py`; the page is the shared frame in
+`<plugin>/servers/workbench/page/`. It reads the Block on every open and stores nothing.
+A Paper Run's status is its receipt's status exactly as for a Task Run. The older route
+`/_board/discovery-board` is no longer registered (`servers/_host/host_registry.py`).
 
-## Spaces and Views
+## Spaces and Views (the retired page)
+
+This table describes the retired theme page, kept to read an old link: `frame_nav.py`
+`OLD_VIEW_SPACE` maps its views to the frame (Scope to Description, Work to Work Details,
+Questions, Reports and Check to Audience Report, Runs, Delivery).
 
 | Space › View | Contents | Source |
 |---|---|---|
@@ -61,17 +58,15 @@ status is its receipt's status exactly as for a Task Run.
 | Delivery › Reports | answered reports, word for word | report Pages |
 | Delivery › BibTeX | every one-entry `.bib` of the Block, together | `runs/rNN_*/result/rNN_*.bib` |
 
-Each Space has the shared Runs panel on the right (`servers/workbench/page/runs_panel.py`),
-folded at first; its run types are the rows of `ref/workbench-table.md` for that Space,
-each with its agent, skill and a prompt to copy. Nothing starts a run.
+The retired page showed the shared Runs panel beside each Space; its run types are the rows of
+`ref/workbench-table.md`, each with its agent and skill. Nothing starts a run.
 
 A Paper Run's Result card is `runs/rNN_<paper>/result/rNN_<paper>.md` (an older Task: `results/rNN_<paper>/`): its `#` title, then
-`- cite:`, `- subject:`, `- venue:`, `- verification:` lines, then Question and Readout.
+`- run:`, `- address:`, `- cite:`, `- subject:`, `- venue:`, `- status:` and `- citation verification:` lines, then Question and Readout.
 The receipt `runtime.yaml` gives `status`, `subject.kind`, `analysis.reading_depth` and
 `analysis.claim_support`.
 
 ## Boundary
 
 The Workbench reads; `haipipe-discovery` and its agents write the Block, its Task Pages
-and Runs; `haipipe-report` the Questions; `haipipe-draft` the reports. The Project view
-only lists Blocks and their counts.
+and Runs; `haipipe-report` the Questions; `haipipe-draft` the reports.

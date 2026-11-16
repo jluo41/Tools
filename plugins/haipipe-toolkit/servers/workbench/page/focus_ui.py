@@ -213,8 +213,13 @@ def ui_view(refs, name: str, root: Path, folder: Path | None = None, walk: Path 
                 f'Open the walk ↗</a></div>')
 
     walks = [(t, kind, ui_walk_path(walk, p, k, root)) for k, (t, kind, _, p) in enumerate(shown)]
-    live_tabs = PB_CSS + _side_tabs(
-        f"fU{name[:1]}x", tabs, [live(t, h) for t, _, h, _ in shown]) + PB_JS
+    # the example page fills the frame: its own 960px column and side rail go (JL 261115: "is this not wide enough?")
+    wide = ("<script>(function(){function fit(f){try{var d=f.contentDocument;if(!d||d.getElementById('ui-wide'))return;"
+            "var s=d.createElement('style');s.id='ui-wide';s.textContent='.focus-page{max-width:none!important;"
+            "padding:12px 18px 24px!important}.focus-rail{display:none!important}';(d.head||d.documentElement).appendChild(s);}"
+            "catch(e){}}document.querySelectorAll('iframe.ui-page').forEach(function(f){f.addEventListener('load',"
+            "function(){fit(f);});fit(f);});})();</script>")
+    live_tabs = PB_CSS + _side_tabs(f"fU{name[:1]}x", tabs, [live(t, h) for t, _, h, _ in shown]) + PB_JS + wide
     secs = [("🖥️ The page, live" if len(shown) == 1 else "🖥️ The pages, live", "", live_tabs)]
     if walk is not None:
         secs.append(("🎬 Walkthroughs", "", PB_CSS + _side_tabs(

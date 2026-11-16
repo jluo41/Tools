@@ -29,10 +29,10 @@ def test_export_resolves_the_page_exactly_as_the_board_server(tmp_path, monkeypa
 
     monkeypatch.setattr(live.export.ExportMixin, "export_latex", door)
     monkeypatch.setattr(live.export.ExportMixin, "export_word", door)
-    results = page_export.export(page, ["latex", "word"], author="Junjie Luo")
+    results = page_export.export(page, ["latex", "word"], author="Ada Lovelace")
     face = (page / "S-X-Main-1-Intro.md").resolve()
     assert results["latex"] == {"ok": True, "source": str(face), "board": str(board.resolve()), "author": None}
-    assert results["word"]["author"] == "Junjie Luo" and results["word"]["source"] == str(face)
+    assert results["word"]["author"] == "Ada Lovelace" and results["word"]["source"] == str(face)
 
 
 def test_a_folder_that_is_not_a_page_is_refused_by_name(tmp_path):
@@ -47,13 +47,13 @@ def test_each_lane_has_one_fixed_run_whose_ticket_code_writes(tmp_path):
     """JL 260928: one Run per lane (`run-delivery-webpage`), rerun in place, never rd01_web, rd02_web."""
     board, page = _space(tmp_path)
     (page / "runs" / "delivery-run").mkdir(parents=True)        # an older Page with Space folders
-    first = page_export.write_ticket(page, "word", "Junjie Luo")
-    again = page_export.write_ticket(page, "word", "Junjie Luo")
+    first = page_export.write_ticket(page, "word", "Ada Lovelace")
+    again = page_export.write_ticket(page, "word", "Ada Lovelace")
     # one folder per Run (0.125): the lane's Run is runs/run-delivery-word/ with its command and card
     assert first == again == page / "runs" / "run-delivery-word" / "run-delivery-word.sh"
     text = first.read_text(encoding="utf-8")
     assert 'page="$(cd "$(dirname "$0")/../.." && pwd)"' in text
-    assert 'export "$page" --lane word --author "Junjie Luo"' in text
+    assert 'export "$page" --lane word --author "Ada Lovelace"' in text
     assert sorted(p.name for p in first.parent.iterdir()) == ["run-delivery-word.sh", "run.yaml"]
     assert sorted(p.name for p in (page / "runs").iterdir()) == ["delivery-run", "run-delivery-word"]
     (page / "runs" / "run-delivery-latex.sh").write_text("old flat ticket\n", encoding="utf-8")

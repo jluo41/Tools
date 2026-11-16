@@ -24,6 +24,9 @@ def _load(name: str, file: str):
 harness = _load("sl_calibration_harness_for_embedding_test", "test_calibration.py")
 emb = _load("sl_embedding_build_test", "embedding_build.py")
 job = harness.job
+# A build clusters with scikit-learn, an optional dependency imported inside embedding_build.
+needs_sklearn = pytest.mark.skipif(importlib.util.find_spec("sklearn") is None,
+                                   reason="scikit-learn not installed")
 
 
 def fake_encoder(texts: list[str]):
@@ -35,6 +38,7 @@ def fake_encoder(texts: list[str]):
     return np.asarray(rows, dtype="float32")
 
 
+@needs_sklearn
 def test_build_embeds_only_development_items_before_g0(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     sealed = harness.sealed_ids(root)
@@ -70,6 +74,7 @@ def test_build_embeds_only_development_items_before_g0(tmp_path: Path) -> None:
     assert state["phase"] == "P0" and state["integrity_errors"] == []
 
 
+@needs_sklearn
 def test_rebuild_is_a_no_op(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     first = emb.build(root, model="org/tiny", encoder=fake_encoder)
@@ -78,6 +83,7 @@ def test_rebuild_is_a_no_op(tmp_path: Path) -> None:
     assert len(list((root.parent / "runs").glob("run-labeling-embedding-build-*.yaml"))) == 1
 
 
+@needs_sklearn
 def test_changed_corpus_is_refused(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     items = root / "corpus" / "items.jsonl"
@@ -110,6 +116,7 @@ def test_failed_encoder_marks_the_run_failed(tmp_path: Path) -> None:
     assert runtime["status"] == "failed" and "model download failed" in runtime["failure"]
 
 
+@needs_sklearn
 def test_latest_reads_map_and_groups(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     assert emb.latest(root) is None
@@ -120,6 +127,7 @@ def test_latest_reads_map_and_groups(tmp_path: Path) -> None:
     assert hit["groups"]["groups"][0]["size"] >= hit["groups"]["groups"][1]["size"]
 
 
+@needs_sklearn
 def test_status_reports_each_catalog_model(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     emb.build(root, model="sentence-transformers/all-MiniLM-L6-v2", encoder=fake_encoder)
@@ -129,6 +137,7 @@ def test_status_reports_each_catalog_model(tmp_path: Path) -> None:
     assert not list((root / "cache" / "embeddings").glob(f"*/{emb.BUILD_MARKER}"))  # marker cleaned up
 
 
+@needs_sklearn
 def test_failed_build_shows_as_failed_and_can_retry(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
 
@@ -158,6 +167,7 @@ def test_one_build_at_a_time_and_catalog_only(tmp_path: Path) -> None:
         emb.start_background_build(root, "BAAI/bge-m3", channel="test", started_by="")
 
 
+@needs_sklearn
 def test_neighbors_are_development_items_only(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     sealed = harness.sealed_ids(root)
@@ -173,6 +183,7 @@ def test_neighbors_are_development_items_only(tmp_path: Path) -> None:
         emb.neighbors(root, "not-built", "i00")
 
 
+@needs_sklearn
 def test_settings_make_their_own_build_and_are_recorded(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     plain = emb.build(root, model="Qwen/Qwen3-Embedding-0.6B", encoder=fake_encoder)
@@ -204,6 +215,7 @@ def test_bad_settings_are_refused_before_any_work(tmp_path: Path) -> None:
     assert not list((root.parent / "runs").glob("run-labeling-embedding-build-*.yaml"))
 
 
+@needs_sklearn
 def test_old_builds_get_a_3d_view_without_touching_vectors(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     emb.build(root, model="org/tiny", encoder=fake_encoder)
@@ -215,6 +227,7 @@ def test_old_builds_get_a_3d_view_without_touching_vectors(tmp_path: Path) -> No
     assert (folder / "vectors.npy").read_bytes() == before
 
 
+@needs_sklearn
 def test_group_examples_are_typical_items_and_record_who_saw_them(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     sealed = harness.sealed_ids(root)
@@ -239,6 +252,7 @@ def test_group_examples_are_typical_items_and_record_who_saw_them(tmp_path: Path
         emb.group_examples(root, v, 2)
 
 
+@needs_sklearn
 def test_group_examples_hide_items_waiting_in_a_round(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     v = emb.build(root, model="org/tiny", encoder=fake_encoder, groups=2)["version"]
@@ -255,6 +269,7 @@ def test_group_examples_hide_items_waiting_in_a_round(tmp_path: Path) -> None:
     assert not set(shown) & set(waiting) and len(shown) == 8 - len(waiting)
 
 
+@needs_sklearn
 def test_item_text_refuses_waiting_items_and_is_recorded(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     emb.build(root, model="org/tiny", encoder=fake_encoder)
@@ -270,6 +285,7 @@ def test_item_text_refuses_waiting_items_and_is_recorded(tmp_path: Path) -> None
         emb.item_text(root, "tiny", next(iter(harness.sealed_ids(root))), human_id="jl")
 
 
+@needs_sklearn
 def test_every_build_records_who_started_it(tmp_path: Path) -> None:
     root, _ = harness.build_job(tmp_path)
     hit = emb.build(root, model="sentence-transformers/all-MiniLM-L6-v2", encoder=fake_encoder,

@@ -44,9 +44,7 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
     a_open = first if first in ar else "Summary"
     a_html = {"Summary": _summary, "Rounds": _rounds, "Questions": _questions, "Cost": _costs,
               "Predicted vs observed": _predicted, "Method scorecard": _scorecard}[a_open](b, root, href)
-    a_runs = {"Summary": (_bk(b, root, "run-build-summary", "build-summary", "Build {folder}'s one-page summary with "
-                              "haipipe-design-delivery's summary.py into delivery/summary.html and summary.pdf, and check "
-                              "it is one page (run-build-summary)."),),
+    a_runs = {"Summary": (),                 # summary.py builds it with no Run folder: no Run type, no button
               "Rounds": (_bk(b, root, "run-add-inputs-<vN>", "add-inputs", "Add the next inputs version "
                                             "to {folder}: inputs/inputs-vN/ with the last round's Exp results and the insight "
                                             "Board's newer data version, frozen (run-add-inputs-<vN>)."),),
@@ -66,14 +64,15 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
     goals = tuple(sorted({j["goal"] for j in b["jobs"]}))
     w_open = first if first in goals else "All"
     groups = {"Set up": ("add-goal", "setup-rules", "add-inputs"), "Launch a Job": ("add-job",),
-              "Report": ("add-observed", "score", "propose-questions", "report", "build-summary")}
+              "Report": ("add-observed", "score", "propose-questions", "report")}
     r_views = ("All",) + tuple(groups)
     r_open = first if first in r_views else "All"
     return {
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Block", d_open, block)),
-        "Idea Studio": Space(run_types=(_bk(b, root, "run-draw-<sNN>", "draw", "Draw a studio topic of {folder}: "
-                                            "sNN-<topic>/ beside its Jobs and its builder (run-draw-<sNN>)."),), page=True),
+        "Idea Studio": Space(run_types=(_bk(b, root, "Add a topic", "draw", "Add or redraw a studio topic of {folder} with "
+                                            "/haipipe-studio: sNN-<topic>/ beside its Jobs (new_topic.py topic); save each "
+                                            "working session as a round, sNN-<topic>/passes/pNN-<MMDD>/."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Block", a_open, block), note="" if a_runs else "No run writes this view: it reads the Jobs' receipts and scores."),
         "Work Details": Space(html=_jobs(b, root, href, w_open), subspaces=("All",) + goals, open=w_open,

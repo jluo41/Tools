@@ -91,6 +91,8 @@ def run_card(run_dir: Path) -> dict:
     card.setdefault("run", name)
     card.setdefault("kind", "soft" if name.startswith("run-") else "hard")
     card.setdefault("status", "—")
+    if card["status"] == "refused" and not card.get("reason"):       # a card written before run_job.py kept the reason
+        card["reason"] = str(_yaml(run_dir / "result" / "runtime.yaml").get("reason") or "")
     card["path"] = run_dir
     card["report"] = run_dir / "result" / "report.md" if (run_dir / "result" / "report.md").is_file() else None
     return card

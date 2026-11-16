@@ -16,7 +16,16 @@ result or a register cell.
 
 ## Run it
 
-An Insight Block (`../haipipe-insight/ref/block-contract.md`):
+An insight Board on the ladder (`board-kind: insight-board`, Jobs of question-vN × data-vM) is not read by
+these two scripts: its stale receipts and layout are `../haipipe-insight/scripts/insight_ladder.py audit <Board>`,
+and a question's delivery gaps are `../haipipe-insight/ref/deliverables.py <question folder>`. `check_block.py`
+says so when given one. Whether its answers are current is
+`../haipipe-insight/scripts/insight_ladder.py review <Board>` (read-only): the answers that owe a reread, the
+answers with no ✅ check, each refused Run with its reason, and what the Question Book leaves unsaid. Checking
+every answer of a Job is one agent per Task, so it starts only when the person asks
+(`../haipipe-insight/ref/deliverables.md` § Reviewing every answer of a Job).
+
+An older Insight Block (`../haipipe-insight/ref/block-contract.md`):
 
 ```bash
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight-check/ref/check_block.py <Block>

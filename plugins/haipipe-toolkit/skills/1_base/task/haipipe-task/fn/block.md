@@ -22,8 +22,10 @@ Resolve the parent project:
 Step 2 - Name and index the Block
 ---------------------------------
 
-Use the next free two-digit pipeline index, starting at 01 with no gap at
-scaffold time. The name is snake_case `<noun>_<qualifier>` and passes the
+Use the next free two-digit index, starting at 01 with no gap at
+scaffold time. The one exception is a staged pipeline Project, whose Block, Job
+and Task numbers follow the ranges in `ref/pipeline-blocks.md` (`b00`, `b10`,
+`b11`+; `j51`+; `t11`+). The name is snake_case `<noun>_<qualifier>` and passes the
 stranger test: a reader can tell what thing and which one from the folder name.
 
 Compose `bNN_{block_name}`, for example:

@@ -4,7 +4,8 @@ r"""build_delivery.py · the canonical delivery engine of haipipe-paper-assemble
 One engine for every paper (260908, after three fixes were found paper-locally
 and would otherwise be re-invented by each copy). The pages own the words: the
 engine reads each Section Page's body fragment <page>/delivery/latex/<page>.tex
-in the Story's compile order (the `haipipe:compile-order` block), copies
+in the version Job face's compile order (the `haipipe:compile-order` block
+under its ## Narrative; an older Board: the Story's block), copies
 fragments, display floats and bibliographies into delivery/latex/, generates
 master.tex, compiles it, converts Word, writes delivery/display-register.md and
 one build-manifest.json. Nothing here is a source of record.
@@ -31,9 +32,9 @@ paper-build.toml and execs this file, so a fix here reaches every paper:
                                                      ZIP made after the build (npj-zip.sh calls it)
   .venv/bin/python delivery/build.py send RD02       copy every declared output into that Round's sent/
   .venv/bin/python delivery/build.py release RD01    copy every declared output into that Round's released/
-                                                     on the ladder (b16 Q05) the name is a comments report of
-                                                     the version, reports/qNN_<kind>-<MMDD>/ (`send q02`, or
-                                                     its full stem): the send freezes into its sent/
+                                                     on the ladder the name is the review Job on the Board,
+                                                     jNN_review_<kind>_v<MMDD>/ (`send j31`, or its full name),
+                                                     or an older reports/qNN_<kind>-<MMDD>/: it freezes into its sent/
   .venv/bin/python delivery/build.py check           (or --dry-run) find every Section's folder and fragment
                                                      through [pages]; writes nothing, exit 1 if one is missing
 
@@ -406,7 +407,8 @@ def latest_outline(group: Path, pid: str):
     return max(current, key=outline_key) if current else None
 
 def read_order():
-    """(main ids, appendix ids, source) from the Story's compile-order block."""
+    """(main ids, appendix ids, source) from the compile-order block of [pages] order: the version Job face's
+    ## Narrative (an older Board: its Story)."""
     src = rel(CFG["pages"]["order"]); text = src.read_text(encoding="utf-8")
     main, appx = [], []
     blocks = list(ORDER_BLOCK.finditer(text))
@@ -1604,82 +1606,7 @@ def refresh_portal():
     for u in portal["uploads"]:
         print(f"  📮 {u['slot']}: {u['state']}" + (f" · {u['detail']}" if u.get("detail") else ""))
 
-def freeze(kind: str, rd: str):
-    """Cut one immutable Round snapshot from the current generated delivery.
-
-    The Round contract is output-config driven: every declared output must be
-    present, and the derived display register travels with the manifest. A
-    partially populated destination is never repaired in place; a new Round
-    (or an explicit human migration) is required.
-    """
-    try:   # 0.17.0: a --pdf-only build leaves Word behind its PDFs; a send carries one build
-        if json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("pdf_only"):
-            sys.exit("cannot freeze a --pdf-only build: its Word files are older than its PDFs; run a full build first")
-        if json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("word_draft"):
-            sys.exit("cannot freeze a --word-draft build: its displays were not placed by measuring; run a full build first")
-    except (OSError, ValueError, KeyError):
-        pass
-    if kind not in {"sent", "released"}:
-        sys.exit(f"invalid freeze target {kind!r}; expected sent or released")
-    rounds = list(ROOT.glob(f"B*-*-Round/{rd}-*")) + (list(VERSION.glob(f"{rd}-*")) if VERSION != ROOT else [])
-    if VERSION != ROOT:                     # on the ladder: a comments report of this version (b16 Q05)
-        rounds += [p for p in VERSION.glob("reports/q[0-9][0-9]_*") if p.is_dir()
-                   and (p.name == rd or p.name.startswith(rd + "_"))]
-    if len(rounds) != 1:
-        sys.exit(f"expected one Round folder for {rd}, found {len(rounds)}")
-
-    dst = rounds[0] / kind
-    if dst.exists():
-        leftovers = [p for p in dst.iterdir() if p.name != ".gitkeep"]
-        if leftovers:
-            names = ", ".join(sorted(p.name for p in leftovers))
-            sys.exit(f"{dst.relative_to(ROOT)} is immutable and already contains: {names}")
-    dst.mkdir(parents=True, exist_ok=True)
-
-    sources = []
-    missing = []
-    targets = set()
-    no_supplement = str(PROFILE.get("appendices", "")).lower() == "main"
-    for key, configured in OUT.items():
-        if configured in ("", None):
-            continue      # 0.9.0: an output switched off (e.g. section_snapshots = "") is not part of a Round
-        if no_supplement and key.startswith("supplement_"):
-            continue      # 0.9.0: appendices inside the manuscript (MISQ) produce no supplement file
-        src = rel(configured)
-        if not src.exists():
-            missing.append(f"{key}: {configured}")
-            continue
-        target_name = src.name
-        if target_name in targets:
-            sys.exit(f"freeze output name collision: {target_name}")
-        targets.add(target_name)
-        sources.append((key, src))
-
-    register = HERE / "display-register.md"
-    if not register.exists():
-        missing.append(f"display-register: {register.relative_to(ROOT)}")
-    elif register.name in targets:
-        sys.exit(f"freeze output name collision: {register.name}")
-    else:
-        sources.append(("display-register", register))
-
-    if missing:
-        sys.exit("cannot freeze an incomplete build; missing: " + "; ".join(missing))
-    try:   # 0.9.0: say so when a letter that is not ready travels with the Round
-        cover = json.loads((HERE / OUT["manifest"]).read_text(encoding="utf-8")).get("cover_letter")
-    except (OSError, ValueError, KeyError):
-        cover = None
-    if cover and not cover.get("ready"):
-        print("  ⚠ the cover letter is not ready: " + "; ".join(c["check"] for c in cover.get("checks", []) if not c["ok"]))
-
-    for key, src in sources:
-        target = dst / src.name
-        if src.is_dir():
-            shutil.copytree(src, target)
-        else:
-            shutil.copy2(src, target)
-        print(f"  → {dst.relative_to(ROOT)}/{target.name} ({key})")
-    print(f"{kind}/ frozen for {rounds[0].name}")
+_load_part("delivery_freeze.py")   # freeze: `send` / `release` copy the build into one Round, report or review Job
 
 def lock_path() -> Path:
     """The build lock of this delivery/: one per folder, outside the repository."""

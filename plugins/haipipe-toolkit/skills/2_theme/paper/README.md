@@ -37,8 +37,8 @@ Evidence Item graph
 ├── scripts/     optional owned implementation
 ├── runs/        optional Page-owned interaction or Paper-local Run tickets
 ├── results/     Folder-local Results
-├── delivery/    page-level render outputs (latex/ · word/ · render/)
-└── studio/      human chat and drawing room
+└── (no delivery/ or studio/ in a paper Section: its output is the Board's delivery/<job>/<task>/<lane>/,
+                 its drawings are Board topics sNN-<topic>/)
 ```
 
 Evidence Items are typed (`CITE`, `VALUE`, `DISPLAY`) and live in the nested
@@ -60,16 +60,20 @@ Outline Evidence Workspace of the Page that consumes them.
 The paper is a Board on the ladder (`haipipe-paper/ref/paper-ladder.md`; b16 Q01, Q04, Q05):
 
 ```text
-Paper-<Slug>/                        Block: board.md · studio/ (s01-ideation, sNN-story-<desk>-<idea>, s10-s19 related work) ·
+Paper-<Slug>/                        Block: board.md · its topics beside the Jobs, no studio/ folder (s01-ideation,
+│                                    s02-story-<desk>-<idea>, s03-s06 plan and checklist, s10-s19 related work) ·
 │                                    reports/qNN_ · runs/ · venues/<venue>/ · related/related.md
-└── jNN_v<MMDD>_<desk>/              Job: one send · its face (## Narrative, ## Questions) · studio/ reports/ runs/
-    ├── t00_abstract · t0N_<title>   Tasks: the Abstract and the Main Sections; t2N_ the Appendix
-    ├── t3N_<title>                  letters: t31_cover-letter · t32_response
-    ├── reports/qNN_<kind>-<MMDD>/   a comments report
-    └── delivery/                    GENERATED from the Sections' own delivery/latex/<page>.tex fragments
+├── delivery/<writing Job>/          the Board's alone, GENERATED: the manuscript, each Task's lanes, build-manifest.json
+├── j01_evidence_display/ · j02_evidence_value/ · j03_evidence_cite/   evidence Jobs: one Task per display, value or claim group
+├── j11_writing_v<MMDD>_<desk>/      writing Job: one send · its face (## Narrative, ## Questions) · reports/ runs/
+│   ├── t00_abstract · t0N_<title>   Tasks: the Abstract and the Main Sections; t2N_ the Appendix
+│   └── t3N_<title>                  letters: t31_cover-letter · t32_response
+├── j21_submission_v<MMDD>_<desk>/   one per send (for: <writing Job>): the cover letter pointer, the portal walk and fill
+└── jNN_review_<kind>_v<MMDD>/       a comments batch (for: <writing Job>), haipipe-paper-comments
 ```
 
-An older Board (`A1-Story/`, `Ba-`/`Bb-`/`Bc-<desk>-…` groups, a root `delivery/`) is still read; the carry-over
+An older Board (`A1-Story/`, `Ba-`/`Bb-`/`Bc-<desk>-…` groups, `jNN_v<MMDD>_<desk>/` versions, `studio/`, comments in a
+version's `reports/qNN_<kind>-<MMDD>/`) is still read; the carry-over
 scripts (`haipipe-paper/scripts/carry_over/`) move it onto the ladder once.
 
 ## Active files
@@ -77,20 +81,24 @@ scripts (`haipipe-paper/scripts/carry_over/`) move it onto the ladder once.
 ```text
 paper/                              by the level each serves
 ├── haipipe-paper/                  all: the door, the ladder contract (ref/paper-ladder.md), the scaffold
-│                                   (scripts/paper_ladder.py), the one-time carry-over (scripts/carry_over/)
+│                                   (scripts/paper_ladder.py), the one-time carry-over (scripts/carry_over/),
+│                                   the family's tests (tests/: ladder scaffold, run naming, chain check)
 ├── haipipe-paper-workflow/         all: the run cards by <Level> › <Space>, gates G0-G2 (Board) and G3-G5 (version)
 ├── workbench-paper/                all: the paper theme on the shared frame; ref/workbench-table.md
 ├── haipipe-paper-ideation/         Board: s01-ideation/ and the ideation Questions
 ├── haipipe-paper-related/          Board: s10-s19, the closest work: one map, one topic per type
 ├── haipipe-paper-story/            Board: each telling as a studio topic, its Questions, the Narrative
 ├── haipipe-paper-venue/            Board: venues/<venue>/ and the shared Venue Pages (QBv bank)
-├── haipipe-paper-comments/         version: comments reports, Review Items (scripts/review_items.py)
+├── haipipe-paper-comments/         Board: review Jobs (comments batches), Review Items (scripts/review_items.py)
 ├── haipipe-paper-assemble/         version: the build, the cover letter, send and release
 ├── haipipe-paper-draft/            Section: one Section, the Abstract or a letter, a draft Task (was -section)
 ├── haipipe-paper-evidence/         Section and version: what backs each Section; one evidence ledger per version
-├── tests/                          the family's tests (the ladder scaffold, run naming)
 └── venue/                          the shared QBv desk bank, prose playbooks and the literature bank
 ```
+
+`venue/` stays at the family root: it is a Git submodule shared by several skills (haipipe-paper-venue,
+-plan, -draft, -assemble), read by `haipipe-draft/src/skill_paths.py`, and SPACE pages cite it by path
+(`structure-source: venue/playbook-…`).
 
 ## Contract and validation status
 

@@ -4,8 +4,11 @@ description: >-
   Check one Board Page artifact against the matching numbered rule pack in a
   fresh context and write only checked:, signed auto. Human approvals and
   Folder rulings remain with their owners; a machine pass never grants
-  workflow release. Use for outline, display, citation or value checks, or
-  to record an explicitly authorized, scoped rule proposal.
+  workflow release. It runs the deterministic rule checks only; the semantic
+  value, cite and display readings belong to haipipe-draft-evidence-value-agent,
+  haipipe-draft-evidence-cite-agent and haipipe-draft-evidence-display-agent.
+  Use for outline, display, citation or value checks, or to record an
+  explicitly authorized, scoped rule proposal.
 tools:
   - Read
   - Write
@@ -15,9 +18,9 @@ tools:
   - Bash
 model: inherit
 metadata:
-  version: "0.3.2"
-  last_updated: "2026-09-28"
-  summary: "Records the machine check; the owning Run Spec and person-reserved gates control release."
+  version: "0.4.0"
+  last_updated: "2026-11-15"
+  summary: "Records the machine check; the owning Run Spec and person-reserved gates control release. 261115: deterministic rule checks only; semantic value, cite and display readings moved to the three evidence reading agents."
   changelog: "./CHANGELOG.md"
 ---
 
@@ -47,6 +50,25 @@ approval remains a separate gate. This agent does not release or dispatch work.
 Pass only when every applicable rule was evaluated and passed. A person's
 🛑 outranks the machine result and reopens the affected check. A missing
 person-reserved approval cannot be inferred from a pass or from silence.
+
+## 🔀 Semantic readings moved out (2026-11-15)
+
+This agent keeps the ⚙️ deterministic rules only: a predicate a named checker or
+a measurement recomputes (a key resolves, a field equals its source, a file is
+newer than its recipe, a page count, a font size, a crop box). The 🤖 semantic
+rules, where a reader must judge what a text or a display says, now belong to
+the evidence reading agents of the must-check gate (`must_check.py` names them):
+
+```text
+value-rules   R4  the Result answers the item        haipipe-draft-evidence-value-agent
+cite-rules    R6  the citation supports the sentence  haipipe-draft-evidence-cite-agent
+display-rules R11 the caption matches the figure     haipipe-draft-evidence-display-agent
+display-rules R12 the claim is visible               haipipe-draft-evidence-display-agent
+```
+
+Record each moved rule as `R<n> moved · <agent>`, never as a pass: a
+`checked:` line that covers a moved rule says `R<n> moved` beside the passed
+range. The rule files keep these rules as written; only their reader changed.
 
 ⚠️ You will be tempted by exactly four questions. Refuse all four, every time:
 
@@ -100,7 +122,8 @@ and unmet gate as not evaluated. The caller resolves them before dispatch.
    python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/check.py <board> | grep '^<page-file>.md'
    ```
 
-2. Run the craft rules by hand, one at a time, in file order. For a display,
+2. Run the remaining craft rules by hand, one at a time, in file order, and
+   mark each moved rule `moved` (§ Semantic readings moved out). For a display,
    this means OPENING `preview.pdf`: render a page to png with `pdftoppm` and
    READ it. A rule about legibility cannot be satisfied by a grep.
 3. Record every rule as `R<n> pass` or `R<n> FAIL · <the exact defect>`.
@@ -162,7 +185,7 @@ path:       <the artifact checked>
 rules_file: <the actual selected rules file; outline uses approve-rules.md>
 verdict:    pass | fail | not-verifiable
 rules:
-  <R1 pass | R4 FAIL · the exact defect | R9 unevaluated · why>
+  <R1 pass | R4 FAIL · the exact defect | R9 unevaluated · why | R6 moved · <agent>>
 wrote:      <the exact `checked:` line written, or none>
 human_tick: <the person's field this `checked:` sits under, and its current
              state: approved: ⬜ | accepted: ⬜ | verified = {} | read: ⬜>

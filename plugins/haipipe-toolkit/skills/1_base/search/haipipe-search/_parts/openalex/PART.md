@@ -22,7 +22,7 @@ metadata:
 
 This adapter brings the latest ARIS OpenAlex worker into HAI Pipe without
 importing its standalone output conventions. Load
-`../../haipipe-discovery-search/SKILL.md` for the durable Search route and
+`../../SKILL.md` (haipipe-search, once named haipipe-discovery-search) for the durable Search route and
 `../../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md` for Result/Bib law.
 
 ## Role

@@ -17,11 +17,14 @@ check                        cli/auto_revise.py check <run>  →  STOP or CONTIN
 ```
 
 The writer only ever edits `candidate.md`, a copy. The Draft is not touched: what reaches it is what the person accepts.
+This is Auto revise, the loop the person starts. The blind review loop that follows a rewrite (`revise.md` § Every
+new version is reviewed; a paper Section's auto round) is a different loop: its kept rewrites become the next Draft
+version, and it ends when a round keeps nothing.
 
 ## Small and big
 
 1. **Small, applied in the round**: wording; a broken plain-English rule (a semicolon, a stock AI phrase, an undefined
-   word); a long sentence split into two with the same meaning; a join between two sentences.
+   word); a long sentence shortened with the same meaning (a split adds a sentence, so it is big); a join between two sentences.
 2. **Big, held for the person**: anything that changes what the text claims, any number, any citation, the order of the
    argument, a sentence added or cut, or the plan (`## 1 · Structure`, owned by haipipe-draft-logic).
 3. **When unsure, it is big.** A held decision costs one click; a wrong silent change costs trust.
@@ -42,7 +45,7 @@ The rubric says no detector score establishes acceptance, so the stop is the rev
 
 `cli/auto_revise.py cards <run>` writes `decisions.yaml`: the decisions first, each once however many rounds held it,
 then the small fixes, folded, each with its round, before and after, so any of them can be undone. On a Section canvas
-(b21 s05) the Revise area shows the decisions as cards to pick, and one card "N small fixes in K rounds" folded under
+(b21 s05) the Revise area shows the decisions as cards to pick, and one folded card, "Small fixes", under
 them. The person picks; the next writing pass writes the picks and the accepted small fixes into the Draft, through
 the sentence addresses (`ref/sentence.md`).
 

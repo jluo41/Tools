@@ -4,13 +4,13 @@ The agents execute the contract owned by haipipe-discovery. They do not define
 an alternate folder shape. A Block is a live Discovery Board from its first
 durable write; a Task Folder is the Page Folder rendered inside that Board.
 Use `haipipe-discovery/scripts/board_sync.py` at structural and handoff
-checkpoints. The Board engine builds `board/`; no agent edits generated files.
+checkpoints. The workbench reads the Block live; nothing is built.
 
-The three live capability skills sit flat at the family root:
-`haipipe-discovery-search` resolves candidates, `haipipe-discovery-review`
-inspects one source/Result, and `haipipe-discovery-synthesize` combines accepted
-Results. The numbered `1_search/` and `2_review/` folders hold only the vendored
-originals those skills may call. None of this is an agent stage or a D1 phase.
+The three live capability skills are
+`haipipe-discovery-search` (resolves candidates; it is `skills/1_base/search/haipipe-search/`),
+`haipipe-discovery-review` (inspects one source/Result) and `haipipe-discovery-synthesize`
+(combines accepted Results). The vendored originals they may call are parts:
+`haipipe-search/_parts/` and `haipipe-discovery/_parts/`. None of this is an agent stage or a D1 phase.
 Agents dispatch into the live skills while D1 remains the sole Discovery
 workflow phase.
 

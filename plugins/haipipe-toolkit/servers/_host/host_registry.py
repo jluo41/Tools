@@ -94,7 +94,7 @@ WORKBENCH_ROUTES = {
     # workbench/workbench-task-draft (once workbench-page): one Page's tabs
     "page": frozenset({"draft", "outline", "runs", "pageruns", "delivery", "folderstat", "evidence",
                        "value", "display", "probe", "latex", "word", "bibex", "bibex-entry",
-                       "bibex-verify", "card", "resolve", "answer", "attach", "image"}),
+                       "bibex-verify", "card", "resolve", "answer", "attach", "image", "float"}),
     "paper": frozenset({"paper-board"}),                   # its old name, paper, dropped 261012
     "work": frozenset({"work-board"}),                     # its old name, task-board, dropped 261012
     # workbench (the base): Studio's draw, chat and terminal routes (Guide is in ALWAYS_ROUTES).

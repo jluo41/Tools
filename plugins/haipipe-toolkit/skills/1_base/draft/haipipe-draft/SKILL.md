@@ -1,6 +1,6 @@
 ---
 name: haipipe-draft
-description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, Run Spec, draft steps, /haipipe-draft, /haipipe-page."
+description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, page Run Spec, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
   version: "0.143.0"
   last_updated: "2026-11-13"
@@ -10,9 +10,31 @@ metadata:
 
 # /haipipe-draft · the draft behind every Page
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `evidence-selection.json`): change the source, then rebuild. `## Content` is generated too: `cli/page.py adopt` writes it from the Draft's `## 3 · Draft`, so a sentence is always edited in the Draft (add its line there if the Draft lacks it), never in `## Content`, `.tex` or `.docx`.
+> Scripts here need Python 3.11+: where a command says `python3`, run it as `uv run --python 3.13 --with pyyaml python ...` (or a SPACE `.venv/bin/python`); see `plugins/haipipe-toolkit/skills/README.md` § Running a skill's scripts.
 
-> ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date (`v1.5 260928 1241`); staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Page, Result, receipt, ledger or manifest.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). Here that means everything under `delivery/` (web copy, `.tex`, `.pdf`, `.docx`, `evidence-selection.json`): change the source, then rebuild. `## Content` is generated too: `cli/page.py adopt` writes it from the Draft's `## 3 · Draft`, so a sentence is always edited in the Draft (add its line there if the Draft lacks it), never in `## Content`, `.tex` or `.docx`.
+
+> ⛔ **No content hashes** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). A version is its number and date (`v1.5 260928 1241`); staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Page, Result, receipt, ledger or manifest. The two exceptions, decided 2026-11-15: haipipe-insight's receipt `tables_sha256` (rerun compare) and haipipe-design's `method-sha` and inputs `manifest.yaml` sha256 (the Job fence); nothing else pins a hash.
+
+## 🗺 Route table · what to do for which request
+
+| The request | Do | Read |
+|---|---|---|
+| change a sentence in the Page, the Word or the PDF; rebuild it | edit `## 3 · Draft`, then `page.py adopt`, `export` | § ✏️ Fast path |
+| deliver a draft Task on the person's ok | `bump`, `adopt`, `cards.py bib`, `export`, `health` | § ✏️ Fast path |
+| wording feedback on an open Page Run | one bounded patch, under two minutes | § ⚡ Fast feedback Step |
+| file to page (make this file a Page Folder) | `page.py setup <input.md>` | § File → Page Folder → work, `ref/standalone.md`, [ref/file-to-page.md](ref/file-to-page.md) |
+| host or open a Page | `fn/serve.md` decides the server | [ref/open-page.md](ref/open-page.md) |
+| one draft-Task step (structure, write, revise, deliver, check) | read the plan's `approved:` first | [ref/draft-steps.md](ref/draft-steps.md) (§ The Plan gate) |
+| name, open or close a Page Run; adopt | `page.py open-run`, `close-run`, `adopt` | [ref/page-runs.md](ref/page-runs.md), `ref/page-run-families.md` |
+| what needs the person (propose Runs) | `/haipipe-draft runs <page>` | `fn/runs.md`, § 🧑 fn/Runs proposes human interaction |
+| create, work on or run a Page | the verbs | § 🚪 Preview · create · work on · run |
+| the Folder on disk; move a Page to the current layout | `page.py check-page-folder`, `draft-layout` | `ref/folder.md`, [ref/page-folder-layout.md](ref/page-folder-layout.md) |
+| who owns a Page Face; the reader sections; Aims | resolve ① to ⑥ | [ref/page-face.md](ref/page-face.md) |
+| which Run Spec holds authority; an ambiguous operation | the authority test | [ref/run-workflow.md](ref/run-workflow.md) |
+| write or revise prose | load `haipipe-draft-writing` | § ✍️ What a write may touch, `ref/writing-rules.md` |
+| say a Page or draft Task is finished | `page.py health --final <task>` | § ✅ Closing checks, [ref/closing-checks.md](ref/closing-checks.md) |
+| what a word means | | `ref/glossary.md` |
 
 ## 📝 Draft and Page · two names for two things (JL 261011)
 
@@ -38,72 +60,18 @@ opens it on the base's draft layout, `servers/workbench/workbench-task-draft/` (
 `haipipe-page-insight` keep their names because they serve or own a Page face; a Task Page's own rules are
 `haipipe-task`'s `ref/task-page.md` (haipipe-page-task merged into it, 2026-10-21).
 
-## 🪜 A draft Task's seven steps (b32 s41, on screen 2026-10-20)
-
-A draft Task is worked in seven steps, the seven tabs of its Work (JL 261015: "So it is the Studio, 1, Plan,
-..... and Delivery as the last one"). Each tab gives its prompt; this table says what the prompt's verb
-does. Only a person signs, ticks, accepts or sends.
-
-| Step (tab) | Its prompt | Owner it loads | Writes | Waits for you |
-|---|---|---|---|---|
-| 🎨 Studio | `/haipipe-studio <block> <sNN>` | haipipe-studio | the Block's `sNN-<topic>/`; what you settle goes into §1 (s41-D25) | optional |
-| 📐 1 · Plan | `/haipipe-draft <task> structure` | haipipe-draft-logic `ref/context.md`, `ref/structure.md`, `ref/scratch.md` | `draft/records/<stem>-context.md`; `## 1 · Structure`; you type `## 2 · Scratch` here, a note per paragraph (JL 261020: "I think we should move the scratch here") | ✍ Sign: your word in chat ("go with B"); the agent writes it with `page.py sign --quote` |
-| ✍️ 2 · Write | `/haipipe-draft <task> write` | haipipe-draft-writing `ref/writing.md` | `## 3 · Draft` from §1 and its Scratch (one sentence per Bullet, ⟦pending⟧ where a value waits), keeping the sentences you typed, in a new `-draft-v<N>.md`; the old one to `previous/` | none: a first draft, no rules yet (s41-D26) |
-| 🔎 3 · Evidence | `/haipipe-evidence <task>` | haipipe-evidence `cards.py` | `evidence/cards.yaml`, `evidence/proposals.md`; cards are CITE and VALUE, one topic (a Task) each, items CITE 1.2 | ☐ you tick each ask |
-| 🖼 4 · Display | `/haipipe-display <task>` | haipipe-display (its five renderers) | `display/Display<n>-<slug>/`: README (claim, kind, `label: Table 1`, built_on its cards), recipe, assets, preview; shown beside the sentence that calls it | ✍ you write `accepted:` in its README |
-| 🔁 5 · Revise | `/haipipe-draft <task> revise` + your notes (your own sentences are typed in 2 · Write) | haipipe-draft-writing `ref/revise.md`; excalidraw-draft `section_canvas.py` when the Section has a canvas | `draft/records/<stem>-revise.md` rewritten as one pass, the latest (`## Pass <k> · <date> · on draft v<N>`; undecided cards still true carry over, older passes stay in git), first as the venue's reviewer, structure before sentences; one `### <Edit · Review · Section question> · s<n> · <what>` card each: Why, Original, Expected, State; accepted cards into §3 as the next version | ✍ on each card ✓ Accept, ✗ Reject or ✎ Edit its words (the cards file only); then `/haipipe-draft <task> apply` writes the accepted ones as the next version |
-| 📤 Delivery | `/haipipe-draft <task> deliver`, `check`; `/haipipe-delivery` render, pull | haipipe-delivery (`page.py export`, `word_round.py`), haipipe-draft-review | the Block's `delivery/<jNN>/<tNN>/`; `render/<name>-v<N>/p-<k>.png` | ✍ you send; another round? |
-
-### 🚦 The Plan gate (JL 261111)
-
-The steps run in order, Plan → Write → Evidence → Display → Revise → Delivery, and the sign on the plan is a gate,
-not a note (the case: `t01_introduction` of Paper-ScalingGlucose-NatSeries2026 was written, rebound and revised
-twice on a plan never signed, then its structure came into question).
-
-1. **Every later step reads the plan state first.** Write, Evidence, Display and Revise open the current Draft
-   Markdown; if `approved:` does not start with ✅, the reply starts at 1 · Plan whatever the prompt named ("revise
-   in a loop", "make v0.11"): show the `## 1 · Structure` map, propose 2 to 4 structure versions with one lean
-   (haipipe-draft-logic, Propose first), and wait.
-2. **The sign is the person's word in chat** ("go with B", "this structure"). The agent writes it, never decides it:
-   `page.py sign <task> --quote "<their words>"` sets `approved: ✅ JL <yymmdd> · in chat: "<quote>"` and keeps the
-   row that governs the Task (its Job's `## Narrative` row; only an older Board whose Story § 8 still holds Section
-   rows uses that row) as text in `draft/records/<stem>-sign.md`; no hash, health compares the text. No button, no
-   second loop.
-3. **Written before the sign is out of order.** `page.py health` gives `order` WARN when `## 3 · Draft` exists on an
-   unsigned plan; `health --final` makes it FAIL. The plain "plan not signed" line stays a WARN at the final gate
-   while no § 3 exists, because the sign is the person's.
-4. **A moved row sends the Section back to Plan.** When the governing row changes after the sign, `health` gives
-   `row` WARN (FAIL at `--final`): re-propose against the new row, then sign again.
-5. **A version's Narrative is signed first.** In a Job whose face has `## Narrative` (a paper version: that venue's
-   layout, one row per Section), the person signs that Narrative before any Section's plan: `page.py sign-narrative
-   <job> --quote "…"` writes `narrative-approved: ✅ JL <yymmdd> · in chat: "…"` and a readable `story-at-sign:` on the
-   face's header and keeps the Story's § 8 (the shared narrative: title, story, claims) as text in
-   `<job>/records/narrative-sign.md`. Then each Section's `page.py sign`. Section health gives `narrative` WARN while
-   the version's Narrative is unsigned or the Story's § 8 has moved since (FAIL at `--final`).
-6. **Revise checks the structure before sentences.** If the structure fails, the pass holds Section question cards
-   only and returns to Plan (haipipe-draft-writing `ref/revise.md`).
-
-The old controller operations still answer and map onto the steps: CONTEXT and OUTLINE are 1 · Plan,
-EVIDENCE is 3 · Evidence and 4 · Display, CONTENT is 2 · Write and 5 · Revise, CHECK is Delivery's `check`. The screen reads
-the files above on every open and writes none of them (`servers/workbench/workbench-task-draft/draft_steps.py`);
-its chips are the state: Plan `✍ sign` until `approved:` starts with ✅, Revise `🔁 pass k` by
-`draft/previous/`, Evidence `🔶 asked` while an item or a proposal waits, Display `✍ sign` while a built unit waits for
-your `accepted:` (`· optional` when the text calls no Table or Figure). A Job's Work shows each Task's
-seven chips, a click each into that tab. Your own words go straight in: 2 · Write and 5 · Revise open, in Work and
-Report, with the Page's paragraph boxes (`outline_revise.py`), and 1 · Plan with its Scratch boxes
-(`outline_scratch.py`); a paragraph box shows one sentence a row, typed freely, each sentence matched back to the
-Bullet it reads like, and it
-saves into the draft when you leave it or press Cmd+Enter; Esc puts back what it held.
+## 🪜 A draft Task's seven steps · 🚦 The Plan gate: [ref/draft-steps.md](ref/draft-steps.md)
 
 ## ✏️ Fast path · change a sentence and rebuild
 
 For "change X in the Page / the Word / the PDF" and "rebuild it", load nothing
 else. Three commands, then report the before and after sentence:
 
+From Tools-SPACE drop `Tools/`; with no SPACE `.venv`, use `uv run --no-project --python 3.13 --with pyyaml --with markdown python`.
 ```bash
 # 1. edit the sentence in draft/<page>-draft-v<N>.md, section `## 3 · Draft`
 .venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py adopt  <page-folder>   # 2. Content ← Draft; writes `content:`
-.venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder> --author "Junjie Luo"   # 3. web, LaTeX, Word
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder> --author "<Your Name>"   # 3. web, LaTeX, Word
 ```
 
 Delivering a draft Task on the person's ok (t01_introduction v0.5, 261021), run from the repository root, no hand
@@ -112,11 +80,11 @@ step:
 ```bash
 P=Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py
 C=Tools/plugins/haipipe-toolkit/skills/1_base/evidence/haipipe-evidence/scripts/cards.py
-grep -n "⟦" <page-folder>/draft/<stem>-draft-v<N>.md     # 0. a ⟦check⟧ or ⟦pending⟧ mark left in § 3 would print: stop and ask
+grep -nE "⟦|\[(E[0-9]+[^]]* pending|open |block )" <page-folder>/draft/<stem>-draft-v<N>.md   # 0. a ⟦check⟧, ⟦pending⟧, [E## pending], [open …] or [block …] mark left in § 3 would print: stop and ask
 .venv/bin/python $P bump   <page-folder>                    # 1. draft v<N> → the next, the old one to draft/previous/
 .venv/bin/python $P adopt  <page-folder>                    # 2. Content ← Draft; a new Page's placeholder is laid out first
 .venv/bin/python $C bib    <page-folder>/evidence/cards.yaml --draft <page-folder>/draft/<stem>-draft-v<new>.md --write
-.venv/bin/python $P export <page-folder> --author "Junjie Luo"   # 4. web, then LaTeX, then Word (no --dry-run)
+.venv/bin/python $P export <page-folder> --author "<Your Name>"   # 4. web, then LaTeX, then Word (no --dry-run)
 .venv/bin/python $P health <page-folder>                    # 5. the Folder agrees with itself
 ```
 
@@ -211,104 +179,7 @@ detailed bridge. It owns the cross-face handshake, staleness propagation, and
 the rule that the Folder closes only when both Task readiness and Page
 readiness are current.
 
-## 🏃 Page Run families inside Outline
-
-Load `ref/page-run-families.md` before naming or allocating a Page Run. Workbench
-Outline's Run Space presents three semantic areas plus the owner-native
-Supporting group, in both standalone and Board-hosted mode:
-
-```text
-Page Writing  RP · run-structure- · run-scratch- · run-section- · run-paragraph- · run-revise-
-              · run-auto-write- · run-evidence-embed- · run-context-  (each + <slug>)
-Page Evidence RE · run-value-<item slug> · run-display-… · run-citation-…
-Page check       run-check-<slug>
-RD         run-delivery-webpage · run-delivery-latex · run-delivery-word · one fixed Run per lane, rerun by `page.py export`
-Supporting native rNN/riNN/rlNN/global identity · Task/Discovery grouping
-```
-
-**Run names (JL 260928: "remove rp-xxx, make it readable").** A Page Run is
-`run-<kind>-<slug>`: `kind` is a word (structure, section, paragraph,
-scratch, revise, auto-write, evidence-embed, context, check, citation, value,
-display), `slug` two to four words (its purpose, its target such as `c1-p2`, or
-its Evidence Item's slug); a taken name gets `-2`. The name carries no day (JL
-261007: a run is worked in passes, each dated inside it); an older dated name
-`run-<kind>-<MMDD>-<slug>` still reads, and `page.py run-names` drops its day. The three Delivery Runs are fixed and never numbered. Each run is
-its own folder (0.125, JL 261009; haipipe-run 0.31.0): `runs/<name>/` holds its ticket
-`<name>.md` (a Delivery Run's is its command, `<name>.sh`), its card `run.yaml`, and
-`passes/pNN-<MMDD>/`, one per close. The older flat `runs/<name>.md` ↔ `results/<name>/`
-still reads. The one grammar is `src/run_names.py`; the paths are `src/run_folders.py`.
-Older names (`rp-sec-07`, `re-value-07_x`, `rd01_latex`) still read;
-`page.py run-names <page>` renames a Page's runs once, moves each into its own folder
-(its result folder becoming the first pass), keeps older numbered Delivery builds as
-history, and writes each built lane's Delivery Run ticket.
-
-**Run bookends (JL 260928).** A Page Writing Run has two bookends the person
-calls. `page.py open-run <page> --kind <kind> [--slug] [--target] [--goal]`
-writes the ticket when it starts; while it is open, only the Draft file
-(`draft/<stem>-draft-v<N>.md`) changes; `page.py close-run <page> <run>
-[--summary]` writes the result folder, its one log entry, decision threads and
-evidence notes once, when the person says the Run is over. Page Content adoption and
-the Delivery Runs (web → LaTeX → Word, `page.py export`) follow only when the person asks. Contract:
-`../haipipe-draft-workflow/ref/interactive-writing-run.md` §🔖. Adoption is one
-command, `cli/page.py adopt <page> [--dry-run]` (`src/page_adopt.py`): it writes
-the current Draft's `## 3 · Draft` sentences into `## Content` in Draft order,
-each on its `realizes:` line, writes each sentence's evidence lines (`> Value:`,
-`> Citation:`, `> Display:`, `> Supporting Run:`; `src/evidence_lines.py`) from the
-Bullet's `Evidence:` / `Answered:` / `Drawn:` items and the Evidence Markdown's
-bound Result and Supporting Runs, keeps every `>` line that names no Evidence Item
-(a hand note, a review mark), drops and names those of a cut sentence, leaves a Draft still
-marked `[open …]` or `[block …]` off the Page, and refuses (writing nothing) when
-the Draft's paragraphs and the Page's differ or when a sentence would have to be
-added, cut or moved across untagged material (a fenced block, a list). Afterwards
-`health` sync passes.
-
-This is a projection, not a second Run registry. Page Run names carry no
-counter (a name is its kind, day and slug), and all are distinct from native `rNN`/`riNN`/`rlNN`
-counters. Execution, Discovery, Insight (`riNN`), Design, and other native
-families retain their identities under Supporting Runs; Page never renames
-them. Supporting members are grouped by parent Task for readability, but the
-external Results remain references and are never copied. A Page Run and a
-Task `r01` may coexist; neither renames or consumes the other. RP kinds:
-
-```text
-run-structure-<slug>   Page Structure Run: SHAPE + SURVEY
-run-scratch-<target>   Human Scratch capture at C1 or C1.P1 (Section/paragraph group)
-run-section-<slug>     Section-level writing
-run-paragraph-<target> Paragraph-level writing (target: p03 or p03-p05)
-```
-
-The first `run-structure-…` is the initial Structure Run and contains both the SHAPE and
-SURVEY cycles. It is one shared Ticket/Result even when several people
-participate: record `participants` on the Run and `contributors` on each Step.
-A later `run-structure-…` is an independent structure/Bullet refinement, not a new
-participant or Survey pass. These Runs settle Page direction, coverage and
-non-coverage, high-level section flow, ordered Bullets, Point roles, paragraph
-jobs, typed evidence decisions, and the structure list. After structure closes, Section Runs use
-`run-section-…`; paragraph Runs use `run-paragraph-p03[-p05]` and expose their exact
-Page-global paragraph target. `RE` uses the focal-result kinds `value`,
-`display`, and `citation`; `DISPLAY` covers table, figure, and algorithm block
-through `display_kind`. One RE Result/Card may expose many `$V_xxx$`,
-`\figure{D_xxx}`, `\table{D_xxx}`, `\algorithm{D_xxx}`, and `\cite{C_xxx}` labels; a
-label is not another Run. The Result root `labels:` manifest is the shared
-binding source; Draft Space and Evidence Card renderers must preserve the
-authored token in expandable provenance even when a resolved value is shown.
-While a structure Run is open, its review artifact is the Structure card at
-the top of the shared Draft Space: the plan's `## C<n>` and `### C<n>.P<m>`
-headings as plain text, read from the selected Outline, which the person can
-click into and edit (rename, reorder, add or drop empty paragraphs; points
-stay with their heading). There is no map file; a plan without divisions
-shows only the `run-structure` button, never an empty card.
-
-The canonical Page Run namespace has no new aliases. The kind token must match
-the scope, and a paragraph target must be exact; a mismatched identity is held
-as a contract error and cannot unlock later work. Retired compact identities in
-existing records remain readable history but are not allocated for new Runs. A
-Run-controller invocation is a **Page workflow pass**,
-not a Page Run object. Owner-native Run receipts remain machine workflow
-records: Page-heavy standalone Folders commonly use `workflow/receipts/`, while
-the current Board controller's compatibility bundle uses
-`<board>/_runs/page/<page-id>/`. An unallocated `new-*` route is still only an
-Evidence plan.
+## 🏃 Page Run families inside Outline (Run names, Run bookends under `../haipipe-draft-workflow/ref/interactive-writing-run.md`, adoption, RP kinds): [ref/page-runs.md](ref/page-runs.md)
 
 ## 🧑 fn/Runs proposes human interaction
 
@@ -343,7 +214,7 @@ them into one expensive operation:
 
 ```text
 Writing Step      complete one scoped draft/review/diagnose/revise cycle
-                  → save candidate, rating/diagnosis, and dependent Bullets
+                  → change only the Draft file (candidate and dependent Bullets)
 Page Run close    settle its fixed structure, Section, or paragraph scope
                   plus its Evidence contract
 Page release      after every Page Run and required evidence Task Result is ready,
@@ -351,10 +222,10 @@ Page release      after every Page Run and required evidence Task Result is read
 ```
 
 A routine Step never writes adopted Page Content, rebuilds delivery, runs the
-whole test suite, or waits for browser/export verification. Its durable minimum
-is the verbatim feedback, complete saved candidate, review/rating and diagnosis
-when the scope requires them, affected Bullets, narrow source/protected-scope
-check, and current Version/Step projection. Update an Evidence requirement
+whole test suite, or waits for browser/export verification. While the Run is open it changes
+only the Draft file: the complete candidate and its affected Bullets (Run bookends, JL 260928). The verbatim
+feedback, review/rating, diagnosis and Version/Step records are written once at the Run's close, from the
+conversation (`haipipe-draft-workflow/ref/interactive-writing-run.md`). Update an Evidence requirement
 during a Step only when the cycle changes what the paragraph must cite, measure,
 or show.
 Between Steps or Runs, use
@@ -431,105 +302,14 @@ python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py adopt <page-fold
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py check-page-folder <page-folder | board-folder>... [--json]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py inspect <page-folder>
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py build <page-folder>
-python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder>... [--lane web|latex|word|all] [--author "Junjie Luo"]
+python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder>... [--lane web|latex|word|all] [--author "<Your Name>"]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py open-run <page-folder> --kind <kind> [--slug] [--target] [--goal] [--by]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py close-run <page-folder> <run> [--summary] [--by]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py run-names <page-folder>... [--dry-run]
 python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/page.py serve <page-folder>
 ```
 
-Markdown `setup` already performs `build`; do not run a redundant second build.
-Use `migrate-addresses` explicitly for a pre-0.81 Shape whose paragraph number
-resets inside each division; it preserves prose and rewrites active Page-owned
-references before `setup` revalidates and rebuilds the Page.
-`outline-tidy` rewrites the current Outline Draft-first, moves every older
-version (and any retired `-logic.mmd`) into `draft/previous/`, moves the six
-process records into `draft/records/`, and repoints `draft/<file>`
-citations in the Page's own files (records, Run scripts). It refuses when a Bullet would
-change, and works on Board Pages too, not only standalone folders.
-After it returns, inspect the generated Page Face, Shape/Draft coverage, setup
-Result checklist (`checks.json` and `report.md`), and `delivery/web/index.html`.
-Setup fails when a blocking mechanical check is missing; semantic judgment and
-human acceptance stay visibly deferred/untested. If role or Draft inspection
-changes a checked artifact, rerun `setup <existing-page-folder>` so a new Task
-Run validates the current records; `build` alone does not
-refresh the audit. Start `serve` only when the user
-explicitly asks for a hosted/live URL; a request for a built website is
-satisfied by the static delivery and does not authorize an indefinite foreground
-server. When hosting is requested, use the workspace's supported background
-process manager, verify the configured public URL, and return instead of
-blocking on the listener. One skill invocation performs all requested mechanical
-substeps; do not make the user request them separately.
-
-The built `delivery/web/` is a portable static reading site. The server always
-renders Page source read-only and adds the same category-workbench pane used by
-Board Pages. Standalone advertises only real top-level presenters: Outline,
-Delivery, Folder, plus an optional domain-owned Labeling presenter when a
-direct `labeling/` lane is present. The
-standalone Labeling surface uses the current Codex task as its Chat transport;
-Studio remains Board-hosted until its chat/draw backend is extracted. Evidence
-and Run stay internal Outline workspaces, never duplicate top-level Workbenches.
-Choose the configured
-reader-facing origin for links; exposing workbench writes beyond loopback requires
-a token. The standalone Page Face has no Chat launcher, comment composer, or
-Page-source save control. Edit Markdown and imported material on disk. Bounded
-workbench read views remain available in either server mode. `--read-only`
-disables workbench writes; without it, Scratch notes autosave and Finish is a
-separate manual action. Do not publish private inputs without the user's
-authority. Static files do not provide save-back.
-Report build, server reachability, and workbench interaction mode separately; do
-not claim hosting from a successful build alone.
-
-Board registration is optional and separate: register the same Page Face,
-then let Board supply navigation. Moving/removing Board membership must not
-move or replace the Page's source. Board Page group descriptions remain
-Board-owned and are outside this file-intake operation.
-
-Scratch is available as a small human-thinking capture once the selected
-Outline exists. Notes autosave to `run-scratch-<target>`; the person manually
-clicks Finish Scratch, which asks the AI to generate a concise Summary from
-the raw notes and closes the Run only after a non-empty Summary is returned.
-Scratch writes only the selected Outline's `## Scratch` registry plus its
-paired `runs/` and `results/` receipt; it never edits Draft prose. In
-Scratch Mode, saved raw Scratch remains visible by default even when the
-underlying body is hidden; `+` reopens its editor. The Board-hosted Page Chat
-and terminal read the current Scratch registry at connect time, and a saved
-Scratch refreshes a held Page Chat's context. When the person asks to use
-Scratch, treat the notes as user-authored planning context and route any
-resulting wording through the normal Page workflow.
-
-The reader-facing completion packet is defined in
-`ref/user-check-packet.md`. The Draft Space includes a read-only Draft
-projection beside each Bullet during SHAPE. The selected
-`draft/<stem>-draft-v<G>.<S>[.<E>].md` (legacy `outline/<stem>-outline-...`) is the sole Draft authority: each
-Bullet stores its planning fields and Draft candidate in that same file.
-The candidate may exist before Shape approval and becomes exact adoption input
-for CONTENT when explicitly accepted. The Page/Run Workflow is the writer of
-the plan, the Page, and every Result; the reader-facing Table and Reading
-views write none of them through the browser. Human feedback and acceptance
-enter through the owning Page Writing Run's interaction and its recorded
-Steps/Versions; Scratch is the explicitly bounded exception for rough human
-notes. Draft Space has no legacy note thread or feedback composer. Delivery Workspace
-is the read-only source-to-artifact consistency projection; it does not replace
-the human Page CHECK gate.
-See `workbench-task-draft/ref/content-preview.md` for the write boundary.
-
-Use `ref/user-check-packet.md` for the two response modes: a routine Writing
-Step returns its exact Run/Version/Step heading, complete selected paragraphs,
-a frozen Structure description beside each paragraph address, a numbered
-blockquote review passage, a brief change explanation, and the three
-final Draft Space, Evidence Space, and Run Space links;
-a formal delivery also returns the Delivery Workspace consistency receipt and
-the evidence/PDF surfaces that are current.
-The Current Run derives granular Track Changes from clean Step-level Before and
-After text and shows each material wording change's local type, rationale, and
-analysis status. Legacy records may retain historical preference fields, but
-interactive Page Steps defer new preference inference to post-run analysis.
-Diff markup never becomes Page prose, and analysis never becomes shared policy
-without confirmation.
-Classification lives in the change-card heading, not a second table. Status,
-navigation, acceptance-only, and presenter-only Steps create no Track Changes;
-the Runs surface expands only the current Step and keeps older Steps collapsed.
+The rest of § File → Page Folder → work (after `setup`, hosting, the standalone server, Scratch, the Draft authority, the two response modes): [ref/file-to-page.md](ref/file-to-page.md)
 
 ## 📁 What a page is on disk
 
@@ -555,462 +335,18 @@ tNN_<task>/
 └── display/     haipipe-display    Display<n>-<slug>/ (built_on: evidence cards)
 ```
 
-A page is one markdown file (the PRODUCT: what the page asserts) beside one
-process folder (how it came to assert it) and the workbench lanes it actually
-uses. The roster of legal folder names is `workbench/ref/roster.md`.
+The rest of § 📁 What a page is on disk (the full tree, the Folder symmetry, Page Evidence, the derived README) and § 📄 The Draft Markdown and Runs beside the content: [ref/page-folder-layout.md](ref/page-folder-layout.md)
 
-```text
-<page>/
-├── page.toml     optional standalone registration: source + imported content
-├── <page>.md      Opening · Content                         THIS reader contract
-├── draft/         HUMAN process (`outline/` on Pages not yet moved; see below)
-│   ├── <stem>-draft-v<G>.<S>[.<E>].md  the ONE current plan: Draft Markdown,
-│   │                                   three sections on one skeleton
-│   ├── <stem>-evidence-items.md  Evidence Markdown: ## Citations · Displays · Values
-│   ├── records/   context, requirement, discussion, feedback, files, log, inputs
-│   ├── previous/  superseded plan versions, moved here when a new one is written
-│   └── _archive/  retired folder material only
-├── workflow/      MACHINE process: Workflow Runtime/compatibility receipts
-│              ─── the LOWER, TASK-side part ───
-├── scripts/       optional owned implementation, any language; shared Task
-│   └── config/    Job code stays one level up in `src/`
-├── runs/          one folder per Page Run: runs/<name>/{<name>.md, run.yaml, passes/pNN-<MMDD>/}
-│                  (run-<kind>-<slug>, run-delivery-<lane>); THE ONE execution door
-├── results/       older Pages only: Results before one folder per Run (0.125).
-│                  A canonical Task Page resolves
-│                  generated output at `$OUTPUT_ROOT/<task>/results/<run>/`
-│              ─── the UPPER, PAGE part ───
-├── delivery/      what leaves the page: web/ · latex/ · word/ · slide/ · render/
-└── studio/        the HUMAN's room on the page (JL 260831): closest to
-    ├── chat/      the person · you talk here, sessions kept
-    └── draw/      you draw here, one scene per owner; the chat may
-                   redraw the scene's named elements on your ask
-```
-
-**The Folder symmetry**: every Folder has a Page Face and Task Face; a
-`primary_face` says which is the usual entry, not which face exists.
-`draft/` is the human planning/decision record and `workflow/` is the
-machine-readable Workflow/Run record. Page-heavy work commonly stores
-compatibility receipts under `workflow/receipts/`; executable work commonly stores
-`plan.yaml` and `report.yaml`. Run Space is an Outline projection over this
-shared Task Face. It presents Page Writing, Page Evidence, and Supporting Runs.
-A native Run pairs its ticket with either a Folder-local Result or the Task
-dialect's resolved `$OUTPUT_ROOT/<task>/results/<run>/`, but the Page surface
-shows the Result first when its card opens; scripts, config, and notebooks
-stay in Folder/detail inspection. Run is never a top-level Page Workbench or a
-lifecycle owner.
-
-New Page Evidence is an `RE` Page ticket plus a bound Result. A Folder-local
-Result is stored as `results/<re-run>/result.yaml`; a Task-backed Result stays
-at the owner dialect's resolved output path, and the RE records that path and
-Run id. One Evidence Item has one current RE lineage and one current Result/Card
-projection; that Result may expose many stable labels such as
-`$V_xxx$`, `\figure{D_xxx}`, `\table{D_xxx}`, `\algorithm{D_xxx}`, and
-`\cite{C_xxx}`. The hidden
-binding retains the Evidence Item, RE, Result path, and provenance. A label
-that needs an independent acceptance or execution lineage becomes another
-Evidence Item/RE. `outline/*-evidence.md` and `outline/evidence/*` are retired
-locations, not runtime inputs. Move them to
-`_archive/legacy-outline-evidence/` before the Page is treated as v4-ready.
-The authored `draft/*-evidence-items.md` file remains the Outline Item
-contract.
-New cross-Folder evidence enters through Supporting Run references in the `RE`
-Result; the external Ticket and Result stay at their owner and are never copied.
-
-A unit MAY carry a `README.md`, and it is DERIVED (JL 260831): a generated
-projection of the two-part tree as it actually stands (which lanes exist,
-their counts, where the product and the rendered page live), regenerated
-whole and never hand-edited — the structure's law lives HERE and in the
-roster, so a hand-written copy per folder would be a second authority that
-drifts. GitHub renders it where the board cannot reach; the 📂 tab computes
-the same walk live (`servers/workbench/workbench-task-draft/folderstat.py`, whose `--write` becomes the
-generator).
-
-A folder is created only when it is used. Values are typed Evidence Items;
-their ready local Result and provenance are shown inside the Outline
-Evidence Space. Every number shown on a Page Face that comes from a Run crosses
-ONE page-serving collection job (`task-type: evidence`, contract
-`haipipe-task-for-evidence`); the Supporting Run Result becomes the explicit
-cross-Folder evidence edge. A display-input Run therefore feeds the
-page-serving collection Job; it does not bypass that one numeric door to feed
-a Page DISPLAY unit directly. A local Run
-may validate or reshape non-authoritative intermediates, but it
-cannot become a second value door. A reusable derivation, a source-data change, or any displayed
-numeric result belongs in the linked executable Folder and its Run Result
-binding. The
-the `draft/` process files, their ids, labels and writers are
-`workbench-task-draft/ref/record-shape.md`; the plan's grammar is
-`ref/plan-grammar.md` beside it. A Run Spec owner loads the exact
-Outline-workbench refs it needs as schema/material contracts. The Page surface installs
-`workbench-task-draft` once as the presenter; the presenter skill is not
-appended to each Run's execution dependency chain.
-
-## 📄 The Draft Markdown and Runs beside the content (0.118)
-
-The plan is one Markdown a person can read and edit by hand: three sections
-that repeat one skeleton (`### C<n>.P<m>` headings, `- B<k>` numbers).
-
-```text
-## 1 · Structure · Bullet Point Table   ### Structure Overview, then per paragraph each
-                                        Bullet's Point and its plan/evidence lines
-## 2 · Scratch · What to write here     rough notes under each paragraph heading
-## 3 · Draft · Reading and Revise       the sentences, one line per Bullet
-```
-
-The Structure Overview declares each division, then gives each paragraph a
-title line, its sentences and job, and the question that leads to the next:
-
-```text
-- C1 · Introduction
-- C1.P1 · Physician prescribing behavior
-  → s1 to s6 · quality and spending · comparable decisions · opioid example
-  → C1.P2: Could interpersonal dispositions help explain variation?
-```
-
-In the workbench the Structure card opens from its folded `Structure` line and
-shows these entries (a division shows its title only); clicking them edits them
-as text: renaming or reordering a `C1.P1`
-line moves its headings in all three sections, and the `→` lines are saved
-into the overview.
-
-`src/plan_layout.py` folds the Draft section back into the Draft-first plan
-for every reader (`canonical_plan` calls `to_canonical`), and every workbench
-writer hands its edited plan to `from_canonical`, which rewrites sections 1
-and 3 and keeps the Structure Overview, Scratch notes and any trailing
-section; a renamed paragraph is renamed in all three sections. A Scratch save
-writes the notes under their heading with one hidden marker line
-(`<!-- run-scratch-0928-c1-p2 · paragraph · open -->`); notes typed by hand are
-read too. No run list, date or history belongs in either Markdown.
-
-`src/outline_version.py::plan_dir` finds `draft/` first and `outline/` on
-older Pages; `latest_outline` and `retire_superseded` read both `-draft-v` and
-`-outline-v` names. New tickets go to their Space folder
-(`src/run_folders.py`); `results/` stays flat and the Run Space pairs
-`runs/<folder>/<run>` with `results/<run>/`.
-
-The workbench has three Spaces, each tab one part of a file, each Space with a
-`Reads` line naming that file (`servers/workbench/workbench-task-draft/space_views.py`):
-
-```text
-Draft      Table ## 1 · Scratch ## 2 · Reading, Revise ## 3 of the Draft Markdown
-Evidence   Citations · Displays · Values = the ## sections of <stem>-evidence-items.md;
-           views All items (ID · item · used by · state) · Card · Source
-           Supporting Runs = every item's `Supporting Runs` line as a tree
-           (Execution/Discovery > Block > Job > Task > Run, each Run with the
-           items it feeds); views All items (the tree) · Source (those lines)
-Delivery   Web · LaTeX · Word · Slides = delivery/<format>/;
-           views Preview · Artifacts · Checks (read only)
-```
-
-Each Space's Runs panel is a column on the right of its content that stays in
-view while the page scrolls (JL 260927): run types on top (the `🔘 BUTTON`
-lines of `haipipe-draft-workflow/ref/run-cards.md`; each view or tab lists only
-its own types through their `· views`: Table · Structure revise, Evidence
-embed; Reading · Auto write; Scratch · Scratch; Revise · Section and
-Paragraph revise; each Evidence tab its own kind, older `pj..t..r..` runs
-joining the item they serve; Delivery Preview and Artifacts · Build, Checks ·
-Check, with the format tab picking that format's builds), the selected run
-below them with Rerun, a
-prompt to copy, its process and its results, and the `runs/` folders it saves
-in. Selecting a paragraph or an item row (`E40`) narrows the panel; a panel
-folds to one line. There is no Page bar above the Spaces (JL 260927: "I don't
-need this"); the Check prompt lives in the Delivery panel, and an old
-`?lens=run` link still opens the page-wide run list. Buttons copy prompts;
-they never start a run by themselves.
-
-`page.py check-page-folder <page | board>` says whether each Page is on this
-layout and names the fix for every rule it misses (`fn/check-page-folder.md`;
-the rules live in `src/layout_check.py`).
-
-`page.py draft-layout <page | board | tasks-dir> [--sort-runs]` moves a Page, or
-every Page under a Board or Task tree, to this layout (a Task Page with no plan
-yet only gets `draft/`): it
-renames `outline/` to `draft/`, writes the three-section plan as the next
-version (refusing if any Bullet would change), groups the Evidence Markdown
-into `## Citations`, `## Displays` and `## Values` (refusing if any item block
-would change), and with `--sort-runs` moves
-each ticket into its Space folder, fixes moved scripts' paths, and repoints
-`runs/<name>` citations. It then rewrites `outline/` paths that name a migrated
-Page's plan folder, inside each Page and in the files around them
-(`sweep_outline_paths`; `_archive/` outside a Page keeps its layout). With
-`--archive-evidence` it moves retired Evidence lanes to
-`draft/_archive/legacy-outline-evidence/`, except a `display/` lane whose units
-have no DISPLAY Result yet. A Page it refuses in a tree run is reported and the
-other Pages still move. Sealed `results/` are never edited, and a Run ticket keeps an `outline/` path that its own Result recorded.
-
-## 🧬 One owner claims the Page Face
-
-A property every Page carries cannot tell one Folder kind from another. A Page
-shows something, cites something, states a number; so display, literature and
-value are workbenches. A Run Workflow/Run Spec owner or declared family skill owns
-the Folder kind and its Page Face. A fixed Page Type may own a Page directly. No
-`folder-kind:` or `page-type:` key is the flexible base.
-
-Resolve ① to ⑥ in order and stop at the first key that matches. Exactly one
-semantic owner may claim the Page Face. An in-place Folder's
-`workflow/folder.yaml current.folder-kind` is authoritative; fixed-kind Folders
-use Page `folder-kind:`. `page-type:` is the declared Page Type when no current
-Folder kind exists. If current
-state and Markdown disagree, fix the Folder, never the resolver.
-
-```text
-step  machine-readable key                    Page Face owner    contract
-──────────────────────────────────────────────────────────────────────────
-①     workflow/folder.yaml current kind        Run Workflow       Run Spec owner
-②     frontmatter `folder-kind: <key>`        Run Spec/family     Run Spec/family skill
-③     frontmatter `page-type: <key>`          Page Type           Page Type owner
-④     filename QBv<n>-                        venue              for-venue
-⑤     filename S-<Family>-<unit>-<slug>       stage              for-stage
-⑥     filename Q<group><n>[<face>]-<slug>     Q decision         base only
-```
-
-A Discovery Folder resolves `folder-kind: discovery` to its Discovery workflow
-Run Spec owner. Its Task Face does not select the Task Folder technical-report
-grammar: the Discovery Run Spec owner owns that Page Face, while `haipipe-task` owns only
-`folder-kind: task`.
-
-### Page Types are self-owned
-
-Each current Page Type declares its own shape and owner in its Page-Face or
-workflow skill. `check.py` validates the `page-type:` value against the
-engine's current set and the resolver loads the owning contract directly.
-There is no central inventory, compatibility layer, alias table, or Page Type
-without an owning contract. A retired key must be migrated or removed from the
-Page; it is not kept alive by a second document.
-
-### Paper Pages
-
-For a Paper Page, follow the [Paper routing contract](../../../2_theme/paper/haipipe-paper/SKILL.md#-routing)
-and load the exact self-owned Ideation, Story, Section, Round or Venue skill.
-For `page-type: ideation`, that is `haipipe-paper-ideation`; it delegates idea
-semantics to `haipipe-ideation` and keeps Page projection/release here. General
-Page work does not load Ideation or every Paper skill. Read the
-[Paper–Page adapter](../../../2_theme/paper/haipipe-paper/ref/page-integration.md) when a
-Paper Run or release is planned. At a Paper G4 Section CHECK, the Page CHECK
-owner also applies the section-scoped `SUB-*` rows from the Paper
-submission-readiness reference; cover-letter and whole-manuscript rows stay at
-Paper level. The same owner is loaded only once.
-
-### A variant extends the base and never redefines it
-
-A Page Face specialization defines Content and fixed extension points without
-reordering the base frame. In a migrated family it lives with the Run owner
-or canonical family skill that owns the Folder kind; an unmigrated Page Type
-remains a base variant under `page-types/`. Load the semantic owner before
-writing. After moving a skill, re-run `install.sh --global` so the installed
-symlink follows it.
-For `folder-kind: task`, the canonical Folder owner remains `haipipe-task`;
-its `ref/task-page.md` § Displays adds the Task Page's display-rich table,
-figure, and diagram contract. It refines the Task Page surface and never
-creates a second Page frame or execution owner.
+## 🧬 One owner claims the Page Face (Page Types are self-owned, Paper Pages, a variant extends the base): [ref/page-face.md](ref/page-face.md)
 
 ## 🧭 The plan's steps
 
 The plan (page context, the Structure Run, Scratch) is `haipipe-draft-logic` since 2026-10-16 (s41-D12); this skill keeps the door.
 Pages: `../haipipe-draft-logic/ref/context.md`, `structure.md`, `scratch.md`, `context-record.md`; the generator `cli/context-record.py` stays here.
 
-## 🎭 Page Run Workflow, independent of Folder kind
+## 🎭 Page Run Workflow, independent of Folder kind · 🧬 Writing DNA handoff: [ref/run-workflow.md](ref/run-workflow.md)
 
-A Page Face persists while its Page Run Workflow authority changes. The page
-workflow (`haipipe-draft-workflow`) is a directed graph of Runs; each Run has one
-owner page or skill (the plan's steps live in `haipipe-draft-logic`), independent of the domain workflow that owns
-the Folder kind:
-
-```text
-run        step              skill                          gate
-────────────────────────────────────────────────────────────────────────────────────
-context    PREPARE           haipipe-draft-logic                     ⚙ resolved context
-structure  SHAPE             haipipe-draft-logic                     👤 approved:
-           SURVEY            haipipe-draft-logic                     👤 Decide per item
-scratch    Save · Finish     haipipe-draft-logic                     👤 Finish Scratch
-evidence   LAND              haipipe-evidence ref/page-evidence     ⚙ local work exhausted; external gates named
-           EMBED             haipipe-evidence ref/page-evidence     ⚙ v0 → SHAPE · G>=1 → writing
-writing    WRITE             haipipe-draft-writing      ⚙ cold pre-check ready
-revise     compare · decide  haipipe-draft-writing ref/revise.md 👤 every change decided
-delivery   build             haipipe-delivery ref/page-delivery     ⚙ build receipt current
-check      CHECK             haipipe-draft-review (page check)       👤 accepted:
-```
-
-The evidence loop law: SHAPE specifies typed Evidence Items; SURVEY
-plans zero-to-many Execution/Discovery Supporting Runs plus exactly one Page
-`RE` lineage per item; LAND produces one ready local Result/Card; EMBED
-interprets it. The ledger is `draft/<stem>-evidence-items.md`
-(`workbench-task-draft/ref/item-table.md`).
-
-Collaborative writing uses persistent `RP` Runs across one Page under
-`../haipipe-draft-workflow/ref/interactive-writing-run.md`.
-A Structure Run (`run-structure-…`) settles, through its SHAPE and SURVEY cycles,
-Structure, Outline Bullets, Point roles, paragraph jobs, and typed
-evidence decisions; it does not write full prose or execute evidence work.
-Several people may contribute Steps to the same Structure Run; record
-`participants` and per-Step `contributors` rather than creating one Run per
-person. A Section Run (`run-section-…`) covers one named Section drafting/revision session.
-A Paragraph Run (`run-paragraph-…`) covers one fixed paragraph or contiguous paragraph
-group. A complete Section draft → review/rating → diagnose → revise cycle is
-one Step inside its Section Run, not a new Run. If the person later
-commissions another independent Section drafting/revision session, allocate a
-new Section Run. For the same paragraph target, reopen the existing Run in a
-new Version unless the target or goal materially changes. Closing one Run
-does not modify Page Content or delivery. After all planned RP Runs and
-required evidence Results are complete, one Page-level CONTENT pass adopts the
-agreed wording. It then reruns the fixed Delivery Run of each declared lane
-(`page.py export`) without commissioning an additional delegated Task Run for
-every accepted paragraph. A Delivery Run is a build, not a second CONTENT or
-check gate.
-The historical/explicitly delegated single-paragraph profile remains in
-`haipipe-draft-writing/ref/paragraph-run.md`. Neither path adds a workbench.
-
-### 🧬 Writing DNA handoff
-
-The Page has one style authority: the resolved Context and its authored
-requirements. When the external `writing-dna-skill` supplies a profile, the
-Page carries a frozen, style-only packet into CONTENT; it does not copy the
-corpus into the Page, create a second Outline, or treat DNA as Evidence.
-
-```text
-CONTEXT/PREPARE  resolve policy + profile id/status/version
-OUTLINE/SHAPE    freeze the reader job, Bullet order, claim contract, and any
-                 declared paragraph-level Narrative Decision
-EVIDENCE         land and fold factual Results; DNA has no evidence authority
-WRITING RUN      freeze applicable Decision + style packet; reload only on drift
-CONTENT/WRITE    adopt agreed wording; preserve its recorded style decisions
-CHECK            judge the built Page and the Run's recorded style application
-```
-
-If a named style is required but its profile or required exemplars cannot be
-resolved, CONTEXT/HOLD owns the block. If the style is optional, CONTENT may
-write under the Page owner's policy without DNA. A profile can change wording,
-rhythm, and compatible structure only after the content contract is stable;
-claim strength, evidence order, topic, and reader promise remain Page-owned.
-A declared `Narrative Decision` is the approved reason for a paragraph's
-organization; it is consumed by CONTENT, is not an Evidence Item, and is never
-minted or rewritten by Writing DNA. If it conflicts with the approved Outline,
-route back to OUTLINE.
-The HAI-side adapter and three-pass realization rules are
-[`haipipe-draft-writing/ref/writing-dna-adapter.md`](../haipipe-draft-writing/ref/writing-dna-adapter.md).
-
-Resolve one invocation as: Folder → base Page Face → Run Workflow/Run Spec-owned
-Folder kind or declared Page Type → current Run Spec → Run Spec-selected and
-page-local workbenches.
-The cycles form a routing grammar, not a conveyor belt: each may repeat,
-SURVEY and LAND are skipped when the page promises nothing it cannot already
-support, and CHECK may route to any earlier cycle. When the visible operation
-is ambiguous, the authority test decides:
-
-```text
-governing policy/context is stale              → PREPARE
-the section list itself is being agreed        → SHAPE
-an item has no valid Run graph or Decide        → SURVEY
-a decided item has no ready local Result        → LAND
-a ready item is not yet in the plan             → EMBED
-approved purpose, Aim promise, or structure changes → OUTLINE / SHAPE
-prose realization changes under the same promise → CONTENT / WRITE
-a concrete version is judged                   → CHECK
-```
-
-`RUN` is the router verb, deliberately not `ADVANCE`; it is owned by
-`haipipe-draft-workflow`, whose `ref/page-run-contract.md` holds
-the packet, receipt, version, role-separation and stop rules, and whose
-`ref/Run-cards.md` states every Run in the same six fields. A pass may run
-inside a person's session (the page chat, which resolves Run owners and controller operations and reads the
-strip: `haipipe-studio/ref/chat.md` §🔁) or as that Run's agent; both leave the same
-trace (the artifact, one log record, the receipt).
-
-## 📑 Two sections on stage, and nothing else
-
-The reader-facing Page order is `Opening → Content`. Outline, Aims, Stage
-Contract, Files, Discussion, Log, and other process records live in the Page
-Folder and are shown only by their owning Draft, Evidence, Run, Delivery, or
-Folder surfaces. `check.py` may still inspect those records, but their presence
-must not add another main Page section.
-
-```text
-#   section    conveys · the reader question                 Run authority              omit
-────────────────────────────────────────────────────────────────────────────────────────────────
-1   🚪 Opening what is this page, why should I care?         CONTENT defines and clarifies      never
-2   Content    what does this page actually establish?       CONTENT writes and builds          Q may · S never
-```
-
-Each section answers one reader question, and a sentence answering another
-section's question is misplaced: substance in Opening moves to Content.
-Inherited inputs and venue move to backstage contract records, page-owned prose
-rules to authored W records in `draft/records/<stem>-requirement.md`, intended
-outcomes to backstage target records, current facts to their Run/CHECK
-receipts, and a question for a person to a `D<nn>` record.
-There is no `## Boundary` section: what a page covers is the Opening's job,
-stated as a `**Covered elsewhere**:` part in its drawer.
-
-There is no reader-facing `## Outline` projection. The current plan's `▤ Outline
-table` remains available in Draft Space with `Address · Bullet · Feedback ·
-Evidence · Supporting Run · Local Run`; C/P rows are planning group headers and
-B rows are the checkable claim/evidence rows. The compact reading projection
-shows the Point statement, not the plan's process-only `Note:` annotations.
-The `draft/` folder remains the authority for every plan, writing rule,
-evidence, feedback, requirement, discussion, file, and log record.
-
-The live Outline/Draft Space makes each paragraph address (`C<n>.P<m>`;
-`P` increases once across the whole Page and never resets at a new `C`)
-an expand/collapse control and keeps its Bullets inside that group. It is a
-read-only projection: each Bullet keeps its bracketed role label and any
-compact Evidence route, while Bullet heads, candidate wording, comments, and
-new Bullets are not editable from the rendered page. Page/Run workflow writers
-update the selected Outline Markdown; the next GET re-reads that one file.
-Markdown remains authoritative: a workflow write against an approved
-Shape creates the next unapproved working Shape and preserves the approved
-file; subsequent writes reuse that working version. Generated Page HTML is
-never an edit target.
-
-The visible reader labels are `🚪 Opening` and `📚 Content`; they must not reuse
-one icon because they answer different reader questions. Draft/Outline is a
-separate owning Space, not a third reader section. Opening is reader prose, not
-an internal ledger: a bare claim, Evidence, or Run address is forbidden there.
-Name the subject in plain English first and keep any address only as a
-secondary compact handle, such as `primary total-MME association
-(Claim1.TotalMME)`.
-
-A manuscript `page-type: section` tightens the reader surface: `🚪 Opening`
-renders exactly one paragraph and has no reader drawer. Its page-owned prose
-rules live as authored `W<n>` records in `draft/records/<stem>-requirement.md`, after
-its generated venue `V<n>` records. The Outline workbench exposes both through
-one `📏 Requirement` lens to CONTEXT, OUTLINE, CONTENT, and CHECK. The Section
-product source carries no `### Writing Style`; post-paragraph notes and Stage
-Contract remain source-side and do not appear on the manuscript review
-surface. Other Page Types retain the ordinary Opening drawer when they need it.
-
-## 🎯 Backstage target records: one Aim is one row
-
-The Page Face does not render targets as a third reader section. When a
-workflow uses Aim records, the legacy `## Aims` syntax remains the record
-shape: one Aim is one row with its tick, target, `Done when:` test, and `Now:`
-fact. The plan carries 🎯 marks that name these backstage rows and no rows of
-its own.
-
-```markdown
-## Aims
-### A3 · 📚 Results
-- ✅ A3.1 · The headline coefficient carries its four coordinates.
-  **Done when:** a reader can quote SPEC, window, trait form and outcome.
-  **Now:** met; §3.2 states all four beside the estimate.
-```
-
-- **The tick says its meaning by shape**: `✅` met · `🔨` being worked on ·
-  `🧠` waiting on a ruling · `⬜` not met · `❄️` deliberately held. This is the
-  Aim vocabulary, not the page `state:` line, which keeps ✅ 🟡 🔴 ⏸️.
-- **A group `### A<n> · <emoji> <name>` maps to Content division n**, taking
-  its number, name and emoji so the two sections line up by eye and by id
-  (`check.py` `group-name-drift`, `group-no-division`); `### P · Page-level`
-  holds a target that genuinely crosses divisions.
-- **`Now:` is a snapshot**; the reason for a transition is a log record. A live
-  ask for a person is that Aim's `Now:` marked `🧠`, pointing at its `D<nn>`.
-- **A fact with no Aim id is a note**, not a status; an ask that owns no Aim
-  becomes a `D<nn>` thread, never a minted Aim. An Aim is not a task: one
-  division may own zero, one or many; changing an Aim's optional `Plan` does
-  not change the Aim.
-- **`### Decision Now` is reserved inside Aims** for a machine-proposed
-  ruling: one `- [ ]` row with the ask, one option per line saying what
-  choosing it commits you to, and a `→ CC recommends` line. A machine closes
-  a row only after the person answered (in chat, in a lane, or by ticking)
-  and records which option, who, when, and their words.
+## 📑 Two sections on stage, and nothing else · 🎯 Backstage target records: [ref/page-face.md](ref/page-face.md)
 
 ## 🚪 Preview · create · work on · run
 
@@ -1035,76 +371,7 @@ visible paragraph, the Aims with their `Now:` lines, the Content divisions,
 the last log record); a group or board folder prints one roster line per
 page. A gist, never a substitute for the whole-file read.
 
-### 🔗 Open the rendered Page
-
-For standalone technical intake/edit/build, use `ref/standalone.md` and its
-handoff; a source/Folder link is appropriate and a Board URL is not required.
-For a hosted standalone Page, verify its configured Page-server origin. The
-following server instructions apply only when this Page is hosted by a Board.
-
-A source `.md` path is not the Board reader-facing link. Build the Board, then open
-the generated Page through the repository's configured Board server:
-
-```bash
-ROOT="$(git rev-parse --show-toplevel)"
-set -a
-source "$ROOT/.server_config/settings.env"
-set +a
-python3 plugins/haipipe-toolkit/servers/_host/serve.py --root "$ROOT"
-# host, port, SPACE name, DOMAIN and auth file come from
-# $ROOT/.server_config/settings.env (BIND_HOST, PORT, SPACE_NAME, DOMAIN, AUTH_FILE)
-```
-
-Open `<DOMAIN>/b/<board-slug>/<page-id>` in a browser. The short
-route redirects to the live reader (`/_board/page`); `<page-id>` is the resolved
-Page id (for example, `b01j03t04` for a Task Page). The Board index is
-`<DOMAIN>/b/<board-slug>`; its workbench is `<DOMAIN>/w/<board-slug>/<page-id>`. If the server is already running, reuse
-it; do not start a second listener. Use the configured public URL for a
-reader-facing reply and never substitute `localhost`, `127.0.0.1`, or
-`file://`. The short-route and server details are owned by
-`fn/serve-host.md`; this section is the Page entry point.
-
-Before returning a reader-facing Page link, make a lightweight request to the
-exact configured public URL and require a successful response. Every Board-hosted
-delivery reply ends with that verified Board URL when the request
-succeeds. If verification fails, the user-check packet ends with an explicit
-Board-unavailable blocker and no clickable substitute. It may not end with a
-source-file path, `localhost`, `127.0.0.1`, or `file://`.
-
-### 👀 User check packet · the only primary return surfaces
-
-For substantive writing or research delivery, return the compact packet in
-`ref/user-check-packet.md`. For a routine interactive turn, return the full
-selected paragraphs and concise feedback dispositions, followed by direct
-Draft Space, Evidence Space, and Current Run links at the very end.
-Only the live
-Draft Space must be refreshed for a routine Step; the Evidence Space
-changes only when that Step changes an evidence requirement. Do not update
-adopted Content or build web, LaTeX, Word, or PDF at Page Run close. The
-following surfaces are the formal Page-release packet, produced once after all
-Page Runs and required evidence Task Results are complete:
-
-1. the verified Board route in two direct views: **Draft Space**
-   (`lens=div`) and **Outline table** (the compact Page projection);
-2. **Evidence you can open now**: the direct Evidence Space link
-   (`lens=evidence`) plus, per ready
-   typed Evidence Item, the DISPLAY unit's `preview.pdf`, the Page's citation
-   register, or the VALUE item card deep link;
-3. **Content state**: the Page version and whether Revise ran (owner-selected workers and
-   the fresh-context style verdict against the resolved owner's policy); a first draft is labelled as such;
-4. the current one-Page compiled PDF, labelled **Latest Page-level PDF**, the
-   delivery surface shown after Revise;
-5. the read-only **Delivery Workspace** (`lens=delivery`), whose lane receipt
-   confirms that the current Page source and saved delivery artifacts agree.
-
-“Page-level” means this Page or Section Page only. It is not the paper master,
-the desk-room build, a Display preview, or a configuration file. Keep raw
-receipts, logs, TeX sources, manifests, and unrelated outputs out of the
-primary completion block. If any requested surface is missing or stale, say so
-explicitly and name the blocker instead of presenting an older file as current.
-The user-check packet is new-layout-only: it accepts only Result payload
-previews and bibliography artifacts at their resolved producer paths, the Evidence Space one-URL
-route, and `delivery/latex/<stem>.pdf`; legacy locations do not qualify.
+### 🔗 Open the rendered Page · 👀 User check packet: [ref/open-page.md](ref/open-page.md)
 
 **Create from file**: follow `ref/standalone.md`; no Board/group is required.
 
@@ -1126,8 +393,8 @@ the pre-Step review packet with the complete selected paragraphs separated by
 visible `### PNN · Cn.Pm` blocks, `s1...sn` labels, proposed next Step number,
 review scope, and the three direct links;
 do not create a journal Step yet. After feedback arrives, resume current
-decisions and affected sources; make the narrow patch, save feedback and
-result, refresh the live Draft Space, and return the saved passage. Do
+decisions and affected sources; make the narrow patch in the Draft file only
+(feedback and result records wait for the Run's close), refresh the live Draft Space, and return the saved passage. Do
 not write Page Content, refresh delivery, wait for export/browser verification,
 or use the broad repair/build loop below for that request.
 
@@ -1156,8 +423,7 @@ python3 <toolkit>/skills/1_base/draft/haipipe-draft/cli/check.py --rules
 ```
 
 `--rules` prints every finding code with its message; read the laws before
-writing, not from the error text after. `watch.py` rebuilds on any `.md`
-save; a `.py`, `.css` or `.js` change needs one build run.
+writing, not from the error text after.
 
 ## ✍️ What a write may touch
 
@@ -1277,42 +543,7 @@ names each sentence by the same address, so chat, record and page agree.
 
 **The final gate (JL 261102: "I think /haipipe-draft should do this final checklist before saying it is finished").** Before any reply says a draft Task is finished, done, complete or ready, run `page.py health --final <task>` and paste its rows. It is `health` with nothing left to wait: Content that differs from the current draft, a stale export and a missing step file fail instead of warning, and its `printed` check reads the built `latex/<stem>.pdf` back (pdftotext) and fails if any § 3 sentence is not in it. Only a person's own step (the sign) stays a warning, named so it is not forgotten and never ticked by the agent. A FAIL means the reply says what is still open, never "finished".
 
-- Before any claim that a Page Folder is current or complete, run
-  `cli/page.py health <page-folder>` (several folders in one call are fine).
-  It checks that the Folder agrees with itself: one current Outline, records
-  in `draft/records/`, the `approved:`/`status:`/`arc:` header, every Bullet
-  parseable (an unindented line silently empties a Bullet), each Page
-  `realizes:` sentence equal to its Draft, Evidence ids declared and bound
-  Result paths present, and delivery newer than the Page. Exit 1 on any FAIL;
-  report its WARN rows rather than calling the Folder done. It judges no prose:
-  Page CHECK still does that. `draft/evidence/bibex/` is live export output
-  (`src/common.py::evidence_lane_dir`) and is not flagged as retired.
-- Row `paragraph` (JL 261112): each paragraph holds 4 to 7 sentences, counted
-  from its `### C<n>.P<m> · <name> · s<a> to s<b>` heading, else its Bullets.
-  WARN while writing, FAIL with `--final`, naming each paragraph id and its
-  count; a `reason: <why>` line under the heading accepts it. It runs only for
-  a page whose face has `section_kind:` and skips the exempt kinds (abstract,
-  summary, appendix and supplement legends, letters, responses, a P0 title).
-  Its one reader is `src/paragraph_length.py` (`RANGE`, `EXEMPT`,
-  `paragraphs()`, `off_range()`, `section_kind()`), shared with haipipe-paper
-  W7 and haipipe-draft-review `paragraph-length`.
-- Rows `expect` and `title` (JL 261112, from the same module): an
-  Introduction's `[Expect]` Bullet whose Evidence line says none ("do we really
-  have evidence for this?": ask the question, cite the prior result, leave the
-  answer to the Results), and a `[Title]` Bullet that still holds a placeholder
-  ("could you put the title here?"). Both WARN, FAIL with `--final`.
-- For Page creation or whole-Page completion, apply `ref/page-checklist.md`
-  and name unmet, deferred or untested checks; never promote a scaffold,
-  a static build or an inferred human approval into completion.
-- Every `folder-kind:` and `page-type:` value resolves directly to its owning
-  Page or workflow contract; no central registry is consulted.
-- Every heading passes `writing-rules.md`'s five lookup-key tests;
-  `grep -n '^#\+ .*, '` returns only clauses that state a second rule.
-- No section states a rule a cited authority owns (`board-form.md` §4,
-  `page-template.md`, `writing-rules.md`, `workbench-task-draft`), except
-  where this file adds what a machine may write.
-- Every path this file names resolves on disk; each `##` section answers one
-  reader question.
+The `health` rows (`paragraph`, `expect`, `title`) and the other closing checks: [ref/closing-checks.md](ref/closing-checks.md)
 
 ## 📂 Files
 
@@ -1327,6 +558,14 @@ haipipe-draft/
 ├── ref/glossary.md     every word this family uses, with the path it names
 ├── src/evidence_labels.py  shared token grammar and Result-label resolver
 ├── ref/user-check-packet.md  the four-surface reader-facing completion packet
+├── ref/draft-steps.md  a draft Task's seven steps and the Plan gate
+├── ref/page-runs.md   Page Run names, bookends, adoption, RP kinds
+├── ref/file-to-page.md  after setup: hosting, standalone server, Scratch, Draft authority
+├── ref/page-folder-layout.md  the full Page Folder tree and the Draft Markdown
+├── ref/page-face.md   who owns the Page Face, the reader sections, Aims
+├── ref/run-workflow.md  Page Run Workflow, Writing DNA, the authority test
+├── ref/open-page.md   open the rendered Page, the user check packet
+├── ref/closing-checks.md  the health rows and the other closing checks
 ├── cli/wdiff.py        word-level diff and the anchored change record (test: tests/test_wdiff_roundtrip.py)
 └── CHANGELOG.md        version history, and the only home for retired rules
 ```

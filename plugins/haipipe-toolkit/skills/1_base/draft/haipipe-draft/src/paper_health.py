@@ -1,11 +1,12 @@
 """Paper rows of `page.py health` that read beyond one Page Folder (haipipe-paper ref/must-check.md).
 
-M-D09: when a row of the Board Story's § 8 changes, the Sections that restate it learn it from their own health,
-not from a broadcast: the changed row is named by its id (`C6`, or a label such as `TITLE`), and only a Section whose
-contract names it (its Narrative row's claims cell, else its face's `claim-ids:`) gets the WARN. The basis is the
-Story rows kept when the Section's plan was signed (`## Story rows it was signed against` in
-draft/records/<stem>-sign.md, written by `page.py sign`), else the Story text the version's Narrative was signed
-against (records/narrative-sign.md).
+M-D09: while a version drafts, each Section's plan is the truth for that Section; a Narrative row that differs from
+it is one quiet INFO on the version Job (narrative_finding), never a Section FAIL or a re-sign. Once the version is
+sent, a changed Story § 8 row is named by its id (`C6`, or a label such as `TITLE`) to the Sections whose contract
+names it (story_row_findings), read against the rows kept at the sign (draft/records/<stem>-sign.md, else the
+version's records/narrative-sign.md).
+M-D19: `page.py sync-narrative` rebuilds the rows (src/narrative_sync.py); at the final gate an unrebuilt Narrative
+is a WARN on the version Job.
 M-D11: a version Job's main text against the venue's shared cap (src/paper_budget.py).
 M-D15: Content may hold adopted text while the plan is unsigned; health says so as a WARN that names the sign.
 """
@@ -106,8 +107,31 @@ def unsigned_content(folder: Path, page: Path, plan: Path | None, approved: bool
     return f"Content holds text from an unsigned plan (v{m.group(1) if m else '?'}); sign the plan"
 
 
-def job_report(target: Path) -> dict | None:
-    """A version Job's own health (the main-text budget), or None when the target is not a version Job."""
+def narrative_finding(folder: Path, final: bool) -> dict | None:
+    """M-D09 and M-D19: one line on the version Job when its Narrative rows differ from the Section plans; quiet while
+    drafting, a WARN at the final gate (before a send). An unsigned Narrative names the sign."""
+    from .folder_health import _header
+    from .narrative_sync import differing
+    face = folder / f"{folder.name}.md"
+    text = face.read_text(encoding="utf-8", errors="ignore")
+    if not re.search(r"(?m)^## Narrative\b", text):
+        return None
+    n = len(differing(folder))
+    if n and final:
+        return {"level": "WARN", "check": "narrative", "where": "", "message": f"the Narrative was not rebuilt since "
+                f"the Sections changed ({n} Section plans differ): page.py sync-narrative, then page.py sign-narrative"}
+    if n:
+        return {"level": "INFO", "check": "narrative", "where": "", "message": f"the Narrative differs from {n} "
+                "Section plans; rebuild it with page.py sync-narrative when the Sections are good"}
+    from .narrative_sync import narrative_table
+    if narrative_table(text)[0] and not re.search(r"(?m)^narrative-approved:\s*✅", _header(text)):
+        return {"level": "WARN", "check": "narrative", "where": "",
+                "message": "the Narrative is not signed: the person signs it once (page.py sign-narrative)"}
+    return None
+
+
+def job_report(target: Path, final: bool = False) -> dict | None:
+    """A version Job's own health (the main-text budget, the Narrative), or None when the target is not a version Job."""
     from .page_structure import is_version_job
     from .paper_budget import budget, budget_line, over_budget
     folder = Path(target).expanduser().resolve()
@@ -115,6 +139,9 @@ def job_report(target: Path) -> dict | None:
     if not is_version_job(folder):
         return None
     over = over_budget(folder)
-    finding = {"level": "WARN" if over else "OK", "check": "budget", "where": "",
-               "message": over or budget_line(budget(folder))}
-    return {"page": folder.name, "plan": None, "verdict": finding["level"], "findings": [finding]}
+    findings = [{"level": "WARN" if over else "OK", "check": "budget", "where": "",
+                 "message": over or budget_line(budget(folder))}]
+    note = narrative_finding(folder, final)
+    findings += [note] if note else []
+    verdict = "WARN" if any(f["level"] == "WARN" for f in findings) else "OK"
+    return {"page": folder.name, "plan": None, "verdict": verdict, "findings": findings}

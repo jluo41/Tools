@@ -66,7 +66,7 @@ python3 <haipipe-project>/scripts/audit_projects.py <project> --deep     root re
 It checks the **shape** at every level: the face, which folders sit where, the child
 prefixes, hard and soft Runs in the right places, `run.yaml` against its folder, the old
 `runs/<run>.sh` + `results/<run>/` layout, dated soft names, heavy files in a Result
-(AGENTS rule 10) and absolute paths in tickets, cards and receipts (rule 7). The owning
+(the SPACE's AGENTS.md § Working rules) and absolute paths in tickets, cards and receipts (same section). The owning
 skill still judges the **content**. Each finding is `failed` or `debt`
 (`../ref/ladder.md` § What the audit reports); a folder takes its worst finding.
 

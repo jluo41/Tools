@@ -26,7 +26,7 @@ DEMO_INSIGHT = SKILLS / "diagrams" / "DesignWorkbench-Demo-260916-InsightBoard"
 UNIT_CHECKER = SKILLS / "2_theme" / "design" / "haipipe-design-unit" / "scripts" / "check_unit.py"
 
 STAGES = ("commissioned", "generate-failed", "generated", "verified", "adopted", "declined")
-HANDOFF_REL = "../../../DesignWorkbench-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md"
+HANDOFF_REL = "../../../DesignWorkbench-Demo-260916-InsightBoard/1-full/W01-full-send-salience/W01-full-send-salience.md"
 
 
 def stamp(minutes: int) -> str:
@@ -379,10 +379,10 @@ def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
     board = folder.parent.parent
     register = board / "0-MT-meta/MT04-question-wisdom/MT04-question-wisdom.md"
     register.parent.mkdir(parents=True, exist_ok=True)
-    page_id = page.stem.split("-", 1)[0]
+    page_id = "-".join(page.stem.split("-", 2)[:2])   # `W01-full`: level, number, segment name
     register.write_text(
         "# Synthetic Wisdom register\nfolder-kind: question\nquestion-level: wisdom\n\n"
-        "```text\nid   question          Gen-1   F·full\n"
+        "```text\nid   question          Gen-1   full\n"
         f"QW1  What counsel?     (none)  ✅ {page_id}\n```\n", encoding="utf-8")
     workflow = folder / "workflow"
     workflow.mkdir(exist_ok=True)
@@ -405,7 +405,7 @@ def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
         "key": "GI6", "status": "passed", "actor": "synthetic-owner",
         "authority": "haipipe-insight-question", "workflow_runtime_id": "fixture-workflow",
         "page": pin, "signature_receipt": signed,
-        "target": {"partition": "F", "question": "QW1"}})
+        "target": {"partition": "full", "question": "QW1"}})
     (workflow / "handoff.yaml").write_text(yaml.safe_dump({
         "schema": "haipipe.insight-handoff/v1", "page": pin, "dependencies": dependencies,
         "gi5": signed, "gi6": [settled]}), encoding="utf-8")
@@ -415,7 +415,7 @@ def bind_insight_handoff(page: Path, signature: str = "JL 260828"):
 def build_insight_board(board: Path) -> Path:
     """The one-page InsightBoard the demo DesignBoard reads: one signed W handoff."""
     board = Path(board)
-    page = board / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
+    page = board / "1-full" / "W01-full-send-salience" / "W01-full-send-salience.md"
     page.parent.mkdir(parents=True, exist_ok=True)
     (board / "board.md").write_text(
         "# Design Workbench Playground · InsightBoard\nboard-kind: insight-board\n"
@@ -423,7 +423,7 @@ def build_insight_board(board: Path) -> Path:
         "close: The one W page is signed; nothing else is asked of this fixture.\n"
         "store: results/demo-insight\n\n## Topic\n\nA one-page InsightBoard fixture: it exists so the "
         "Design demo has a real,\nsigned Wisdom handoff to bind. Its finding is condensed from the SMSR2v1 board.\n\n"
-        "## Pages\n\n### F · Full ladder\n1-F-full/FW01-send-salience/FW01-send-salience.md\n",
+        "## Pages\n\n### F · Full ladder\n1-full/W01-full-send-salience/W01-full-send-salience.md\n",
         encoding="utf-8")
     page.write_text(
         "# Send salience, and stop calling the rest a slate\n\n"

@@ -12,11 +12,11 @@ address of a Discovery unit. The only work address is Block–Job–Task–Run
 
 | Axis | Canonical values | What it answers | What it does not mean |
 |---|---|---|---|
-| Work hierarchy | discoveries → bNN Block → jNN Job → tNN Task Page → rNN Run | Where is this work and what owns it? | Not a phase or a skill directory |
+| Work hierarchy | discovery → bNN Block → jNN Job → tNN Task Page → rNN Run | Where is this work and what owns it? | Not a phase or a skill directory |
 | Discovery domain | D1 SCOPE → PREPARE? → ACQUIRE ↔ SYNTHESIZE → CLOSE | When does the inquiry move? | Not b01/j01/t01/r01 numbering |
 | Page workflow | 00 CONTEXT → 01 OUTLINE → 02 EVIDENCE → 03 CONTENT → 04 CHECK | How is the Task Page authored and checked? | Not a Folder level |
 | Page type | source-map, source-reading, synthesis forms | What article does the Task Page promise? | Not a Run kind |
-| Skill bank | haipipe-discovery-search, -review, -synthesize, -inquiry at the root; 1_search and 2_review vendored originals; agents | Which capability or role is loaded? | Not a project path |
+| Skill bank | haipipe-discovery-search, -review, -synthesize, -inquiry at the root (Search is `1_base/search/haipipe-search`); vendored originals in each `_parts/`; agents | Which capability or role is loaded? | Not a project path |
 
 The work hierarchy is structural. D1 and Page workflows are temporal. Skill
 folders are organizational. Page type is semantic. A name such as 2_review can
@@ -106,7 +106,7 @@ old status. It makes the new b/j/t address explicit. Old skill directories are
 not project folders and must not be moved into discovery/. Idea-typed legacy
 manifests are rejected; they are not converted or redirected. After a write,
 run `scripts/board_sync.py` on each new Block so migration also forms its
-`discovery-block` Board. There is no need to rename `1_search`, `2_review`, or the
+`discovery-block` Board. There is no need to rename the `_parts/` originals or the
 root-level capability skills to Block/Job/Task/Run directories.
 
 ## 6. Acceptance invariants
@@ -128,8 +128,8 @@ root-level capability skills to Block/Job/Task/Run directories.
    haipipe-ideation and hands selected directions to Paper P0; Discovery keeps
    only the external evidence and cross-Result synthesis it owns.
 8. Every structural or terminal handoff refreshes the Block Board through
-   `scripts/board_sync.py`; `board.md` is the authored head, `board/` is
-   generated, and the direct `jNN_/tNN_` tree remains membership authority.
+   `scripts/board_sync.py`; `board.md` is the authored head, nothing is
+   built, and the direct `jNN_/tNN_` tree remains membership authority.
 
 ## 7. Worked route
 

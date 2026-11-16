@@ -112,6 +112,10 @@ def page_identity_html(theme: str, folder: Path, root: Path, data: dict) -> str:
     level = page_level(folder)
     if level not in ('Block', 'Job', 'Task'):
         return ''
+    face = data.get('face')
+    if level == 'Task' and face and inside(face, root) and re.search(
+            r'(?m)^task-type:\s*draft\b', face.read_text(encoding='utf-8', errors='ignore')):
+        return ''                                 # Draft Lab: the text first, no type line (JL 261115)
     kind = page_type(theme, level, folder, root, data)
     if not kind:
         return ''

@@ -357,6 +357,34 @@ def _python(root: Path) -> str:
     return str(venv) if venv.exists() else sys.executable
 
 
+HOST_VENV = Path.home() / ".cache" / "haipipe" / "host-venv"   # one venv for the host, outside every SPACE
+
+
+def launcher(root: Path) -> list[str]:
+    """The command that runs serve.py: the SPACE's .venv python, else this python, whichever imports the host's one
+    package need (PyYAML) and is Python 3.10 or newer; else HOST_VENV, made once with uv (Python 3.13 and PyYAML) for
+    a SPACE whose interpreters lack it, as DrFirst-SPACE's Homebrew python did. Not `uv run --with`: its env is a
+    temporary folder uv deletes when the daemon forks away."""
+    import shutil
+
+    def ok(py: str) -> bool:
+        try:
+            return subprocess.run([py, "-c", "import sys, yaml; assert sys.version_info >= (3, 10)"],
+                                  capture_output=True, timeout=20).returncode == 0
+        except (OSError, subprocess.TimeoutExpired):
+            return False
+    venv_py = str(HOST_VENV / "bin" / "python")
+    for py in dict.fromkeys([_python(root), sys.executable, venv_py]):
+        if ok(py):
+            return [py]
+    if shutil.which("uv"):
+        subprocess.run(["uv", "venv", "--quiet", "--python", "3.13", str(HOST_VENV)], capture_output=True)
+        subprocess.run(["uv", "pip", "install", "--quiet", "--python", venv_py, "pyyaml"], capture_output=True)
+        if ok(venv_py):
+            return [venv_py]
+    return [_python(root)]
+
+
 def space_port(root: Path) -> int:
     """This SPACE's one port (JL 261012: "if things are sharing the same SPACE, they should be of the same port
     number"). It is settings.env's PORT, and a taken one stops here rather than drifting to the next free port:
@@ -388,7 +416,7 @@ def start(root: Path) -> Server:
     args = ["--root", str(root), "--host", host, "--port", str(port), "--no-terminal",
             "--daemon", f"/tmp/{name}-{port}.log"]
     script = str(SERVERS / "_host" / "serve.py")
-    subprocess.Popen([_python(root), script, *args], cwd=root, stdout=subprocess.DEVNULL,
+    subprocess.Popen([*launcher(root), script, *args], cwd=root, stdout=subprocess.DEVNULL,
                      stderr=subprocess.DEVNULL, start_new_session=True)
     if not _until(lambda: _answers(f"http://127.0.0.1:{port}"), 40):
         raise SystemExit(f"wb: started a server on port {port}, but it did not answer; see /tmp/{name}-{port}.log")
@@ -411,7 +439,7 @@ def restart(server: Server, root: Path) -> Server:
             raise SystemExit(f"wb: could not stop the server on port {server.port} (pid {server.pid})")
     _until(lambda: _port_free(server.port), 10)
     script = server.script if Path(server.script).is_absolute() else str(server.cwd / server.script)
-    subprocess.Popen([_python(root), script, *server.args], cwd=server.cwd, stdout=subprocess.DEVNULL,
+    subprocess.Popen([*launcher(root), script, *server.args], cwd=server.cwd, stdout=subprocess.DEVNULL,
                      stderr=subprocess.DEVNULL, start_new_session=True)
     if not _until(lambda: _answers(server.local), 40):
         raise SystemExit(f"wb: restarted the server on port {server.port}, but it did not answer")
@@ -483,6 +511,18 @@ def main(argv: list[str] | None = None) -> int:
     if argv[:1] == ["share"]:                       # /wb share <folder> <email>: cli/wb_share.py (b10 s52)
         import wb_share
         return wb_share.main(argv[1:])
+    if argv[:1] == ["restart"]:                     # /wb restart: after a Tools code change, a running host keeps old code
+        root = Path(argv[2]).resolve() if argv[1:2] == ["--root"] and argv[2:3] else space_root(Path.cwd().resolve())
+        if root is None:
+            raise SystemExit("wb: no SPACE root above this folder (no env.sh or .server_config); pass --root")
+        running = servers(root)
+        for server in running:
+            server = restart(server, root)
+            print(f"✅ restarted {root.name} on port {server.port} (pid {server.pid})")
+        if not running:
+            server = start(root)
+            print(f"✅ started {root.name} on port {server.port} (pid {server.pid})")
+        return 0
     if argv[1:2] == ["share"] and not argv[0].startswith("-"):     # /wb <folder> share [<email>]: folder first
         root = space_root(Path.cwd().resolve())
         folder = resolve_path(argv[0], root) if root else None

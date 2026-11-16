@@ -64,7 +64,7 @@ shows its basis (`against · by · why`: in full on a card, on hover in a table)
 counts; and freezing and releasing are one button, **Review and approve**, the one place a person reviews.
 
 The Summary leads with the bottom line, the Opening of each Block question partly or fully answered (open ones are
-left out); it names methods by name, with ids such as `M04 m3 · inputs i1` only on hover (the demo: "without naming
+left out); it names methods by name, with ids such as `M04 m3 · inputs-v1` only on hover (the demo: "without naming
 every part"); each released Job says who approved it and when, from its `run-release-j<NN>` card's `signed:` line, the
 full line on hover; its Next line is plain words, never a Run name; and it links the one-page PDF that
 haipipe-design-delivery's `summary.py` builds into `delivery/summary.pdf` (JL 261013).

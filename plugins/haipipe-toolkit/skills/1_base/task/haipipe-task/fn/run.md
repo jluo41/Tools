@@ -10,7 +10,7 @@ The target must be a canonical Task Folder:
 work/bNN_<block>/jNN_<job>/tNN_<task>/
 ```
 
-Require the same-stem Task Page, `scripts/`, `scripts/config/`, and `runs/`.
+Require the same-stem Task Page, `scripts/` and `runs/` (`scripts/config/` only holds settings several Runs share).
 Reject a Job, Block, or any path outside this hierarchy.
 
 The Run name must match `rNN_<noun>_<qualifier>`. If omitted, select it only
@@ -21,7 +21,7 @@ mode.
 
 ```text
 card      <task>/runs/<run>/run.yaml
-config    <task>/scripts/config/<run>.yaml (or <task>/runs/<run>/config.yaml)
+config    <task>/runs/<run>/config.yaml (an older Block: <task>/scripts/config/<run>.yaml)
 Ticket    <task>/runs/<run>/<run>.sh
 Result    $OUTPUT_ROOT/<task>/runs/<run>/result/
 notebook  $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb

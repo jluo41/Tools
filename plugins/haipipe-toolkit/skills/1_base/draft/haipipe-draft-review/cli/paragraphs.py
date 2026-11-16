@@ -58,7 +58,7 @@ def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("files", nargs="+")
     ap.add_argument("--min", type=int, default=4)
-    ap.add_argument("--max", type=int, default=6)
+    ap.add_argument("--max", type=int, default=7)
     ap.add_argument("--skip", default=r"(?i)abstract|key points|keywords|conclusion|article information")
     a = ap.parse_args()
     skip, bad = re.compile(a.skip), 0

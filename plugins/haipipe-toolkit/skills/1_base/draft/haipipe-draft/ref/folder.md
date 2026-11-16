@@ -11,8 +11,8 @@ Every Task folder follows one rule: a Task may hold a draft; a Task is not a Pag
 ```text
 tNN_<task>/
 ├── tNN_<task>.md   the face: title, task-type (draft, evidence, …), what it answers, its state
-├── draft/          haipipe-draft-writing   the plan, the scratch, the text
-├── evidence/       haipipe-evidence        cards.yaml (CITE, WORK) · proposals.md
+├── draft/          haipipe-draft           the plan and scratch (haipipe-draft-logic), the text (haipipe-draft-writing)
+├── evidence/       haipipe-evidence        cards.yaml (CITE, VALUE) · proposals.md
 ├── display/        haipipe-display         one unit per figure or table, built on evidence/
 └── runs/           each Run's ticket and its result/, written by the Run's own skill
 ```

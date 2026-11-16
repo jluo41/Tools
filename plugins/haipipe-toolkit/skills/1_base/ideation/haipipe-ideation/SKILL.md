@@ -233,7 +233,7 @@ complete specimen is more useful than another abstract rule.
 /haipipe-ideation novelty-check <idea>     run the claim-level novelty specialist
 /haipipe-ideation pressure-test <idea>     run falsifiability + feasibility checks
 /haipipe-ideation journal-fit <idea>       broad-screen; deep-fit finalists
-/haipipe-ideation nature-review <idea>     apply the Nature editorial overlay
+/haipipe-ideation nature-paper-review <idea>  apply the Nature editorial overlay
 /haipipe-ideation sync <unit>              refresh the P0 working projection
 /haipipe-ideation select <unit>            record the person's idea + target decision
 /haipipe-ideation handoff <unit>           emit the Paper P0 packet

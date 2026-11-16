@@ -1,6 +1,6 @@
 # task
 
-`task/` owns executable Task Folders and their Plan → Build → Execute → Report lifecycle.
+`task/` owns executable Task Folders, their life (plan ▶ build ▶ run ▶ read ▶ close) and the four commands that drive it: Plan → Build → Execute → Report.
 The hierarchy is `work/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs, one folder each in `runs/`.
 `haipipe-task` does two jobs: the Task level (`ref/task-folder.md`, `ref/lifecycle.md`, `ref/task-page.md`)
 and the door to every type (`ref/types.md`); each `haipipe-task-for-<type>` carries one `## Type contract`.
@@ -14,7 +14,8 @@ Consumers can bind exact Task Results or settled Insight findings as their contr
 
 ## Mental Model
 
-Every task has the same four-stage lifecycle:
+Every Task takes the same four commands. They are commands on the Task, not phases that own
+anything; what each step of the Task's life leaves on disk is `haipipe-task/ref/lifecycle.md`:
 
 ```text
 Plan -> Build -> Execute -> Report
@@ -26,7 +27,7 @@ Chinese mnemonic:
 规 -> 建 -> 行 -> 报
 ```
 
-| Stage | Chinese | Meaning |
+| Command | Chinese | Meaning |
 | --- | --- | --- |
 | Plan | 规 / 规划 | Define bounded Run Specs, dependencies, gates, routes, and Result receipts. |
 | Build | 建 / 构建 | Prepare the runnable object: configs, scripts, refs, runners, and environment. |
@@ -117,3 +118,11 @@ insight    = D → I → K → W → RF, settled once and reused as evidence
 paper      = academic expression and release
 design     = commissioned design work and verification
 ```
+
+## History notes
+
+`_notes/` keeps the family's old review notes as history, not skill text (the
+installers skip `_` folders): `DESIGN.md` (v5 design snapshot), `SKILLSET_REVIEW.md`,
+`1_data-SKILLSET_REVIEW.md`, `3_end-SKILLSET_REVIEW.md`, `3_end-LESSON.md` (endpoint
+lessons) and `agents-CODE_REVIEW.md` (a 2026-06 review of the agent files, with the
+agent names of that date). Current rules live in each skill's `SKILL.md`.

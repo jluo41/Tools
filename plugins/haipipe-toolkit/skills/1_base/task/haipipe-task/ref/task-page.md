@@ -74,7 +74,9 @@ and keeps its passes (haipipe-run). The two never reserve, renumber, or consume 
 
 Add the exact `task-type:` when a specialist owns the executable dialect.
 Only `folder-kind: task` and `task: .` identify a Task Page. Task Folder = Page
-Folder = `tNN_<task>/`; Job means only its `jNN_<job>/` parent.
+Folder = `tNN_<task>/`; Job means only its `jNN_<job>/` parent. This means one folder, not
+one thing: the Task is the folder, and its face `tNN_<task>.md` is the page a reader opens,
+so a Task is not itself a Page (JL 261011).
 
 The Page Face is not a run log. It is the technical report of what the Folder
 found and what those findings mean for the Task's own question. Machinery stays
@@ -283,18 +285,19 @@ A negative or null verdict may close a reading. An unbound verdict cannot.
 When the named Result changes, only its dependent reading, evidence binding,
 and Page version become stale; the Task identity does not change. Route the
 Page back to EVIDENCE or CONTENT as appropriate, then CHECK the exact rebuilt
-version. The Folder is closed only when P-B-E-R and this Page reading are both
+version. The Folder is closed only when its Runs and this Page reading are both
 current.
 
-Use this closure equation rather than treating either face as sufficient:
+Use this closure equation rather than treating either face as sufficient; it is
+the one in `ref/lifecycle.md` § Close, with `page_ready` spelled out:
 
 ```text
-task_ready   = terminal P-B-E-R + every required Task Result current
+task_ready   = every planned Run terminal + its Result gate passed + its receipt current
 page_ready   = every planned Page Run closed
                + every required Task Result bound by id/path
                + accepted Content adopted and released
                + CHECK receipt and READING rows current
-folder_closed = task_ready AND page_ready
+task_closed  = task_ready AND page_ready AND the close: line is true
 ```
 
 A new, rerun, replaced, or invalidated Task Result makes every dependent Page
@@ -305,8 +308,8 @@ whole Folder when the unaffected face remains current.
 
 The Page's top-level `state:` is therefore a cross-face Folder state, not a
 claim that one script or one Run succeeded. It may become `closed` only when
-the Task Folder's current P-B-E-R records and the current READING gate above
-all pass. A new or stale Run reopens the affected evidence, reading, and Page;
+the Task Folder's current Run receipts, the current READING gate above and its
+`close:` line all pass. A new or stale Run reopens the affected evidence, reading, and Page;
 it does not create a new Board Page.
 
 ## Run/Result boundary

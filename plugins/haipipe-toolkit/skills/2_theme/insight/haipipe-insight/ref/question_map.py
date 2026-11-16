@@ -13,7 +13,7 @@ to the question that reuses it (a `cite` need's `from: <L><NN>.E<n>`). A questio
 nothing on the board and that nothing reuses has a dashed box. Retired questions are left out;
 each frame's name counts them.
 
-The drawing is generated (AGENTS.md rule 8): never edit it, change a question file and rerun
+The drawing is generated (the SPACE's AGENTS.md § Working rules): never edit it, change a question file and rerun
 this script. The workbench shows it view only and says when a question file is newer.
 A hand sketch is its own drawing in the same studio/.
 """

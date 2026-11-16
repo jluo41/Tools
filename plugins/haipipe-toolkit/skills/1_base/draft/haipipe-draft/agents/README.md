@@ -12,6 +12,22 @@ haipipe-draft-writing-agent     writing · WRITE
 haipipe-draft-check-agent       check · CHECK; also CONTENT's cold pre-check
 ```
 
+The must-check gate's reading agents (2026-11-15). `haipipe-paper/scripts/must_check.py` runs the scripts and
+prints which of these to dispatch, each in a fresh context, none reading text it wrote:
+
+```text
+haipipe-draft-eval-structure-agent    S1, S2: paragraph jobs and slots against § 8.3 and venue examples
+haipipe-draft-eval-paragraph-agent    D1: paragraph logic, blind, 0-10, a fix under 8
+haipipe-draft-eval-sentence-agent     D1: sentence logic, read, ai; the scope guard's reading half
+haipipe-draft-ab-reader-agent         D2: blind A/B pairs, easier and same meaning; writes no text
+haipipe-draft-evidence-value-agent    a VALUE item proposed for each number no item covers
+haipipe-draft-evidence-cite-agent     the cited paper read against its sentence; a person verifies
+haipipe-draft-evidence-display-agent  the sentence's claim read against the display's headline and caption
+haipipe-draft-consistency-agent       one version: one term one meaning, one claim one wording, counts
+```
+
+`haipipe-draft-writing-agent` also writes D2's rewrites and adopts only the pairs the A/B reader kept.
+
 The board family's four agents moved here when `skills/board` was retired (JL 261005):
 
 ```text

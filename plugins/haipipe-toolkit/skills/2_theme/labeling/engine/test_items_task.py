@@ -3,6 +3,7 @@ unsigned recipe or build, the items keep the answers out, a revision is a new ve
 from __future__ import annotations
 
 import csv
+import importlib.util
 import json
 import os
 import sys
@@ -91,6 +92,7 @@ class ItemsTaskTest(unittest.TestCase):
         self.run_worker(run)
         return run
 
+    @unittest.skipUnless(importlib.util.find_spec("sklearn"), "scikit-learn not installed")  # the map step
     def test_three_steps_from_raw_rows_to_a_map(self):
         d = self.describe()
         card = json.loads((d / "result" / "description.json").read_text())

@@ -66,7 +66,7 @@ _spec.loader.exec_module(SOFT)
 VERSION = re.compile(r"^j(\d{2})_(?:writing_)?v([^_]+)_(.+)$")   # j11_writing_v<MMDD>_<desk>; older jNN_v<MMDD>_<desk> still read
 # a paper Board's evidence Jobs come first, one per kind, beside the writing Jobs (JL 261031: "you can call them
 # j01_evidnece_xxx j02_evidnece_xxx j03—evidence_xxx j11_writing_xxx")
-EVIDENCE_JOBS = (("j01_evidence_display", "displays: one Task per figure or table, t01-t19 main, t51-t59 appendix"),
+EVIDENCE_JOBS = (("j01_evidence_display", "displays: one Task per display, tNN_display-<letter>-<slug>"),
                  ("j02_evidence_value", "values: one Task per group of printed numbers, each read from a returned Result"),
                  ("j03_evidence_cite", "citations: one Task per claim group, each from verified CITE Results"))
 WRITING_FROM = 11                                      # writing Jobs are j11, j12, ...

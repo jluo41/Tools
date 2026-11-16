@@ -56,8 +56,8 @@ rows keeps them until that version is next touched, then they move to its face. 
 
 Section-local paragraph detail may elaborate the Story's ordered moves but
 cannot change its central claim, evidential limit or reader transition. A
-material change to a version row reopens that Section's plan (health `row`);
-a change to §8 after the version's `sign-narrative` shows as health `narrative`. The selected
+version row or §8 that moved since a sign is one quiet note on the version Job while Sections draft, a WARN at the
+final gate, never a Section FAIL or a re-sign (must-check M-D09; `page.py sync-narrative`, then one sign). The selected
 Venue contract supplies the desk rules, not new research findings.
 
 ## Compile projection

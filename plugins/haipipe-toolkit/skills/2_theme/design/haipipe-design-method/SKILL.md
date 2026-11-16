@@ -111,9 +111,10 @@ a trigger ─▶ run-propose-method-<slug> (a Block) ─▶ the next version m<k
 
 The triggers (s00): the checks fail often (④ T0 or T1); the N designs are alike (⑤ coverage); the critique or a
 pretest finds a pattern (T2, T3); the Exp says the version loses (the scorecard); a paper suggests a procedure; a new
-kind of input appears. New inputs alone need no new version: they are a new inputs version. A proposal is written
-into the Block's `runs/run-propose-method-<slug>/` and names the trigger, the step it changes and the evidence; the
-registry cuts the version only when a person signs.
+kind of input appears. New inputs alone need no new version: they are a new inputs version. A proposal is the Block's Run
+`runs/run-propose-method-<slug>/` and names the trigger, the step it changes and the evidence; on a Board with a
+Book it lands in the Book's `proposals/` and a person signs the type's next version there, else the registry cuts
+the version only when a person signs.
 
 
 The learning loop: observed, scores, scorecard

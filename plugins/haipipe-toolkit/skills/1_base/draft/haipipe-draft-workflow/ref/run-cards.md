@@ -259,8 +259,8 @@ person copies to start that run in a Claude or Codex session; the panel fills in
 
 The order and the design drawing: `servers/workbench/workbench-task-draft/studio/page-workbench-design.excalidraw`
 § "The runs of a Page". A run opens with `page.py open-run` (one ticket,
-`runs/<name>.md`), changes only the text while it is open, and closes with
-`page.py close-run` when the person says so (`results/<name>/` and one log line).
+`runs/<name>/<name>.md`), changes only the text while it is open, and closes with
+`page.py close-run` when the person says so (its pass `runs/<name>/passes/pNN-<MMDD>/` and one log line).
 
 ## `Page.check`
 

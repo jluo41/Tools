@@ -56,8 +56,8 @@ Agent details
 | Agent | Stages | What it does |
 |-------|--------|-------------|
 | `haipipe-task-orchestrator-agent` | all | Clean-context dispatch target. Routes to creator/reviewer per stage and returns the Run/Result receipt. |
-| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts Run Specs. Build: writes/fixes code. Report: drafts report and Run audit. |
-| `haipipe-task-reviewer-agent` | 1, 2, 4 | Plan: checks Run Specs. Build: Gate 1 code review. Report: accuracy + Gate 2 Result audit. |
+| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts Run Specs. Build: writes/fixes code. Report: drafts the report. |
+| `haipipe-task-reviewer-agent` | 1, 2, 3, 4 | Plan: checks Run Specs. Build: Gate 1 code review. Execute: Gate 2 Result audit. Report: accuracy. |
 
 
 Shared across task

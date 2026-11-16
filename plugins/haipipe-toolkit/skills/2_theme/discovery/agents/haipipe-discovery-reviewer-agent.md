@@ -14,7 +14,7 @@ metadata:
 
 # Discovery Reviewer
 
-LOAD haipipe-discovery first. Evaluate D1 SCOPE, optional PREPARE, ACQUIRE,
+Read `haipipe-discovery/SKILL.md` by path first (this agent has no Skill tool). Evaluate D1 SCOPE, optional PREPARE, ACQUIRE,
 SYNTHESIZE's Page-workflow handoff, and CLOSE after Page CHECK. Return pass or
 revise with exact paths and defects.
 
@@ -32,12 +32,12 @@ any structural or terminal handoff, verify:
 [ ] spine:, close:, Topic, Pipeline, Board Map, and Pages are present
 [ ] the managed Job span names each direct jNN_ folder once, with the exact folder token
 [ ] no individual Task, Run, Result, or Page body is duplicated into board.md
-[ ] board/ was rebuilt from source and Board check --strict has no errors
+[ ] the creator's Board check --strict receipt has no errors (nothing is built)
 [ ] every discovered tNN Page is under the expected jNN Group and has the Discovery folder-kind
 ~~~
 
-If the source or projection is stale, return `revise` with the exact Block path
-and ask the creator to run `scripts/board_sync.py <block> --build --check
+If the source is stale, return `revise` with the exact Block path
+and ask the creator to run `scripts/board_sync.py <block> --check
 --strict`. A green Page/Run receipt does not substitute for a Board check.
 
 ## SCOPE gate
@@ -57,7 +57,7 @@ and ask the creator to run `scripts/board_sync.py <block> --build --check
 
 ## Run/Result gate
 
-Run the deterministic checker, then independently spot-check:
+Read the creator's deterministic checker receipt (this agent has no shell), then independently spot-check:
 
 ~~~text
 [ ] every runs/<RUNNAME>/<RUNNAME>.sh is executable
@@ -119,8 +119,8 @@ mistaken for a Block, Job, Task, or Run.
 
 ## Bib gate
 
-Read-only recompute the expected aggregate and require deterministic no-diff
-output. Never pass `--write`: D1 SYNTHESIZE is the sole aggregate-Bib mutation
+Compare the aggregate with the complete Result Bibs by reading them, and require the
+creator's deterministic no-diff receipt. Never ask for `--write` at this gate: D1 SYNTHESIZE is the sole aggregate-Bib mutation
 route.
 
 ~~~text

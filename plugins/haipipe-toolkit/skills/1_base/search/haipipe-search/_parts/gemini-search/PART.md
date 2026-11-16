@@ -22,7 +22,7 @@ metadata:
 
 This is the HAI Pipe adapter for the latest ARIS Gemini search skill. It is a
 candidate scout, not a citation authority and not a Run writer. Load
-`../../haipipe-discovery-search/SKILL.md` for the durable Trigger -> Subject ->
+`../../SKILL.md` (haipipe-search, once named haipipe-discovery-search) for the durable Trigger -> Subject ->
 Run/Result contract.
 
 ## When to use
@@ -50,7 +50,7 @@ or CLI never blocks the required preprint and journal-index channels.
 5. Hand the harvest to `haipipe-discovery-search`. The dispatcher performs
    exact-title/DOI/arXiv verification, cross-channel deduplication, relevance
    admission, and Run allocation. One admitted Subject receives one numbered
-   `runs/<RUNNAME>.sh` plus same-stem `results/<RUNNAME>/`; this adapter never
+   `runs/<RUNNAME>/` folder (its `<RUNNAME>.sh` ticket and its `result/`); this adapter never
    creates a Run, Result, Bib, or standalone notes ledger.
 
 ## Verification and coverage

@@ -11,7 +11,7 @@ from live.frame import esc, pop
 from live.ui_parts import _kv
 from live.insight_view_parts import _pill, _side_tabs
 from live.insight_prototype_facts import (
-    ORDER, LEVEL, CSS, _proto, _computes, _scripts, q_state, q_word, _ready, r_word, _label, _proposals,
+    ORDER, LEVEL, CSS, _proto, _computes, _scripts, q_state, q_word, _ready, r_word, _closed_r, _label, _proposals,
     _p_word, _focus, KIND_WORD)
 from live.insight_prototype_status import _open_btn, _release_waits
 
@@ -53,7 +53,7 @@ def _questions_by_release(proto: dict, root: Path) -> tuple:
         return None
     items = [(_label(r), r_word(r)) for r in rs]
     panels = [_by_level(list(r["questions"].values()), root, True) or "<p>This release asks no question yet.</p>" for r in rs]
-    signed = sum(r_word(r).startswith("closed") for r in rs)
+    signed = sum(_closed_r(r) for r in rs)
     word = "✅" if rs and signed == len(rs) else "🏃" if signed else "⬜"
     return ("❓ Questions", word, CSS + _side_tabs("prq", items, panels), "")
 
@@ -122,17 +122,16 @@ def _cuts_part(r: dict, qs: list, root: Path, eid: str = "prc") -> tuple | None:
         return None
     power = (r.get("thresholds") or {}).get("power") or {}
     floor = power.get("smallest_effect_pp")
-    items, panels = [], []
-    for p in parts:
-        name = str(p.get("name") or "")
-        asks = [q["id"] for q in qs if q.get("asked") == "all" or name in (q.get("asked") or [])
-                or (name == "cross" and any(n.get("cut") == "cross" for n in (q.get("needs") or {}).values() if isinstance(n, dict)))]
-        items.append((name, V._where(p)))
-        panels.append(_kv([("where", f'<code>{esc(V._where(p))}</code>'), ("why", esc(str(p.get("why") or "—"))),
-                           ("asked by", esc(", ".join(asks) or "—"))]))
+    # one row a segment: its name, its filter and why it is asked. Which questions ask it is the question map's
+    # (its segment picker lights them), never a wall of ids here
+    why = any(str(p.get("why") or "").strip() for p in parts)        # the Why column only where a segment has one
+    rows = "".join(f'<tr><td><b>{esc(str(p.get("name") or ""))}</b></td><td><code>{esc(V._where(p))}</code></td>'
+                   + (f'<td>{esc(str(p.get("why") or ""))}</td>' if why else "") + '</tr>' for p in parts)
+    table = (f'<div class=tblwrap><table class=pb-seg><thead><tr><th>Segment</th><th>Where</th>{"<th>Why</th>" if why else ""}</tr></thead>'
+             f'<tbody>{rows}</tbody></table></div>')
     head = (f'<p>Set in {esc(_label(r))}, before any result is seen'    # its files are 📦 Delivery's (round 2: shown once)
             + (f'; a segment too small to show a {esc(floor)}-point gap is not answered' if floor else "") + '.</p>')
-    return ("✂️ Segments", f"smallest gap to detect: {floor} points" if floor else _label(r), head + _side_tabs(eid, items, panels), "")
+    return ("✂️ Segments", f"smallest gap to detect: {floor} points" if floor else _label(r), head + table, "")
 
 
 def parts(folder: Path, root: Path, level: str) -> list:

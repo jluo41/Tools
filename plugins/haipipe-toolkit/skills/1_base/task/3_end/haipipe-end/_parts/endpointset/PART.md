@@ -174,11 +174,13 @@ work/bNN_<endpoint_block>/
 └── j02_endpoint_package_<qualifier>/
     └── t01_endpoint_set_<qualifier>/
         ├── scripts/<worker>.py
-        ├── scripts/config/r01_base.yaml
-        ├── runs/r01_base.sh
-        ├── results/r01_base/runtime.yaml
+        ├── runs/r01_base/r01_base.sh
+        ├── runs/r01_base/config.yaml
+        ├── runs/r01_base/result/runtime.yaml
         └── notebooks/r01_base.ipynb
 ```
+
+An older Block keeps the flat `runs/r01_base.sh`, `scripts/config/r01_base.yaml` and `results/r01_base/`.
 
 **Flow:** every required development Task passes → package Task → deploy.
 Legacy flat/C-series trees remain readable but are never scaffolded.

@@ -94,8 +94,9 @@ supersedes: null
 Create the runtime receipt with `status: planned` before work starts. A Result
 envelope with missing canonical outputs is truthful non-success, never `Done`.
 Existing `rNN_labeling-*` and `rlNN_*` envelopes remain readable migration
-history. Do not rename their files in place; every newly allocated Labeling
-Run uses the full `run-labeling-...` name. The old abbreviated stem may still
+history. Do not rename their files in place; every newly allocated Run of a Page-local
+labeling job uses the full `run-labeling-...` name (a ladder Job's items, meaning and expression
+Tasks allocate `runs/rNN_<what>/` with `result/` inside, per their own skills). The old abbreviated stem may still
 be shown as a compatibility alias on an older Run card.
 
 The [Run Type–Skill table](ref-space-mapping.md#run-type-skills) declares the

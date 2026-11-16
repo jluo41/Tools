@@ -36,9 +36,20 @@ def _href(b: dict, root: Path):
     return lambda sub="", space="", path=None: _focus(Path(path) if path else b["path"], root)
 
 
-def _preview(b: dict, j: dict) -> str:
+def _preview(b: dict, j: dict) -> bool:
+    """A Job whose question version is not signed yet: its sign waits on the person (🙋 and a Sign button, no words)."""
     plan = P.release(b["prototype"], j["release"])
-    return "" if str(plan["face"].get("signed") or "").startswith("✅") else f'{j["name"][:3]} is still open: its question version is not signed'
+    return not str(plan["face"].get("signed") or "").startswith("✅")
+
+
+def _sign_btn(b: dict, j: dict, root: Path) -> str:
+    """🙋 Sign, to where the question version is signed (the Question Book's Work); "" once it is signed."""
+    if not _preview(b, j):
+        return ""
+    plan = P.release(b["prototype"], j["release"])
+    name = esc(plan.get("label") or plan.get("name") or j["release"])
+    return (f' <span class="word you mk" title="1 waits for you">🙋</span> <a class=fd-btn data-pop="{name}" '
+            f'href="{esc(_proto_work(plan["job"], root))}">Sign</a>') if plan.get("job") else ' <span class="word you mk" title="1 waits for you">🙋</span>'
 
 
 def _job_state(j: dict) -> str:
@@ -72,7 +83,7 @@ def _plans_grid(b: dict, root: Path) -> str:
                 row.append('<span class=mut>no Job yet</span>')   # a new Job is Work's (Jobs › ➕ A new Job)
                 continue
             wrote, asked = V.written_of(j["tasks"])
-            row.append(f'{_jlink(j, root)} {_pill(_job_state(j) + (" · questions not signed" if _preview(b, j) else ""))}'
+            row.append(f'{_jlink(j, root)} {_pill(_job_state(j))}{_sign_btn(b, j, root)}'
                        f'<br>{_strip(j)}<br><span class=mut>{V.far(wrote, asked, "written")}</span>')
         rows.append(row)
     return JOB_KEY + '<div class=in-plans>' + _ctable(heads, rows) + '</div>'
@@ -92,7 +103,7 @@ def _answers(b: dict, root: Path, work: bool = False) -> str:
     out = _big(str(first["face"]["answer"]) if first else "What this dataset says, Job by Job")
     if first and shown is not None:
         out += (f'<p class=in-sub>{_pill(_job_state(shown))} {_jlink(shown, root, _pair(shown))}'
-                + (f'; {esc(_preview(b, shown))}' if _preview(b, shown) else "") + '</p>')
+                + _sign_btn(b, shown, root) + '</p>')
     if shown:
         xs = V._executive(shown)
         earlier = [j for j in b["jobs"] if V._executive(j) and j is not shown]

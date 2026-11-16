@@ -176,7 +176,7 @@ from serve_routes import PAGE_VIEW_ROUTES, new_route_name  # noqa: E402,F401
 from serve_post import PostMixin  # noqa: E402
 from slow_watch import SlowWatchMixin  # noqa: E402
 
-STAMP_KEEP = 3.0                         # seconds a Draft folder's newest-change stamp is reused across tabs
+STAMP_KEEP = 10.0                        # seconds a Draft folder's newest-change stamp is reused across tabs
 _STAMPS: dict = {}                       # folder -> (time, stamp)
 from serve_cli import daemonize, main  # noqa: E402,F401
 
@@ -320,16 +320,38 @@ class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, Activ
         self.end_headers()
         return True
 
+    def float_view(self):
+        """GET /_board/float?path=<a unit's float.pdf or preview.pdf>: its page 1 as PNG, the typeset float a display
+        box shows (src/float_image.py; must-check M-D18), from a cache outside the paper folder. Only such a PDF inside
+        the root; when it cannot be rasterized, the unit's preview.png or assets/figure.png."""
+        from urllib.parse import parse_qs, urlsplit
+        from src.float_image import NAMES, float_png
+        rel = (parse_qs(urlsplit(self.path).query).get("path") or [""])[0].strip("/")
+        root = Path(self.root).resolve()
+        pdf = (root / rel).resolve()
+        if not (rel and pdf.name in NAMES and root in pdf.parents and static_path_allowed(root, pdf) and pdf.is_file()):
+            return self.send_error(404, "not found")
+        png = float_png(pdf) or next((x for x in (pdf.parent / "preview.png", pdf.parent / "assets" / "figure.png")
+                                      if x.is_file()), None)
+        if not png:
+            return self.send_error(404, "not found")
+        body = png.read_bytes()
+        self.send_response(200)
+        self.send_header("Content-Type", "image/png")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
     def draft_stamp_view(self):
         from urllib.parse import parse_qs, urlsplit
         rel = (parse_qs(urlsplit(self.path).query).get("path") or [""])[0].strip("/")
-        root = Path(self.root).resolve()
-        folder = (root / rel).resolve()
         newest = 0.0
-        hit = _STAMPS.get(str(folder))                    # every open tab of a Draft polls this every few seconds:
-        if hit and time.monotonic() - hit[0] < STAMP_KEEP:  # tabs on one page share one walk
-            newest = hit[1]
-        elif rel and folder.is_dir() and root in folder.parents:
+        hit = _STAMPS.get((str(self.root), rel))          # every open tab of a Draft polls this every few seconds:
+        if hit and time.monotonic() - hit[0] < STAMP_KEEP:  # tabs on one page share one walk, looked up before any
+            newest = hit[1]                               # path is resolved
+        elif rel and (folder := (Path(self.root).resolve() / rel).resolve()).is_dir() \
+                and Path(self.root).resolve() in folder.parents:
             # results/ and data/ hold run output a Draft page never shows; walking them on every poll hung a host
             skip = {"runs", "delivery", "_archive", "__pycache__", "workflow", "previous", "results", "data",
                     "node_modules"}
@@ -341,7 +363,7 @@ class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, Activ
                             newest = max(newest, os.stat(os.path.join(dirpath, f)).st_mtime)
                         except OSError:
                             pass
-            _STAMPS[str(folder)] = (time.monotonic(), newest)
+            _STAMPS[(str(self.root), rel)] = (time.monotonic(), newest)
         body = json.dumps({"stamp": newest}).encode()
         self.send_response(200)
         self.send_header("Content-Type", "application/json")
@@ -422,6 +444,8 @@ class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, Activ
         if self.path.split("?", 1)[0] == "/_board/labeling":
             # 🏷 four Spaces over one labeling/ lane
             return self.labeling_view()
+        if self.path.split("?", 1)[0] == "/_board/float":
+            return self.float_view()          # 🖼 a display's typeset float, page 1 as PNG
         if self.path.split("?", 1)[0] == "/_board/draft-stamp":
             # 🔄 the newest change time of one page folder's text and records, so an open page reloads itself when an
             # agent or another tab writes (JL 261114: "How to make the UI to be auto refreshed to show the changes?")

@@ -16,8 +16,8 @@ file we were sent, an email, a repo or a dataset. It is Delivery's twin on the o
 
 ```text
 haipipe-related   related/               came in     one per Block, read by every level
-haipipe-studio    sNN-<topic>/    think       one per Block, opened from every level
-haipipe-report    reports/qNN_<topic>/   answer      every level its own
+haipipe-studio    sNN-<topic>/    think       one numbering per Block, beside the Jobs or Tasks they serve
+haipipe-report    ## Questions           answer      in the topic that answers it (an older Block: reports/qNN_<topic>/)
 haipipe-delivery  delivery/              went out    one per Block, opened from every level
 ```
 
@@ -66,7 +66,7 @@ The table: related.md
 
 1. **kind**: meeting · paper · file · email · repo · dataset · tool · project.
 2. **link**: a path under `related/` in backticks, or a web address.
-3. **feeds**: the studio topics (`sNN`) and reports (`qNN`) it feeds; a report cites the row the
+3. **feeds**: the studio topics (`sNN`) and Questions (`qNN`) it feeds; an answer cites the row the
    way it cites a Run.
 4. **group**: extra groups, comma-separated; the subfolder is never written here.
 5. **bears on** (a paper Board): what a paper bears on (the closest work, the background, an idea, a
@@ -83,7 +83,7 @@ the things like subfolders and can give them the group name"). A meeting in `mee
 cell. The subfolder group has no × and changes only when the file moves. A row kept as a web link has
 no subfolder, so its `kind` stands in (JL 261013: the groups are "things like meeting, email,
 paper"): the bar reads by what each item is. Untagged holds only a row with no subfolder, no kind and
-an empty cell. `related/_groups.txt` keeps the buttons' order, as `studio/_groups.txt` does for the
+an empty cell. `related/_groups.txt` keeps the buttons' order, as `_studio_groups.txt` (an older Block: `studio/_groups.txt`) does for the
 topics. What a paper is about is not a Studio group: it goes in `bears on`.
 
 
@@ -134,7 +134,7 @@ Boundary
 | `haipipe-paper` | a paper Board's `reference.bib`, built from its paper rows at Delivery |
 | `haipipe-discovery` | a deep read of a paper: a discovery Task's Run, linked from its row |
 | `table-papers` | the papers behind a workbench (Guide › Related Paper), not a Block's related/ |
-| `haipipe-studio` | `studio/`: Related folds inside it, but its topics are no related items |
+| `haipipe-studio` | the `sNN-<topic>/` topics: Related folds inside the Studio, but its topics are no related items |
 | `haipipe-delivery` | `delivery/`, the twin: what went out |
 
 

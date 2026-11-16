@@ -10,7 +10,7 @@ Spec bindings and the compile/response profiles.
 | Work | Semantic owner / family | New identity and storage | Boundary |
 |---|---|---|---|
 | Page writing | exact Paper PageType + shared Page writing / `page` | `run-<kind>-<slug>` (kind: structure, scratch, section, paragraph, revise, auto-write, evidence-embed, context, check); Page-native Ticket/Result | structure or bounded prose session; feedback is a Step |
-| Page Evidence | consuming Page's Evidence Item / `page` | `run-value-<slug>`, `run-citation-<slug>`, `run-display-<slug>`; Page-native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
+| Page Evidence (an older Section; a paper Section now keeps none, haipipe-paper-evidence rule 9) | consuming Page's Evidence Item / `page` | `run-value-<slug>`, `run-citation-<slug>`, `run-display-<slug>`; Page-native Ticket and Result | one local evidence lineage; a worker may execute it without changing its owner |
 | Page delivery | shared Page delivery owner / `page` | one fixed Run per lane: `run-delivery-webpage`, `run-delivery-latex`, `run-delivery-word`; no receipt | generated Page artifact; does not authorize Page release |
 | Supporting work | Task, Discovery or other declared native owner | full native `rNN`, `rlNN`, or global Ticket/Result address | consumer-neutral computation or inquiry; never renamed for Paper |
 | Paper judgment | Paper Ideation/Story card owner / `paper` | `run-paper-<judgment>-<slug>`, below | one fixed idea, claim, Task Roadmap row or Section row |
@@ -30,8 +30,8 @@ run-xxx-xxx"). A Run lives with its level (`haipipe-paper/ref/paper-ladder.md`):
 a Board's and a version's own Runs in their `runs/`, a Section's in the Section
 Task's `runs/` through the Page workflow. Use `paper_lane: main | appendix |
 letters` (from the Task's number band: `t0N_`, `t2N_`, `t3N_`) and the full
-semantic `page:` beside the Run's native identity. A comments batch is a report
-(`reports/qNN_<kind>-<MMDD>/`), not a Run family or a Run-number authority. The
+semantic `page:` beside the Run's native identity. A comments batch is a review Job
+(`jNN_review_<kind>_v<MMDD>/`; an older Board: `reports/qNN_<kind>-<MMDD>/`), not a Run family or a Run-number authority. The
 older dated form `run-<kind>-<MMDD>-<slug>` is still read; `page.py run-names`
 drops its day.
 

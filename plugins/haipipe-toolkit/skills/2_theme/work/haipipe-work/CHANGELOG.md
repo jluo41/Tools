@@ -1,5 +1,6 @@
 ## [0.3.0] — 2026-11-14
 
+- 🗺️ Work map on every work Block's Overview: a line per Job, a station per Run, a click opens the Run in the pop-out (`work_map.py`); b41 draws its decisions with the same code (JL 261114).
 - Work pages carry no state words: a Job, Task or Run row shows its mark (✅ ⏳ ⬜ ❌ 🔶) with the word in its hover (`ui_parts.state_mark`); a Job row has no "done · N Tasks"; the Job's state lead line and the "No Run has returned anything yet" lines are gone; a row that waits on the person keeps its words (JL 261113).
 - `propose <Block>`: read loose material, propose the Block's own Overview and Findings sections and its Jobs, the person ticks, then make them (`ref/propose.md`). A face names its own sections under `## Review Content` and `## Findings` (`### title`, `embed: path` for a .md, never an .html, `each: glob`), rendered by `servers/workbench/page/work_sections.py`; first case b41_agreeablerx_replay (JL 261114). `## Plan + Results` adds sections after the Jobs; an `.html` is never framed; a list item with sub-items is a card (chips, tinted blocks) and bold-time items a timeline with phases; an empty Data, Values or Displays section is not drawn.
 

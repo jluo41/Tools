@@ -74,7 +74,7 @@ A Board Job's name reads left to right (JL 261012: "make the job folder name to 
 slug, the data version) and hyphens join the words inside one, as in a Task's name; the Job ▾ menu shows it as it is.
 `ref/open_job.py` writes it (`job_name`); the older `jNN_prototype-pN-<slug>_data-<D>vM` and `jNN_pN_<D>vM` stay
 readable until `ref/rename_code_data.py` carries the Board over. A renamed Job keeps its old name in its face,
-`renamed-from: j01_p1_SMSR2v1`, so an old workbench link still opens it.
+`renamed-from: j01_p1_<D>v1`, so an old workbench link still opens it.
 
 **The Executive level, X** (JL 261012: "based on the whole bottom level question, what are the high level question we
 should have?"). Above D, I, K and W, a release may ask a few Executive questions, `tNN_X<NN>_<slug>/` with
@@ -133,7 +133,7 @@ The rules
    same release on the next data version) or `code` (the next release on the same data). Both at once is refused:
    add the one, then the other. One Job per pair; a Job is frozen once closed (`run-close-jNN`, a person signs).
 2. **A release is signed, then frozen.** A version opens from the newest one (`run-open-version-question-vN`): every
-   question kept, its Task pointed back to the release that holds it (`task: ../j01_p1_<slug>/t02_I01_…`), the segments,
+   question kept, its Task pointed back to the release that holds it (`task: ../j01_question-v1_<slug>/t02_I01_…`), the segments,
    thresholds and `src/` copied. A question new or changed in this release has its Task here; a changed one is
    carried forward under the same `tNN` and its `agreed:` resets. Signing (`run-sign-release-question-vN`, a person) needs
    every new or changed question agreed by an agent that did not draft it, and the segments set. A Board runs only a
@@ -144,7 +144,7 @@ The rules
    (`run-set-segments-question-vN`, a person signs the segments) before any outcome is seen. A Board never sets a segment; it proposes
    one (`run-propose-cut-<slug>`). A Run's `rNN` is the segment's place in the release's `partitions.md`.
 5. **Proposals are the only way in.** A question, a fix, a retirement or a segment reaches a release only as
-   `proposals/<slug>.md` (`kind: new question | fix | retire | segment`, `level:`, `from:` the Job or report it came
+   `proposals/<slug>.md` (`kind: new question | fix | retire | cut`, where `cut` is the file's word for a segment, `level:`, `from:` the Job or report it came
    from, `state: open | taken | declined`, `taken-in: question-vN`, why). The Board's and a Job's Propose Runs write there
    and nowhere else. Decided (261008): **a release is cut per triaged batch** (`run-triage-proposals-question-vN` takes a
    batch into the next version), never per single proposal, so one new question does not make a new Job each time.
@@ -192,7 +192,7 @@ closed. A button the shared frame also has keeps the frame's name (haipipe-run `
 
 ```text
 level      Run                              kind  does                                       skill
-Question Book  run-triage-proposals-question-v<N>        soft  take a batch of proposals into p<N>        haipipe-insight-question
+Question Book  run-triage-proposals-question-v<N>        soft  take a batch of proposals into question-v<N>  haipipe-insight-question
            run-open-version-question-v<N>            soft  the next version, from the newest          haipipe-insight
            run-map-questions                soft  draw the question map                      haipipe-insight
            run-carry-<board>                soft  carry an older Block or board in, once     haipipe-insight
@@ -215,7 +215,7 @@ Board      run-add-version-data-v<M>             soft  a data version, frozen   
            run-write-counsel                soft  the Wisdom counsel                         haipipe-insight-wisdom
            run-draft-handoff                soft  the Design handoff (a person signs)        haipipe-insight-wisdom
            run-close-j<NN>                  soft  check, then close a Job (a person signs)   haipipe-insight-check
-           run-draw-s<NN>                   soft  a studio topic (every level)               haipipe-studio
+           (no Run) sNN-<topic>/passes/     a studio topic's round is a pass (every level)   haipipe-studio
 Job        run-launch-j<NN>                 soft  run the Job's tickets                      haipipe-insight
            run-power-j<NN>                  soft  measure n and power per segment, before outcomes haipipe-insight
            run-compare-j<prev>              soft  reports/vs-<prev>.md                       haipipe-insight-knowledge
@@ -258,6 +258,7 @@ ref/open_job.py             a Job's face, its Tasks and one ticket per asked seg
 ref/run_job.py              the runner of a hard Run's ticket: reads the release, writes only the Run
 ref/run_question.py         the statistics, the power check and the gate, shared by both runners
 ref/figures.py              the run report's figures, from result tables only
+ref/deliverables.py         what one question delivers and how each part is reviewed (worked patterns: ref/deliverables.md)
 ref/question_map.py         the question map
 ref/prototype_from_block.py carry an Insight Block (one Job per level) into a release, word for word
 ref/carry_over.py           carry a register board into an Insight Block, word for word
@@ -265,7 +266,10 @@ ref/rename_code_data.py     carry pN/vM names and work/Prototype-bNN-<T>/ onto q
 ```
 
 An older folder: `insight_ladder.py audit <Board, Question Book or Project>` says what it lacks; `update` (a dry run, then
-`--apply`) fixes the names, the goal lines and each Job's hash; stale receipts are rerun by their tickets.
+`--apply`) fixes the names, the goal lines and each Job's hash; stale receipts are rerun by their tickets. `review <Board>`
+(read-only) then says which answers owe a reread or a check, which Runs refused and why, and what the Question
+Book leaves unsaid. A refused Run's reason is kept on its card (`run.yaml` `reason:`) and shown on the Task page
+where its answer would sit.
 
 A new topic: `insight_ladder.py prototype`, `version`, one `question` per question, then the review, the plan, the
 scripts and `sign`; `board`, `data data-v1`, `job --release question-v1 --data data-v1`; the tickets; then the pages.

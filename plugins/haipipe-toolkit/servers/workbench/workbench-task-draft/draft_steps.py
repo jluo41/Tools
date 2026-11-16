@@ -367,6 +367,8 @@ def _text_and_editor(d: dict, ev: dict, root: Path, folder: Path) -> str:
     text = "".join((f'<h3 style="margin:14px 0 4px">{esc(t)}</h3>' if len(d["text"]) > 1 else "") + _md(b, marks, _parts(d))
                    for t, b in d["text"])
     text = _embed_displays(text, d, _displays(folder, d), root)
+    from live.draft_card_text import ref_names, ref_text   # \ref reads "Figure 2" (M-D18)
+    text = ref_text(text, ref_names(folder))
     right = (f'<h4 style="margin:0 0 4px">✍️ Write it yourself {pop(src.replace("&embed=1", ""), "Write it yourself", "↗")}</h4>'
              f'<iframe class=space-frame title="Write it yourself" src="{esc(src)}" style="{FIT_STYLE}" '
              f'onload="{FIT};window.wrHook&&window.wrHook(this)"></iframe>')

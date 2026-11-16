@@ -25,18 +25,19 @@ the skill OPENS a workbench; every section after this one is the contract the op
 /wb update <Block>         bring it to today's rules      cli/wb_update.py (b10 s10), below
 /wb share <folder> <email> share it on its SPACE's door   cli/wb_share.py (b10 s52); --people <list>
 /wb <folder> share [<email>] the same, folder first; no email: who has it, its link
-/wb share --serve [<SPACE>] start that SPACE's share door  <space>.jjluo.com → 127.0.0.1:569x
+/wb restart [--root <SPACE>] restart this SPACE's host   after a Tools change; starts one if none runs
+/wb share --serve [<SPACE>] start that SPACE's share door  <space>.<DOMAIN> → 127.0.0.1:<port>
 ```
 
 **One share door per SPACE** (JL 261012; b10 s52-D17): a second host on the same SPACE, `--share`,
 127.0.0.1 only, behind its public name through the tunnel; people sign in with an emailed code
 and see only what the SPACE's `.server_config/access.yaml` grants them. The table names its door
-(`public_url:`, `port:`): physician 5691, welldoc 5692, drfirst 5693, reach 5694, jluo41 5695,
-knowledge 5696 (Tools-SPACE's block.jjluo.com was dropped, s52-D18). A SPACE with no table has no
+(`public_url:`, `port:`, for example `https://share.example.test` and a port of its own): each SPACE keeps
+its own values in its git-ignored `.server_config/` (`access.yaml`, `settings.env`), never in this repo. A SPACE with no table has no
 door, and `/wb share` refuses it. A share door is never one of the SPACE's own hosts to `/wb`.
 
 **What a door can reach** (JL 261012: "will this make my mac studio unsafe?"): only 127.0.0.1 on this Mac,
-so the tunnel is its one way in; only named JHU emails get a code; a grant opens its folder and below, every
+so the tunnel is its one way in; only emails in the allowed domains get a code; a grant opens its folder and below, every
 other path is 404; for everyone but an owner it is read-only, with no terminal and no chat. The tables, the cookie
 secret and the mail key are git-ignored and mode 600, so a clone of this repo carries the code and no way in.
 
@@ -44,7 +45,7 @@ secret and the mail key are git-ignored and mode 600, so a clone of this repo ca
 just start from the SPACE, and then we pickup the board"). Every row above goes through the
 one host rooted at the SPACE; a Project, Block, Job or Task is picked up inside it by its
 path. Never start a host rooted at a Project or a board folder: such hosts outlive renames
-and serve gone folders (DrFirst's 8765, 8766 and 8767 did, stopped 261011). A Tools
+and serve gone folders (three such hosts once did, stopped 261011). A Tools
 blueprint Block belongs to the Tools SPACE, so it opens on the host rooted at `Tools/`.
 
 **A renamed folder keeps its old links** (JL 261012: "I cannot open you anymore"). Whoever renames a Block,
@@ -60,6 +61,9 @@ existed still says Not found.
    loads the link, and restarts a server that drops the request (a server started before another
    session renamed something in Tools holds old paths). Then it opens the browser and prints the link,
    the folder, its level and the skill for its theme. `--no-open` only prints; `--no-restart` never restarts.
+   A running host keeps the code it started with, so after a Tools change run `wb.py restart` in each SPACE.
+   It starts serve.py with the SPACE's `.venv/bin/python` when that has PyYAML (Python 3.10+), else
+   `~/.cache/haipipe/host-venv/bin/python`, made once with uv (`launcher` in cli/wb.py).
    A Project, Theme folder, Block, Job or Task opens on its focus page (`layout=focus`: Report · Work ·
    Studio, the page picks its opening section; JL 261030: "Why not using the UI that we discussed
    previously?"); `--classic` opens the old screens (Project Home view, the frame on its Studio).
@@ -85,7 +89,7 @@ A new Block starts on `haipipe-block`'s `new_board.py`, which writes today's fac
 
 ```text
 1 shape      haipipe-project ladder.py audit           names, faces, folders, Run cards
-2 today      ladder.py audit --today                   studio topics, ## Questions, reports/, Block-only delivery/;
+2 today      ladder.py audit --today                   studio topics, ## Questions, an older reports/, Block-only related/;
                                                        a work Block's workflow layout (261021, below)
 3 plan       what moves, what is made, what is proposed
 4 apply      --apply: the safe moves and missing Run roles, then runs/run-update-<bNN>/ with a pass holding proposals.md
@@ -103,9 +107,9 @@ What a person and the agent do around those seven script steps:
 3. **Word it**: rewrite that `proposals.md` in the Block's words, per `haipipe-studio` `ref/infer-topics.md`
    and `haipipe-report` `ref/infer-reports.md`: the script's lines are candidates, not the answer.
 4. **Tick**: a person ticks `[x]` the lines to keep; nothing proposed is made before (b10 s10-D03).
-5. **Make**: ticked topics by `haipipe-studio` `new_topic.py topic`, their groups in `studio/_groups.txt`;
+5. **Make**: ticked topics by `haipipe-studio` `new_topic.py topic`, their groups in `_studio_groups.txt` (an older Block: `studio/_groups.txt`);
    ticked Questions by `haipipe-report` (`add-question --group`, the topic's group).
-6. **Workflow layout** (a work Block, LLMRec b01 and b02, 261021): the agent adds `workbench-layout: workflow`
+6. **Workflow layout** (a work Block, 261021): the agent adds `workbench-layout: workflow`
    to the Block's face;
    each Job face its `emoji:` and `## Deliverables` (`haipipe-job` `ref/job-contract.md`), each work Task
    face its `goal:` and `close:`, all written from the Job's and Task's own records, never guessed. A Run
@@ -147,7 +151,7 @@ checklist is `servers/README.md` § Adding a workbench, and
 
 Two words, two things: a **workbench** is the lane a Page owns on disk and the
 contract an agent writes to (`workbench-task-draft` says what `draft/`,
-`runs/`, `results/` and `delivery/` hold); a **workbench** is that lane's
+`runs/<run>/` (each with its `result/`) and `delivery/` hold); a **workbench** is that lane's
 served face in the browser (`plugins/haipipe-toolkit/servers/workbench/workbench-task-draft`
 renders them). They pair by name, `workbench-<x>` with
 `servers/workbench-<x>`, and never swap roles; the servers tree's `README.md`
@@ -160,7 +164,7 @@ standalone lane uses `<page-dir>/<lane>/`; a category-owned lane uses its real
 nested address, such as `draft/evidence/bibex/` or `delivery/latex/`.
 PRIMARY lanes hold originals a person makes (draw, chat): they are committed
 and only their category-owned writer edits them. Meetings are project/SPACE
-records owned by `haipipe-project-meeting`, never current Page material.
+records owned by `haipipe-related` (a Block's `related/`), never current Page material.
 DERIVED workbenches hold projections of the page's own text (slide, latex, word,
 citation workbench): they regenerate on demand, a hand edit is overwritten on
 the next build, and the folder is safe to gitignore.
@@ -212,7 +216,7 @@ Every optional surface, including the Page Runs stepper, appears in the one
 Workbench picker. A surface may use its own panel layout after opening, but that
 never creates a second top-level menu.
 A generic Page Workbench's OPERATING knowledge lives in one of exactly two
-public skills beside this one in `skills/1_base/draft/`: `workbench-task-draft` (the 📃 Page
+public skills: `workbench-task-draft`, beside this one in `skills/1_base/workbench/` (the 📃 Page
 tab with its Draft, Evidence and Delivery Spaces and their Runs panels, the 📤
 Delivery tab, and the 📂 Folder tab: everything
 `servers/workbench/workbench-task-draft` renders) or `haipipe-studio`. Internal lanes
@@ -262,8 +266,8 @@ typed identity. One RE Result/Card may expose many `$V_xxx$`,
 the authored Ticket and runtime internals while the Page inspects the generated
 Result by logical Run address without copying it. The typed Page RP/RE and Task `rNN` counters are independent
 and may both begin at 01 in one Folder. A standalone/Discovery Folder stores both projections at
-its root; a canonical Task Page stores the ticket inside the Task and its
-generated Result at the containing Job's `results/<task>/<run>/`. A custom
+its root; a canonical Task Page keeps one folder per Run, `runs/<run>/` with its ticket and its
+generated `result/` (an older Task: the Result at the containing Job's `results/<task>/<run>/`). A custom
 Labeling dialect keeps Ticket and Result receipt in its authority-owning
 round/evaluation/production/audit folder while preserving the same logical Run
 address and receipt contract. `scripts/`
@@ -276,14 +280,14 @@ accepted wording: never treat them as a disposable cache or regenerate their
 completed Steps/Versions. Results are never evidence merely by existing, and
 become Page evidence only when an Evidence Item/RE Result binds them. There is
 no Evidence storage lane under `draft/`; the plan folder owns the Item contract,
-while `runs/` and `results/` own execution and payloads. Rows and physical
+while `runs/<run>/` and its `result/` own execution and payloads. Rows and physical
 dialects: `ref/roster.md` and `workbench-task-draft/ref/run-space.md`.
 
 For a Board Page, the Evidence Item contract is in the authored
 `draft/<stem>-evidence-items.md`; its Supporting Run and Local Run references
-resolve directly through the owning `runs/` and `results/` records. There is no
-`outline/evidence/supporting-runs/` binding lane. Actual page-local execution stays at the
-sibling `runs/` (Tickets) and `results/` (paired generated Results). `⚙️ Runs`
+resolve directly through the owning `runs/<run>/` records. There is no
+`outline/evidence/supporting-runs/` binding lane. Actual page-local execution stays in the
+sibling `runs/<run>/` (its Ticket and its generated `result/`; an older Page: `runs/` beside `results/`). `⚙️ Runs`
 presents Page-owned writing history plus the output side of allocated
 Supporting Task Runs, while `📃 Page → Evidence Space` owns why
 each output is needed and any unallocated route.

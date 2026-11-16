@@ -17,7 +17,7 @@ def child_rows(level, folder, root, data, mode, view):
     number columns never wrap; the goal gives way (JL 261020: "this is not readable")."""
     nw = ' style="white-space:nowrap"'
     heads = ["Job" if level == "Block" else "Task", "Goal"] + (["Tasks"] if level == "Block" else []) + [
-        "Runs", "✅", "🚧", "❌", "⛔", "◌", "last finished"]
+        "Runs", "✅", "🏃", "❌", "⛔", "◌", "last finished"]
     rows = []
     for child in frame.children(folder, level):
         tasks = [t for t in data if t == child or child in t.parents]
@@ -37,7 +37,7 @@ def child_rows(level, folder, root, data, mode, view):
     return f"<table class=wf-table><thead><tr>{head}</tr></thead><tbody>{''.join(rows)}</tbody></table>" + LEGEND
 
 
-LEGEND = ("<p class=mut>✅ finished · 🚧 running · ❌ failed · ⛔ blocked · ◌ waiting for a person to start it. Read from each "
+LEGEND = ("<p class=mut>✅ finished · 🏃 running · ❌ failed · ⛔ blocked · ◌ waiting for a person to start it. Read from each "
           "Run's receipt (runtime.yaml), else its card; a finished Run is not the goal accepted.</p>")
 
 
@@ -155,7 +155,7 @@ def status_tree(level, folder, root, data, mode):
 def hot_runs(every, root):
     """What runs now and what failed, each a short list of one-line Runs with their Task."""
     out = ""
-    for k, title in (("running", "🚧 Running now"), ("failed", "❌ Failed")):
+    for k, title in (("running", "🏃 Running now"), ("failed", "❌ Failed")):
         rows = [r for r in every if state_of(r) == k]
         body = f'<ul class=dtree>{"".join(run_node(r, root, task=True) for r in rows)}</ul>' if rows else "<p class=mut>None.</p>"
         out += card(f"{title} · {len(rows)}", body, "" if rows else "none", key=k)

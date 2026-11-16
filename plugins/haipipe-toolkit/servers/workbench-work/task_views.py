@@ -249,8 +249,6 @@ def drawing_html(drawing):
         bar = (f'<span><button type="button" class="draw-edit">Edit drawing</button> '
                f'<span class="mono mut">{e(drawing["path"])}</span></span>{link(url + "&edit=1", "Open full screen")}')
     sessions = drawing.get("sessions") or []
-    count = (f' <span class="mut">· {len(sessions)} session{"s" if len(sessions) != 1 else ""}</span>'
-             if sessions else "")
     saved = ""
     if sessions:                                     # the studio's saved sessions, newest first (haipipe-studio)
         items = "".join(f'<li>{pop(s["url"], "Session · " + s["title"], s["pass"] + " · " + s["title"])}</li>'
@@ -259,7 +257,7 @@ def drawing_html(drawing):
     if drawing.get("preview"):                       # the builder's preview: readable without the canvas
         saved += (f'<a class="draw-preview" href="{e(drawing["preview"])}" target="_blank" rel="noopener">'
                   f'<img src="{e(drawing["preview"])}" alt="{e(drawing["title"])}" loading="lazy"></a>')
-    return (f'<details class="draw" data-board="{e(drawing["path"])}"><summary>{e(drawing["title"])}{count}</summary>'
+    return (f'<details class="draw" data-board="{e(drawing["path"])}"><summary>{e(drawing["title"])}</summary>'
             f'<div class="st-bar">{bar}</div>{saved}'
             f'<iframe class="st-frame" title="{e(drawing["title"])}" data-src="{e(url)}" referrerpolicy="no-referrer"></iframe>'
             '</details>')

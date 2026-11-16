@@ -1,14 +1,11 @@
 ---
 name: workbench-cowork
 description: >-
-  Open and interpret a CoWork Block Workbench, in the Insight Workbench's style:
-  Scope (Block, People, Resources, RoadMap Draw), Work (Jobs, Questions as
-  Logic │ Work │ Report rows, Emails, Meetings), Check (Waiting on, Drafts,
-  Reports) and Delivery (Reports, Done jobs), each with the shared Runs panel,
-  and the shared Guide. Also the Project view: every cowork Block of a Project in
-  one table. Use to see who we wait on, which drafts are not sent, a Job's
-  state, or a Block's Questions. The Block contract belongs to haipipe-cowork;
-  report writing to haipipe-draft.
+  Open and interpret a CoWork Block on the shared workbench frame (the work
+  shape every Block, Job and Task page takes). Use to see who we wait on, which
+  drafts are not sent, a Job's state, or a Block's Questions. The older
+  cowork-board page (Scope, Work, Check, Delivery) is retired and described
+  only for reading old links. The Block contract belongs to haipipe-cowork.
 metadata:
   version: "0.5.2"
   last_updated: "2026-10-11"
@@ -17,31 +14,32 @@ metadata:
 # CoWork Block Workbench
 
 One `cowork/bNN_*/board.md` declaring `board-kind: cowork-block` opens one Workbench
-(`haipipe-cowork` owns the Block). It is drawn as the Task Workbench is
-(`servers/workbench-work/`, after the Insight Workbench): the title alone in the
-header, the Block band, the Spaces Guide · Scope · Work · Check · Delivery, every
-View opened by a heading and one lead line, and each Space's content in one box
-beside its Runs panel. Guide is the theme's own, in its server folder:
-`servers/workbench-cowork/guide/` (`guide.yaml`: Description and RoadMap Draw; `method.md`, its
-cards in `methods/cowork/` and `methods.excalidraw`: Method) and `related/papers.md` (Related
-Paper). The Workbench Table stays here, in `ref/workbench-table.md`.
+(`haipipe-cowork` owns the Block). It opens on the shared frame every theme uses
+(`servers/workbench/page/`): cowork is one of the work-shaped themes
+(`focus_base.py` `WORK_SHAPE`), so its Block and Job pages read as a work page does
+(`../../work/workbench-work/SKILL.md`, Current focus pages). The cowork-board page this
+skill once described (Spaces Guide · Scope · Work · Check · Delivery, presenter
+`servers/workbench-cowork/`) is retired: its code sits in `servers/_old/workbench-cowork/`
+and its route is no longer registered. `ref/workbench-table.md` lists that page's run types.
 
 ## Open
 
 Use the existing shared host; do not start another when one is running.
 
 ```text
-/_board/cowork-board?path=<Block>/board.md          one Block
-/w/<block-folder>                                   the same, short
-/_board/cowork-board?path=<Project>/cowork          every Block of a Project
-/_board/cowork-board                                every cowork Block under the root
+/wb <Block | Job>                                   the focus page, on the running host
+/w/<block-folder>                                   the same Block, short
+/_board/workbench?path=<Block or Job folder>        the shared frame, full path
 ```
 
-The host is `<plugin>/servers/_host/serve.py`; the presenter is
-`<plugin>/servers/workbench-cowork/` (`coworkboard.py` reads, `cowork_views.py`
-draws). It reads the Block's files on every open and stores nothing.
+The host is `<plugin>/servers/_host/serve.py`; the page is the shared frame's
+(`<plugin>/servers/workbench/page/`). It reads the Block's files on every open and stores nothing.
 
-## Spaces and Views
+## Retired page: Spaces and Views
+
+What the retired cowork-board page showed (`servers/_old/workbench-cowork/`), kept to read an old
+link or an older Block, never as the page to build toward. Drawings now live in `sNN-<topic>/`
+beside the Jobs and answers in those topics (`haipipe-cowork`), not in `studio/` or `reports/`.
 
 | Space › View | Contents | Source |
 |---|---|---|
@@ -67,13 +65,13 @@ a message: the person signs every send.
 A draft is an `emails/*.md` whose name contains `draft` or whose header has
 `status: draft`. Waiting days count from the job page's `since` to today.
 
-## On the base frame (proposed, b13 Q01)
+## On the shared frame
 
-The same Block also opens in the base frame every theme shares (`servers/workbench/page/frame.py`):
+A Block opens in the frame every theme shares (`servers/workbench/page/frame.py`):
 `/_board/workbench?path=<Block or Job folder>`. The levels are Guide · Block · Job ▾ · Task ▾, and
 each level has the six Spaces Description | Idea Studio · Audience Report | Work Details | Runs ·
-Delivery. `servers/workbench-cowork/cowork_theme.py` fills them; anything it leaves out is the
-base's default.
+Delivery. The table below is the cowork fill `cowork_theme.py` gave them; that module is in
+`servers/_old/workbench-cowork/`, so until it returns a cowork page shows the base's default.
 
 | Level › Space | Third row | Contents |
 |---|---|---|
@@ -88,11 +86,11 @@ base's default.
 
 An email, a meeting or a checklist step is a row of its Job, not a Task. The Task tab stays greyed
 until a Job has a `tNN_<doc>/` (a document written with others in rounds), which opens as the
-base's Page Task. Idea Studio and Runs are the base's (`studio/` topics; `runs/` by run type).
+base's Page Task. Idea Studio and Runs are the base's (`sNN-<topic>/` topics; `runs/` by run type).
 Today's Check Space has no place here; where waiting-on and drafts show is b13 Q02.
 
 ## Boundary
 
 The Workbench reads; `haipipe-cowork` and its agents write the Block, `haipipe-report`
-the Questions, `haipipe-draft` the reports. The Project view only lists Blocks and their
+the Questions; an answer is written in its Studio topic (`haipipe-studio`). The Project view only lists Blocks and their
 open Jobs; it has no registers of its own.

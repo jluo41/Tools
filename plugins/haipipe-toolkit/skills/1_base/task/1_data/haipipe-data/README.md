@@ -67,7 +67,8 @@ File Map
   fn/fn-0-dashboard.md      <- dashboard function
   fn/fn-1-load.md           <- load function (all stages)
   fn/fn-2-cook.md           <- cook function (all stages)
-  fn/fn-3-design-chef.md    <- design-chef function (all stages)
+  fn/fn-3-design-chef.md    <- design-chef function (workflow, source, record, universal rules)
+  fn/fn-3-design-chef-case-aidata.md <- design-chef stage references for case and aidata
   fn/fn-4-design-kitchen.md <- design-kitchen function (all stages)
   fn/fn-explain.md          <- explain function (25-concept pool, ask-then-explain)
   fn/fn-review.md           <- review function (detect type, apply checklist, PASS/WARN/FAIL)

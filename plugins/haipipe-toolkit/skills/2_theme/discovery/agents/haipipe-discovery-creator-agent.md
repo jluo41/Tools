@@ -26,7 +26,7 @@ the reviewer evaluates. I never review my own work.
 The Block is also the Discovery Board. Use
 `haipipe-discovery/scripts/board_sync.py` at every structural checkpoint; the
 Board helper owns only `board.md`'s managed Job span and the Board CLI owns the
-derived `board/` site. Never hand-edit generated HTML or duplicate Task rows in
+close check. The workbench reads the Block live; nothing is built. Never duplicate Task rows in
 the Board source.
 
 ## D1 SCOPE
@@ -36,7 +36,7 @@ Create both Faces of one Task Page:
 ~~~text
 discovery/bNN_<block>/jNN_<job>/tNN_<task>/
 Page Face: tNN_<task>.md, shared draft/ process and selected draft/evidence lanes
-Task Face: discovery.yaml, optional scripts, runs, results
+Task Face: discovery.yaml, optional scripts, runs/<RUNNAME>/ with its result/
 ~~~
 
 Use ref/discovery-yaml-schema.md. Do not put parent/consumer data or a copied
@@ -50,7 +50,7 @@ stem equals the Task folder stem. Stamp readable and compact Task addresses in
 the manifest. After creating a Block, Job, or Task Folder, run:
 
 ~~~bash
-python3 plugins/haipipe-toolkit/skills/2_theme/discovery/haipipe-discovery/scripts/board_sync.py <block> --build --check --strict
+python3 plugins/haipipe-toolkit/skills/2_theme/discovery/haipipe-discovery/scripts/board_sync.py <block> --check --strict
 ~~~
 
 The direct `jNN_/tNN_` tree remains the Board membership authority; the helper
@@ -104,7 +104,7 @@ paper.pdf        optional
 The Card cite key must equal the Result Bib key. On failure write blocked or
 unresolved truthfully. A complete status around missing artifacts is a lying
 receipt. Runtime also records `bib.source` and `bib.mode: verbatim_copy`.
-After a Run batch changes a Task's visible state, rebuild and check the owning
+After a Run batch changes a Task's visible state, sync and check the owning
 Discovery Board before handing the Task to SYNTHESIZE.
 
 ## D1 SYNTHESIZE · Page workflow handoff
@@ -138,8 +138,8 @@ optional Task-side typed record (`summary.md`, `verdict.md`, or `landscape.md`).
 D1 SYNTHESIZE asks `workbench-task-draft/ref/evidence/citations.md` to build
 the deterministic citation aggregate under `draft/evidence/bibex/`. The
 typed record and Bib build are not Runs; the Outline Evidence Workspace does
-not replace the owning Result. After Page `04 CHECK`, rebuild and strictly
-check the Board so its generated status and navigation are current before D1
+not replace the owning Result. After Page `04 CHECK`, sync and strictly
+check the Board so its status and navigation are current before D1
 CLOSE.
 
 ## D1 CLOSE · after Page CHECK
@@ -151,8 +151,8 @@ CLOSE.
 5. Append project log events.
 6. Reconcile the full Supporting/Local Run graph when this Discovery Page is
    consumed elsewhere; never create a separate question ticket or answer bank.
-7. Run `board_sync.py <block> --build --check --strict` and include the Board
-   source path plus generated Board path in the handoff.
+7. Run `board_sync.py <block> --check --strict` and include the Board
+   source path in the handoff.
 
 D1 CLOSE cannot report ok while Page CHECK is open, the checker fails, or a material Trigger is unresolved.
 
@@ -176,7 +176,6 @@ typed_record:
 evidence_bib:
 board:
   source: <block>/board.md
-  generated: <block>/board/
 summary:
 not_done:
 ~~~

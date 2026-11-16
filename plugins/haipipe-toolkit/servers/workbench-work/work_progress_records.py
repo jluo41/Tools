@@ -289,7 +289,7 @@ def role_of(row):
     return role if role in ROLE_ORDER else "other"
 
 
-STATE = (("running", "🚧 running", ("running", "started", "in_progress")),
+STATE = (("running", "🏃 running", ("running", "started", "in_progress")),
          ("finished", "✅ finished", ("complete", "completed", "done", "ok", "passed")),
          ("partial", "🔶 partial", ("partial",)),      # some rows stored, the rest not (b02's binder writes it)
          ("failed", "❌ failed", ("failed", "error", "crashed")),

@@ -11,9 +11,9 @@ plan    the Job's ## Deliverables item it feeds (haipipe-job)        the agent t
         each planned Run's folder and card, status: planned (haipipe-run)
         workflow/plan.yaml only when several Runs share routes or gates
 build   scripts/<worker>, the Run's config, its ticket, its card    the type skill's creator
-        CODE_REVIEW.md when the lifecycle Workflow runs             the reviewer agent
-run     result/runtime.yaml: running ▶ complete | partial | failed   the ticket
-        result/ files, heavy.yaml, passes/pNN-<MMDD>/ when rerun
+        CODE_REVIEW.md when the lifecycle Workflow runs             the reviewer returns it, the orchestrator saves it
+run     result/runtime.yaml: running ▶ complete | failed | blocked   the ticket
+        result/ files, heavy.yaml, result/attempts/<NNNNNN>/ when retried (ref/task-folder.md)
 read    result/headline.txt, a describe Run, a figures Run          their own Runs
         the face's reading (a Task Page's READING table)            a person
         workflow/report.yaml when a plan.yaml exists                fn/stage-report.md
@@ -55,7 +55,8 @@ close   the close: line is true and the Job's items it feeds tick   checked from
 1. **Who presses Run**: a quick, local, unpaid Run that a request leads to is run and reported; a paid
    (LLM, search API), long or shared-store Run waits for a person (AGENTS working rule 2).
 2. **The receipt is the record**: `running` before expensive work, then `complete` only when the Result
-   gate passed, `partial` when some of it did, `failed` with the reason. A process exit alone proves
+   gate passed, else `failed` or `blocked` with the reason (`ref/runtime-yaml-schema.md` lists the
+   status words; there is no `partial`). A process exit alone proves
    nothing. A Run that ran before its ticket wrote receipts gets one rebuilt from its files (haipipe-run
    `ref/receipts-and-inventory.md` § Rebuilt receipts).
 3. **Long Runs** run in `tmux` on the machine that holds the data; a supervisor in `sbatch/` runs

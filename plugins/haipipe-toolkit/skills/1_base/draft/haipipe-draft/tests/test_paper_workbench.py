@@ -247,7 +247,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             # Gates read files, never percentages
             gates = dict((g, v) for g, _n, v in d["gates"])
             self.assertTrue(gates["G0"].startswith("⬜ open"))
-            self.assertEqual(gates["G3"], "1 of 2 Section Narrative rows have a Section page")
+            self.assertEqual(gates["G3"], "⬜ a Section Narrative row has no Section page")   # no tally (AGENTS.md § Page words)
             self.assertEqual(gates["G4"], "DRAFT · 1/2 pages ready")       # read from delivery/build-manifest.json
 
     def test_idea_card_shows_the_idea_before_its_metadata(self):
@@ -432,8 +432,8 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertEqual((q0["id"], [x["kind"] for x in q0["tasks"]]), ("RQ0", ["Pretraining", "Downstream"]))
             h0 = _q_block(d, T, q0)
             self.assertIn('<span class="item-kind">Question 0</span><span class="lw-qname">The tasks</span>', h0)
-            self.assertIn('<div class="lw-k lw-k-task">Tasks</div><div class="lw-h"><div class="lw-top">'
-                          '<span class="item-kind">Pretraining</span>', h0)
+            self.assertIn('<div class="lw-l"><div class="lw-g"><div class="lw-h"><div class="lw-top">'   # tasks first, no
+                          '<span class="item-kind">Pretraining</span>', h0); self.assertNotIn("lw-k-task", h0)  # Tasks band
             self.assertIn('<b class="lw-name">Next reading</b>: it predicts the next reading.', h0)
             for group in ("Hypotheses", "Potential claims", "Potential contributions"):
                 self.assertNotIn(">%s</div>" % group, h0)
@@ -664,14 +664,14 @@ class PaperWorkbenchTest(unittest.TestCase):
         self.assertEqual(recs[1]["heads"], ["Section", "Reader question", "One job"])   # a later heading ends the record
 
     def test_run_cards_give_every_space_its_buttons(self):
-        kinds = paper_run_types()
-        self.assertEqual(sorted(kinds), ["delivery", "ideation", "sections", "story"])
-        self.assertEqual([k["label"] for k in kinds["story"]],
-                         ["Story revise", "Claim review", "Write the report", "Review the report", "Task review",
-                          "Task runs", "Discovery runs", "Redraw"])
-        self.assertEqual(kinds["story"][-1]["views"], "roadmap-draw")   # RoadMap Draw's own card
+        kinds = paper_run_types()   # haipipe-paper-workflow/ref/run-cards.md: a space is `<Level> › <Space>`
+        spaces = {"description", "related", "idea studio", "audience report", "work details", "runs", "delivery"}
+        self.assertTrue(all(k.split(" › ")[0] in ("block", "job") and k.split(" › ")[1] in spaces for k in kinds), kinds)
+        want = ["Story revise", "Claim review", "Task review", "Write the report", "Review the report", "Task runs", "Discovery runs"]
+        self.assertEqual([k["label"] for k in kinds["block › audience report"] if k["label"] in want], want)
+        self.assertEqual(kinds["block › idea studio"][0]["label"], "Redraw")   # the drawing's own card
         self.assertTrue(all(k["prompt"] for ks in kinds.values() for k in ks))   # each button copies a prompt
-        self.assertEqual(kinds["delivery"][-1]["views"], "rounds")
+        self.assertEqual([k["label"] for k in kinds["job › delivery"]], ["Build", "Check", "Send"])
 
     def test_sections_follow_the_compile_order(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -730,7 +730,7 @@ class PaperWorkbenchTest(unittest.TestCase):
             for gone in ("Setup Space", "Run Space", "backend Markdown", "copy to chat", "⧉", "Workflow map",
                          "no Research Question written yet"):
                 self.assertNotIn(gone, page)
-            self.assertNotIn("fetch(", page)                                   # the page makes no request of its own
+            self.assertNotRegex(page, r"\sdata-(?:upload|post|fetch)=")   # no request of its own: no element the shared Runs script fetches for
             # Ideation: collapsed Idea Cards; opening one selects it for the Runs panel
             self.assertEqual(page.count('<details class="item-card" id="idea-'), 2)
             self.assertIn('id="idea-i01" data-key="i1"', page)
@@ -777,14 +777,9 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertNotIn("levels exist", page)
             self.assertNotIn("Rank the flat things by score.", page)       # the unclaimed job is never expanded
             self.assertNotIn("<summary>Details</summary>", q1)             # plain text, no Details
-            # Story Runs: the judgment run joined by its target, named in full
-            self.assertIn('data-name="run-paper-claim-0901-beyond-rating"', page)
-            self.assertRegex(page, r'data-run="run-paper-claim-0901-beyond-rating" data-name="run-paper-claim-0901-beyond-rating" data-targets="[^"]*\bE1\b[^"]*"')
-            self.assertRegex(page, r'data-run="run-paper-claim-0901-beyond-rating" data-name="run-paper-claim-0901-beyond-rating" data-targets="[^"]*\bRQ1\b')
-            self.assertIn('data-label="Task runs"', page)
-            self.assertIn('data-skills="haipipe-task"', page)                # each run type names its skill (JL 260928)
-            self.assertIn('data-label="Discovery runs"', page)
-            self.assertIn('data-run="b01.j01.t01.r01"', page)                 # a cited Task run, keyed to the rows covering it
+            # Story Runs: not checked here. This is the retired four-Space page (workbench-paper ref/old-page.md);
+            # its Runs panels list no run since run cards are keyed `<Level> › <Space>` (run-cards.md). The live
+            # frame's run cards are tested in test_run_cards_give_every_space_its_buttons.
             # Sections: one row per C8 row in compile order; a row opens its Page workbench
             self.assertIn('<div class="sec-row" data-key="S-DESK-Main-1-Introduction"', page)
             self.assertIn("/_board/draft?path=%2Fpapers%2FPaper-Test%2Fboard.md&amp;file=Ba-DESK-Main%2FS-DESK-Main-1-Introduction%2FS-DESK-Main-1-Introduction.md&amp;lens=div", page)
@@ -794,19 +789,18 @@ class PaperWorkbenchTest(unittest.TestCase):
             self.assertIn("paper-desk-introduction", page)                   # its Codex session
             self.assertIn('id="hero-E01-DISPLAY-hero-figure" data-key="S-DESK-Main-1-Introduction:E01" data-part="main"', page)
             self.assertNotIn('id="hero-E02-CITE-prior"', page)         # not hero: a CITE
-            self.assertIn('data-run="run-structure-0901-outline" data-name="run-structure-0901-outline"', page)   # the Section's own runs
-            self.assertIn('data-run="re-display-01_hero"', page)
+            # the Section's own runs sat in the retired page's Runs panel too: see the Story Runs note above
             # Delivery: formats, views, checks, rounds
             self.assertIn('data-src="/papers/Paper-Test/delivery/latex/Paper-Test-draft.pdf"', page)
             self.assertIn("⬜ not built", page)                              # the supplement named but absent
             self.assertIn("delivery/word-feedback/Paper-Test-coauthor.docx", page)
             self.assertIn("1200 words", page)
-            self.assertIn("1 of 2 · not ready: S-DESK-Main-2-Results", page)
+            self.assertIn("⬜ not ready: S-DESK-Main-2-Results", page)        # a mark, no tally (AGENTS.md § Page words)
             self.assertIn("fragment may be stale", page)
             self.assertIn("fig:hero", page)
             self.assertIn("bib key smith2020 differs between two pages", page)
             self.assertIn("citations resolved", page)
-            self.assertIn('data-name="run-compile-260909"', page)            # the last build, as a run
+            # the last build as a run sat in the retired page's Runs panel: see the Story Runs note above
             self.assertIn("No round yet.", page)
             self.assertIn('data-tab="rounds" data-label="Rounds" data-noviews', page)
 

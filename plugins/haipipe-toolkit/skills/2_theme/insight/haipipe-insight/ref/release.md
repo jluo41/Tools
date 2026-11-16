@@ -39,7 +39,7 @@ release.yaml
 ```yaml
 release: question-v2                  # the id; the same in faces, Run names and every Board Job that pins it
 questions:                        # every question asked in this release, in tNN order
-  D01: {task: ../j01_p1_<slug>/t01_D01_<slug>, change: kept}          # kept: its Task lives in an earlier release
+  D01: {task: ../j01_question-v1_<slug>/t01_D01_<slug>, change: kept}  # kept: its Task lives in an earlier release
   I01: {task: t02_I01_<slug>, change: "changed: <what, one line>"}     # changed: carried here under the same tNN
   I04: {task: t06_I04_<slug>, change: new}                             # new: asked first here
 retired:                          # left out of this release, never asked again under the same id
@@ -94,7 +94,9 @@ Signing
 new or changed script is reviewed by another agent, the question review has a verdict, and the segments are signed. The
 signature is `signed: ✅ <YYMMDD>` (never a name), recorded when the person states it
 (`insight_ladder.py sign --date YYMMDD`), and it sets `state: closed`. After it the release never changes: a fix is
-a proposal, and a proposal is the next release.
+a proposal, and a proposal is the next release. Before the signature an open release may be edited in place; the
+order that keeps its Board Jobs current (re-pin, rerun, audit, review) is `deliverables.md` § Editing a version
+that is not signed yet.
 
 Cadence (decided 261008): one release per triaged batch of proposals, never one per proposal, so a Board does not
 gain a Job for every new question.

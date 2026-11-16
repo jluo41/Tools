@@ -49,8 +49,8 @@ Those Page Runs are not D1 Runs and never enter the Discovery inventory.
 
 At the skill-bank level, `haipipe-discovery-search`, `haipipe-discovery-review`,
 and `haipipe-discovery-synthesize` are the three live capability skills at the
-family root; `1_search/` and `2_review/` hold only the vendored originals they
-may call. Search resolves candidates, Review inspects one source/Result, and
+family root (Search is `1_base/search/haipipe-search`); each `_parts/` folder holds only the
+vendored originals they may call. Search resolves candidates, Review inspects one source/Result, and
 Synthesize combines accepted Results into the Page. These skills do not add
 D1/D2/D3 phases or Runs. This controller sits at the family root too (the former
 `workflow-phases/` path is retired) and owns the Discovery Run Specs and

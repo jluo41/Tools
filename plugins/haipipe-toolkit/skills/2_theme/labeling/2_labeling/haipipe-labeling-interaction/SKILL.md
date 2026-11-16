@@ -1,7 +1,7 @@
 ---
 name: haipipe-labeling-interaction
 description: >-
-  The 🧭 meaning Task of a labeling Job, step by step: Frame, then loops of Report → Preferences → Update. The only
+  The 🧭 meaning Task of a labeling Job, step by step: Frame, then loops of Prepare (the interaction report) → Preferences → Update. The only
   Task that asks the person: each loop writes one interaction report (cards drawn from the corpus, nothing
   preselected) as a /haipipe-interaction form, saves the person's answers, and Update turns them into reference
   labels lNN and guideline mNN, a mind map whose rules cite their cards; the person signs mNN before expression runs.

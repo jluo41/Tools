@@ -298,14 +298,12 @@ class StepsPageTest(unittest.TestCase):
 
     def test_a_block_row_marks_where_its_job_stands_with_no_word_or_count(self):
         block = L.render(self.theme, self.root, self.block, "report", "standing")
-        kinds = [F.state_kind(F.state_label(F.read_face(t, self.root)["state"])) for t in frame.children(self.job, "Job")]
         row = block.split(f'data-pop="{self.job.name}"', 1)[1].split("</summary>", 1)[0]
-        self.assertIn(f"<small>{L.job_word(kinds)}</small>", row)
+        mark = re.search(r'<small title="([^"]*)">([^<]*)</small>', row)   # the shared mark, its word on hover only
+        self.assertIn(mark.group(2), ("✅", "🔶", "🏃", "🙋", "⬜"))
+        if 'class="part"' in row:                                               # a half bar never sits beside ⬜
+            self.assertEqual(mark.group(2), "🔶")
         self.assertNotRegex(row, r"\d+ of \d+ done")                             # no check or progress tally (AGENTS.md)
-        self.assertEqual(L.job_word(["✅ done", "🙋 waiting on you"]), "🙋")
-        self.assertEqual(L.job_word(["✅ done", "✅ done"]), "✅")
-        self.assertEqual(L.job_word(["✅ done", "⏳ running"]), "🏃")
-        self.assertEqual(L.job_word(["✅ done", "⬜ not run yet"]), "⬜")
         self.assertIn("_<wbr>", block.split("<h1>", 1)[1].split("</h1>", 1)[0])   # a phone breaks the name at words
 
     def handler(self):

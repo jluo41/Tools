@@ -18,7 +18,7 @@ PHI      →  Pattern 2  server-resident              (Steps 1-7 with the P2 del
 
 Pattern 2 in one line: nothing comes local — all stages are Spark on the cluster, output goes to `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/`, and the group carries an orchestrator + `_databricks/` bundle.
 Full contract: `../SKILL.md` "Pattern 2" + `../../../haipipe-task/ref/databricks-execution.md`.
-Live example: `examples/Project-REACH-ADHD/work/A00_rawstore_reachadhd/`.
+Older example shape: `examples/<Project>/work/A00_rawstore_<cohort>/`.
 
 
 Step 1 — Identify project + block
@@ -62,11 +62,11 @@ bNN_<raw_block>/
         │   ├── run.yaml              its card (haipipe-run)
         │   └── result/               written by the Ticket
         ├── notebooks/
-        ├── draft/
-        └── workflow/
+        ├── draft/                    only when the Task writes
+        └── workflow/                 optional: plan.yaml + report.yaml
 ```
 
-⚡ P2's group root below is the older REACH shape (`work/A00_rawstore_reachadhd/`): read it where it
+⚡ P2's group root below is the older shape (`work/A00_rawstore_<cohort>/`): read it where it
 exists, never scaffold it for new work (SKILL.md § the older shape); a new raw Job is jNN_<cohort>_raw/:
 
 ```

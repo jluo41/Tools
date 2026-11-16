@@ -1,6 +1,6 @@
 ---
 name: haipipe-report
-description: "Owns a Block's Questions and their reports at any level: what a Question is and where it lives (reports/qNN_<topic>/), shaping and reviewing asks, linking work to it (answers:), its walk open → partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a question, review the questions, /haipipe-report, /haipipe-question."
+description: "Owns a Block's Questions and their reports at any level: what a Question is and where it lives (the board.md register; its answer in the Studio topic that answers it; reports/qNN_<topic>/ in an older Block only), shaping and reviewing asks, linking work to it (answers:), its walk open → partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a question, review the questions, /haipipe-report, /haipipe-question."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.2"
@@ -33,8 +33,8 @@ Question's status rightwards, and the asking before it (§ Questions below; fold
 
 ```text
 Question                 Work                              Report
-register row · status    Jobs, Tasks whose face says       reports/qNN_<topic>/qNN_<topic>.md
-studio topics feeding    answers: <id> (or <id>.E<n>)      Opening · drawing · answer-status
+register row · status    Jobs, Tasks whose face says       the answering topic's face: Q01 · Answer
+studio topics feeding    answers: <id> (or <id>.E<n>)      (an older Block: reports/qNN_<topic>/ Page)
   │                        │                                 │
 haipipe-report § Questions   theme work skills                 haipipe-report
 ```
@@ -49,7 +49,7 @@ Questions: what one is, and how it is recorded
 
 (Folded in from the retired `haipipe-question`, 2026-10-16: "no need for the question anymore".)
 
-A board's `reports/` folder is its list of questions: each `qNN_<topic>/` holds one
+A board's `## Questions` register is its list of questions. In an older Block each `reports/qNN_<topic>/` holds one
 Question and the report that answers it (JL 261003: "reports is a list of questions").
 Every board kind uses the same shape: a Task Block (`work/bNN_<block>/`), a Paper board
 (`paper/Paper-<Name>/`) and a skill Block (`Tools/blueprints/bNN_<block>/`).
@@ -57,8 +57,8 @@ Every board kind uses the same shape: a Task Block (`work/bNN_<block>/`), a Pape
 ```text
 <board>/
 ├── board.md                    the question register (Questions, Related resources)
-├── s01-<name>/                 a Block Studio topic; a report's drawing, its face Feeds: the report
-└── reports/
+├── s01-<name>/                 a Block Studio topic: its face Feeds: the Question and holds its `Q01 · Answer`
+└── reports/                    an older Block only
     └── q01_<topic>/
         ├── q01_<topic>.md      the report Page: Opening, then Answer · Evidence · Limits · Next
         └── page.toml           registers the Page with the Page reader
@@ -68,7 +68,7 @@ Every board kind uses the same shape: a Task Block (`work/bNN_<block>/`), a Pape
 2. **A topic, not a decision**: a Question is a topic many sections, sessions and Runs feed, that grows into its report (JL 261003). A narrow decision is something its report records.
 3. **The report test**: could it fill a report's Answer, Evidence, Limits and Next?
 4. **The reuse test**: would the next few sections or Runs on this work feed it too?
-5. **Too narrow or too broad**: one yes/no answers it, lift it; it is the board's whole spine, name the part. Read `<board>/reports/` and the register before proposing one.
+5. **Too narrow or too broad**: one yes/no answers it, lift it; it is the board's whole spine, name the part. Read the register (and an older Block's `reports/`) before proposing one.
 
 ```text
 ✅ topic                                   ❌ decision
@@ -81,13 +81,13 @@ file, a Task's Run request, a paper's sub-question). The report test sizes a top
 is shaped by `ref/asking.md` and judged by `ref/review.md` (Q1 "one thing" tests an ask).
 
 Propose, then create. A question is first **proposed**: a chat reply names it as
-`(proposed) <Board> "<short question>"` and offers its folder `<board>/reports/qNN_<topic>/`
-with the board's next free NN. It is **created** only when the person agrees. To create one:
+`(proposed) <Board> "<short question>"` and offers its register id, the board's next free `QNN`,
+with the Studio topic that will answer it. It is **created** only when the person agrees. To create one:
 
 1. **Pick the id**: the next free `QNN` in the register, or `Q-<word>-<number>` when the register is cut by a word (`Q-food-1`); ids never move or get reused.
-2. **Name the folder**: the id in lower case, then two or three snake_case words: `q07_<topic>`.
+2. **Name its slug**: the id in lower case, then two or three snake_case words: `q07_<topic>` (an older Block's report folder took this name).
 3. **Register it**: add the entry to `board.md`'s `## Questions` register; its `group:` line (comma-separated) puts its card on the Report's group bar.
-4. **Frame the report**: the same-stem `.md` with `answers:` and `answer-status: open`, and `page.toml`.
+4. **Name where the answer goes**: the register's `report:` points at the face of the Studio topic that answers it, which gets a `Q01 · Answer` part (an older Block: a same-stem report `.md` with `answers:` and `answer-status: open`, and `page.toml`).
 5. **Hand it on**: from here the report is the walk below.
 
 On a Task Block the helper does steps 1 to 4 (it refuses a duplicate id, an existing folder and a work path that is not a Task):
@@ -112,7 +112,7 @@ The register's full contract is `ref/block-questions.md`.
 Find a board's questions:
 
 ```bash
-ls <board>/reports/                                   # one folder per question
+ls <board>/reports/                                   # an older Block only: one folder per question
 sed -n '/^## Questions/,/^## /p' <board>/board.md     # the register
 grep -h '^answer-status:' <board>/reports/*/q*.md     # where each one stands
 ```
@@ -159,7 +159,7 @@ have is an error.
 The report Page
 ---------------
 
-An ordinary `haipipe-draft` Page in `reports/qNN_<topic>/`, with three header lines
+In an older Block, an ordinary `haipipe-draft` Page in `reports/qNN_<topic>/`, with three header lines
 (`answers:`, `answer-status:`, `results-read:`), an Opening that states the answer, and the
 Content divisions **Answer · Evidence · Limits · Next**. Write it through the Page flow
 (load `haipipe-draft`); never type final prose into generated Content. A comments batch is a
@@ -172,7 +172,7 @@ Figures and the check
 
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-report/scripts
-python $S/build_report_drawing.py <level>/reports/qNN_<topic>/     # the drawing, from ## Figures
+python $S/build_report_drawing.py <level>/reports/qNN_<topic>/     # an older Block: the drawing, from ## Figures
 python $S/check_report.py <level folder>                           # the rows, and what is wrong
 ```
 
@@ -195,7 +195,7 @@ example are `ref/infer-reports.md`.
 3. **Block**: where the Jobs' answers differ, and what that means next (b00: 3 drops blocked; 60 tables with
    no event time).
 4. **Kept only if** named Tasks answer it and they do not all answer it the same way; the theme's kinds only
-   group it. § Questions then makes the row and the folder.
+   group it. § Questions then makes the row.
 
 
 The buttons it owns

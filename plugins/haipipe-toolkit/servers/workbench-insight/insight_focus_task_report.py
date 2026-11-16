@@ -409,6 +409,32 @@ def _t_across(x: dict) -> str:
                     f"in {len(rows)} Jobs" if len(rows) > 1 else "this Job only")
 
 
+def _delivers(spec: dict) -> str:
+    """What the question delivers and the test each part must meet, read from its question file alone
+    (haipipe-insight ref/deliverables.py): a row per live need, then the Task page. "" for an older question file."""
+    if not spec.get("id") or not isinstance(spec.get("needs"), dict):
+        return ""
+    try:
+        from live.instance_reader import _tools
+        _tools()
+        import deliverables as DL
+        d = DL.deliverables(spec)
+    except Exception:  # noqa: BLE001 · the list is an extra: the section still shows the needs
+        return ""
+    rows = []
+    for r in d["needs"]:
+        if r["kind"] == "compute":
+            figs = {f["table"]: f["kind"] for f in r["figures"]}
+            gives = "<br>".join(esc(t) + (f' <span class=mut>+ {esc(figs[t])} figure</span>' if t in figs else "")
+                                for t in r["tables"])
+        else:
+            gives = f'<span class=mut>{"from " + esc(r["source"]) if r["kind"] == "cite" else "a reading on the page"}</span>'
+        rows.append(f'<tr><td><b>{esc(r["id"])}</b> {esc(r["what"])}</td><td>{gives}</td><td>{esc(r["test"])}</td></tr>')
+    rows.append(f'<tr><td><b>Answer</b></td><td>{"<br>".join(esc(a) for a in d["answer"])}</td><td>{esc(d["may_say"])}</td></tr>')
+    return ('<table class="wf-table in-ct"><thead><tr><th>Need</th><th>Delivers</th><th>Counts when</th></tr></thead>'
+            f'<tbody>{"".join(rows)}</tbody></table>')
+
+
 def _t_plan(x: dict) -> str:
     q, t, root = x["q"], x["t"], x["root"]
     may = next((m for lv, _, m in V.LEVELS if lv == t["qid"][:1]), "")
@@ -418,9 +444,10 @@ def _t_plan(x: dict) -> str:
                        + (f' <span class=mut>{esc(V._goes(n))}</span>' if V._goes(n) else "") for n in needs) or "—"
     steps = " · ".join(dict.fromkeys(V.STEP.get(str(n.get("kind")), _cap1(str(n.get("kind") or "step"))) for n in needs))
     q = dict(q, question=q.get("question") or spec.get("ask") or spec.get("question") or "")
-    return _section("📋 Needs", _kv([("question", esc(q.get("question") or "—")), ("need", need),
-                                     ("steps", esc(steps or "—")), ("may say", esc(may.replace("may say: ", ""))),
-                                     ("agreed", esc(str(q.get("agreed") or "not yet")))])
+    table = _delivers(spec)
+    return _section("📋 Needs", _kv([("question", esc(q.get("question") or "—")), ("need", "" if table else need),
+                                     ("steps", esc(steps or "—")), ("may say", "" if table else esc(may.replace("may say: ", ""))),
+                                     ("agreed", esc(str(q.get("agreed") or "not yet")))]) + table
                     + (f'<p>{_pop(V.open_url(Path(q["file"]), root), t["qid"], "the question file ↗")}</p>' if q.get("file") else ""),
                     "agreed" if q.get("agreed") else "to agree")
 

@@ -1,0 +1,25 @@
+# 🧪 Draft Lab: the sentence is the unit
+
+- **Each sentence is a row with its cards** · 11-13 to 11-14
+  - Cards (edit, review, evidence, comments) sit on their sentence, folded to one line until opened.
+  - JL: "the sentences will be the basic unit"
+- **★ review score per sentence, and when it is old** · `f83caedd9`, `ee44b879e`, `1e8be4f06`
+  - A ★ scored on other words, or before a renumber, greys as stale and stops offering its suggestion.
+  - JL: "★ score should auto-update"
+- **✓ the person's check** · `51d7a2a64`, `6c9ea3bdd`, `1e8be4f06`
+  - A checked sentence hides its review and gets no new card, ★ or suggestion; a check lapses when the words change.
+- **Use this and Accept write at once** · `2a472e454`, `a3e059efe`
+  - The sentence is written into the Draft and the Page's Content; with an unsigned plan the page says so in plain words (JL 261115 "1 A").
+- **The page keeps still** · `de9e888d4`, `0ea9480eb`
+  - Its own writes never reload it; a change from elsewhere shows "↻ Show changes".
+  - JL: "the jump is very annoying"
+- **Reads like the paper** · `a1540d6a5`, `a5378fcd6`, `76c362c12`, `1e8be4f06`
+  - Citations as (Author et al. Year), with "not in Bib" for a missing key; `\ref` as "Figure 2"; LaTeX math typeset.
+- **Less to wade through** · `8b6d15a3b`, `1e8be4f06`
+  - Decided cards fold, answered comments fade, a checked paragraph starts folded.
+  - JL: "I feel the UI is much harder to use than before"
+- **Who changed it** · `be94d2606`
+  - Earlier wordings name who made each version (`by:`); two wordings merged into one sentence read as one row.
+- **Removed: the "Copy: revise with my N open comments" button** · 11-15, JL's ruling
+- **A Section's eight steps as marks** · `1e8be4f06`
+  - `S1 S2 S3 · D1 D2 D3 D4 D5`, JL's Section method.

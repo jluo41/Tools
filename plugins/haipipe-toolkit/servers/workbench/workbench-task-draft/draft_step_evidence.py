@@ -14,7 +14,7 @@ from live.draft_steps_common import (
     _code, FLAT, _fold, INK, _inline, _kv, _marks, _md, _not_yet, _parts, _poss, _prompt_box, _step_box, _word)
 # 4 · Display moved out (600-line rule); every name stays importable here
 from live.draft_step_evidence_display import (  # noqa: F401
-    _calls, CALLS, _display_card, DISPLAY_INK, _display_step, _displays, _field, REFS, _units)
+    _calls, CALLS, _display_card, DISPLAY_INK, _display_step, _displays, _field, float_url, REFS, _units)
 # the sentence board's look (SX_ROWS) and the open points moved out (700-line rule); every name stays importable here
 from live.draft_step_evidence_rows import SX_ROWS  # noqa: F401
 from live.draft_step_evidence_open import (  # noqa: F401
@@ -96,10 +96,13 @@ def _ev_card(s: str, rows: list) -> str:
 
 def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
     """Each Table or Figure the text calls, shown under the first sentence that calls it, as it will stand in the paper
-    (JL 261021: "如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE"): its rendered preview.png, which
-    opens full size; a unit with only preview.pdf links it; one not built yet says so. The unit stays the source (its
+    (JL 261021: "如果我们有图片或者表格的话 ... PNG TO EMBED UNDER THAT SENTENCE"): the typeset float at full box
+    width (float_url: page 1 of float.pdf, else of preview.pdf cut to its float), which opens full size, and one line
+    under it, its name and Run; without a rasterizer its preview.png; one not built yet says so. The unit stays the source (its
     README, recipe and the Run that made the asset); the page only shows its picture."""
     order = [_sid(m) for _, b in (d or {}).get("text", []) for m in re.findall(r"(?m)^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · ", b)]
+    from live.draft_step_support import xref_spans   # an Extended Data name reads as a reference to its Section
+    html = xref_spans(html, xs)
     for x in xs or ():
         if x.get("owner"):  # another Section's display shows only where the paper prints it (JL 261114: "only need to show in first place ... should be in the results")
             continue
@@ -109,16 +112,19 @@ def _embed_displays(html: str, d: dict, xs, root: Path) -> str:
             continue
         # the name a reader knows (Table 2), never the LaTeX label (JL 261023: the box said "tab:online-ratings")
         name = x.get("shown") or (x["names"][0] if x.get("names") else x["title"])
-        if x.get("pic"):
-            u = "/" + quote(_rel(x["pic"], root))
-            fig = (f'<a href="{esc(u)}" target=_blank><img src="{esc(u)}" alt="{esc(name)}"></a>'
-                   f'<figcaption><b>{esc(name)}</b> · {esc(x.get("claim") or x.get("slug", "").replace("-", " ") or x["title"])}</figcaption>')
+        # the typeset float, figure and caption as the paper prints them, and one line under it: its name and Run.
+        # No caption rebuilt in HTML: it leaked LaTeX ("95\\% interval"; M-D18)
+        line = esc(" · ".join(w for w in (name, x.get("run", "")) if w))
+        src = float_url(x, root)
+        if src:
+            fig = (f'<a href="{esc(src)}" target=_blank><img src="{esc(src)}" loading=lazy '
+                   f'alt="{esc(x.get("alt") or name)}"></a><figcaption>{line}</figcaption>')
         elif x.get("pdf"):
-            fig = f'<figcaption><b>{esc(name)}</b> · {_code(x["pdf"], root)}</figcaption>'
+            fig = f'<figcaption>{line} · {_code(x["pdf"], root)}</figcaption>'
         else:
             fig = (f'<figcaption><b>{esc(name)}</b> · ' + ("not built yet" if x.get("made") else "no unit in display/ yet")
                    + (f' · {esc(x["claim"])}' if x.get("claim") else "") + '</figcaption>')
-        html = html[:m.end()] + f'<li class="disp-embed{" disp-none" if not x.get("pic") else ""}"><figure>{fig}</figure></li>' + html[m.end():]
+        html = html[:m.end()] + f'<li class="disp-embed{" disp-none" if not src else ""}"><figure>{fig}</figure></li>' + html[m.end():]
     return html
 
 
@@ -148,18 +154,28 @@ def _bib_names(d: dict) -> dict:
     return out
 
 
-def _cite_names(html: str, d: dict) -> str:
+def _cite_names(html: str, d: dict, marks: bool = True) -> str:
     """Each citation as the compiled paper prints it, "(Barnett et al. 2017; Hoppe et al. 2017)", its keys on hover; the
     source keeps \\citep{...} (JL 261113, after trying the raw LaTeX: "how about we just make the citations to be the
     readable one?"). A key with no Bib entry (or one without author and year) shows the key and a visible "not in Bib"
     mark (must-check M-D02). The web export does the same with its own copy, haipipe-draft `src/cite_names.py`."""
     names = _bib_names(d)
-    miss = lambda k: f'{esc(k)} <span class=cite-miss title="no entry for {esc(k)} in draft/evidence/bibex/*.bib">not in Bib</span>'
+    # marks only on the current Draft's own sentences: a card or history row shows an old key as plain text (M-D18)
+    miss = (lambda k: f'{esc(k)} <span class=cite-miss title="no entry for {esc(k)} in draft/evidence/bibex/*.bib">not in Bib</span>'
+            ) if marks else esc
+    # a cited key the citation Job has not verified carries a quiet mark; a verified one its state on hover (M-D18)
+    from live.draft_step_support import cite_states
+    states = cite_states(Path(d["file"]).parent.parent) if marks and d.get("file") else {}
+    def unv(keys):
+        """One quiet mark per citation for its keys the citation Job has not verified, which it names on hover."""
+        out = [f'{k}: {states.get(k, (False, "no citation check names it"))[1]}' for k in keys
+               if marks and k in names and not states.get(k, (False, ""))[0]]
+        return f'<span class=cite-unv title="not verified · {esc("; ".join(out))}">?</span>' if out else ""
     shown_one = lambda k: esc(names[k]) if k in names else miss(k)
     def one(m):
         keys = [k.strip() for k in m.group(1).split(";") if k.strip()]
         shown = "; ".join(shown_one(k) for k in keys)
-        return f'<span class="cite cite-ay" title="{esc(", ".join(keys))}">({shown})</span>'
+        return f'<span class="cite cite-ay" title="{esc(", ".join(keys))}">({shown}){unv(keys)}</span>'
     html = CITE_SPAN.sub(one, html)
     # \\citet is the narrative form, as natbib prints it: "Barnett et al. (2017)", so the two never look alike (JL 261113:
     # "if we have this issue, maybe using the \\cite should be better")
@@ -169,7 +185,7 @@ def _cite_names(html: str, d: dict) -> str:
         for k in keys:
             who, _, year = names.get(k, k).rpartition(" ")
             parts.append(esc(f"{who} ({year})") if k in names and who and year.isdigit() else shown_one(k))
-        return f'<span class="cite cite-ay cite-t" title="{esc(", ".join(keys))}">{"; ".join(parts)}</span>'
+        return f'<span class="cite cite-ay cite-t" title="{esc(", ".join(keys))}">{"; ".join(parts)}{unv(keys)}</span>'
     return re.sub(r"\\citet\{([^}]*)\}", narr, html)
 
 
@@ -183,6 +199,11 @@ def _text_rows(d: dict, marks: dict, right: dict, rest_head: str, xs=(), root: P
                    + _md(b, marks, _parts(d), rows=True) for t, b in d["text"])
     text = _embed_displays(text, d, xs, root) if xs else text
     text = _cite_names(text, d)
+    if d.get("file"):                    # \ref reads "Figure 2" (M-D18)
+        from live.draft_card_text import ref_names, ref_text
+        text = ref_text(text, ref_names(Path(d["file"]).parent.parent))
+        from live.draft_step_support import support_marks   # each sentence's support (M-D18)
+        text = support_marks(text, d, Path(d["file"]).parent.parent)
     seq = [_sid(m) for _, b in d["text"] for m in re.findall(r"(?m)^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · ", b)]
     at = {sid: i for i, sid in enumerate(seq)}
     # in the order the text reads, which an S number need not follow once a sentence has moved

@@ -106,8 +106,8 @@ Keyword -> unit map (first/most-specific match wins; unit = the bucket folder):
 
 ```
 search, find paper, arxiv, semantic scholar, exa, sources.md,
-read, summarize paper, alphaxiv, deepxiv, analyze paper        -> haipipe-discovery-search/feedback/
-review, source reading, inspect Result, analyze source        -> 2_review/feedback/
+read, summarize paper, alphaxiv, deepxiv, analyze paper        -> skills/1_base/search/haipipe-search/feedback/
+review, source reading, inspect Result, analyze source        -> haipipe-discovery-review/feedback/
 lit review, landscape, verdict, synthesize, combine papers    -> haipipe-discovery-synthesize/feedback/
 Direction Card, evidence bundle, semantic idea, Paper handoff -> haipipe-ideation owner (outside Discovery)
 creator/orchestrator/reviewer agent, dispatch                 -> agents/feedback/
@@ -148,15 +148,15 @@ Fix: <added when resolved>
 The discovery layer root is the `skills/2_theme/discovery/` directory (resolve symlinks:
 the orchestrator is reached via `.claude/skills/haipipe-discovery` ->
 `…/skills/2_theme/discovery/haipipe-discovery`, so the root is one level ABOVE the
-orchestrator folder, i.e. `…/skills/discovery`, NOT
+orchestrator folder, i.e. `…/skills/2_theme/discovery`, NOT
 `…/skills/2_theme/discovery/haipipe-discovery`). Inboxes are created LAZILY on first
 capture, so a mapped folder not existing yet is expected, not an error. Do NOT
 pre-create empty inboxes; create one only when a file is actually filed there.
 
 ```
-1_search    (arxiv, semantic-scholar, exa-search, openalex,
-             gemini-search, alphaxiv, deepxiv, paper-analyzer) haipipe-discovery-search/feedback/
-2_review    (source review, Result inspection)                  2_review/feedback/
+search      (arxiv, semantic-scholar, exa-search, openalex,
+             gemini-search, alphaxiv, deepxiv, paper-analyzer) skills/1_base/search/haipipe-search/feedback/ (outside this root)
+review      (source review, Result inspection)                  haipipe-discovery-review/feedback/
 haipipe-discovery-synthesize (research-lit, comm-lit-review, academic-research) haipipe-discovery-synthesize/feedback/
 ideation    (semantic direction, cards, bundle, handoff)      outside Discovery; route to haipipe-ideation
 agents      (creator / orchestrator / reviewer dispatch)       agents/feedback/

@@ -6,6 +6,8 @@ first). A rule here is never said to JL again: the session that writes, revises 
 
 ## The gate
 
+Run: `python3 <haipipe-paper>/scripts/must_check.py <task|version-job>` (the auto checks, then the reading agents to dispatch, then what the person must read first).
+
 1. **Before JL sees a Section** (a draft version, a Draft Lab round, a reply that shows prose), **before a Section
    closes**, and **before a send**, the session runs every rule whose `when:` matches, `auto` ones by script and
    `read` ones by a fresh reviewer subagent that did not write the text.
@@ -128,7 +130,7 @@ M-A20 · Make titles and labels academic and clear on first read; no metaphor ve
 M-A21 · Let a person do the verb, and use the exact verb for the method.
   check: read (inanimate subject with an animate verb; "map" where the method scores)
   when: before JL sees a Section
-  said: 1× · 261110 MISQ Ritu (co-author) "We introduced three sets of controls in sequence" as the fix (no JL quote)
+  said: 1× · 261110 MISQ a co-author "We introduced three sets of controls in sequence" as the fix (no JL quote)
 
 M-A22 · Open the Abstract with the paper's title; its last sentence does not restate it.
   check: auto (`C1.P0 · Title · S0` present; word limit counted on C1.P1)
@@ -186,7 +188,7 @@ M-B09 · Give each display one question, colour named in words, and a blind revi
 M-B10 · Never print a data partner's internal cohort names or any identifying rows.
   check: auto (pdftotext of PDF and Word grepped for cohort names; `check_results_phi.py --changed`)
   when: before a send
-  said: 2× · 261113 ScalingGlucose "we will not show the name of ALS, CVS, LLY"
+  said: 2× · 261113 ScalingGlucose "we will not show the name of <cohort A>, <cohort B>, <cohort C>"
 
 M-B11 · Show observed data and the pre-trend in result figures, not only coefficients.
   check: read (raw series beside the model figure; periods before the policy counted)
@@ -202,7 +204,7 @@ M-B12 · Apply a fix JL asks on one figure to that figure only; report the same 
 ## C · Paper process
 
 M-C01 · Score every sentence with a fresh blind subagent, never the writer; card each one below threshold.
-  check: auto (every sentence has a ★ score by a reviewer id that is not the writer; cards exist for scores below 7)
+  check: auto (every sentence has a ★ score by a reviewer id that is not the writer; cards exist for scores below 8)
   when: before JL sees a Section
   said: 16× · 261113 MISQ "score, should LLM or agent to judge it, the subagent to judge it."
 
@@ -393,10 +395,10 @@ M-D08 · Keep explanations in the Discussion, one meaning per term, claims withi
   when: before JL sees a Section
   said: 4× · 261115 ScalingGlucose paragraph-logic r01: 45 of 53 paragraphs under 8, these four faults most often
 
-M-D09 · When a Story row changes, each Section that restates it learns it from its own health, not a broadcast.
-  check: auto (health names the changed Story row and the Sections whose Drafts restate it)
+M-D09 · While Sections draft, a Narrative or Story row that differs from a Section plan is a quiet note, never a FAIL or a re-sign.
+  check: auto (health on a Section never FAILs on narrative or a changed Story row while the version is drafting; the version Job page shows one quiet note)
   when: before JL sees a Section
-  said: 2× · 261115 ScalingGlucose: a C6 claim edit failed every Section's narrative check; JL wants the Board not to disturb Sections
+  said: 2× · 261115 ScalingGlucose: a C6 claim edit failed every Section's narrative check; JL wants the Board not to disturb Sections; 261115 JL "now it is jumping, disturb things a lot"
 
 M-D10 · Turn a "for all" ruling into one sweep by the tool or the Board; a Section edits only its own Draft.
   check: read (a Section's change list names only its own files)
@@ -427,6 +429,66 @@ M-D15 · Accept writes a card into Content even while the plan is unsigned; the 
   check: auto (health WARNs, never FAILs, "Content holds text from an unsigned plan (v<N>); sign the plan" while the plan is unsigned and Content has adopted text)
   when: before JL sees a Section
   said: 1× · 261115 ScalingGlucose: an accept put an unsigned v1.4 into print; JL's ruling 261115 "1 A": keep writing, show the warning
+
+M-D16 · Show a state mark only when a record proves it; never show a state that can be wrong.
+  check: auto (each mark on a page names the file or field it is read from; a step with no record shows nothing)
+  when: before JL sees a page
+  said: 1× · 261115 ScalingGlucose t01: the Section step line was wrong on 3 of 8; JL agreed to delete it
+
+M-D17 · Show on a sentence only what needs the person: its score small (★ in colour only under 8), one id, history inside the opened sentence.
+  check: auto (Draft Lab test: a sentence scored 8+ shows a small grey number, under 8 a coloured ★; a paragraph heading shows its paragraph score; one number per sentence; no 🕘 count on a closed row; no type line or file row over the text)
+  when: before JL sees a page
+  said: 1× · 261115 ScalingGlucose t01 "ok do it, remove all unnecessary things"; "why I didn't see the AI eval score"; "why no per sentence eval and per paragraph eval?"
+
+M-D18 · Render every VALUE, CITE and DISPLAY in a Section with its support state in Draft Lab.
+  check: auto (Draft Lab test: each sentence shows a chip per evidence item that targets it, marked resolved, bound but not found, or no item for a number it prints (a sentence a CITE item covers prints the cited paper's numbers: no ⚠); a CITE chip says verified or not; a \ref reads "Figure N" from its unit, the unit found in display/ or results/re-display-*/; a display box shows the unit's float.pdf (figure and caption only, written by preview_display.py beside preview.pdf), with its Run as one line under it, never a caption rebuilt in HTML)
+  when: before JL sees a Section
+  said: 4× · 261115 ScalingGlucose "the citation, values, and display ... not well rendered"; "this should be checked, for the evidence UI check"; "we are making sure each evidence will be supported"; "for the display, what we want to insert the float.pdf, not like this"; "we have the preview.pdf, in the display view, but also the float version, so we will have the float.pdf"
+
+M-D19 · When the Sections are good, rebuild the version's Narrative from the Section plans in one step; JL signs once.
+  check: auto (`page.py sync-narrative <version Job>` proposes the new Narrative rows (moves, displays, claims) as a diff; sign-narrative signs them; the Story claims follow from the same pass)
+  when: before a send
+  said: 1× · 261115 ScalingGlucose "job level, we have the initial version, and then we go to each task level, and adjust them within them, and make the changes, until we are good, and then go back to update the job level narrative"
+
+M-D20 · Bind every CITE item to the citation Run that checked its key, by command; Draft Lab shows "not read yet" otherwise.
+  check: auto (`page.py health` WARNs, and FAILs under --final, on a CITE item in draft/<stem>-evidence-items.md with no Local Run; `cite_tasks.py bind <Section Task>` prints the fix, `--apply` writes it; Draft Lab test: every CITE item has a ❝ card on its sentence, from its bound Run, else the citation Job's citations.csv row, else its BibTeX marked "not read yet")
+  when: before JL sees a Section
+  said: 1× · 261115 ScalingGlucose t01: 0 citation cards beside 19 CITE items while the citation Job had checked every key; JL wants it fixed in the skills and UI, never by hand in a Section
+
+M-D21 · An edit card reads at a glance: the change first, its Why as numbered points, quotes and paper lists in a closed Detail.
+  check: auto (Draft Lab test: the change comes before the Why; a Why written `(1) … (2) …` shows one point per row; a `Detail:` line shows closed; the Why is never cut or capped)
+  when: whenever a writer adds or rewrites a card
+  said: 2× · 261115 ScalingGlucose t01: a Why of about 150 words in one grey paragraph above the change, JL: "this is not readable"; then on a cap: "No, I think the previous version and content is good, Just think about how to make it more readable."
+
+M-D22 · Every sentence with a problem has an Edit card: numbered reasons and a fix or options to accept.
+  check: auto (must_check.py: a review line under 8 on any score, with a weak or broken link, or over the point rule, whose sentence has neither a Fix nor an `### Edit` card, fails; Draft Lab: Accept on a two-sentence Expected writes two rows, s12 and s12a; a second Use this is hidden where an edit card stands)
+  when: after each sentence review, before JL reads the Section
+  said: 1× · 261115 ScalingGlucose t01: "for the sentences with problem, please show the editing card with reasoning and suggestion options in the UI. It does [not] work well now."
+
+M-D23 · The sentence review names every unnatural phrase and its plain wording; one caps ai at 7.
+  check: agent (haipipe-draft-eval-sentence-agent reads each sentence aloud by sentence-logic.md § Natural phrasing; the worked examples there are the calibration: a review that passes any of them at ai 8 or more is redone)
+  when: every sentence review (D1)
+  said: 1× · 261115 ScalingGlucose t01 s12, "A lower loss need not mean": "this is the weird expression, for the sentence level evaluation, and one rule is to identify the weird non-human expression, like this."
+
+M-E10 · A paragraph with three or more sentences under 8, or patched by cards into a list, is rewritten whole, rated again and compared blind.
+  check: agent (the Section session follows section-method.md D2 § Paragraph rewrite; a pass that cards more than two sentences of one paragraph instead is redone)
+  when: each draft-loop round
+  said: 1× · 261115 ScalingGlucose t01: "from P3 and beyond, I think you should just totally using the loop of /haipipe-paper-draft to rewrite them, and reviewing them and updating them ... Currently, it is so hard to read."; "the sentence and paragraph score should be around 7 and 8."
+
+M-C31 · The Board session works at Board and Job level only; it never reviews a Section's sentences or relays Section reports.
+  check: read (the Board session's changes and replies touch the Story, Narrative, evidence Jobs, build and checks only)
+  when: always
+  said: 1× · 261115 ScalingGlucose Board "you focus on the block level, don't need to judge each session's details"
+
+M-C32 · The Board messages a Section only when a Board change touches that Section's own text or bindings: once, to it alone.
+  check: read (no broadcast to all Sections, no follow-up check message; each message names the change and the Section's file it touches)
+  when: always
+  said: 2× · 261115 ScalingGlucose Board "make each session work on their own session, do not disturb them"; "you only send the relevant message"
+
+M-C33 · Before saying something waits on JL, or asking to undo a change, read what JL already did in that Section.
+  check: read (the Section's page head, signs, Draft Lab accepts and JL's own messages in that Section session are read first; a change JL made is never asked to be undone)
+  when: before any message to JL or to a Section
+  said: 2× · 261115 ScalingGlucose Board "I just work with them"; "you should check what I did in these sessions as well" (the Abstract rolled back JL's own v1.4 accept)
 
 ## E · JL's method for working a Section (261115; haipipe-paper-draft ref/section-method.md)
 

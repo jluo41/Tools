@@ -211,6 +211,9 @@ def run(task, stem):
                 target=r["task"].name, question=r["qid"], release=r["release"], data=r["data"],
                 script=receipt["scripts_sha256"][:12], n=receipt.get("rows_after", "—"), power=receipt.get("power", "—"),
                 status=receipt["status"], passes=int(card.get("passes") or 0) + 1, ticket=receipt["ticket"])
+    card.pop("reason", None)
+    if receipt["status"] == "refused":                       # the page shows why, where a Run's answer would sit
+        card["reason"] = receipt.get("reason", "")
     (rundir / "run.yaml").write_text(yaml.safe_dump(card, sort_keys=False, allow_unicode=True))
     print(f"{r['qid']} · {stem}: {receipt['status']}"
           + (f" · {receipt.get('reason') or receipt.get('problem')}" if receipt["status"] != "ok" else ""))

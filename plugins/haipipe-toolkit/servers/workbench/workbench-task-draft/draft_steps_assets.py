@@ -102,7 +102,7 @@ NOTES_CSS = """<style>
 /* in Revise the evidence stays boxed (JL 261021: "I think we still need the box"), but its CITE labels go, as the
    words are what is read there (3 · Evidence keeps them) */
 .rv-board .rv-left mark+sup{display:none}
-.nt-sel{position:fixed;z-index:50;display:none}
+.nt-sel{position:fixed;z-index:50;display:none;gap:4px}.nt-sel button{padding:2px 7px;font-size:15px;margin-right:4px}
 /* a comment is a thread: rounded, a round mark for who wrote each message, small text actions */
 .rv-right .rv-note{border-radius:10px;padding:10px 12px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .nt-head{display:flex;align-items:center;gap:6px}
@@ -150,7 +150,7 @@ NOTES_JS = """<script>
   document.querySelectorAll('.rv-board .rv-note[data-n]').forEach(function(c){if(c.dataset.state==='done')return;
    var li=board(c).querySelector('.rv-left li[data-a="'+c.dataset.s+'"],.rv-left li[data-s="'+c.dataset.s+'"]')||(c.dataset.p&&board(c).querySelector('.rv-left h4[data-p="'+c.dataset.p+'"],.rv-left h3[data-p="'+c.dataset.p+'"]'));
    if(!li||li.querySelector('.nt-mark'))return;
-   var m=document.createElement('span');m.className='nt-mark';m.textContent='💬';m.title='Comment '+c.dataset.n;var g=li.querySelector('.nt-gut');if(g)g.insertBefore(m,g.firstChild);});}
+   var m=document.createElement('span');m.className='nt-mark';m.textContent=/[❓🤔] issue/.test(c.textContent)?'🤔':'💬';m.title='Comment '+c.dataset.n;var g=li.querySelector('.nt-gut');if(g)g.insertBefore(m,g.firstChild);});}
  /* a new comment's card goes in reading order: before the first card on its sentence or a later one */
  function place(card,li){var sp=li.closest('.rv-split'),right=sp.querySelector('.rv-right'),before=right.querySelector('.rv-tail');
   [].some.call(right.children,function(c){if(!c.classList.contains('rv-card'))return false;var s=(c.dataset.s||'').split(' ')[0];
@@ -165,17 +165,26 @@ NOTES_JS = """<script>
    '<button type=button class="nt-btn nt-w" data-note-act=cancel>Cancel</button><span class="rv-msg mut"></span></div>';
   if(quote)c.querySelector('.nt-quote').textContent='“'+quote+'”';
   var row=li.closest('.sx-row');if(row)row.classList.add('sx-open');place(c,li);again();c.querySelector('textarea').focus();li.classList.add('rv-lit');setTimeout(function(){li.classList.remove('rv-lit');},1400);}
- /* select words in a sentence: a 💬 Comment button opens a comment on them */
- var sel=document.createElement('button');sel.type='button';sel.className='work-act nt-sel';sel.textContent='💬 Comment';
+ /* select words in a sentence: 💬 opens a comment on them; 🤔 marks them an issue at once, no reason typed (JL 261115:
+    "one is comments, just emoji, and the other one is issue ... I don't want to provide the reason, to speed up") */
+ var sel=document.createElement('span');sel.className='nt-sel';
+ sel.innerHTML='<button type=button class="work-act nt-sel-c" title="Comment on these words">💬</button><button type=button class="work-act nt-sel-i" title="An issue here, no reason needed">🤔</button>';
  document.addEventListener('DOMContentLoaded',function(){document.body.appendChild(sel);});if(document.body)document.body.appendChild(sel);
  function picked(){var s=window.getSelection&&window.getSelection();if(!s||s.isCollapsed||!s.rangeCount)return null;
   var a=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentNode),f=s.focusNode&&(s.focusNode.nodeType===1?s.focusNode:s.focusNode.parentNode);
   var li=a&&a.closest&&a.closest('.rv-board .rv-left li[data-s]');if(!li||!f||li!==(f.closest&&f.closest('li[data-s]')))return null;
   var q=s.toString().replace(/\\s+/g,' ').replace(/^\\s*[Ss]\\d+[a-z]?\\s+/,'').replace(/[+💬]/g,'').trim();return q?{li:li,q:q,r:s.getRangeAt(0).getBoundingClientRect()}:null;}
- document.addEventListener('mouseup',function(e){if(e.target===sel)return;setTimeout(function(){var p=picked();
+ document.addEventListener('mouseup',function(e){if(sel.contains(e.target))return;setTimeout(function(){var p=picked();
   if(!p){sel.style.display='none';return;}sel._p=p;sel.style.left=Math.max(4,p.r.left)+'px';sel.style.top=(p.r.bottom+6)+'px';sel.style.display='block';},0);});
- document.addEventListener('mousedown',function(e){if(e.target!==sel)sel.style.display='none';});
- document.addEventListener('click',function(e){if(e.target===sel&&sel._p){e.preventDefault();sel.style.display='none';open(sel._p.li,sel._p.q);return;}
+ document.addEventListener('mousedown',function(e){if(!sel.contains(e.target))sel.style.display='none';});
+ function issue(li,quote){var bd=board(li);
+  fetch('/_board/draft-comment',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({task:bd.dataset.task,act:'add',s:tgt(li),text:'🤔 issue',quote:quote})})
+   .then(function(r){return r.json();}).then(function(j){if(!j.ok){li.title='not saved: '+(j.err||'');return;}
+    if(j.html){var t=document.createElement('div');t.innerHTML=j.html;place(t.firstElementChild,li);}
+    li.classList.add('rv-lit');setTimeout(function(){li.classList.remove('rv-lit');},1400);again();});}
+ document.addEventListener('click',function(e){var sb=e.target.closest&&e.target.closest('.nt-sel button');if(sb&&sel._p){e.preventDefault();sel.style.display='none';
+   if(sb.classList.contains('nt-sel-i'))issue(sel._p.li,sel._p.q);else open(sel._p.li,sel._p.q);window.getSelection().removeAllRanges();return;}
   var plus=e.target.closest&&e.target.closest('.nt-plus');if(plus){e.preventDefault();e.stopPropagation();open(plus.closest('li[data-s],h4[data-p],h3[data-p]'),'');return;}
   var mk=e.target.closest&&e.target.closest('.nt-mark');if(mk){var li=mk.closest('li[data-s],h4[data-p],h3[data-p]'),c=board(li).querySelector('.rv-note[data-s="'+tgt(li)+'"]');
    if(c){c.scrollIntoView({behavior:'smooth',block:'center'});}return;}
@@ -219,14 +228,14 @@ CARDS_CSS = """<style>
 .rv-choice{display:block;padding:6px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer;line-height:1.5}
 .rv-choice:hover{background:var(--wash)}.rv-choice.sel{border-color:var(--acc);background:var(--wash)}
 .rv-choice input{accent-color:var(--acc);margin:0 4px 0 0;vertical-align:-2px}
-.rv-choice .rv-opt-diff{display:none}.rv-choice.sel .rv-opt-diff{display:inline}.rv-choice.sel .rv-opt-plain{display:none}
+/* every option shows its change, picked or not (JL 261115: "I didn't find what does the B mean here?") */
+.rv-choice .rv-opt-plain{display:none}
 .rv-drop .rv-opt-text{color:var(--mut)}.rv-confirm{font-weight:600}
 .rv-card.editing .rv-choices{display:none}
 .rv-opts{margin:8px 0 0}.rv-opt{padding:6px 0;border-top:1px solid var(--line)}
 .rv-opt-text{line-height:1.55;margin:2px 0 0}.rv-opt .rv-opt-mark{display:none}
 /* the option in the card shows its change; the others read as plain sentences; the card's own change is that option's */
-.rv-card.has-opts .rv-change{display:none}.rv-opt .rv-opt-diff{display:none}.rv-opt.chosen .rv-opt-diff{display:inline}
-.rv-opt.chosen .rv-opt-plain{display:none}
+.rv-card.has-opts .rv-change{display:none}.rv-opt .rv-opt-plain{display:none}
 .rv-card.has-opts:not(.show-opts) .rv-opt:not(.chosen){display:none}.rv-card.has-opts:not(.show-opts) .rv-opt.chosen{border-top:0}
 /* every card in the column is one compact line until clicked, as a comment in a shared document is, so each stays
    beside its sentence (JL 261021: the Logic cards "应该是放到右边的"); a click opens it whole, with its buttons */
@@ -267,8 +276,12 @@ CARDS_CSS = """<style>
 .rv-rev:not(.open):not(.peek) .lg-more{display:none}
 .rv-rev:not(.open):not(.peek) .lg-clip2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 li.rv-lit,h4.rv-lit,tr.rv-lit td{background:#fff3bf;border-radius:3px}
+.lg-tp{font-size:11.5px;color:var(--mut);margin-left:8px;white-space:nowrap}.lg-tp.over{color:#b45309;text-decoration:underline dotted 1px;text-underline-offset:3px}
+.sx-row:has(.rv-card[data-state=proposed]) .lg-use{display:none}   /* one place to act: the edit card, not a second Use this (JL 261115) */
+.rv-why{margin:6px 0 4px}.rv-why-lead{margin:0 0 3px}.rv-pt{display:grid;grid-template-columns:18px 1fr;gap:6px;margin:2px 0;line-height:1.4}.rv-pn{font:600 11px system-ui,sans-serif;color:var(--mut);padding-top:2px}
+.rv-detail{margin:2px 0 4px;font-size:12.5px}.rv-detail>summary{cursor:pointer;color:var(--mut)}
 .rv-board .rv-right{position:relative;clip-path:inset(0 -30px -100000px -30px)}
-.sx-row:hover>.rv-left li[data-s]{background:#fff8db;border-radius:3px}
+/* no yellow on the row under the mouse: it read as a mark with no reason (JL 261115: "can you find the reason why") */
 .sx-row:hover>.rv-right>.rv-card{border-color:#f08c00}
 .rv-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:28px;align-items:start}
 /* the text reads as prose (JL 261021: "把字体变大一些"; "像 S5 这种东西能不能放到最左边"): larger type, no bullets, each
@@ -287,7 +300,7 @@ li.rv-lit,h4.rv-lit,tr.rv-lit td{background:#fff3bf;border-radius:3px}
 .rv-left h4{font-size:16px}
 .cite{color:var(--mut);font-size:.78em;white-space:nowrap}
 .rv-left li.disp-embed{margin:6px 0 12px 42px}.rv-left li.disp-embed figure{margin:0}
-.rv-left li.disp-embed img{display:block;max-width:100%;max-height:340px;border:1px solid var(--line);border-radius:4px}
+.rv-left li.disp-embed img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:4px;background:#fff}
 .rv-left li.disp-embed figcaption{font-size:13px;color:var(--mut);margin-top:4px;line-height:1.45}
 .rv-left li.disp-none figure{border:1px dashed #e8590c;border-radius:6px;padding:6px 10px}
 .rv-right .rv-card{cursor:pointer}

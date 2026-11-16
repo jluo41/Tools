@@ -10,7 +10,7 @@ The one file another system reads (b12 s12, JL 261007). A Job writes `<Block>/de
   "designs": [
     {
       "job": "j03",
-      "job_name": "j03_<goal name>_<method name>",
+      "job_name": "j03_<goal name>_M04-<slug>-m2_inputs-v2",
       "design": "d04",
       "name": "<short name>",
       "words": "<the design, word for word>",
@@ -18,7 +18,7 @@ The one file another system reads (b12 s12, JL 261007). A Job writes `<Block>/de
       "against": "the control",
       "why": "<the ranking's basis for the predicted effect>",
       "released": "<YYMMDD>",
-      "pins": {"goal": "G01", "method": "M04 m2", "inputs": "i2"},
+      "pins": {"goal": "G01", "method": "M04 m2", "inputs": "inputs-v2"},
       "screen": "screens/d04.png"
     }
   ]

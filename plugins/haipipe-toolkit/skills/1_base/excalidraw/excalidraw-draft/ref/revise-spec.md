@@ -32,7 +32,7 @@ task31_file_edits:
   replies:                                     # optional: a co-author's comment and our reply, a blue note at a change
   - {at: 8, to: Gordon Gao, when: "2026-10-14, on part 4", said: "<their words>", brief: <the reply, short>,
      items: [{anchor: <words in the draft>, reply: <a comment there>}]}   # items: delivery/build_clean.py
-  review:                                      # optional, sentence mode: a writing review's proposals (haipipe-writing),
+  review:                                      # optional, sentence mode: a writing review's proposals (haipipe-draft-review),
     label: <one line above the first note>     #   each a red note at its sentence, a red L from it, after the changes'
     items:                                     #   notes; open until a person picks (b21 s04, JL 261014)
     - {id: W1, at: C2.P3.s1, title: <short>, change: <the proposed words>, why: <one line>, ask: "Ask JL: <question>"}
@@ -95,6 +95,6 @@ read_revise.py edits <face> --key <plan> [--apply]  # the sentences a person cha
                                                     #   and takes the edited boxes off the drawing
 ```
 
-haipipe-writing works on the draft (only the sentences a change touches, unless asked for more), a new pass a
+haipipe-draft-writing works on the draft (only the sentences a change touches, unless asked for more), a new pass a
 new version with the old one moved to previous/; the tracked Word file is built from it last (`deliver`). A plan
 whose image change says `image: figure` names the picture with `figure:` (a path beside the face).

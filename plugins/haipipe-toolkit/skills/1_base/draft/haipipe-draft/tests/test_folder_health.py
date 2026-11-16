@@ -215,7 +215,11 @@ def test_a_moved_governing_row_sends_the_section_back_to_plan(tmp_path):
     assert "| Sample-Page | What is it? |" in kept and "sha" not in kept    # the row as text, no hash
     assert levels(folder_health(folder), "row") == []
     jf.write_text(jf.read_text().replace("What is it?", "What changed?"), encoding="utf-8")
-    assert levels(folder_health(folder), "row") == [WARN]
+    # M-D09 (JL 261115): while the version drafts, the Section's plan is the truth; no WARN, no re-sign
+    assert levels(folder_health(folder), "row") == []
+    assert levels(folder_health(folder, final=True), "row") == []
+    jf.write_text(jf.read_text().replace("# j11\n", "# j11\nstate: sent\n"), encoding="utf-8")
+    assert levels(folder_health(folder), "row") == [WARN]                 # after the send the old rule holds
     assert levels(folder_health(folder, final=True), "row") == [FAIL]
 
 
@@ -234,14 +238,16 @@ def test_a_version_narrative_is_signed_before_its_sections(tmp_path):
     jf.write_text("# j11\ngoal: the first send\n\n## Narrative\n\n| Section | question |\n|---|---|\n| Sample-Page | Q |\n",
                   encoding="utf-8")
     assert levels(folder_health(folder), "narrative") == [WARN]
-    assert levels(folder_health(folder, final=True), "narrative") == [FAIL]
+    assert levels(folder_health(folder, final=True), "narrative") == [WARN]   # the person's sign, never a FAIL
     r = sign_narrative(job, "this order")
     assert r["ok"] and (job / "records" / "narrative-sign.md").is_file()
     head = jf.read_text().split("## ")[0]
     assert "goal: the first send" in head and 'narrative-approved: ✅ JL' in head and "story-at-sign: s02-story § 8" in head
     assert levels(folder_health(folder), "narrative") == []
     story.write_text(story.read_text().replace("C1 first.", "C2 first."), encoding="utf-8")
-    assert levels(folder_health(folder), "narrative") == [WARN]
+    assert levels(folder_health(folder), "narrative") == []          # M-D09: drafting, the Story moved quietly
+    jf.write_text(jf.read_text().replace("goal: the first send\n", "goal: the first send\nstate: sent\n"), encoding="utf-8")
+    assert levels(folder_health(folder), "narrative") == [WARN]      # after the send it is named again
     story.write_text(story.read_text().replace("C2 first.", "C1 first.").replace("\nx\n", "\ny\n"), encoding="utf-8")
     assert levels(folder_health(folder), "narrative") == []         # § 9 is not the Narrative
 

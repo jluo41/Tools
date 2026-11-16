@@ -28,11 +28,11 @@ methodology.
 ### Routing (topic categories)
 
 ```
-  init, seed, setup, scaffold       -> label-init
-  iterate, loop, batch, panel       -> label-round
-  validate, benchmark, kappa, ceil  -> label-evaluate
-  scale, cascade, tier, batch-label -> label-complete
-  status, dashboard, trajectory     -> label-status
+  init, seed, setup, scaffold       -> haipipe-labeling-building
+  iterate, loop, batch, panel       -> haipipe-labeling-building
+  validate, benchmark, kappa, ceil  -> haipipe-labeling-scanning
+  scale, cascade, tier, batch-label -> haipipe-labeling-scanning
+  status, dashboard, trajectory     -> haipipe-labeling (the door's status)
   sampler, sampling, pool           -> agent: sampler
   embedder, embed, cluster, FAISS   -> agent: embedder
   classifier, train, uncertainty    -> agent: classifier

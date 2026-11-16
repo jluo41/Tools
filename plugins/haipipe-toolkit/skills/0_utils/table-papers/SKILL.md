@@ -54,7 +54,7 @@ Rules
 3. **At least one ★ per group.** The view shows a group's key papers and folds the rest
    under "N more papers"; a group with no ★ shows all, and the check warns.
 4. **A full text only under an open license.** A `pdf` file sits in `ref/papers/` and is
-   listed with its license in `ref/papers/README.md` (CC BY or another license that lets
+   listed with its license in `ref/papers/README.md` (both made with the first PDF; CC BY or another license that lets
    it be shared). Any other paper links to its publisher.
 5. **General, not one board.** Papers about one dataset, channel or board belong with that
    board's own work, not in the workbench's table.

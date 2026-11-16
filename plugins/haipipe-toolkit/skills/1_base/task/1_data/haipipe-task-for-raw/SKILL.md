@@ -18,7 +18,7 @@ The job keeps scripts, configs, and convert-only notebooks either way.
 
 **Invocation modes (see `../../haipipe-task/ref/types.md` § Asked or silent):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
 `haipipe-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
-Always end with the structured return block (status / task_folder / run_name / files).
+Always end with the structured return block of `../../haipipe-task/ref/types.md` § Asked or silent (see Return contract below).
 
 ## Type contract
 
@@ -95,7 +95,7 @@ Two kinds of raw Job, never in one Block (see `haipipe-task/ref/pipeline-blocks.
 number ranges):
 - **Extraction Job**: pulls tables from an operational database into
   `0-RawDataStore/<dataset>/`. It lives in its own extraction Project, e.g.
-  REACH `Project-0-EHR-Description/work/b01_reach_jhu/j22_pd2d_raw_extraction`.
+  `<extraction-Project>/work/bNN_<source_system>/jNN_<cohort>_raw_extraction`.
   The Job's `src/config-defaults.yaml` types `raw_data_name` once; a refresh
   changes that line and never writes into another version's folder.
 - **Raw understanding Block `b00`**: in every Project that USES the data, one
@@ -107,8 +107,8 @@ Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the cata
 Raw understanding Block (`b00`)
 -------------------------------
 
-Reference implementations: REACH-SPACE `examples/Project-REACH-PD2D/work/b00_rawdata/`
-(one dataset) and WellDoc-SPACE `examples-1-data/Proj01-CGM-RawData/work/b00_rawdata/`
+Reference implementations: a PHI SPACE's `examples/<Project>/work/b00_rawdata/`
+(one dataset) and a partner-data SPACE's `examples-1-data/<Project>/work/b00_rawdata/`
 (14 datasets in seven raw families, Jobs `j51`-`j96`; migrated 260923).
 
 ```
@@ -128,33 +128,34 @@ b00_rawdata/
 - The Job number is the dataset's number in `b01` to `b03` too
   (`b01/j51_<cohort>_v<yymmdd>_source`); see `haipipe-task/ref/pipeline-blocks.md`.
   `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
-- Keep only Tasks a person reads. WellDoc Proj01 has three kinds per dataset: `t01` for its
+- Keep only Tasks a person reads. A partner-data Project has three kinds per dataset: `t01` for its
   files (`r01` what is there, `r04` where each goes), one Task per table it carries, and `t93`
   for the dataset (`r05` when its rows fall, `r06` whether it is ready, plus the dataset
   notebook). A catalog-sample Task or a separate routing or timeline Task is not kept.
 - Table Tasks come from the observed inventory, never a fixed topic list. A table the
   family's catalog expects but a drop lacks gets no Task: the intake Run lists it
   (`absent_tables` in its config) and fails if a file named after it turns up.
-- Runs are passes: `r01_structure_schema` (local, from receipts or headers),
+- Each Run is one reading of the table (a Run here, not a haipipe-run pass):
+  `r01_structure_schema` (local, from receipts or headers),
   `r02_profile_semantics` (types, nulls, distincts, year ranges), `full_scan`
-  only where needed. Only the passes that apply exist.
-- Privacy: metadata only. For PHI the profile pass is a server `.cmd` Run;
+  only where needed. Only the Runs that apply exist.
+- Privacy: metadata only. For PHI the profile Run is a server `.cmd` Run;
   dates leave as years, counts 1 to 10 as `<11`, and no row value leaves.
   Encoded ids (`patient_id_encoded`, `invitation_id_encoded`) are meaningless
   UUIDs, not PHI: a notebook may show them, and they never block a commit (JL 260929).
 - A table's reader-facing description (what one row is, what each column means, pictures
   of the values) is a `tNN_describe_<table>` Task from `haipipe-task-for-description`,
-  beside the profile passes; its column dictionary lives in the Block's `src/`. A raw
+  beside the profile Runs; its column dictionary lives in the Block's `src/`. A raw
   table in a non-parquet format gets the same card from its `r07_full_scan` Run
   (`description.json`, built while every row is read once); the Run fails when the card
   leaves a question open.
 - Every table Task has a reader notebook, `<task>/notebooks/<dataset>_<table>.ipynb`, that
   shows its `synth_df`: one synthetic person's rows in that table, invented values in the real
   columns (`haipipe-task-for-description` § synth_df); `t93` has the dataset notebook, the same
-  person through every table. For PHI the profile pass is a server `.cmd` Run, which brings no
+  person through every table. For PHI the profile Run is a server `.cmd` Run, which brings no
   notebook back, so the Job's `src/build_notebooks.py` builds them on the laptop from the fetched
-  Results (REACH PD2D `j51_reachpd2d_v260922_raw`, JL 260929). Where the raw rows sit on this
-  machine (WellDoc Proj01 `b00`), the table notebook draws three real people instead, in the same
+  Results (for example `j51_reachpd2d_v260922_raw`, JL 260929). Where the raw rows sit on this
+  machine (a partner-data SPACE's `b00`), the table notebook draws three real people instead, in the same
   one notebook, and git ignores it (`haipipe-task-for-description` rule 12, JL 260929).
 - `datapoint_timeline` and `source_handoff` are `haipipe-data raw`'s
   `understand` and `hand-off` as Tasks. Readiness is computed from gates
@@ -200,9 +201,9 @@ _WorkSpace/                                   fixed, un-dated
 
 **Knowing when to refresh.** The operational database gives no update
 notice, and its table-timestamp catalog (`information_schema`) is
-permission-denied on REACH. The signal is the table census: rerun the census
-Run that records `n_rows` per source table (REACH:
-`Project-0-EHR-Description/work/b01_reach_jhu/j01_table_census/t01_table_catalog`,
+permission-denied on some servers. The signal is the table census: rerun the census
+Run that records `n_rows` per source table (for example
+`<extraction-Project>/work/bNN_<source_system>/j01_table_census/t01_table_catalog`,
 Run `r01_deid_derived`), fetch it, and `git diff` its committed
 `table_catalog.csv`. Changed `n_rows` on the tables the extraction reads means
 the source was refreshed: cut a new version. No change means no new data. It
@@ -247,15 +248,15 @@ Pattern 2: Server-resident rawstore (PHI cohorts)
 
 When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
 The whole extraction pipeline runs on Databricks and writes to the catalog volume.
-Current shape: REACH-SPACE Project-0-EHR-Description
-`work/b01_reach_jhu/j21_adhd_raw_extraction/` (and `j22_pd2d_...`). One
+Current shape: an extraction Project's
+`work/bNN_<source_system>/jNN_<cohort>_raw_extraction/`. One
 extraction Job; `src/config-defaults.yaml` holds `volume_base` and the ONE
 versioned `raw_data_name` (`reach-adhd-v260922`), so a refresh is one edit;
 each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>/rNN_<run>.cmd`
 tickets; `sbatch/run_all.cmd` runs the Job and writes `_FROZEN.yaml` after
 the last Run. No `.ipynb`, no `.sh`.
 
-Legacy example: Project-REACH-ADHD `work/A00_rawstore_reachadhd/`.
+Legacy example: `<Project>/work/A00_rawstore_<cohort>/`.
 
 Legacy shape (readable, never scaffolded for new work):
 
@@ -361,7 +362,8 @@ Summary:
   1. Identify project + block.
   2. Collect metadata (NN, name, stage number, _meta block).
   3. Create canonical Task skeleton (`scripts/`, `runs/rNN_<run>/` with its
-     `config.yaml`, `run.yaml` card and `result/`, `notebooks/`, `draft/`, `workflow/`).
+     `config.yaml`, `run.yaml` card and `result/`, `notebooks/`; `draft/` only when the Task writes,
+     `workflow/` only when a plan pays).
   4. Seed `runs/rNN_<run>/config.yaml` from `ref/config-seed.yaml`.
   5. Copy run-script from `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
   6. Suggest next via cross-skill link.
@@ -370,6 +372,9 @@ Summary:
 
 Return contract
 ---------------
+
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
 
 ```
 status:    ok | blocked | failed
@@ -382,7 +387,7 @@ next:      /haipipe-data raw understand <cohort>  OR  run on Databricks
 MUST NOT
 ---------
 
-- Place heavy artifacts (`.parquet`, `.csv` > 1 MB) in a Run's `result/`.
+- Place heavy artifacts (`.parquet`, a row-level `.csv`, any file over 10 MB) in a Run's `result/`.
   Heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the
   catalog volume for Pattern 2).
 - Write complex multi-table JOINs in SQL — extract tables separately,
@@ -392,7 +397,7 @@ MUST NOT
   server-only; only aggregated outputs move).
 - Skip the `_meta:` block.
 - Create `README.md` at Block, Job, or Task root. Use `board.md`, the Task Page,
-  and `diagram/`; legacy Databricks-native READMEs remain readable.
+  and a Block `studio/` topic; legacy Databricks-native READMEs remain readable.
 
 
 First-run gate

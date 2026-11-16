@@ -224,10 +224,14 @@ def work_view_map(ctx: PageContext) -> None:
     inbox_fn = lambda: ctx.inbox
     if live_work:
         work_topics = WF.topics_for(folder, root, questions)
+        from live.work_sections import view_html as work_sections_view
+        from live import ui_docs
         def live_findings():
             from live import work_sections
             if own := work_sections.view_html(folder, root, data, 'findings', WF.section):   # the face names its own
                 return side_css() + own + PB_JS
+            if topics := ui_docs.topics_html(folder, root):   # a theme Block's topics, one group per tab (JL 261115:
+                return side_css() + WF.section(1, '🗂 Topics', topics).replace('<details class=band-sec>', '<details class=band-sec open>', 1)
             if home == 'overview-report':
                 return untabbed(overview_report_html(data, questions, folder, root, False))
             if theme.name not in ('discovery', 'cowork'):        # work: Values and Displays only (JL 261111)
@@ -240,10 +244,16 @@ def work_view_map(ctx: PageContext) -> None:
             return side_css() + numbered(output_sections(folder, root) + list(extra)) + PB_JS
         overview = {
             'overview': ('Overview', lambda: WF.overview(folder, root, data, questions, work_topics)),
+            # a face's own `## Design` is a view of its own, the person's high-level design (JL 261115)
+            **({'design': ('Design', lambda: side_css() + work_sections_view(folder, root, data, 'design', WF.section) + PB_JS)}
+               if data['sections'].get('design') else {}),
             'standing': ('Plan + Results', lambda: WF.status(folder, root, data, work_topics)),
             'findings': ('Findings', live_findings),
             'delivery': ('Delivery', lambda: WF.delivery(folder, root, data)),
             **{k: v for k, v in overview.items() if k.startswith('ui-') or (home == 'overview-report' and k == 'answers')},
+            # a theme Block's Docs: one place per view and section of its example pages (JL 261115)
+            **({'docs': ('Docs', lambda: side_css() + ui_docs.view(folder, root, WF.section) + PB_JS)}
+               if level == 'Block' and ui_docs.has_docs(folder) else {}),
         }
 
     # Work: do. Its views: Progress (the children, or a Task's Runs), Deliverables, Files.
@@ -323,10 +333,9 @@ def rail_sections(ctx: PageContext) -> None:
     knows = known(folder, root, every) if page_level(folder) not in ("SPACE", "Folder") else []
     # the standard Interaction, left tabs and one question on the right (JL 261104: "make this to be the standard items for
     # any of them"; "the workbecnh UI code"), or what the filter found nothing of
-    empty = {"waiting": "Nothing needs your input.", "answered": "Nothing answered yet."}
-    asked = {key: (name, standard_interactions([r for r in inbox if key == "all" or r["state"] == key], folder, root)
-                   or '<p class="mut">' + empty.get(key, "Nothing asked yet.") + '</p>')   # the views' own words
-             for key, name in (("all", "All"), ("waiting", "Needs your input"), ("answered", "Answered"))}   # opens on All
+    asked = {key: (name, standard_interactions([r for r in inbox if key == "all" or r["state"] == key], folder, root) or "")
+             for key, name in (("all", "All"), ("waiting", "Needs your input"), ("answered", "Answered"))}   # opens on All;
+    #                                                an empty view draws nothing, no empty-state words (AGENTS.md § Page words)
     rail = []                                            # (key, label, group): the right rail, in this order
     if overview:
         rail.append(("report", "Report", ""))
@@ -504,10 +513,9 @@ def rail_words(ctx: PageContext, key: str, tag: str = "") -> str:
     if key == "studio":
         return "" if tag else "drawings, mind maps, slides"
     if key == "interactions":
-        return ("🙋 waits on you" if any(r["state"] == "waiting" for r in ctx.inbox)
-                else "nothing waits on you" if ctx.inbox else "nothing asked yet")
+        return "🙋 waits on you" if any(r["state"] == "waiting" for r in ctx.inbox) else ""   # no empty-state words
     if key == "delivery" and not ctx.delivery:
-        return "nothing handed over yet"
+        return ""
     if key == "know":
         return "what to keep in mind"
     return {"report": "read the results and check the progress", "delivery": "what it has handed over",

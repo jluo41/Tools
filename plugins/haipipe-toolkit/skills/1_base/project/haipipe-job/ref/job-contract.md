@@ -10,7 +10,7 @@ and how it is built is `haipipe-task`'s; this skill owns the level between them.
 bNN_<block>/
 └── jNN_<job>/                     or a theme's own name (below)
     ├── jNN_<job>.md               the face (this contract)
-    ├── studio/ reports/           its own topics and Questions, when it has them
+    ├── sNN-<topic>/               its own topics, beside its Tasks (an older Job: studio/sNN-<topic>/, reports/)
     ├── runs/run-<type>-<target>/  soft Runs only at a Job (haipipe-run)
     ├── src/ sbatch/               shared code and a supervisor, when its Tasks share them
     ├── delivery/                  what the Job hands on
@@ -77,7 +77,7 @@ answers: Q01                    # optional: the Block Question it answers (haipi
 8. **## Deliverables**: a work Job's to-do list, below. `haipipe-project audit --today` reports a
    work Job without it, or without `emoji:`, as debt; `/wb update` lists them to write.
 
-## The Deliverables: what a Job hands on (LLMRec b01 and b02, 261021)
+## The Deliverables: what a Job hands on (261021)
 
 JL 261020: "I want it like the TODO list ... for each job, what are the delivery and outcome to
 provide ... make the Goal to be the first one". The face's `## Deliverables` holds one fenced
@@ -120,7 +120,8 @@ deliverables:
    root. The view says a path from its Task (`runs/<run>/result/...`).
 5. **The Block's own**: a Block's `board.md` may hold its own `## Deliverables` for what no Job
    owns (a drawing across Jobs); the tree shows them last, as "Across all Jobs". A table made by a
-   Run is a Job's: a hard Run lives in a Task (LLMRec b01 j09 holds the five-source comparison).
+   Run is a Job's: a hard Run lives in a Task (for example a Job that holds a five-source comparison). This `## Deliverables`
+   is not a Block's `## Deliveries`, the list of its Studio topics' deliveries (haipipe-studio).
 6. **kind**: data (a stored set), table (one table), figure (charts), card (a Table Card), check
    (an audit or comparison verdict), site (a published build), view (a link that opens a set),
    code, doc.
@@ -139,7 +140,7 @@ deliverables:
 | Space | shows (vanilla) | its buttons → skill |
 |---|---|---|
 | Description | the face: title, goal, close, answers | Update the description → **haipipe-job** |
-| Idea Studio | the Job's studio topics | `run-draw-<sNN>` (add · redraw · save a session) → haipipe-studio |
+| Idea Studio | the Job's studio topics | add · redraw · save a session → haipipe-studio (no Run: a round is the topic's `passes/pNN-<MMDD>/`) |
 | Audience Report | its Questions' rows, if it has a register | Ask · Write · Rebuild drawing · Check → haipipe-report |
 | Work Details | its Tasks: name · title · Runs | Add a Task → **haipipe-job** |
 | Runs | the Job's soft Runs | Run → haipipe-run |
@@ -174,7 +175,7 @@ THEME = Theme(name="<theme>", ..., level_patterns={"Job": r"^<job regex>", "Task
 ```bash
 S=<haipipe-job>/scripts
 python $S/new_job.py job  <block> --slug <job>  --title '<title>' [--answers Q01] [--goal '…'] [--close '…']
-python $S/new_job.py task <job>   --slug <task> --title '<title>' [--kind page] [--answers Q01.E1]
+python $S/new_job.py task <job>   --slug <task> --title '<title>' [--kind <task-type>] [--answers Q01.E1]
 python $S/new_job.py check <job>
 ```
 

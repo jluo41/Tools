@@ -43,6 +43,12 @@ finally:
             sys.modules.pop(name, None)
         else:
             sys.modules[name] = old
+# board_jobs and render_board live in the split board module and read its own _board_pages.
+BOARD = sys.modules[workbench.board_jobs.__module__]
+# The Runs panel lives in its own module and calls its own imported _round_draw.
+RUNS = sys.modules[workbench._runs_panel.__module__]
+# The Page URL check reads the Board's Pages through the hold module.
+HOLD = sys.modules[workbench.generated_page_url.__module__]
 
 
 def test_attached_page_shows_each_source_run_before_package_link(tmp_path, monkeypatch) -> None:
@@ -50,7 +56,7 @@ def test_attached_page_shows_each_source_run_before_package_link(tmp_path, monke
     fixtures.prep.attach(owner, "transcripts", page)
     board = page.parents[2]
     (board / "board.md").write_text("# Board\n", encoding="utf-8")
-    monkeypatch.setattr(workbench, "_board_pages", lambda _: [{
+    monkeypatch.setattr(BOARD, "_board_pages", lambda _: [{
         "id": "Label-1", "title": "Labeling job", "file": "pages/Label-1/Label-1.md", "group": "Data"
     }])
     jobs = workbench.board_jobs(board, "/board/board.md")
@@ -61,7 +67,9 @@ def test_attached_page_shows_each_source_run_before_package_link(tmp_path, monke
     vm = workbench._view_model(page)
     assert len(vm["preparation"]["runs"]) == 1
     assert workbench._next_step(vm)[0].endswith("unit-recipe.")
-    assert "1 of 5" in workbench._data_space(vm)["preparation"]
+    # No "1 of 5 steps done" tally (AGENTS.md § Page words): each step shows its own mark.
+    steps = re.search(r"<ol class=prepsteps>(.*?)</ol>", workbench._data_space(vm)["preparation"]).group(1)
+    assert re.findall(r"<li class=(\w+)>", steps) == ["done", "next", "todo", "todo", "todo", "todo"]
     assert "run-corpus-source-normalize-" in workbench._run_table(vm)
     assert all(len(t["runs"]) == (1 if t["op"] == "source-normalize" else 0)
                for t in workbench._run_types(vm)["data"] if t.get("family") == "corpus")
@@ -135,7 +143,7 @@ def test_prepared_page_is_discovered_before_contract_and_has_live_runs(tmp_path,
     (board / "board.md").write_text("# Board\n", encoding="utf-8")
     page_entry = {"id": "Label-1", "title": "Labeling job", "file": "pages/Label-1/Label-1.md",
                   "group": "Data"}
-    monkeypatch.setattr(workbench, "_board_pages", lambda _: [page_entry])
+    monkeypatch.setattr(BOARD, "_board_pages", lambda _: [page_entry])
 
     jobs = workbench.board_jobs(board, "/board/board.md")
     assert len(jobs["jobs"]) == 1
@@ -156,11 +164,10 @@ def test_prepared_page_is_discovered_before_contract_and_has_live_runs(tmp_path,
     assert state["partition_id"] in view
     assert "PRIVATE_REPLY" not in view
 
-    generated = board / "board" / "Data" / "Label-1.html"
-    generated.parent.mkdir(parents=True)
-    generated.write_text('<section data-file="pages/Label-1/Label-1.md"></section>', encoding="utf-8")
+    # The Board's built site is retired: the Page URL is the live reader's /_board/page?path=.
+    monkeypatch.setattr(HOLD, "_board_pages", lambda _: [page_entry])
     html = workbench.render(page, "/board/board.md", "pages/Label-1/Label-1.md",
-                            "/board/board/Data/Label-1.html", board)
+                            "/_board/page?path=/board/pages/Label-1/Label-1.md", board)
     assert 'data-view=preparation' in html
     assert "run-corpus-initial-group-reserve-" in html
     assert "PRIVATE_REPLY" not in html
@@ -216,7 +223,7 @@ def test_flat_board_page_first_requires_its_own_page_folder(tmp_path, monkeypatc
     (board / "board.md").write_text("# Board\n", encoding="utf-8")
     flat = board / "SL" / "S-Label-2.md"
     flat.write_text("# S-Label-2\n", encoding="utf-8")
-    monkeypatch.setattr(workbench, "_board_pages", lambda _: [{
+    monkeypatch.setattr(BOARD, "_board_pages", lambda _: [{
         "id": "S-Label-2", "title": "New Labeling Page", "file": "SL/S-Label-2.md", "group": "SL"
     }])
     vm = workbench._view_model(flat)
@@ -375,7 +382,7 @@ def test_human_calibration_first_run_prompt_needs_an_open_round(tmp_path, monkey
     card = root / "rounds" / "round_01" / "card.md"
     card.parent.mkdir(parents=True)
     card.write_text("# Round 1\n", encoding="utf-8")
-    monkeypatch.setattr(workbench, "_round_draw", lambda *_: {
+    monkeypatch.setattr(RUNS, "_round_draw", lambda *_: {
         "items": [{"item_id": "i01", "order": 0, "state": "waiting", "first": None}],
         "card": {"released_at": "2026-09-29T12:00:00+00:00", "released_by": "human"}})
     panel = workbench._runs_panel(vm, "labeling", types)
@@ -408,7 +415,7 @@ def test_human_calibration_resume_only_for_the_current_open_batch(tmp_path, monk
     assert workbench._run_again(vm, run) == ("", "")
 
     vm["cal"]["current_round"] = {"round_id": "round_01", "open_item": "i01"}
-    monkeypatch.setattr(workbench, "_round_draw", lambda *_: {"items": []})
+    monkeypatch.setattr(RUNS, "_round_draw", lambda *_: {"items": []})
     action, prompt = workbench._run_again(vm, run)
     assert action == "Resume" and "Continue labeling round 1" in prompt
 

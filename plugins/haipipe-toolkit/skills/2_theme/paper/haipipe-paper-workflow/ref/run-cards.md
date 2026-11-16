@@ -34,7 +34,7 @@ shows them under four buttons in Work Details. The base frame adds its own (Add 
 🧩 SKILL    haipipe-paper
 🤖 AGENT    haipipe-draft-writing-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-paper update the face of {folder}/board.md: its spine, close, which telling it tells now (story-current) and its target; keep the session as a pass of runs/run-update-board.md.
+💬 PROMPT   /haipipe-paper update the face of {folder}/board.md: its spine, close, which telling it tells now (story-current) and its target; keep the session as a pass of runs/run-face-board/.
 
 🔘 BUTTON   Add a venue · Block › Description · ^run-add-venue- · views scope venue
 🏷 RUN      run-add-venue-<venue>
@@ -354,7 +354,7 @@ A Section's Runs are its own Page Runs; these buttons open them from the version
 🧩 SKILL    haipipe-evidence
 🤖 AGENT    haipipe-draft-evidence-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-draft evidence <target>: land and verify this Section's open Evidence Items, then bind their Results.
+💬 PROMPT   /haipipe-paper-evidence <target>: read this Section's checks from the Board's evidence Jobs (values, citations, displays) and list what differs; a Section keeps no evidence Run of its own (an older Section: land and verify its open Evidence Items, then bind their Results).
 
 🔘 BUTTON   Delivery runs · Job › Work Details · - · views main appendix
 🏷 RUN      run-delivery-<lane> (the Section's)
@@ -423,4 +423,4 @@ A Section's Runs are its own Page Runs; these buttons open them from the version
 🧩 SKILL    haipipe-paper-assemble
 🤖 AGENT    haipipe-paper-assemble-agent (new)
 ✍️ SIGNS    the send
-💬 PROMPT   /haipipe-paper-assemble send {folder}: open the comments report this send will collect into (reports/qNN_<venue>-<MMDD>/, page-type: comments), then freeze the current build into its sent/ with delivery/build.py send qNN; a person signs that this is what went out.
+💬 PROMPT   /haipipe-paper-assemble send {folder}: open the comments batch this send will collect into (the review Job jNN_review_<kind>_v<MMDD>/, page-type: comments; an older Board: reports/qNN_<venue>-<MMDD>/), then freeze the current build into its sent/ with delivery/build.py send qNN; a person signs that this is what went out.

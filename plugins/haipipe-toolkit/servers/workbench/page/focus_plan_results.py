@@ -201,7 +201,8 @@ def work_views(overview: dict, folder: Path, root: Path, level: str, questions: 
 
 
 def job_progress(j: Path, root: Path) -> tuple:
-    """(its line "partly · 2 Tasks · 85%", word, Tasks, share, Tasks' worth done): one count for Status and the map."""
+    """(its word, word, Tasks, share, Tasks' worth done): one count for Status and the map; a state word, never a
+    Task count or a percent (AGENTS.md § Page words): the bar beside it shows how far."""
     labels = [state_label(read_face(t, root)["state"]) for t in frame.children(j, "Job") if inside(t, root)]
     if not labels:                               # a Job with no Tasks (a cowork Job, one line of work) is known by its own
         kind = state_kind(state_label(read_face(j, root)["state"]))   # face's state (261106), not "not run"
@@ -217,7 +218,7 @@ def job_progress(j: Path, root: Path) -> tuple:
                                                  for x in partly if re.search(r"(\d+) of (\d+)", x)) if int(b))
     share = round(100 * fill / n) if n else 0
     word = "done" if n and done == n else "not run" if not done and not partly else "partly"
-    return f"{word} · {n} Task{'' if n == 1 else 's'}" + (f" · {share}%" if word == "partly" else ""), word, n, share, fill
+    return word, word, n, share, fill
 
 
 # a Job's type from its Tasks' task-type, in the words of b17 ui/job-views.md (a Job holds one kind of work)
@@ -246,8 +247,8 @@ JOB_MARK = {"done": "✅", "partly": "🔶", "running": "🏃", "waits for you":
 
 
 def job_row(j: Path, js: list, root: Path, outputs: bool = False) -> tuple:
-    """(one Job's closed row, its word, its Tasks, its Tasks' worth done): its emoji and jNN, its name, then how far,
-    "partly · 7 Tasks · 14%" (JL 261108, the 261105 look); Answer on the row when a form under it waits (round 3);
+    """(one Job's closed row, its word, its Tasks, its Tasks' worth done): its emoji and jNN, its name, its mark and a
+    bar for how far, never a Task count or a percent; Answer on the row when a form under it waits (round 3);
     opened, its Tasks and Runs. A Block's bands and a Theme's Block sections draw the same row."""
     jf = j / f"{j.name}.md"
     jt = jf.read_text(encoding="utf-8", errors="ignore") if jf.is_file() else ""

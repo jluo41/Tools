@@ -6,7 +6,7 @@ workbench (`/w/<block>`). Rows run input → process → output: Scope states th
 Block, its Questions, its data and its drawings; Task does the work and writes the
 answers, one View per register group; Check reads what was run and judges the reports;
 Delivery holds the answered reports. Folder is where the run writes: `Block ›` is
-the Block folder (`work/bNN_<block>/`), `Tools ›` the workbench's own `ref/`;
+the Block folder (`work/bNN_<block>/`), `Tools ›` the plugin folder;
 `none` writes no file, only a verdict.
 
 Agents: `haipipe-task-creator-agent` makes a Task (plan, build, report of a Run);
@@ -15,7 +15,9 @@ read-only and returns its review, which the orchestrator saves. `haipipe-task-or
 runs a Ticket. The Block-level writes (the Questions register, a report scaffold, a
 drawing) need an agent of their own, planned as `haipipe-task-block-agent (new)`.
 Questions are recorded, asked and reviewed by `haipipe-report` (`skills/1_base/project/haipipe-report/`).
-Reports are Pages: one agent plans, another writes, `haipipe-draft-check-agent` checks.
+Reports are Pages: one agent plans, another writes, `haipipe-draft-check-agent` checks. The
+`reports/qNN_<topic>/` folders in the rows are an older Block's; since 261110 a new answer is a
+part of its Studio topic's face (`haipipe-report`).
 `haipipe-task` routes and gates; it is no row's Skill: each row names the small skill
 that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 
@@ -32,9 +34,9 @@ that does the work, `(new)` where it is still to be split out of `haipipe-task`.
 | board | Scope | RoadMap Draw | Draw | haipipe-task-block-agent (new) | haipipe-studio | none | Block › studio/<name>.excalidraw |
 | board | Task | each group | Plan a Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/plan.yaml · board.md (Questions › work) |
 | board | Task | each group | Review the plan | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | none |
-| board | Task | each group | Build the Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/scripts/ · runs/rNN_<run>.sh |
+| board | Task | each group | Build the Task | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/scripts/ · runs/rNN_<run>/ |
 | board | Task | each group | Review the Task code | haipipe-task-reviewer-agent | haipipe-task-review (new) | none | Block › CODE_REVIEW.md beside the code it reviews |
-| board | Task | each group | Run a Task | haipipe-task-orchestrator-agent | haipipe-task-run (new) | none | $OUTPUT_ROOT › tNN_<task>/results/rNN_<run>/ |
+| board | Task | each group | Run a Task | haipipe-task-orchestrator-agent | haipipe-task-run (new) | none | $OUTPUT_ROOT › tNN_<task>/runs/rNN_<run>/result/ |
 | board | Task | each group | Report the Run | haipipe-task-creator-agent | haipipe-task-plan (new) | none | Block › jNN_<job>/tNN_<task>/workflow/report.yaml · RUN_AUDIT.md |
 | board | Task | each group | Plan the report | haipipe-draft-structure-agent | haipipe-draft-logic | none | Block › reports/qNN_<topic>/draft/ |
 | board | Task | each group | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
@@ -61,7 +63,7 @@ Notes
 - **Make and judge apart.** Every judging row names a different agent from the row
   that made the thing it judges.
 - **Folders.** `$OUTPUT_ROOT` is the Job folder when the Job serves itself, or its
-  declared store; a Result's path keeps the `tNN_<task>/results/rNN_<run>/` shape either way.
+  declared store; a Result's path keeps the `tNN_<task>/runs/rNN_<run>/result/` shape either way (an older Block: `results/rNN_<run>/`).
   CODE_REVIEW.md sits beside the code it reviews (a Task's, or a Job's shared `src/`).
 - **Guide › Method.** The method steps live in the `task` entry of
   `servers/workbench/guide/guide_families.py`; Method has no run.

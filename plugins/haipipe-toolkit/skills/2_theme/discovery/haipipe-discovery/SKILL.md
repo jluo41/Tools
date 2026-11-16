@@ -45,6 +45,19 @@ ref/external-capability-registry.md
                                 CITE authority and derived Bib aggregation
 ~~~
 
+### Minimum to add one paper
+
+To add one paper (a DOI, arXiv id, link or PDF) to a Discovery Task, read only these, then follow
+§ Durable protocol steps 4 and 5:
+
+1. A discovery question is a `tNN_` Task Page under `discovery/bNN_*/jNN_*/`, not a Block Question `qNN`
+   (that is `haipipe-report`); resolve the words to that Task folder first.
+2. `ref/paper-run-contract.md`: the Run name `rNN_<author><year>_<slug>`, its ticket and its Result.
+3. `scripts/paper_result_build.py --help`: the ticket calls it with `--task --run --address`, the paper
+   (`--doi`, `--arxiv` or `--pmlr-url`), and two lines you write after reading the abstract: `--readout`
+   (what the paper found) and `--reuse` (what this Task takes from it).
+4. Close with `scripts/paper_runs.py build-bib <task> --write` and `scripts/paper_runs.py check <task>`.
+
 ## Verbs
 
 ~~~text
@@ -101,7 +114,7 @@ DISCOVERY TYPE  source-map | source-reading | topic-summary | prior-art-verdict 
                 in ref/page-types.md
 ~~~
 
-Every skill we wrote sits flat at the family root; the numbered folders hold
+Every skill we wrote sits flat at the family root; each `_parts/` folder holds
 only vendored originals (listed in `ref/external-skill-map.md`). Three live
 capability groups, one skill each:
 
@@ -111,8 +124,8 @@ discovery/
 ├── haipipe-discovery-inquiry/         D1 Run controller
 ├── haipipe-discovery-review/          2 · per-Subject reading, Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis
+├── haipipe-discovery/_parts/          vendored originals: research-lit, comm-lit-review, academic-researcher
 ├── workbench-discovery/               the Block's live view
-│   └── _parts/                        vendored originals: research-lit, comm-lit-review, academic-researcher
 └── agents/                            execution roles
 
 1_base/search/                         Search is shared with other themes
@@ -130,7 +143,7 @@ tracing, citation checks, genealogy, and Result-to-Claim support are described
 in `ref/external-capability-registry.md`; they return packets to the root-level
 Search, Review and Synthesize skills and do not become new lifecycle owners.
 
-Do not replace the numbered folders with `routes/`. Only
+Do not replace the `_parts/` folders with `routes/`. Only
 `haipipe-discovery-inquiry/` declares executable phase ownership.
 
 When an older 0/1/2/3 or 1/2/3/4 description is encountered, use
@@ -192,13 +205,13 @@ Board view:
    direct `jNN_/tNN_` tree supplies membership and order; `board.md` remains a
    presentation head rather than a second Page registry.
 4. After a structural change, a Run batch, Page `04 CHECK`, and before a
-   completion claim, rebuild and check the projection:
+   completion claim, sync and check the Board:
 
 ~~~bash
 python3 scripts/board_sync.py <block> --check --strict
 ~~~
 
-The generated `board/` site is disposable. Never hand-edit it, and never
+Nothing is built: the workbench reads the Block live. Never
 create a Board Page for a Run. The exact mapping and checkpoint table live in
 `ref/board-sync.md`.
 
@@ -338,7 +351,7 @@ bound. Never mint an umbrella Discovery Run for Page synthesis or writing.
 
 ### 0. Resolve scope
 
-Find the nearest project root containing work/, paper/, applications/, or
+Find the nearest project root containing work/, discovery/, paper/, applications/, or
 _haipipe/. Under its `discovery/` bank, a Block owns Jobs, a Job owns Task
 Pages, and a Task contains `discovery.yaml`. Detect existing units by structure,
 but every new address must pass the explicit b/j/t/r naming gate.

@@ -48,12 +48,27 @@ def same_words(a, b):
         return False
 
 
+def own_names(space):
+    """The comment authors that count as this SPACE's own person (their comments are never "new from others"):
+    AUTHOR_NAMES, comma-separated (name and initials, e.g. "Ada Lovelace, AL"), from the environment, else from
+    <space>/.server_config/settings.env; none set means every comment counts as someone else's."""
+    raw = os.environ.get("AUTHOR_NAMES")
+    cfg = Path(space) / ".server_config" / "settings.env"
+    if raw is None and cfg.is_file():
+        for line in cfg.read_text(encoding="utf-8").splitlines():
+            m = re.match(r"\s*(?:export\s+)?AUTHOR_NAMES\s*=\s*(.*)$", line)
+            if m:
+                raw = m.group(1).strip().strip("'\"")
+    return {n.strip() for n in (raw or "").split(",") if n.strip()}
+
+
 class Round:
-    def __init__(self, word_dir, name, onedrive=None, me=("JL", "Junjie Luo"), reader=""):
+    def __init__(self, word_dir, name, onedrive=None, me=None, reader=""):
         self.word = Path(word_dir).resolve()
-        self.name, self.me, self.reader = name, set(me), reader
         self.onedrive = Path(onedrive).resolve() if onedrive else None
         self.space = next(p for p in self.word.parents if (p / "env.sh").is_file())
+        self.name, self.reader = name, reader
+        self.me = set(me) if me is not None else own_names(self.space)
         self.render_dir = self.word.parent / "render"
 
     def rel(self, p):

@@ -160,21 +160,16 @@ def papers_page(board: Path | None, root: Path, table: Path) -> str:
     for row in rows:
         # a paper may serve two methods (`by a; by b`): it shows once, in its first group
         groups.setdefault(row.get("group", "").split(";")[0].strip() or "other", []).append(row)
-    # the three study roles are always counted, as they always were; `practice` only when present
-    roles = " · ".join(f"{n} {k}" for k in PAPER_ROLES
-                       if (n := sum(r.get('role', '').lower() == k for r in rows)) or k != "practice")
     index = paper_runs(board)
     run_of = {id(r): index.get(r.get("doi", "").lower()) for r in rows}
-    pdfs = sum(_paper_pdf(r, table, run_of[id(r)]) is not None for r in rows)
+    pdfs = any(_paper_pdf(r, table, run_of[id(r)]) is not None for r in rows)
     venues: dict[str, int] = {}
     for row in rows:
         venues[row.get("venue", "") or "—"] = venues.get(row.get("venue", "") or "—", 0) + 1
-    utd = sum(is_utd24(r.get("venue", "")) for r in rows)
-    keys = sum(bool(r.get("key")) for r in rows)
-    head = (f'<div class="rp-head">{len(rows)} papers · {keys} key · {roles} · {utd} in UTD24 journals · {pdfs} with a PDF</div>'
-            + (f'<div class=rp-tools><button type=button class=rp-only aria-pressed=false>Show only the {pdfs} papers with a PDF</button></div>'
-               if pdfs else "")
-            + f'<details class=rp-venues><summary>{len(venues)} journals and publishers</summary><div class=mut>'
+    # labels carry no counts (AGENTS § Page words): the cards show how many; a venue's count stays, it is the content
+    head = ((f'<div class=rp-tools><button type=button class=rp-only aria-pressed=false>Show only the papers with a PDF'
+             '</button></div>' if pdfs else "")
+            + '<details class=rp-venues><summary>Journals and publishers</summary><div class=mut>'
             + " · ".join(f"{_e(v)} ({n})" for v, n in sorted(venues.items(), key=lambda kv: (-kv[1], kv[0])))
             + '</div></details>')
     card = lambda r: _paper_card(root, r, table, run_of[id(r)])
@@ -185,10 +180,10 @@ def papers_page(board: Path | None, root: Path, table: Path) -> str:
         rest = [r for r in rs if r not in top]
         cards = [card(r) for r in top], [card(r) for r in rest]
         has = any("rp-card has-pdf" in c for c in cards[0] + cards[1])
-        more = (f'<details class=rp-more><summary>{len(rest)} more paper{"s" if len(rest) != 1 else ""}</summary>'
+        more = (f'<details class=rp-more><summary>More papers</summary>'
                 f'<div class="rp-group">{"".join(cards[1])}</div></details>' if rest else "")
         return (f'<section class="rp-band{" has-pdf" if has else ""}">'
-                f'<div class="lw-k">{_e(group[:1].upper() + group[1:])}<span class="lw-kn">{len(rs)}</span></div>'
+                f'<div class="lw-k">{_e(group[:1].upper() + group[1:])}</div>'
                 f'<div class="rp-group">{"".join(cards[0])}</div>{more}</section>')
     bands = "".join(band(g, rs) for g, rs in groups.items())
     return f'<div class="rp-list">{head}{bands}</div>'

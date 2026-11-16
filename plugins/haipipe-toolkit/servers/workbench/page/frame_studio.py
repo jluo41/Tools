@@ -7,7 +7,7 @@ import re
 from pathlib import Path
 from urllib.parse import quote, urlencode
 
-from live.frame_base import _e, _file_url, _reader, _rel, _title, chain, children, level_of, pop
+from live.frame_base import _dir_signature, _e, _file_url, _reader, _rel, _title, chain, children, level_of, pop
 
 
 # ── Idea Studio: one closed row per studio topic, opened in place (b10 s02-D25, D27) ───────
@@ -474,6 +474,39 @@ def studio_inventory(folder: Path, root: Path) -> list:
     Keep each topic's source for its feeds and sessions. Never enter an archive or a link
     outside this Block/root, and count a linked topic only once.
     """
+    key, sig = (str(folder), str(root)), _inventory_signature(folder)
+    hit = _INVENTORY.get(key)
+    if hit and sig is not None and hit[0] == sig:      # every render of an open Draft page asked again (a hung host)
+        return list(hit[1])
+    out = _studio_inventory(folder, root)
+    _INVENTORY[key] = (sig, out)
+    return list(out)
+
+
+_INVENTORY: dict = {}                     # (folder, root) -> (signature, inventory)
+
+
+def _inventory_signature(folder: Path):
+    """The mtimes the inventory depends on: this folder, its Jobs and Tasks, their studio/ folders and every topic
+    folder in them, so a topic or drawing added anywhere reads again at once. None when a folder cannot be read."""
+    try:
+        sources = [folder]
+        if level_of(folder) == "Block":
+            jobs = children(folder, "Block")
+            sources += jobs + children(folder, "Job") + [t for j in jobs for t in children(j, "Job")]
+        elif level_of(folder) == "Job":
+            sources += children(folder, "Job")
+        sig = []
+        for src in sources:
+            for d in (src, src / "studio"):
+                if d.is_dir():
+                    sig.append((str(d),) + _dir_signature(d))
+        return tuple(sig)
+    except OSError:
+        return None
+
+
+def _studio_inventory(folder: Path, root: Path) -> list:
     root, folder = root.resolve(), folder.resolve()
     if folder != root and root not in folder.parents:
         return []

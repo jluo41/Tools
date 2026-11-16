@@ -41,7 +41,8 @@ inputs"). Several papers under it are items, each tagged with its own sentence. 
 
 ## When nothing backs a sentence
 
-Write a `need` item on a "Sources still needed" card (no `source`), with `propose`: usually `{level: run, in:
+Write a `need` item in the card of the Task its Run would be made in (there is no "Sources still needed" card, JL
+261020; the door's § Two kinds), with `propose`: usually `{level: run, in:
 <the Task whose question it falls under>}`, or `{level: task, in: <the Job>, name: tNN_<new question>}` when no
 Task asks it yet.
 

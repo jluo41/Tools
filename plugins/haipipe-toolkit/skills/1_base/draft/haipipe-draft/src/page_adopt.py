@@ -41,7 +41,7 @@ from .plan_shape import iter_plan_bullets
 HEADING = re.compile(r"^#{3,6} ")
 DRAFT_SECTION = re.compile(r"(?m)^## \d+ · Draft\b")
 DRAFT_PARAGRAPH = re.compile(r"^### (C\d+\.P\d+)\b")
-DRAFT_BULLET = re.compile(r"^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·")
+DRAFT_BULLET = re.compile(r"^- (?:\[[ xX]\]\s*)?B(\d+[a-z]*)\s*·")   # B1a, a split's second row, is its own (JL 261115)
 NOT_PROSE = ("#", ">", "<!--", "-", "```", "*")   # what folder_health does not read as sentence text; a table a Draft carries is its text
 # a Draft that is still a marker, not a sentence: `[open · E05 · …] …`, `[block E02 · unchanged] …`
 MARKER = re.compile(r"^\[(?:open|block|pending|todo|tbd|placeholder)\b[^\]]*\]", re.I)
@@ -121,7 +121,7 @@ def _skeleton(page_text: str, plan_text: str) -> list:
     out = [""] + ([f"### {title.group(1)}", ""] if title and not as_sections else [])
     printed = set()
     for pid, name, body in re.findall(r"(?ms)^### (C\d+\.P\d+)\b(?:\s*·\s*([^\n]*))?\n(.*?)(?=^### |\Z)", section):
-        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+)[a-z]*\s*·\s*(?:[Ss]\d+[a-z]*\s*·\s*)?(\S.*)$", body)
+        sentences = re.findall(r"(?m)^- (?:\[[ xX]\]\s*)?B(\d+[a-z]*)\s*·\s*(?:[Ss]\d+[a-z]*\s*·\s*)?(\S.*)$", body)
         if not sentences:
             continue
         cid = pid.split(".")[0]

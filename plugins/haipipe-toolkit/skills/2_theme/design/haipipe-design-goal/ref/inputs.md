@@ -30,9 +30,9 @@ A Block's inputs version · inputs/inputs-vN/
 Any files, then `manifest.yaml`, written last by `make_inputs.py freeze` and never edited:
 
 ```yaml
-version: i2                  # the folder name
+version: inputs-v2           # the folder name (an older Block: i2)
 frozen: '261007'             # YYMMDD
-new: <what changed from i1>
+new: <what changed from inputs-v1>
 rules: r2                    # the shared rules' version it carries, if any
 parts:
 - part: Goal · how much is set
@@ -58,8 +58,8 @@ A Job's fence · jNN_<goal>_M0x-<slug>-mK_inputs-vM/inputs/
 inputs/
 ├── goal.md                  written: the pinned goal's entry (aim · who · venue · N · rules · leave out)
 ├── method.md                copied by run-setup-method-j<NN> (haipipe-design-method): the pinned version
-├── rules.md -> ../../inputs/i2/rules.md            one relative link per Block input step ① sees
-├── handoff-W-03.md -> ../../inputs/i2/handoff-W-03.md
+├── rules.md -> ../../inputs/inputs-v2/rules.md            one relative link per Block input step ① sees
+├── handoff-W-03.md -> ../../inputs/inputs-v2/handoff-W-03.md
 └── manifest.yaml
 ```
 
@@ -73,7 +73,7 @@ and a `sees:` entry `<part> [<kind>, …]` links only the files of those kinds; 
 Job's manifest copies each linked file's `kind:`.
 
 ```yaml
-inputs: i2
+inputs: inputs-v2
 frozen: '261007'
 method: method.md
 parts:                       # every part of step ①, in order; a part the method leaves out reads "nothing"
@@ -85,7 +85,7 @@ parts:                       # every part of step ①, in order; a part the meth
 files:                       # every file in the fence but the manifest
 - {path: goal.md, source: written, sha256: <first 12 hex>}
 - {path: method.md, source: <registry version, e.g. haipipe-design-method M04 m2>, sha256: <first 12 hex>}
-- {path: rules.md, source: ../../inputs/i2/rules.md, sha256: <first 12 hex>}
+- {path: rules.md, source: ../../inputs/inputs-v2/rules.md, sha256: <first 12 hex>}
 ```
 
 `sha256` stores the first 12 hex of the file's sha256, here and in every inputs-version manifest.

@@ -38,7 +38,7 @@ For every Run:
 <task>/runs/<run>/<run>.<ticket-extension>
 <task>/runs/<run>/run.yaml                 its card, with role:
 $OUTPUT_ROOT/<task>/runs/<run>/result/runtime.yaml
-$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb   when notebook policy is not off
+$OUTPUT_ROOT/<task>/notebooks/<run>.ipynb   when notebook policy is not off (or the Ticket's NOTEBOOK_NAME)
 ```
 
 Check exact stem equality, `rNN_` grammar, receipt fields, config path, Ticket

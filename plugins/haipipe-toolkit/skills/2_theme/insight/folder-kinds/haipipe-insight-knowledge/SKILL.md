@@ -4,7 +4,7 @@ description: >-
   InsightBoard level contract for Knowledge: one supported proposition with
   strength, rival explanations and boundary, written on its answering page
   from named results and Information pages, never advising. Trigger: insight
-  knowledge, claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
+  knowledge, insight claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
 metadata:
   version: "2.4.1"
   last_updated: "2026-10-09"
@@ -19,6 +19,11 @@ metadata:
 ---
 
 # /haipipe-insight-knowledge · make the bounded claim
+
+> **Older layout (261008) below.** The per-segment page folders, `QK` ids and `answers.yaml` are the register
+> board's. On the insight ladder (`../../haipipe-insight/ref/insight-ladder.md`) the answering page is the Task's
+> `tNN_K<NN>_<slug>.md`, written by `run-write-t<NN>` from `runs/rNN_<segment>/result/`; comparing Jobs, checking
+> consistency and pooling are the Runs that reference lists. What a Knowledge page may say still holds.
 
 Load `haipipe-insight` (`ref/board-contract.md`, `ref/report.md`,
 `ref/evidence-needs.md`) and the workflow. `folder-kind: knowledge` remains a read-only key for boards made

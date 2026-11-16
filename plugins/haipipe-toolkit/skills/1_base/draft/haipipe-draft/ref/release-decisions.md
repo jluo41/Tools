@@ -11,7 +11,7 @@ does not allocate a Run.
 
 | Context | Required evidence | Action |
 |---|---|---|
-| Interactive Page writing | The exact Structure/Writing Run versions have durable human acceptance; every required dependency and Evidence Result is current | Reuse those decisions. An explicit Page release request authorizes adoption/delivery; an empty historical `approved:` field does not require the same approval again. |
+| Interactive Page writing | The exact Structure/Writing Run versions have durable human acceptance; every required dependency and Evidence Result is current | Reuse those decisions. An explicit Page release request authorizes adoption/delivery on a signed plan; when `approved:` is empty, sign it first with `page.py sign` from the person's own words (JL 261111). |
 | Interactive writing with an unfinished or unaccepted scope | The outstanding Run/scope, version, evidence, and decision owner are named | Continue that Run or present its missing decision. A general release request does not accept an unfinished candidate. |
 | Non-interactive or unmigrated Shape profile | Approved G>=1 Shape and that profile's declared human gates | Follow its Shape gate. Machine `checked:` cannot substitute for human acceptance. |
 | Refusal, pause, or acceptance of a different version | Original words and exact target/version | Preserve the decision. Do not transfer approval to changed content or interpret silence as approval. |

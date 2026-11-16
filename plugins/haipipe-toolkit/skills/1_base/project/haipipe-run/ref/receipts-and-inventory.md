@@ -24,7 +24,7 @@ signs: [agreed, checked]        # the signs its workbench row needs
 status: planned                 # planned | running | waiting | done | failed | held | superseded
 passes: [p01-<MMDD>]            # its history, oldest first
 writes: [result/]               # soft: the items it touched, e.g. [draft/<section>.md]
-feeds: [reports/qNN_<topic>]    # who reads its output
+feeds: [sNN-<topic>]            # who reads its output
 moved_from: []                  # only after haipipe-project update moved an older layout
 ```
 
@@ -107,8 +107,8 @@ run: r01_execution_fit-model
 family: Execution
 operation: fit-model
 target: model-a / frozen-data-v1 / config-v1
-ticket: t01_model/runs/r01_execution_fit-model.sh
-result: t01_model/results/r01_execution_fit-model/
+ticket: t01_model/runs/r01_execution_fit-model/r01_execution_fit-model.sh
+result: t01_model/runs/r01_execution_fit-model/result/
 status: planned
 started_at: null
 finished_at: null

@@ -6,7 +6,7 @@ description: >-
   Each view has Review Content followed by the shared Around the Work sections.
   Keeps the draft editors, human sign actions, evidence and delivery previews.
   Also documents the legacy three-Space page and its source-file contracts.
-  Trigger: draft task UI, draft workbench, draft folder, stale draft page,
+  Trigger: draft task UI, draft workbench, draft folder page, stale draft page,
   workbench-page, /workbench-task-draft.
 metadata:
   version: "0.106.0"
@@ -200,9 +200,9 @@ Report: the same seven, Results only · Table · Questions
 - A Section's Studio topic is one whose face names the Task; a face naming `jNN_…/tNN_…` paths counts only for those
   (two versions often share a Section's name).
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means the workbench views and the `delivery/` artifacts its export doors write (`*-view.html`, `.tex`, `.pdf`, `.docx`, `index.html`): fix `servers/workbench/workbench-task-draft/` or the Page source, then rebuild.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). Here that means the workbench views and the `delivery/` artifacts its export doors write (`*-view.html`, `.tex`, `.pdf`, `.docx`, `index.html`): fix `servers/workbench/workbench-task-draft/` or the Page source, then rebuild.
 
-> ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time. Never write, check or compare a sha256 in a Page, Result, record or workbench view.
+> ⛔ **No content hashes** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). A version is its number and date; staleness is file time. Never write, check or compare a sha256 in a Page, Result, record or workbench view.
 
 **LOAD `workbench` FIRST.** It owns what any workbench is: storage,
 surface, writer, boundary. This file owns the Page workbench's delta: what the
@@ -474,7 +474,7 @@ name on disk and on screen alike (`run-section-0927-readability-cleanup`,
 `page.py run-names <page>` renames the Page once (flat `runs/`, `results/`, every
 mention inside the Page; then `page.py export`).
 
-**Records at the two ends** (JL 260928, AGENTS.md rule 3): `page.py open-run <page>
+**Records at the two ends** (JL 260928, the SPACE's AGENTS.md § Working rules): `page.py open-run <page>
 --kind <kind> --slug <words> [--target C1.P2] [--goal …]` writes the one ticket
 (`status: open`); while open only the Page's text changes and the panel shows the
 run as Running with no result; `page.py close-run <page> <run>` writes

@@ -30,7 +30,7 @@ PATH_FIELDS = ("owner", "package", "receipt")
 CUSTODY = Path("_WorkSpace") / "LabelingStore" / "_custody"
 
 
-# Paths and private text inside a SPACE (AGENTS.md rule 7: no /Users/<name>/ in a tracked file).
+# Paths and private text inside a SPACE (the SPACE's AGENTS.md § Working rules: no /Users/<name>/ in a tracked file).
 # A record keeps a path relative to the SPACE root, the nearest folder holding env.sh; a
 # `*.private.*` file lives under _WorkSpace/LabelingStore/_custody/ at the same relative place,
 # so the corpus text never sits in a git-tracked folder. Outside a SPACE nothing changes.

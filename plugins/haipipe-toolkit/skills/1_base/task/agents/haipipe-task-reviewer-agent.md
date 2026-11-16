@@ -20,7 +20,7 @@ Folder for the same Task.
 
 Load `haipipe-task`, then read the relevant type specialist's SKILL.md by the path in its type table
 (the type skills are hidden from the listing). I inspect the creator's
-files in a fresh context and return `pass`, `revise`, `blocked`, or `fail` with
+files in a fresh context and return `pass`, `warn`, `revise`, `blocked`, or `fail` with
 exact paths. I never mutate the Task, Run, or Result.
 
 ## Plan gate
@@ -47,7 +47,8 @@ exact paths. I never mutate the Task, Run, or Result.
 ## Run/Result gate
 
 ```text
-[ ] runs/<RUNNAME>.sh ↔ <task>/results/<RUNNAME>/ is exact and same-stem
+[ ] runs/<RUNNAME>/<RUNNAME>.sh ↔ runs/<RUNNAME>/result/ is exact and same-stem
+    (an older Block: runs/<RUNNAME>.sh ↔ <task>/results/<RUNNAME>/)
 [ ] runtime.yaml has valid status and full readable + compact BJTR address
 [ ] family/operation, inputs, config, script, timestamps, and exit status agree
 [ ] every declared artifact exists and is readable

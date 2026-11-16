@@ -92,11 +92,13 @@ There is no separate question door to load.
 Before reporting success, require:
 
 ```text
-runs/<RUNNAME>.sh                         executable ticket
-<task>/results/<RUNNAME>/runtime.yaml     valid status + full BJTR address
-<task>/results/<RUNNAME>/                  declared artifacts present
+runs/<RUNNAME>/<RUNNAME>.sh               executable ticket
+<task>/runs/<RUNNAME>/result/runtime.yaml valid status + full BJTR address
+<task>/runs/<RUNNAME>/result/             declared artifacts present
 workflow/report.yaml                       present for Report completion
 ```
+
+An older Block keeps the flat `runs/<RUNNAME>.sh` beside `<task>/results/<RUNNAME>/`.
 
 For a consumer handoff, also require:
 

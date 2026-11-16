@@ -955,9 +955,13 @@ def next_heading_number(level: int, first: str = "") -> str:
     return ".".join([first or str(HEADING_COUNTS[0])] + [str(n) for n in HEADING_COUNTS[1:index + 1]])
 
 
+LEGEND_HEADING = re.compile(r"^(?:Extended Data|Supplementary) (?:Fig\.|Figure|Table) \S+\s*\|")
+
+
 def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool = True, compact: bool = False,
                number_displays: bool = False, main_numbering: bool = False, appendix_letters: bool = False,
-               heading_upper: bool = True, number_headings: bool = False) -> None:
+               heading_upper: bool = True, number_headings: bool = False,
+               line_spacing: float | None = None) -> None:
     """0.7.1: ``number_displays`` gives every table/figure in this stream a running
     title ("Table S1.", "Figure S1."; prefixes from the profile), so a supplement
     table no longer prints its caption with no number."""
@@ -971,12 +975,23 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
     # a full-page display ends its page: whatever follows starts the next one (page break before, never a break
     # paragraph after, which spilled onto a blank page when the display filled its page; JL 261023)
     break_next = False
+    # LEGEND ITEMS (JL 261115, ScalingGlucose Extended Data): a heading that names its own display, "Extended Data
+    # Fig. 1 | <title>", with the display right under it and its legend paragraph after, prints as one item on its
+    # own page: the display inline (never floated, no numbered caption of its own: the heading already numbers it),
+    # then the legend. The Section export (workbench-task-draft export_latex.py) puts it in that order.
+    legend_seen = False
+    legend_pending = False
     for event in events:
         start = len(body_children(doc))
         new_page = break_next
         break_next = False
+        if event.kind != "display":
+            legend_pending = False
         if event.kind == "heading":
             title = str(event.value)
+            if LEGEND_HEADING.match(title):
+                new_page = new_page or legend_seen
+                legend_seen = legend_pending = True
             if appendix_letters and event.level == 1:
                 # LaTeX's \appendix letters its sections; Word printed the bare title in
                 # caps, so "Appendix A." was nowhere in the .docx while the LaTeX PDF and
@@ -1001,7 +1016,8 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
             if appendix_letters and event.level == 1 and letter == 1 and bool(PROFILE_CONFIG.get("appendix_new_page", False)):
                 doc.paragraphs[-1].paragraph_format.page_break_before = True
         elif event.kind == "text":
-            add_rich_text(doc, str(event.value), MATH_STORE, size=11 if compact else 12)
+            add_rich_text(doc, str(event.value), MATH_STORE, size=11 if compact else 12,
+                          line_spacing=BODY_SPACING if line_spacing is None else line_spacing)
         elif event.kind == "math":
             add_math_paragraph(doc, str(event.value), size=11 if compact else 12)
         elif event.kind == "code":
@@ -1011,7 +1027,13 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                 add_bullet(doc, str(item))
         elif event.kind == "display" and include_displays:
             display = event.value
-            if isinstance(display, Display):
+            if isinstance(display, Display) and legend_pending:
+                legend_pending = False
+                if display.kind == "table":
+                    add_table(doc, display, "", compact=compact)
+                else:
+                    add_figure(doc, display, "", compact=compact, max_height=4.6)   # leaves the double-spaced legend room on the page
+            elif isinstance(display, Display):
                 title = ""
                 if number_displays:
                     counters[display.kind] += 1
@@ -1813,13 +1835,17 @@ def build() -> tuple[Path, Path]:
         return MAIN_PATH, None
 
     supp_doc = Document()
-    configure_document(supp_doc, body_size=11, line_spacing=1.5)
+    # supplement_line_spacing (profile or paper-build.toml): the supplement's text spacing; Nature's Extended Data
+    # legends are not judged on it, and single spacing keeps a long table and its legend on one page (261115)
+    supp_spacing = float(PROFILE_CONFIG.get("supplement_line_spacing", 1.5))
+    configure_document(supp_doc, body_size=11, line_spacing=supp_spacing)
     add_text(supp_doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")), bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, "[AUTHOR ACTION REQUIRED: confirm that all supplement citations, table labels, and figure labels match the final main manuscript]", size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
     supp_doc.add_page_break()
     add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True,
-               appendix_letters=True)
+               appendix_letters=True,
+               line_spacing=supp_spacing if "supplement_line_spacing" in PROFILE_CONFIG else None)
     save_docx(supp_doc, SUPP_PATH)
 
     pdf_report = render_submission_pdfs()

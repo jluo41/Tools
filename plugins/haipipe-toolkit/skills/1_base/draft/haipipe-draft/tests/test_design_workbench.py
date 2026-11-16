@@ -201,7 +201,7 @@ class DesignItemsTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             items = design_snapshot(page, board)["items"]
             html = _element_matrix_html(items, aim)
-            for label in ("<details class=elmatrix open><summary>Design elements · ",
+            for label in ("<details class=elmatrix><summary>Design elements · ",   # starts closed (haipipe-ui SKILL.md:81)
                           "<th>greeting</th><th>sender</th><th>news</th><th>ask</th><th>link</th><th>opt-out</th><th>added</th>",
                           '<a href="#item-ITEM01" data-item="ITEM01">Design 1</a>', "<tr class=elcount><th>changed in</th>"):
                 self.assertIn(label, html)
@@ -228,7 +228,7 @@ class DesignItemsTest(unittest.TestCase):
                           '<span class="el-from intuition">intuition</span> · <span class=el-how>intuitive</span>'):
                 self.assertIn(label, rendered)
             # the strip of Runs and the all-items bar are gone (JL 260921)
-            for gone in ("<table class=kv><tr><th>goal</th>", "supported by FW01",
+            for gone in ("<table class=kv><tr><th>goal</th>", "supported by W01-full",
                          "<th>Runs</th>", "class=steps", "Commission ✓", "For all items at once"):
                 self.assertNotIn(gone, rendered)
             for jargon in ("pinned in Ticket", "candidate text", "check_unit", "handoffs signed", "roster"):
@@ -526,11 +526,11 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
                 "title": "Second card", "goal": "Try a shorter card", "type": "ui-card",
                 "audience": "patients due a refill", "job": "refill review",
                 "stance": "follow", "basis": "evidence-informed",
-                "evidence": "handoff · ../../../DesignWorkbench-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md",
+                "evidence": "handoff · ../../../DesignWorkbench-Demo-260916-InsightBoard/1-full/W01-full-send-salience/W01-full-send-salience.md",
                 "acceptance": "≤ 200 characters"})
             register = page.parent / "outline" / f"{page.stem}-design-items.md"
             text = register.read_text(encoding="utf-8")
-            needle = "evidence:\n- handoff · ../../../DesignWorkbench-Demo-260916-InsightBoard/1-F-full/FW01-send-salience/FW01-send-salience.md\n"
+            needle = "evidence:\n- handoff · ../../../DesignWorkbench-Demo-260916-InsightBoard/1-full/W01-full-send-salience/W01-full-send-salience.md\n"
             cut = text.rfind(needle)
             text = text[:cut] + text[cut + len(needle):]      # strip only ITEM02's line
             register.write_text(text, encoding="utf-8")
@@ -542,7 +542,7 @@ class GoalAndInsightSpaceTest(unittest.TestCase):
 
 
 class BecauseRuleTest(unittest.TestCase):
-    """Each card names the one insight rule it acts on (`because: FW01 · W1`), or says it has none."""
+    """Each card names the one insight rule it acts on (`because: W01-full · W1`), or says it has none."""
 
     def item(self, page: Path, **fields) -> dict:
         return {"basis": "evidence-informed", "because": "", "stance": "follow",
@@ -550,18 +550,18 @@ class BecauseRuleTest(unittest.TestCase):
 
     def test_rule_is_read_from_the_cited_page(self):
         with TemporaryDirectory() as td:
-            page = build_insight_board(Path(td) / "Insight") / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
-            rule = because_rule(self.item(page, because="FW01 · W2"))
-            self.assertEqual((rule["state"], rule["ref"], rule["rule"]["do"]), ("rule", "FW01 · W2", False))
+            page = build_insight_board(Path(td) / "Insight") / "1-full" / "W01-full-send-salience" / "W01-full-send-salience.md"
+            rule = because_rule(self.item(page, because="W01-full · W2"))
+            self.assertEqual((rule["state"], rule["ref"], rule["rule"]["do"]), ("rule", "W01-full · W2", False))
             self.assertEqual(rule["rule"]["text"], "vary the message by age, gender, send day or region")
-            self.assertEqual(because_rule(self.item(page, because="FW01 W1"))["rule"]["id"], "W1")
-            self.assertEqual(because_words(self.item(page, because="FW01 · W1")),
-                             "FW01 · W1: DO send `salience` to the whole population")
+            self.assertEqual(because_rule(self.item(page, because="W01-full W1"))["rule"]["id"], "W1")
+            self.assertEqual(because_words(self.item(page, because="W01-full · W1")),
+                             "W01-full · W1: DO send `salience` to the whole population")
 
     def test_missing_rule_ai_idea_and_unnamed_are_told_apart(self):
         with TemporaryDirectory() as td:
-            page = build_insight_board(Path(td) / "Insight") / "1-F-full" / "FW01-send-salience" / "FW01-send-salience.md"
-            self.assertEqual(because_rule(self.item(page, because="FW01 · W9"))["state"], "unknown")
+            page = build_insight_board(Path(td) / "Insight") / "1-full" / "W01-full-send-salience" / "W01-full-send-salience.md"
+            self.assertEqual(because_rule(self.item(page, because="W01-full · W9"))["state"], "unknown")
             self.assertEqual(because_rule(self.item(page, because="FW07 · W1"))["state"], "unknown")
             self.assertEqual(because_rule(self.item(page, because="none"))["state"], "ai")
             self.assertEqual(because_rule(self.item(page, basis="brief-only"))["state"], "ai")
@@ -573,7 +573,7 @@ class BecauseRuleTest(unittest.TestCase):
             board, page, _runs = v2_fixture(Path(td))
             register = plan_folder(page.parent) / f"{page.stem}-design-items.md"
             text = register.read_text(encoding="utf-8")
-            text = text.replace("basis: evidence-informed\n", "basis: evidence-informed\nbecause: FW01 · W1\n", 1)
+            text = text.replace("basis: evidence-informed\n", "basis: evidence-informed\nbecause: W01-full · W1\n", 1)
             register.write_text(text, encoding="utf-8")
             snapshot = design_snapshot(page, board)
             first = snapshot["items"][0]
@@ -585,8 +585,8 @@ class BecauseRuleTest(unittest.TestCase):
             self.assertIn("DO send <code>salience</code> to the whole population", rendered)
             first["stance"] = "challenge"
             self.assertIn("if it loses, the rule holds", render_design(snapshot, "design"))
-            first["because"] = "FW01 · W9"
-            self.assertIn("FW01 · W9 · no such row on the cited page", render_design(snapshot, "design"))
+            first["because"] = "W01-full · W9"
+            self.assertIn("W01-full · W9 · no such row on the cited page", render_design(snapshot, "design"))
 
 
 class DesignSignalTest(unittest.TestCase):
@@ -597,7 +597,7 @@ class DesignSignalTest(unittest.TestCase):
         page.parent.mkdir(parents=True)
         page.write_text("# Message\nfolder-kind: design\n", encoding="utf-8")
         (design_board / "board.md").write_text("# Design Board\nreads: A00_InsightBoard\n", encoding="utf-8")
-        handoff = insight_board / "1-F-full" / "FW01-counsel" / "FW01-counsel.md"
+        handoff = insight_board / "1-full" / "W01-full-counsel" / "W01-full-counsel.md"
         handoff.parent.mkdir(parents=True)
         handoff.write_text(
             "# Counsel\nfolder-kind: wisdom\nstate: ✅ SETTLED\nquestion-level: wisdom\nSERVES QW1\n"
@@ -839,7 +839,7 @@ class BatchAndDraftTest(unittest.TestCase):
             self.assertIn("No row is named for this design", rendered)
             register = plan_folder(page.parent) / f"{page.stem}-design-items.md"
             register.write_text(register.read_text(encoding="utf-8").replace(
-                "basis: evidence-informed\n", "basis: evidence-informed\nbecause: FW01 · W1, W2\n", 1), encoding="utf-8")
+                "basis: evidence-informed\n", "basis: evidence-informed\nbecause: W01-full · W1, W2\n", 1), encoding="utf-8")
             rendered = render_design(design_snapshot(page, board), "design")
             # a named DO NOT row is a limit of the design, not a link in its chain
             self.assertIn("<h4 class=colh>Limits</h4>", rendered)

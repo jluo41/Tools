@@ -24,7 +24,7 @@ Switching Report and Work keeps a subview both sides offer.
   optional `task` or `job`), drawn as one tree like the folders: the goal at
   the root, then each Job, its Tasks and their deliverables, and last the
   Block's own list ("Across all Jobs"). An item ticks ✅ only when its files
-  are on disk and its named Run finished; 🚧 while it runs, 🔶 some files
+  are on disk and its named Run finished; 🏃 while it runs, 🔶 some files
   (also a Run short of its gate), ❌ a failed Run with nothing on disk, ⬜
   none. A Task, Job or goal is ✅ or 🔶, never ❌ for one open item. Paths
   show on hover, never in the line.

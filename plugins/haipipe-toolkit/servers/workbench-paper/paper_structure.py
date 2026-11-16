@@ -221,7 +221,13 @@ def structure_view(version: Path, root: Path, md) -> str:
     parts, claims = _story_parts(told), _claims(told)
     title = parts.pop("TITLE", "")
     tale = next((parts.pop(k) for k in list(parts) if k.startswith("STORY")), "")
-    if stale:
+    from src.folder_health import version_drafting
+    if stale and version_drafting(version):
+        # while Sections draft, their plans are the truth: one quiet note, no ❗, no re-sign (must-check M-D09, M-D19)
+        state, cls = "✅", "st-ok"
+        note = (esc(sign.group(1).lstrip("✅ ").strip())
+                + "; rebuilt from the Section plans by page.py sync-narrative when the Sections are good")
+    elif stale:
         state, cls = "❗", "st-no"           # the mark carries the state; the note says what to do (AGENTS § Page words)
         note = esc(sign.group(1)) + "; the Story's § 8 changed since: review and sign again"
     elif signed:

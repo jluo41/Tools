@@ -3,11 +3,10 @@
 This is the canonical **Page Run**: the human-interaction execution profile of
 `haipipe-draft-workflow`, not a
 controller label, workbench, or background service. Use it when a person is shaping,
-drafting, or revising a Page with the agent. It may start before Shape approval
-and before evidence is ready. Published Content still has its existing gates.
+drafting, or revising a Page with the agent. Shaping may start before the plan is signed and
+before evidence is ready; no sentence is written until `approved:` starts with ✅ (JL 261111). Published Content still has its existing gates.
 For the fused Structure Run, also load `structure-run.md`: SHAPE and SURVEY
 are cycles of one `run-structure-<slug>`, including when several people participate.
-For the rationale, see `../../../../../../docs/page-writing-philosophy.md`.
 
 ## 🔖 Run bookends · the Draft changes during a Run; records wait for its close
 
@@ -20,7 +19,7 @@ has two bookends the person calls, and this section overrides every per-turn
 recording instruction later in this file:
 
 ```text
-OPEN     the person starts the Run          name it once: Run id, target, Draft file; write nothing else
+OPEN     the person starts the Run          `page.py open-run` writes its one ticket (Run, target, Draft file); nothing else
 MIDDLE   every feedback turn                edit ONLY the Draft file (Draft prose + dependent Bullets)
 CLOSE    the person says the Run is over    self-review when asked, then write the Run's records once
 AFTER    the person asks for delivery       adopt the Draft into Page Content, then web → LaTeX → Word
@@ -29,7 +28,7 @@ AFTER    the person asks for delivery       adopt the Draft into Page Content, t
 **Middle.** The only file that changes is the Draft file:
 `draft/<stem>-draft-v<N>.md` (`outline/<stem>-outline-v*.md` in the older
 layout). Untouched until the close: Page Content in `<stem>.md`,
-`results/<run>/` (`vNNN.md`, `working.md`, `runtime.yaml`), `runs/` tickets,
+`results/<run>/` (`vNNN.md`, `working.md`, `runtime.yaml`), the Run's ticket after the open,
 `draft/records/` log, context, discussion and feedback records, evidence-item
 notes, receipts, and `delivery/`. A ruling routed from another session while
 the Run is open is applied to the Draft the same way and recorded at the close.

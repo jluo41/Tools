@@ -6,6 +6,7 @@ from __future__ import annotations
 import datetime
 import difflib
 import re
+from collections import Counter
 from pathlib import Path
 
 from live.frame import esc
@@ -77,10 +78,27 @@ def _wordings(d: dict, revise: Path) -> list:
     return out
 
 
+_HISTORY: dict = {}
+
+
 def _sentence_history(d: dict, revise: Path) -> dict:
     """{S: [(date, label, text)]} oldest first, each earlier wording at the sentence of today's text it is closest to
-    (at least 60% the same words, and not a fragment), consecutive repeats removed; the last line is today's."""
+    (at least 60% the same words, and not a fragment), consecutive repeats removed; the last line is today's. Kept per
+    Draft until its sentences, an earlier version or the revise file change."""
     now = Keys(d).words()
+    prev = Path(d.get("file") or ".").parent / "previous"
+    mt = lambda f: f.stat().st_mtime_ns if f.is_file() else 0
+    key = (str(d.get("file")), tuple(now.items()), mt(Path(revise)),
+           tuple((f.name, mt(f)) for f in sorted(prev.glob("*.md"))) if prev.is_dir() else ())
+    if key in _HISTORY:
+        return _HISTORY[key]
+    if len(_HISTORY) > 64:
+        _HISTORY.clear()
+    _HISTORY[key] = out = _sentence_history_now(d, revise, now)
+    return out
+
+
+def _sentence_history_now(d: dict, revise: Path, now: dict) -> dict:
     if not now:
         return {}
     keys = {s: _plain(t) for s, t in now.items()}
@@ -91,6 +109,11 @@ def _sentence_history(d: dict, revise: Path) -> dict:
         for s, k in keys.items():
             a, b = p.split(), k.split()
             if not a or not b or min(len(a), len(b)) < 0.3 * max(len(a), len(b)):
+                continue
+            # the shared words bound the matched words from above: a pair that cannot reach 0.6 or the 0.85 fragment rule
+            # is skipped before difflib (261115: 76,499 matchers made the history 95% of a render)
+            shared = sum((Counter(a) & Counter(b)).values())
+            if shared < 0.3 * (len(a) + len(b)) and shared < 0.85 * min(len(a), len(b)):
                 continue
             sm = difflib.SequenceMatcher(None, a, b)
             same = sum(x.size for x in sm.get_matching_blocks())

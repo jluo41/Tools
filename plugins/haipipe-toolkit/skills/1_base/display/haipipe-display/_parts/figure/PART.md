@@ -58,11 +58,10 @@ This renderer never writes to a flat `figures/` directory.
 - **DPI = 300** — Output resolution
 - **FORMAT = `pdf`** — Output format.
   Options: `pdf` (vector, best for LaTeX), `png` (raster fallback)
-- **COLOR_PALETTE = `tab10`** — Default matplotlib color cycle.
-  Options: `tab10`, `Set2`, `colorblind` (deuteranopia-safe)
+- **COLOR_PALETTE = the caller's `colour-scheme.yaml`**: the one colour scheme of the paper or report; the recipe reads it and types no hex code (`../../../ref/display-revise-loop.md`, the colour rule).
+  Only when no scheme exists: `tab10`, `Set2`, or `colorblind` (deuteranopia-safe)
 - **FONT_SIZE = 10** — Base font size (matches typical conference body text)
 - **Output directory** — `assets/` for the active render; `candidates/` when `DISPLAY_CANDIDATE=<id>` is set. Generation scripts live in `recipe/`. The default final asset is `figure.pdf`; when `FORMAT = 'png'`, use `figure.png` and update the wrapper reference.
-- **REVIEWER_MODEL = `gpt-5.5`** — Model used via Codex MCP for figure quality review.
 
 ## Inputs
 
@@ -70,7 +69,8 @@ This renderer never writes to a flat `figures/` directory.
 2. **Display Intake** — `intake/manifest.yaml` and its approved CSV/JSON snapshot.
 3. **Existing candidate** — only when the caller asked to refine that named candidate.
 
-If no display unit or verified Intake exists, stop and ask the caller to create one.
+If the input is a bare CSV or JSON with no unit, make the unit where the door's `SKILL.md` says
+(**A bare input**: `<input folder>/display/Display<n>-<slug>/`) and go on; do not stop to ask.
 
 ## Procedure
 
@@ -127,8 +127,8 @@ matplotlib.rcParams.update({
     'mathtext.fontset': 'stix',
 })
 
-# Color palette
-COLORS = plt.cm.tab10.colors  # or Set2, or colorblind-safe
+# Colours: read the caller's colour-scheme.yaml (a thing, its hex code) when one exists
+COLORS = plt.cm.tab10.colors  # only when there is no scheme (or Set2, or colorblind-safe)
 
 def save_fig(fig, name, fmt=FORMAT):
     """Write the active asset or a named candidate without replacing the other."""
@@ -223,11 +223,10 @@ update the wrapper reference if needed, and rebuild the canonical unit preview.
 
 Verify all output files exist and are non-empty.
 
-Compile and inspect the unit preview from the caller's asset-reference base:
+Compile and inspect the unit preview with the door's one preview recipe:
 
 ```bash
-WORK_ROOT=/path/to/caller-asset-reference-base
-(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
+python <haipipe-display>/scripts/build_preview.py "$UNIT_DIR"
 ```
 
 Open `preview.pdf` and check clipping, legibility, and the caption/asset pairing.
@@ -238,35 +237,19 @@ error or defect and keep the unit unaccepted.
 
 For one caller-directed render, the renderer writes the selected asset and recipe into the unit but
 does not mark it accepted. When the caller requests competing candidates, keep alternatives under
-`candidates/` until the caller selects one. `float.tex` is caller-owned: after the caller supplies
-an approved caption, label, and placement, a renderer may refresh just its asset reference under
-the shared contract. It never invents or changes those semantic fields.
+`candidates/` until the caller selects one. Who writes `float.tex` is the door's rule (`SKILL.md`,
+**Who writes `float.tex`**): the renderer writes the file, the caption, label and placement are the
+caller's words, copied in unchanged.
 Do not create a parallel `latex_includes.tex` file or write an ad hoc figure block in a section.
 
 The caller or its adapter consumes the selected unit through its existing
 `float.tex`. The renderer never records `accepted:`.
 
-### Step 7: Figure Quality Review with REVIEWER_MODEL
+### Step 7: Blind Review
 
-Send the compiled preview together with its claim and caption to GPT-5.5 for an
-advisory visual and editorial review. In candidate mode, attach the asset or
-candidate-named preview for that id, not the unit's existing `preview.pdf`. Review the actual
-rendered figure, not a plan alone; the caller remains responsible for semantic
-accuracy and acceptance.
-
-```
-mcp__codex__codex:
-  model: gpt-5.5
-  config: {"model_reasoning_effort": "xhigh"}
-  prompt: |
-    Review this compiled data figure for a [VENUE] submission.
-
-    Check the visible labels, scale, legend, comparison, and fit at paper size.
-    Also check whether the claim and caption describe what the rendered data
-    actually show. Flag issues; do not treat a score as acceptance.
-
-    [attach the matching active preview or candidate asset/preview and include the approved claim and caption]
-```
+The door's revise loop (`SKILL.md`, **Revise loop**): a fresh blind agent reviews `preview.pdf`
+page 1 and `assets/figure.png` when the unit has one; a Codex reviewer is only an optional second
+opinion. A score never accepts or promotes a unit. Before each round, self-check the list below.
 
 ### Step 8: Quality Checklist
 

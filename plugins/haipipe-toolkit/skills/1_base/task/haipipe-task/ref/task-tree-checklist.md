@@ -30,7 +30,7 @@ NAME · every folder passes the stranger test
 - [ ] N1  block `bNN_`, job `jNN_`, task `tNN_`; a job name is `<noun>_<qualifier>`, two words at least
 - [ ] N5  no name made of shape words only (data, table, pipeline, pool, rank, …)
 - [ ] —   Task names are unique within one Job; cross-Job repeats use full b/j/t addresses and relative paths
-- [ ] N9  every ticket in `runs/` is `rNN_<stem>.sh|.ps1`; the stem does not repeat `run_`
+- [ ] N9  every ticket in `runs/` is `rNN_<stem>.sh|.ps1|.cmd`; the stem does not repeat `run_`
 - [ ] N10 each `rNN` index identifies exactly one Run stem inside its Task
 
 SHAPE · one grammar at every level
@@ -47,7 +47,7 @@ SHAPE · one grammar at every level
 
 WIRING · the ticket, the config, the script
 - [ ] N7  every `rNN_` run-config has a ticket of the same stem, and the reverse when the task uses configs
-- [ ] —   the ticket derives RUN_NAME from its own file name and names `scripts/config/${RUN_NAME}.yaml`
+- [ ] —   the ticket derives RUN_NAME from its own file name and names its Run folder's `config.yaml` (an older Block: `scripts/config/${RUN_NAME}.yaml`)
 - [ ] —   the ticket calls a script that exists in `scripts/` (`python "$TASK_DIR/scripts/<stem>.py" "$@"`)
 - [ ] S15 no store path is derived from the ticket's file name; a chunk folder is pinned in the config (`chunk_dir:`)
 - [ ] S16 no script, config or ticket names a `work/…` path that does not exist (a hardcoded config path, an old `producer:` string)

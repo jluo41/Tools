@@ -21,16 +21,21 @@ html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the 
                                slide decks link its assets AT THIS PATH · do not move
 haipipe-display/_parts/html-to-svg/ · haipipe-display/_parts/icon-to-svg/ 🔧 converters
 haipipe-display/_parts/figure-to-svg/              🔧 converter
-_todo/                      🗃 parked, not deleted · retired 260816: the poster and
-                               slides renderers, their paper-side doors, and the
-                               content-plan spec that only they used
+(retired 260816)            🗃 the poster and slides renderers, their paper-side doors, and the
+                               content-plan spec that only they used; no longer on disk
+                               (git history). `_parts/slide/` is a newer, different renderer
 ```
+
+Why `ref/` stays at the family root, not under the door: the door, its `_parts/` renderers,
+`haipipe-display-method`, `agents/haipipe-display-unit-agent.md` and paper-side skills all cite
+`display/ref/`, and Physician-SPACE review notes cite it by that path.
 
 Start at `haipipe-display/SKILL.md`. The Excalidraw drawing skills (excalidraw-studio, -report, -section, -read,
 -revise, -workflow, -job, -task, -slide, -ideation) live in `../excalidraw/` since 2026-10-16.
 Page DISPLAY Results, View pages, and Paper sections are callers; each supplies
-its unit path and owns the resulting acceptance decision. A Page Result unit uses
-`<page>/results/<re-run>/payload/<unit>/`. The Paper adapter may project that
+its unit path and owns the resulting acceptance decision. A draft Task's unit is
+`<task>/display/Display<n>-<slug>/` (JL 261016; an older Page: a DISPLAY Result's
+`<page>/results/<re-run>/payload/<unit>/`). The Paper adapter may project that
 source unit into generated delivery files. The View caller keeps its unit at the
 View-owned path in the shared contract.
 
@@ -39,10 +44,10 @@ the page and framed in its own tab; it is not a display renderer's job.
 
 ## Unit and Run boundary
 
-The caller supplies each unit path. A Page DISPLAY Result owns
-`<page>/results/<re-run>/payload/<unit>/`; renderer skills do not write to the retired
-`outline/evidence/display/` or flat `display/` locations. A Paper adapter may project approved unit
-files into generated delivery output, while the Page Result remains the source unit.
+The caller supplies each unit path. A draft Task's unit is `<task>/display/Display<n>-<slug>/`, beside
+`draft/` and `evidence/` (an older Page: a DISPLAY Result's `<page>/results/<re-run>/payload/<unit>/`); renderer
+skills do not write to the retired `outline/evidence/display/` or keep a second copy. A Paper adapter may project
+approved unit files into generated delivery output, while the unit remains the source.
 
 A parent Workflow is a list of Runs. One invocation producing one bounded unit may be one Run;
 renderer Steps, tool calls, compiles, reviews, and retries stay inside it. `origin.run` names the

@@ -235,7 +235,9 @@ as image elements (`picture()`, `ref/add_pictures.py`); preview the first frame 
 `### Evidence`. A scratch on the same canvas stays; the report frames sit beside it.
 Full guidance, rules 0 to 12, frame choice and worked examples: `ref/report-drawing.md`.
 
-**Built from studio frames.** When the report's pictures already exist as frames of the Block's
+**Built from studio frames (an older Block only).** Since 261110 a Question's answer lives in the Studio topic that
+answers it, as the `Q01 · Answer` part of its face, with no `reports/` folder and no report drawing (haipipe-report);
+the build below still reads an older Block's `reports/qNN_<topic>/`. When the report's pictures already exist as frames of the Block's
 studio drawings, the report drawing is generated, never drawn by hand: the report's `.md` lists
 its figures under `## Figures` (a yaml block: `from` a studio drawing, the `frame` name, a
 `caption`), and `haipipe-report`'s `scripts/build_report_drawing.py <reports/qNN_topic/>` copies each frame (with the

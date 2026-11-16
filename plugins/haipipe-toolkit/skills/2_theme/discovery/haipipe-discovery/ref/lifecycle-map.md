@@ -45,7 +45,6 @@ The Block is a Board as soon as it exists. The source/projection split is:
 discovery/b01_<block>/board.md      authored Board head
 discovery/b01_<block>/jNN_*/        Board Groups / Jobs
 discovery/b01_<block>/jNN_*/tNN_*/  Board Pages / Task Folders
-discovery/b01_<block>/board/        generated Board site
 ```
 
 `board.md` declares `board-kind: discovery-block`, `spine:`, `close:`, Topic,
@@ -61,8 +60,8 @@ Run batches, Page CHECK, and before D1 CLOSE:
 python3 scripts/board_sync.py <block> --check --strict
 ~~~
 
-The helper is idempotent and preserves authored Board prose. The generated
-`board/` tree is disposable and must be rebuilt rather than edited.
+The helper is idempotent and preserves authored Board prose. Nothing is
+built: the workbench reads the Block live.
 
 All four address-bearing levels use
 `<level-letter><NN>_<noun>_<qualifier>`. The path yields compact

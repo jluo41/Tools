@@ -5,7 +5,7 @@ its Status bars, both here:
 
   Findings  the questions in words with their scripts, a side tab per release (Block) or per DIKW level (a release);
             then the proposals and the segments, a side tab each.
-  Status    each release by release.yaml's state and its sign ("closed · signed ✅ 261106", "draft · not signed yet"),
+  Status    each release by its mark (✅ once a person signed it, ⬜ until then; what waits on the person is a 🙋 line),
             each question by question.md and its Runs ("agreed · script reviewed"); a question its Runs, each verdict.
 
 [(title, word, html, waits)] each, a title plain words. Read-only: nothing here writes."""

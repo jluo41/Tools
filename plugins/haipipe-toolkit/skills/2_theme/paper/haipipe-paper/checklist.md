@@ -65,6 +65,8 @@ Missing evidence Jobs (V1) are made by update too (`paper_ladder.py evidence`).
 | V7 | Examples compared | the Board has an `sNN-paper-display-examples` drawing of the venue's published displays |
 | V8 | Display questions answered | no collection Run (haipipe-interaction) under `j01_evidence_display` is `waiting` |
 | V9 | Displays accepted | each printed display's unit README says `accepted: yes`, by a person (a blind review that passes is V5's) |
+| V10 | Captions short | each display's caption is within the word limits, the venue's when `call.md` states one (haipipe-paper-evidence `caption_check.py`) |
+| V11 | The chain holds | haipipe-paper-evidence's `chain_check.py <Board>` finds no failure (shown without the recompute; run the script itself before a send) |
 
 ## ④ Writing · one Job per send
 

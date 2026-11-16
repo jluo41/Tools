@@ -18,7 +18,7 @@ skills/
 │               (response-format, diagram-ascii, ask-questions, table-workbench, table-papers, ...)
 ├── 1_base/     what every theme is built on: project (the ladder, Runs) · task (the work
 │               Task) · draft (the words) · evidence · display · excalidraw · workbench · ideation · search
-└── 2_theme/    one folder per theme: cowork · design · discovery · insight · labeling · paper,
+└── 2_theme/    one folder per theme: cowork · design · discovery · insight · labeling · paper · work,
                 each holding its haipipe-<theme> skills and its workbench-<theme>
 ```
 
@@ -43,7 +43,8 @@ Block (bNN) -> Job (jNN) -> Task Page (tNN) -> Run (rNN)
 commission with preserved Steps/attempts; its Result records the outcome.
 A Workflow lists planned Run Specs and actual Instances, connected by
 dependencies and routes. A Task or Discovery
-folder owns its own `runs/` and `results/` (plus scripts and workflow metadata).
+folder owns its own `runs/`, one folder per Run with its `result/` inside (plus scripts and
+workflow metadata; an older Block keeps `results/<run>/` beside flat `runs/`).
 Scripts are engines for Runs, not a second evidence system.
 
 Task and Discovery are sibling executors:
@@ -84,7 +85,7 @@ The Page workflow
 =================
 
 The Page family is canonical under `skills/1_base/draft/` (the Board family was retired
-into it, JL 261005): `haipipe-draft`, `haipipe-draft-writing`, `haipipe-draft-workflow` with its Run pages (context, structure, scratch in `haipipe-draft/ref/`; revise in `haipipe-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is haipipe-studio's. The Page runtime owns file intake,
+into it, JL 261005): `haipipe-draft`, `haipipe-draft-logic`, `haipipe-draft-writing`, `haipipe-draft-review`, `haipipe-draft-workflow` with its Run pages (context, structure, scratch in `haipipe-draft-logic/ref/`; revise in `haipipe-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is haipipe-studio's. The Page runtime owns file intake,
 individual rendering and standalone editing/hosting, the Board checker and the
 Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
@@ -98,7 +99,7 @@ extra folder levels:
 01 OUTLINE   -> haipipe-draft-logic   SHAPE the plan; SURVEY evidence items
 02 EVIDENCE  -> haipipe-evidence (ref/page-evidence.md) LAND Supporting/Local Run Results;
                                          EMBED accepted evidence
-03 CONTENT   -> haipipe-draft-writing  WRITE -> DRAFT -> REVISE -> BUILD
+03 CONTENT   -> haipipe-draft-writing  WRITE: Adopt -> Integrate -> Build -> Pre-check
 04 CHECK     -> haipipe-draft-review    whole-page consistency and readiness
 ```
 
@@ -118,7 +119,7 @@ Runs/
 ├── Page         RP writing, RE evidence, RD delivery, delegated writing/display
 ├── Design       Commission, Generate, Verify
 ├── Paper        bounded judgments, compile and response work
-└── Labeling     the domain's 25 independently closable operation kinds
+└── Labeling     the domain's 26 independently closable operation kinds
 
 Scripts/         the files that execute a Run (one path per script/engine)
 ```
@@ -136,8 +137,8 @@ examples/<PROJECT>/
 ├── work/          internal execution (haipipe-task)
 ├── discovery/    external evidence (haipipe-discovery)
 ├── paper/         academic Page composition (haipipe-paper)
-├── applications/  other Page consumers
-└── diagram/        non-runtime design records
+├── insight/ · design/ · labeling/ · cowork/ · ideation/   the other Theme folders, each its skill's
+└── external/ · platforms/   pinned upstream material · owned code repos (haipipe-project; applications/ and diagram/ are retired)
 ```
 
 A canonical Task or Discovery leaf is addressed as
@@ -147,8 +148,8 @@ small:
 ```text
 <task-page>/
 ├── scripts/                  code/config engines
-├── runs/<run-id>/             Run declarations and runtime receipts
-├── results/<run-id>/          Result Card and produced artifacts
+├── runs/<run-id>/             the Run: ticket, config, run.yaml card
+│   └── result/                runtime receipt, Result Card and produced artifacts
 ├── workflow/                  plan/report projections, when useful
 └── <page>.md                  Page Face / outline and content records
 ```
@@ -158,7 +159,8 @@ binding in this contract. Questions are ordinary bounded Run requests: reuse
 an existing immutable Result or open the shallowest new Run. The consuming
 Page, not the executor, records the Supporting/Local relationship.
 A board's own Questions are a different thing: topics recorded in its
-`reports/qNN_<topic>/` folders, each answered by a report Page. They are owned
+`board.md` register, each answered in the Studio topic that answers it (an older Block: a
+`reports/qNN_<topic>/` report Page). They are owned
 by `1_base/project/haipipe-report/`.
 
 
@@ -166,17 +168,17 @@ Current skill buckets
 =====================
 
 ```text
-0_connect / 0_utils   connectors and shared helpers
-board                 Board format, renderer, Page/Folder contracts
+0_utils               shared helpers
+draft · workbench     the Page (its words, its workflow) and the screen manuals (/wb, the Page Task's screen, page rules)
 project               project container setup; haipipe-report holds board questions (a topic and its
-                      asks, reports/qNN_<topic>/, the register), shaping an ask and reviewing it (Q1-Q7)
+                      asks, the register, its answer in a Studio topic), shaping an ask and reviewing it (Q1-Q7)
 task                  internal execution and task-domain families
 discovery             Search, Review, and Synthesize external evidence
 run                   neutral Level-4 Run/Result contract
 ideation              evidence bundles and research directions
 paper                 academic composition and Page Types
 insight               evidence-led understanding: native Runs, dependencies, DIKW resources
-design                creative production: Brief -> Commission -> Generate -> Verify
+design                creative production on the design ladder: goal -> method -> inputs -> generate -> verify -> rank -> release
 display / writing     rendering and prose engines
 ```
 
@@ -196,6 +198,19 @@ delivery QA snapshots and Task/Discovery `QA/` folders are not part of the
 current project surface; the canonical replacement is a typed Run/Result plus
 the consumer's Supporting/Local evidence row.
 
+
+Running a skill's scripts
+=========================
+
+Skill scripts need Python 3.10 or newer; `haipipe-draft`'s `cli/page.py` needs 3.11. A system
+`python3` may be older (macOS's Command Line Tools ship 3.9), so a bare `python3 <script>` can stop
+with `TypeError: unsupported operand type(s) for |`. Run them through uv, from Tools-SPACE (paths
+start at `plugins/`) or from a SPACE (paths start at `Tools/plugins/`):
+
+    uv run --python 3.13 --with pyyaml python <path/to/script.py> ...
+
+A SPACE that has its own `.venv` (3.11+) may use `.venv/bin/python` instead. A skill's `python3`
+or `python` in a command means one of these two.
 
 Where to read next
 ==================

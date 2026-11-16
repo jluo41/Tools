@@ -14,7 +14,7 @@ the Audience report").
 
 ```text
 Question                         Work                               Report
-the register row                 the Jobs and Tasks that answer it   reports/qNN_<topic>/qNN_<topic>.md
+the register row                 the Jobs and Tasks that answer it   the answering topic's Q01 · Answer (older: reports/qNN_<topic>/)
 id · title · group · status      a face's answers: <id>              title · Opening's first paragraph
 the studio topics that feed it   (or a need, answers: <id>.E<n>)     its one drawing · answer-status
 (**Feeds:** in a topic's face)   then the register's work:           report qNN · <status>
@@ -24,7 +24,7 @@ owner: haipipe-report            owner: the theme's work skills;     owner: haip
 
 1. **Question cell**: the face's `## Questions` register row (`haipipe-report`), its
    answer-status from the report, and each studio topic whose face says
-   `**Feeds:** qNN_<topic>` (`haipipe-studio`).
+   `**Feeds:** Q01` (or an older `qNN_<topic>`; `haipipe-studio`).
 2. **Work cell**: each Job or Task under this level whose face says `answers: <id>`,
    then the register row's own `work:` entries, in that order. Each opens its folder.
 3. **Report cell**: the report Page's title (opens the Page), the first paragraph of its
@@ -34,7 +34,7 @@ owner: haipipe-report            owner: the theme's work skills;     owner: haip
 5. **A Task with no register** shows its own face as its report: a Task's Page is its answer.
 6. **A Job with no register** shows the Block's rows its face `answers:` names, each with its
    Block report and the register's `work:` under this Job, named from the Job (JL 261011, over an
-   empty j51 in REACH-SPACE). Its Ideation and Narrative read the Block's studio, as Studio does.
+   empty Job in one SPACE). Its Ideation and Narrative read the Block's studio, as Studio does.
 
 The frame draws this row (`servers/workbench/page/frame.py` `question_rows`); a theme may draw
 its own row over it but reads the same three sources.
@@ -78,13 +78,15 @@ asked     some Work     the report states the answer from exact Results
 
 ## The report Page
 
+An older Block only (no new `reports/` since 261110): a Question's answer now is the `Q01 · Answer` part of
+the Studio topic that answers it (`haipipe-studio` `ref/topic-contract.md`). The folder below is still read.
+
 ```text
 reports/qNN_<topic>/
 ├── qNN_<topic>.md          the report Page: header lines, Opening, Content, ## Figures
 ├── page.toml               registers the Page with the Page reader
-├── qNN_<topic>.excalidraw  its one drawing, generated from ## Figures (or drawn in studio/)
-├── qNN_<topic>.png         the drawing's preview
-└── studio/                 this report's own drawings, when it draws them by hand
+├── qNN_<topic>.excalidraw  its one drawing, generated from ## Figures (or a Block sNN topic that feeds it)
+└── qNN_<topic>.png         the drawing's preview
 ```
 
 The Report is a `haipipe-draft` Page, with its normal Opening, Content, Draft, evidence
@@ -165,7 +167,7 @@ report's `.md` lists its figures under `## Figures`.
 
 ```yaml
 figures:
-- from: ../../studio/s01-<topic>/s01-<topic>.excalidraw
+- from: ../../s01-<topic>/s01-<topic>.excalidraw
   frame: "1 · <frame name>"
   caption: <what this figure shows>
 ```

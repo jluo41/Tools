@@ -7,12 +7,15 @@ who to ask, its links and its drawings; Work moves the Jobs (one line of work ea
 the Questions, the emails and the meetings; Check finds who we wait on, the drafts not
 sent and the reports to judge; Delivery holds the answered reports and the done Jobs. Folder is
 where the run writes: `Block ›` is the Block folder (`cowork/bNN_<topic>/`), `Tools ›`
-the workbench's server folder (`servers/workbench-cowork/`); `none` writes no file, only a verdict.
+the workbench's server folder (`servers/_old/workbench-cowork/` since the cowork-board page retired);
+`none` writes no file, only a verdict. The Space and View names are that retired page's; the run
+types and their folders still hold on the shared frame.
 
 Agents: the Block-level writes (a job page, the Questions register, an email draft, meeting
 notes, a drawing) need an agent of their own, planned as `haipipe-cowork-agent (new)`;
 a draft or a register change is judged by `haipipe-cowork-reviewer-agent (new)`, never
-by the agent that wrote it. Reports are Pages: `haipipe-draft-writing-agent` writes,
+by the agent that wrote it. An answer is a part of its Studio topic's face (no `reports/` folder;
+an older Block: `reports/qNN_<topic>/`): `haipipe-draft-writing-agent` writes,
 `haipipe-draft-check-agent` checks. No agent sends a message: the person signs the send.
 
 | Level | Space | View | Run type | Agent | Skill | Person signs | Folder |
@@ -24,12 +27,12 @@ by the agent that wrote it. Reports are Pages: `haipipe-draft-writing-agent` wri
 | board | Scope | Block | Update the Block status | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › board.md (header) |
 | board | Scope | People | Add a person | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › j00_people/j00_people.md |
 | board | Scope | Resources | Add a resource | haipipe-cowork-agent (new) | haipipe-report | none | Block › board.md (Related resources) |
-| board | Scope | RoadMap Draw | Draw | haipipe-cowork-agent (new) | haipipe-studio | none | Block › studio/<name>.excalidraw |
+| board | Scope | RoadMap Draw | Draw | haipipe-cowork-agent (new) | haipipe-studio | none | Block › sNN-<topic>/ |
 | board | Work | Jobs | Open a job | haipipe-cowork-agent (new) | haipipe-cowork | the request | Block › jNN_<job>/jNN_<job>.md |
 | board | Work | Jobs | Update a job | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/jNN_<job>.md (header) · Timeline.md · CHECKLIST.md |
-| board | Work | Questions | Ask a Question | haipipe-cowork-agent (new) | haipipe-report | the question | Block › board.md (Questions) · reports/qNN_<topic>/ |
+| board | Work | Questions | Ask a Question | haipipe-cowork-agent (new) | haipipe-report | the question | Block › board.md (Questions) |
 | board | Work | Questions | Review the questions | haipipe-cowork-reviewer-agent (new) | haipipe-report | a change | none |
-| board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
+| board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › sNN-<topic>/ (the face's "Q01 · Answer" part) |
 | board | Work | Emails | Draft an email | haipipe-cowork-agent (new) | haipipe-draft | the send | Block › jNN_<job>/emails/<thread>.md · CHECKLIST.md |
 | board | Work | Meetings | Write meeting notes | haipipe-cowork-agent (new) | haipipe-cowork | none | Block › jNN_<job>/meetings/YYYY-MM-DD-<topic>.md |
 | board | Check | Waiting on | Draft a follow-up | haipipe-cowork-agent (new) | haipipe-draft | the send | Block › jNN_<job>/emails/<thread>.md |

@@ -468,7 +468,7 @@ def test_a_background_reads_under_the_goal_and_is_absent_without_one(board):
     (job / "j01_tables.md").write_text("# Tables\ngoal: Build the table\nclose: Validate it\n\n## Background\n\n"
                                        "- **Why**: a model needs <one> number\n  for each row\n- **Where**: `t01` built it\n\n## Topic\nx\n")
     out = work_progress.background_html(job)
-    assert "BACKGROUND" in out and out.count("<li>") == 2
+    assert ">Background</summary>" in out and " points" not in out and out.count("<li>") == 2
     assert "<b>Why</b>: a model needs &lt;one&gt; number for each row" in out
     assert "<code>t01</code>" in out and "Topic" not in out
 

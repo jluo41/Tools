@@ -64,7 +64,10 @@ after r04 with no pass ─▶ stop; hand the person the open problems
 2. **Blind review**: spawn a FRESH agent (Agent tool, a new general-purpose agent, never yourself,
    never the round before's reviewer) with the reviewer brief from the ref, pasted verbatim. Give it
    a review packet holding only each unit's `preview.pdf` page 1 (the display and its caption) and
-   `assets/figure.png`; the method pages stay out, so the reviewer judges the display as a reader sees it.
+   `assets/figure.png` when the unit has one (a table has none); the method pages stay out, so the
+   reviewer judges the display as a reader sees it. This is the one reviewer rule for every kind:
+   a Codex reviewer (`mcp__codex__codex`) is only an optional second opinion when that tool is
+   available; it never replaces the fresh agent, and its words never decide the pass.
 3. **Record** its text verbatim as `<unit>/review/rNN.md` and set the README `review:` line.
 4. **Revise** from the review, re-render, recompile `preview.pdf`, and go to step 2 with a new
    reviewer.
@@ -141,7 +144,18 @@ python <this skill>/scripts/build_preview.py <unit> --method-from <source versio
 python <this skill>/scripts/build_preview.py <unit> --look paper                # the paper's default page
 python <this skill>/scripts/build_preview.py <unit> --preamble-from <delivery/<job>/latex/master.tex>
                                                    # page 1 exactly as that built paper prints it
+python <this skill>/scripts/build_preview.py --help                             # every flag
 ```
+
+This is the one preview recipe for every kind: a part never runs `pdflatex` on `preview.tex` by hand. The script
+compiles inside the unit, so `float.tex` references its asset unit-relative (`\input{assets/table-body.tex}`,
+`\includegraphics{assets/figure.pdf}`). Its plain head already loads booktabs, siunitx, threeparttable and graphicx; a
+unit that needs more keeps them in its own `preview.tex` head, which the script keeps. A candidate preview runs the same
+script on `candidates/<id>/`: a copy of `float.tex` with the candidate asset beside it, the active unit untouched.
+
+**Who writes `float.tex`**: the renderer writes the file (the `table`/`figure` environment and the line that
+`\input`s or `\includegraphics` its asset); the caller owns its words (caption, `\label`, placement) and the renderer
+copies them in unchanged. With no caption given the renderer leaves `float.tex` pending and builds no preview.
 
 **Page 1 looks like the paper's page** (JL 261101: "the full pdf preview, just like the one we will see in the paper
 pdf"). `--preamble-from` takes a built paper's `master.tex` head (its class, fonts, caption style, `preamble.tex`,
@@ -164,19 +178,27 @@ built on evidence: its README names `built_on:` cards of `<task>/evidence/cards.
 it shows come from those cards' Runs, read with haipipe-evidence's `scripts/cards.py`, so a figure and the sentence
 citing it cannot disagree.
 
-**In a paper, the unit frames a display Run's picture** (JL 261022; the display Job moved onto the paper Board as
-`j01_evidence_display` on 261031). The picture or table body is drawn by a Run of the Board's `j01_evidence_display`
-(one Task per display, each Run a version) into that Run's `result/`; the paper's
-`Display<n>-<slug>/` names the question, caption, legend, number, size and `review/rNN.md`, its `intake/manifest.yaml`
-points at the Run's `result/`, and its `recipe/` copies the picture in and draws nothing. A picture fix from the
-revise loop goes to the work Run's script. The rules are haipipe-paper-evidence's rule 3.
+**In a paper, the display's one home is its display Task** (JL 261113; the display Job moved onto the paper Board as
+`j01_evidence_display` on 261031). The picture or table body is drawn by a Run of that Task (one Task per display,
+each Run a version) into that Run's `result/`; the Task holds the question, caption, legend, number, size and
+`review/rNN.md`, and a Section only cites it (an older Board: a Section-side `Display<n>-<slug>/` whose
+`intake/manifest.yaml` points at the Run's `result/`, still read). A picture fix from the
+revise loop goes to the display Task's Run script, as a new Run. The rules are haipipe-paper-evidence's rule 3.
 
 For an older Page, the caller supplies the unit directory. For a Page DISPLAY Result, that is
-`<page>/results/<re-run>/payload/<unit>/`; a Paper Section Page uses the same Page-owned Result
+`<page>/results/<re-run>/payload/<unit>/`; an older Board's Paper Section Page uses the same Page-owned Result
 address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
 supplies its unit path through its Paper adapter. Renderers never choose a paper root or create a
 second unit copy. Page citations and the human `accepted:` decision belong to
 `1_base/workbench/workbench-task-draft/ref/evidence/displays.md`.
+
+**A bare input (a CSV or JSON, no Task, Page or paper): the unit lands next to it**, at
+`<input folder>/display/Display<n>-<slug>/` (`n` the next free number, the slug what the display shows), the same
+`display/Display<n>-<slug>/` shape a draft Task uses. Do not stop to ask for a unit path. The person who asked is the
+caller: copy the file into `intake/inputs/`, seed `intake/manifest.yaml` from `../ref/intake-manifest.template.yaml`
+(`origin.type: external`, `holder` the input folder, `artifact` and `provenance` the input file itself), write the
+README `question:` from the ask, and write `float.tex` with a caption drafted from the ask by the caption rule, marked
+in the README as `caption: drafted, for the person to approve`. Then make, preview and review as above.
 
 ## 📂 Files
 

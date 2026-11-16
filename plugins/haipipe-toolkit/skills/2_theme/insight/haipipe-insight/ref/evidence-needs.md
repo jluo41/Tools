@@ -94,6 +94,8 @@ cite      a need already answered for another question, named by its full id
           heterogeneity claim).
 judge     a reading the page makes from named needs (`from: E1, E2` or full ids).
           Legal at Knowledge and Wisdom only: Data and Information make no claims.
+          `pass:` says what the reading must contain to count (a verdict word, the
+          numbers it rests on, where it stops), never which verdict.
 ```
 
 - **The spec comes first.** It is written from the ask alone, before any task,

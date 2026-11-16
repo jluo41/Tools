@@ -11,7 +11,7 @@ Project-root setup, audit, and safe reconciliation for `examples/`.
 /haipipe-project update [<project>|--all]
 ```
 
-Every active Project has `README.md` and `project.yaml`. Content worlds are
+Every active Project has `project.md` and `project.yaml` (`README.md` is optional). Content worlds are
 lazy: `work/`, `discovery/`, `cowork/`, `paper/`, `insight/`,
 `design/`, `external/` and (software/hybrid) `platforms/` appear when first
 used. `diagram/` and `applications/` are retired.

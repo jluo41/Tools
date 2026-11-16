@@ -299,7 +299,7 @@ def test_http_invalid_board_is_404_and_auth_still_applies(server):
 
 def test_studio_topics_of_the_block_and_its_jobs_list_with_their_sessions(demo):
     """RoadMap Draw lists the haipipe-studio topic folders (sNN-<topic>/), the Block's own and then
-    each Job's under the Job's name, each with the sessions saved as passes of runs/run-draw-<sNN>/."""
+    each Job's under the Job's name, each with its sessions: passes/ inside the topic, else an older runs/run-draw-<sNN>/."""
     root, board = demo
     scene = json.dumps({"type": "excalidraw", "elements": [], "source": "build_s02_map.py"})
     write(board / "s01-block-map/s01-block-map.excalidraw", scene)
@@ -316,7 +316,10 @@ def test_studio_topics_of_the_block_and_its_jobs_list_with_their_sessions(demo):
     assert not topics[1].get("source")                       # a studio topic keeps the person's marks: editable
     html = render_task_board(snap, "studio")
     assert '<h3 class="draw-group">j07_example_job</h3>' in html
-    assert "2 sessions" in html and "p02-1010 · second pass" in html
+    assert "sessions</summary>" not in html and "p02-1010 · second pass" in html
+    write(job / "s02-a-topic/passes/p03-1115/pass.md", "# a round inside the topic\n")   # the current place wins
+    inner = [d for d in task_board_snapshot(board, root)["drawings"] if d.get("topic") == "s02-a-topic"][0]
+    assert [s["title"] for s in inner["sessions"]] == ["a round inside the topic"]
     assert topics[1]["preview"] == ""                       # no preview yet: no picture
     (job / "s02-a-topic/s02-a-topic.png").write_bytes(b"\x89PNG\r\n\x1a\n")
     assert 'class="draw-preview"' in render_task_board(task_board_snapshot(board, root), "studio")

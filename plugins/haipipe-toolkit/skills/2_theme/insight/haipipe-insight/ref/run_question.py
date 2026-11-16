@@ -448,7 +448,7 @@ def md_table(df, limit=REPORT_ROWS):
 
 def write_report(r, receipt, out, rep):
     """reports/<run>/report.md, the run's report: generated from the run, never written by hand
-    (AGENTS.md rule 0). The point first (each need's lead lines), then its figures, then its tables."""
+    (the SPACE's AGENTS.md § Working rules). The point first (each need's lead lines), then its figures, then its tables."""
     lead = figures.lead
     q, part = r["q"], r["part"]
     status = receipt["status"] + (f" · {receipt.get('reason') or receipt.get('problem')}" if receipt["status"] != "ok" else "")

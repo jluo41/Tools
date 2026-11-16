@@ -192,7 +192,7 @@ python Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-studio/
 3. **The words**: `make` writes the face with an empty `task:` yaml, so the first drawing reads the page; then write
    `idea` and `videos` in the face (an agent per few Tasks, from each page, within the limits) and redraw.
 4. **Check**: `check.py` after every build (⑦ for every frame); open the preview and read it.
-5. **Save the session**: haipipe-studio's `new_topic.py session <block> sNN`, a pass of `run-draw-<sNN>`.
+5. **Save the session**: haipipe-studio's `new_topic.py session <block> sNN`, a round in the topic's `passes/pNN-<MMDD>/` (no Run).
 
 
 Boundary

@@ -14,7 +14,7 @@ the registry records how a worker may be used without crossing HAI authority.
 ## Vendored originals · what we call
 
 Two treatments, the same rule as `writing/` and `ideation/`. An original we
-**call** is vendored: an adapted copy in a numbered stage folder with its LICENSE,
+**call** is vendored: an adapted copy in its caller's `_parts/` folder with its LICENSE,
 a CHANGELOG stamping the upstream commit, and `metadata.haipipe.vendored_from` in
 its frontmatter. A source we only **read** stays in `references/` and is digested
 in the tables below. The skills we wrote (`haipipe-discovery-search`,
@@ -52,10 +52,10 @@ three live capability families may invoke and normalize into HAI packets:
 
 | Reference capability | Family | HAI use | Durable owner |
 |---|---|---|---|
-| academic-paper-search | `1_search` | Provider decision tree for missing search or access channels | `haipipe-discovery-search` resolves identity and allocates Runs |
-| literature-review extraction/appraisal | `2_review` | Method, limitation, reproducibility, confidence, and disagreement fields | `haipipe-discovery-review` writes the existing Result contract |
-| literature-source-tracing | `2_review` | Primary-text locator for a cited statement | Result `facts.md` and `runtime.yaml`; never DOCX output |
-| citation-fidelity / reference-verify | `2_review` / CHECK | Page-level citation verification and pending state | Result verification plus Outline citation authority |
+| academic-paper-search | Search | Provider decision tree for missing search or access channels | `haipipe-discovery-search` resolves identity and allocates Runs |
+| literature-review extraction/appraisal | Review | Method, limitation, reproducibility, confidence, and disagreement fields | `haipipe-discovery-review` writes the existing Result contract |
+| literature-source-tracing | Review | Primary-text locator for a cited statement | Result `facts.md` and `runtime.yaml`; never DOCX output |
+| citation-fidelity / reference-verify | Review / CHECK | Page-level citation verification and pending state | Result verification plus Outline citation authority |
 | research-genealogy | `haipipe-discovery-synthesize` | Citation lineage for `landscape-review` | Page CONTENT phase, backed by admitted Results |
 | result-to-claim | `haipipe-discovery-synthesize` | Supported / partial / unsupported claim gate | Synthesis map and Page CHECK |
 | citation-audit | `haipipe-discovery-synthesize` / CHECK | Post-synthesis bibliography and context audit | Outline/CHECK; never a second Bib |

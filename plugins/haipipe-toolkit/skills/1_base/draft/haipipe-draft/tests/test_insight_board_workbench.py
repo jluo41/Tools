@@ -37,7 +37,7 @@ from live.insightboard import (
     work_runs,
 )
 
-# The SPACE root is the nearest folder holding env.sh (AGENTS.md rule 7: no
+# The SPACE root is the nearest folder holding env.sh (the SPACE's AGENTS.md § Working rules: no
 # absolute paths).  Tools may be a symlink, so the working directory is tried first.
 REAL = next((p for p in (Path.cwd(), *Path.cwd().parents, *Path(__file__).resolve().parents)
              if (p / "env.sh").is_file()), Path("/nonexistent"))
@@ -235,7 +235,7 @@ class InsightBoardWorkbenchTest(unittest.TestCase):
             self.assertIn('id="method-by-look"', method)                         # a card per index row
             self.assertIn("tested in 1 study", method)                           # its evidence row counts
             self.assertIn('data-mview="papers"', papers)                         # Guide › Related Paper
-            self.assertIn("2 papers · 1 key", papers)
+            self.assertNotIn("2 papers · 1 key", papers)                         # a band carries no count (AGENTS § Page words)
             self.assertIn("rp-utd", papers)                                      # Management Science is UTD24
 
     def test_runtime_inventory_counts_shared_native_run_once_and_refreshes(self):

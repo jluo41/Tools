@@ -47,7 +47,7 @@ Sealed-test records use protected handles until authorized text resolution.
 
 ```json
 {
-  "round_id": "round-02",
+  "round_id": "round_02",
   "item_id": "r123",
   "source_pool": "H | L | N | HL | LN | HN | HLN | novelty | random",
   "scores": {"region": {}, "margin": 0.0, "novelty": 0.0},
@@ -66,7 +66,7 @@ Each weak executor writes one independent `P_t` row:
 
 ```json
 {
-  "round_id": "round-02",
+  "round_id": "round_02",
   "item_id": "r123",
   "policy_version": "G_1",
   "executor": {"name": "...", "version": "...", "family": "..."},
@@ -95,7 +95,7 @@ Every `B_t` row preserves why it enters human review:
 
 ```json
 {
-  "round_id": "round-02",
+  "round_id": "round_02",
   "item_id": "r123",
   "primary_role": "audit | challenge | coverage | carryover",
   "source_pool": "disagreement | mismatch | novelty | consensus",
@@ -116,8 +116,8 @@ The blind initial judgment and the final human decision are separate immutable e
 ```json
 {
   "item_id": "r123",
-  "round_id": "round-02",
-  "human_id": "JL",
+  "round_id": "round_02",
+  "human_id": "<initials>",
   "policy_version": "G_1",
   "first_pass": {
     "timestamp": "...",
@@ -134,7 +134,7 @@ The blind initial judgment and the final human decision are separate immutable e
     "diagnostic_region": "HN",
     "uncertainty": {"level": "low", "reason": "..."},
     "rationale": {"evidence": ["..."], "rejected_label": "none", "reason": "..."},
-    "change_type": "none | correction | clarification | concept_revision",
+    "change_type": "none | correction | clarification | concept_revision | unresolved",
     "seq": 15
   },
   "prelabel_comparison": {},
@@ -147,7 +147,7 @@ Each `seq` points to the item's `first` or `final` event in `sessions/events.jso
 An unresolved item uses a workflow disposition:
 
 ```json
-{"terminal_disposition":"unresolved","reason":"missing_context","owner":"JL","use_limitation":"exclude_from_training"}
+{"terminal_disposition":"unresolved","reason":"missing_context","owner":"<initials>","use_limitation":"exclude_from_training"}
 ```
 
 It does not invent a fourth class.
@@ -171,7 +171,7 @@ diff:
   casebook: []
   wrapper: []
   editorial: []
-accepted_by: JL
+accepted_by: <initials>
 checkpoint_id: checkpoint-02
 closed_at: <date>
 ```
@@ -183,7 +183,7 @@ Closed and final policy versions are immutable.
 ```json
 {
   "checkpoint_id": "checkpoint-02",
-  "round_id": "round-02",
+  "round_id": "round_02",
   "parents": {"prior_policy": "G_1", "prior_gold": "D_1"},
   "artifacts": {"candidate_pool": "candidate_pool.jsonl", "prelabels": [], "human_batch": "human_batch.jsonl", "human_final": "human_final.jsonl"},
   "closed_policy": "G_2",

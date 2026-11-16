@@ -35,7 +35,7 @@ The button's name is the Run column; "what it does" is the small line under it.
 | Description | Update the description | `haipipe-block` | `run-face-<bNN>` | Block |
 | Description | Update the description | `haipipe-job` | `run-face-<jNN>` | Job |
 | Description | Update the description | `haipipe-task` | `run-face-<tNN>` | Task · Page Task |
-| Idea Studio | add a topic · redraw it · save this session or meeting | `haipipe-studio` | none: a round is `passes/pNN-<MMDD>/` in the topic | one `studio/` per Block |
+| Idea Studio | add a topic · redraw it · save this session or meeting | `haipipe-studio` | none: a round is `passes/pNN-<MMDD>/` in the topic | every level; one sNN numbering per Block |
 | Audience Report | Ask a Question | `haipipe-report` | `run-ask-<qNN>` | every level (a Page Task: Ask a question) |
 | Audience Report | Write the report | `haipipe-report` | `run-report-<qNN>` | every level |
 | Audience Report | Rebuild report drawing | `haipipe-report` | `run-figures-<qNN>` | Block · Job · Task |
@@ -95,7 +95,7 @@ labeling    Prepare a corpus run-labeling-corpus-<corpus> · Open a labeling job
 cowork      Update the Block status / a job / the Job run-face-<bNN|jNN> · Open a job run-add-<jNN> ·
             Add a person / resource / file / entry run-add-<what>-<slug> · Draft an email
             run-email-<slug> · Write meeting notes run-meeting-<slug> · Review a draft
-            run-review-email-<slug> · and the shared Ask, report, check, draw names
+            run-review-email-<slug> · and the shared Ask, report, check names
 insight     Prepare extract run-add-version-<d>vM · Ask run-ask-<L><NN> · Carry a board over
             run-carry-<board> · Register a segment run-set-segments-p<N> · Review the questions
             run-review-questions-p<N> · Plan the evidence run-plan-evidence-<L><NN> · Write / Review the
@@ -116,8 +116,8 @@ design      Add a goal × method run-add-job-j<NN> · Set shared rules run-setup
 
 ## Settled and handed over (b03 s21, 261007)
 
-1. **Delivery at Block and Job** (decided): stays in each level skill (`haipipe-block`,
-   `haipipe-job`); no `haipipe-delivery` until a theme's Block delivery needs one.
+1. **Delivery at Block and Job** (decided): the Block's `delivery/` folder and the Delivery view are `haipipe-delivery`'s;
+   `haipipe-block` and `haipipe-job` point to it.
 2. **Checked** (decided): not a fourth answer state; the report Page's CHECK verdict is shown
    beside answered (`haipipe-report`).
 3. **Folder moves** (handed to the skill-folder design Block, b04): where these skills finally

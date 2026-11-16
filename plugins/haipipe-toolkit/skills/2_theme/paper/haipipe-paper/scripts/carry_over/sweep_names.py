@@ -6,7 +6,7 @@
     python sweep_names.py <board> --rollback    put the newest sweep's files back exactly
 
 migrate_paper.py, topics_paper.py and rename_tasks.py leave draft/records/, draft/previous/ and Run tickets as
-written, so a receipt still resolves through their records. JL's full-sweep rule (AGENTS.md rule 7) wants the
+written, so a receipt still resolves through their records. JL's full-sweep rule (the SPACE's AGENTS.md § Working rules) wants the
 hand-written ones to say the new names too. This script reads the three records the others wrote
 (.paper-moves.yaml, .paper-topics-N.yaml, .paper-tasks.yaml) and replaces, longest first:
 

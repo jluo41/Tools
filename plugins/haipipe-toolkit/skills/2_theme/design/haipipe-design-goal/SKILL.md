@@ -94,9 +94,9 @@ copies of the insight Block's signed handoff (copied, not linked: a later handof
 designs. Its `manifest.yaml`:
 
 ```yaml
-version: i2
+version: inputs-v2
 frozen: '<YYMMDD>'
-new: <what changed from i<N-1>>
+new: <what changed from inputs-v<N-1>>
 rules: r2                                # the design-goal.md rules version this inputs version carries
 parts:                                   # which part of step ① each file serves
 - {part: Goal · how much is set, file: rules.md, says: the shared rules}
@@ -106,7 +106,7 @@ files:
 ```
 
 `run-add-inputs-v<N>` writes the files, then freezes them (`scripts/make_inputs.py freeze`). A frozen version is
-never edited; new material is `i<N+1>`, and a Job on it is a new Job (one clock: `moved: inputs`). A newer handoff
+never edited; new material is `inputs-v<N+1>` (an older Block: `i<N+1>`), and a Job on it is a new Job (one clock: `moved: inputs`). A newer handoff
 never makes a released design stale.
 
 
@@ -129,7 +129,7 @@ Each reasoning step's `from` (t00's chains, a design's elements) is a file in th
 `own knowledge`; the reviewer checks it in the first pass of `run-open-designs-j<NN>` (`fence-check.md`) before the
 design Tasks open. Rebuilding the fence after a goal or method change is a new pass of `run-setup-inputs-j<NN>` on a
 Job whose t00 has not run; once t00 has run, a change is a new Job. A design that needs an input the fence lacks
-(found by a verify) is never fixed by a revise: it is dropped, or a new inputs version (`run-add-inputs-i<N+1>`)
+(found by a verify) is never fixed by a revise: it is dropped, or a new inputs version (`run-add-inputs-v<N+1>`)
 makes a new Job (`moved: inputs`).
 The full contract, with each file's shape: [ref/inputs.md](ref/inputs.md).
 
@@ -149,7 +149,7 @@ All five are soft (`run-<type>-<target>/run.yaml` and `passes/`; `haipipe-run`);
 them (its run cards name it). Show the person the changed lines before writing a goal or a rule; write them only after the person says yes.
 
 ```bash
-python scripts/make_inputs.py freeze design/Design-<name>/inputs/i2 --new "a new handoff"
+python scripts/make_inputs.py freeze design/Design-<name>/inputs/inputs-v2 --new "a new handoff"
 python scripts/make_inputs.py job design/Design-<name>/j03_<goal-name>_<method-name>
 ```
 

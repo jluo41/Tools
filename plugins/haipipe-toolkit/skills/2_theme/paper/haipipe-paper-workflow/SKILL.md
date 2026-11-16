@@ -6,7 +6,7 @@ description: >-
   version; one run card per button of each level's Spaces. Use
   when asking where a paper is, how its research plan connects to execution,
   whether work may be released, or what may be compiled next. Trigger: paper
-  journey, paper-runs, workflow, Run routing, gate, /haipipe-paper-workflow.
+  journey, paper-runs, paper workflow, Run routing, gate, /haipipe-paper-workflow.
 metadata:
   version: "1.10.0"
   last_updated: "2026-11-01"
@@ -77,7 +77,7 @@ controller steps and compatibility labels do not add Run identities.
 | Run receipt | what actually ran, its provenance, checks, and Result | deciding how the paper should be told |
 | Section Task | local outline, evidence bindings, prose, displays, page deliverable | changing the Story's identity or RQ text |
 | Compile | generated manuscript projection and build manifest | becoming a source of wording or evidence |
-| comments report (`reports/qNN_<kind>-<MMDD>/`) | Review Items, dispositions, checked response package | becoming a second home for revised prose |
+| comments batch (a review Job, `jNN_review_<kind>_v<MMDD>/`; an older Board: `reports/qNN_<kind>-<MMDD>/`) | Review Items, dispositions, checked response package | becoming a second home for revised prose |
 
 A version face's `## Questions` opens with five standing questions every send answers (b16 s12), each a Question
 │ Work │ Report row until its report exists: J1 what is the one-minute story · J2 why this venue · J3 which writing
@@ -112,8 +112,9 @@ G0  Ideation → Story
     novelty/feasibility bounds, pilot or explicit waiver, complete deep fit
     against the current Venue contract, and the human PROCEED or
     risk-accepted PROCEED WITH CAUTION recorded by I3.
-    Validate the reciprocal binding from Story<Letter>-<desk>-<idea-slug>
-    back to Story00-ideation, the final handoff, the sole I3 receipt, and the
+    Validate the reciprocal binding from the telling, sNN-story-<desk>-<idea>/,
+    back to s01-ideation/ (an older Board: Story<Letter>-<desk>-<idea-slug> and
+    Story00-ideation), the final handoff, the sole I3 receipt, and the
     named Venue contract. A Paper-side G0 record is validation/projection only:
     it points to those records and never creates, requests, or overwrites a
     second selection receipt. Page Shape approval and Page CHECK acceptance
@@ -164,9 +165,10 @@ G3  Narrative → Section
 G4  Section → Compile
     Every Section admitted to a ready build has an approved outline, accepted
     evidence bindings, current delivery output, and Page CHECK closure, and
-    `page.py health --final` shows no `order`, `row` or `narrative` FAIL: the
-    version's Narrative is signed, and neither §8 nor the Section's row has
-    changed since its sign. Records are text; no hash is written or compared. The
+    `page.py health --final` shows no FAIL: the version's Narrative is signed. A Narrative
+    or Story row that moved since a sign is one quiet note on the version Job, a WARN at
+    this final gate, never a Section FAIL or a re-sign (must-check M-D09, M-D19:
+    `page.py sync-narrative`, then one sign). Records are text; no hash is written or compared. The
     assembler may run earlier, but the receipt must say DRAFT until the full
     intended set is closed; only a human may label the build ready. At the final
     G4 pass, apply the Paper submission-readiness reference: Section Pages own
@@ -194,7 +196,7 @@ Paper-<Slug>/                           Board: board.md · sNN-… topics · rel
 └── jNN_writing_v<MMDD>_<desk>/         a version (j11 first): its face (## Narrative · ## Questions), reports/ · runs/
     ├── t00_abstract/ · t0N_<title>/    Section Tasks (Main), t2N_<title>/ (Appendix)
     ├── t3N_<title>/                    letters: t31_cover-letter · t32_response
-    └── reports/qNN_<kind>-<MMDD>/      a comments report
+    └── reports/qNN_<kind>-<MMDD>/      an older Board's comments batch (now a review Job on the Board, jNN_review_<kind>_v<MMDD>/)
 ```
 
 Evidence execution remains outside the Paper folder:
@@ -218,7 +220,7 @@ New Page work uses the shared Page Run names (`run-<kind>-<slug>`);
 Paper judgment Runs are `run-paper-<judgment>-<slug>`; external Supporting
 Runs retain their native identity. Paper judgment and compile/response profiles
 are declared in the Run Spec reference. Older short names are retired.
-A comments batch is a report, `reports/qNN_<kind>-<MMDD>/`, never a Run family.
+A comments batch is a review Job, `jNN_review_<kind>_v<MMDD>/` (an older Board: `reports/qNN_<kind>-<MMDD>/`), never a Run family.
 
 ## 🧾 Receipts and work status
 

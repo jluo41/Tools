@@ -183,7 +183,7 @@ insight/<Dataset>-InsightBoard/              Block: one extract
 - `results/` holds only light output: receipts, aggregate tables, metrics and
   the run's `fig_*.png`. A file over 10 MB, a model or a row-level table goes to
   `_WorkSpace/ProjectResult/<Project>/<page path>/results/<ticket>/` with a
-  `heavy.yaml` pointer in the result (AGENTS.md rule 10).
+  `heavy.yaml` pointer in the result (the SPACE's AGENTS.md § Working rules).
 - Every result is aggregate. No row-level patient value is ever written to a
   board.
 - A result is generated: never edited by hand. Rerun its ticket.

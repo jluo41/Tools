@@ -10,19 +10,19 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 <Project>/<theme folder>/bNN_<topic>/      work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
 ├── board.md                               the face (this contract)
 ├── sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
-├── reports/qNN_<topic>/                   Audience Report: one folder per Question (haipipe-report)
+├── reports/qNN_<topic>/                   an older Block only: a Question's answer now sits in its topic (haipipe-report)
 ├── runs/run-<type>-<target>/              soft Runs only at a Block (haipipe-run)
 ├── delivery/                              what the Block hands on
 ├── resources/                             pinned reading the Block cites
 └── jNN_<job>/                             its Jobs, in order (haipipe-job)
 ```
 
-Recommend at most 10 sNN Studio topics per Block. Before adding more, reuse a
-related topic or make an independent area its own Block. Existing topics keep
-their ids and files; the recommendation never blocks a creation.
+A Block holds at most 9 sNN Studio topics (`new_topic.py` refuses a tenth unless `--over-limit`). Before
+adding more, reuse a related topic or make an independent area its own Block. Existing topics keep
+their ids and files.
 
-No empty folder is made ahead of its content (`haipipe-project`): `studio/`, `reports/`,
-`runs/` and the Jobs come with their first item. A design Block in the Tools repo
+No empty folder is made ahead of its content (`haipipe-project`): a topic, `runs/`
+and the Jobs come with their first item. A design Block in the Tools repo
 (`Tools/blueprints/bNN_<topic>/`) has the same face and folders, read by the vanilla frame.
 
 ## The face: board.md
@@ -78,8 +78,8 @@ A theme's own Block template sits over this one and keeps these fields: the work
 | Space | shows (vanilla) | reads | its buttons → skill |
 |---|---|---|---|
 | Description | the face: title, header fields | `board.md` | Update the description → **haipipe-block** |
-| Idea Studio | one row per studio topic | `sNN-<topic>/` | `run-draw-<sNN>` (add · redraw · save a session) → haipipe-studio |
-| Audience Report | Question │ Work │ Report rows | `## Questions`, `reports/`, Jobs' and Tasks' `answers:` | Ask a Question · Write · Rebuild drawing · Check → haipipe-report |
+| Idea Studio | one row per studio topic | `sNN-<topic>/` | add · redraw · save a session → haipipe-studio (no Run: a round is the topic's `passes/pNN-<MMDD>/`) |
+| Audience Report | Question │ Work │ Report rows | `## Questions`, the answering topics (an older Block: `reports/`), Jobs' and Tasks' `answers:` | Ask a Question · Write · Rebuild drawing · Check → haipipe-report |
 | Work Details | its Jobs: name · title · Tasks | `jNN_<job>/` (or the theme's Job names) | Add a Job → **haipipe-block** (scaffold by haipipe-job) |
 | Runs | the Block's soft Runs | `runs/*/run.yaml` | Run → haipipe-run |
 | Delivery | `delivery/` items | `delivery/` | Build the delivery → **haipipe-block** |
@@ -90,13 +90,12 @@ The Guide is each theme's.
 
 1. **Update the description** (`run-face-<bNN>`): edit the face's header fields and Topic;
    keep the field names; a theme's own fields stay.
-2. **Add a Job** (`run-add-<jNN>`): `haipipe-job`'s `scripts/new_job.py <block> --slug …`
+2. **Add a Job** (`run-add-<jNN>`): `haipipe-job`'s `scripts/new_job.py job <block> --slug … --title "…"`
    makes the next `jNN_<job>/` and its face; add it to `## Pages` only when the Block keeps
    an explicit order.
 3. **Build the delivery** (`run-delivery-<target>`): this skill's at a Block (decided, b03 s21,
-   261007): Block and Job delivery stay in their level skills, following the theme's delivery
-   rule; a Page Task's is `haipipe-delivery (ref/page-delivery.md)`'s. No separate `haipipe-delivery` until a
-   theme's Block delivery needs more than the level skill holds.
+   261007): the Block's `delivery/` folder, its paths and helpers and the Delivery view are `haipipe-delivery`'s
+   (a Page Task's: its `ref/page-delivery.md`); the theme's delivery rule says what is built.
 
 ## Which theme reads a Block
 
@@ -104,8 +103,8 @@ The frame asks, in this order:
 
 ```text
 1. a theme that claims it        Theme.claims(block) -> True   (asked before the Theme folder)
-2. its Theme folder              tasks/ → work · discoveries/ → discovery · cowork/ · papers/ →
-                                 paper · insights/ → insight · designs/ → design · labelings/ → labeling
+2. its Theme folder              work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
+                                 (an older plural folder, tasks/ or discoveries/ or papers/, still reads)
 3. otherwise                     vanilla (also every Block outside a Project, e.g. Tools/blueprints/)
 ```
 
@@ -128,5 +127,4 @@ python <haipipe-block>/scripts/new_board.py <Project>/<theme folder> --slug <top
 
 It takes the next free `NN` in the Theme folder (or `--nn`), the Theme folder's default
 `board-kind` (or `--kind`; an unknown folder needs one), writes `bNN_<topic>/board.md`, and
-refuses an existing folder or a taken number. `--questions` adds an empty register for
-`haipipe-report`. Then `haipipe-project audit <block>` checks its shape.
+refuses an existing folder or a taken number. An empty register for `haipipe-report` comes by default (`--no-questions` leaves it out). Then `haipipe-project audit <block>` checks its shape.

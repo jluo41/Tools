@@ -208,7 +208,7 @@ def background_html(folder):
     "可以再加一个 section，比如叫 background 啥的，介绍一下我们要实现什么"). A `- ` line is a bullet (its next lines
     continue it), anything else a paragraph; **bold** and `code` keep their look. A fenced yaml block holding
     `timeline:` is drawn as a picture (timeline_svg); another fenced block shows as it is written. The words fold
-    under one "BACKGROUND · N points" line, closed by default; the pictures stay in view (JL 261021: "像这种
+    under one "Background" line, closed by default; the pictures stay in view (JL 261021: "像这种
     background，我们可以给它 hide 一下吗"). No section, nothing drawn."""
     text = section(text_of(frame.face(folder)), "Background") if folder else ""
     if not text:
@@ -262,9 +262,8 @@ def background_html(folder):
             flush()
             out.append(f"<pre>{e(chunk.rstrip())}</pre>")
     flush()
-    n = sum(w.count("<li>") for w in words) or len(words)
     folded = (f'<details data-work-key="background-{e(folder.name)}"><summary class=mut style="cursor:pointer;'
-              f'font-size:12px;letter-spacing:.04em">BACKGROUND · {n} point{"s" * (n != 1)}, click to read</summary>'
+              f'font-size:12px;letter-spacing:.04em">Background</summary>'
               + "".join(words) + "</details>") if words else ""   # folded by default (JL 261021: "background ... hide")
     return ('<div class=goal-bg style="margin:6px 0 14px;font-size:14px;line-height:1.55">'
             + folded + "".join(out) + "</div>")

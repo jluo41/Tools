@@ -1,6 +1,6 @@
 ---
 name: describe-medication
-description: "Normalize a logged medication (any cohort's dialect: a WellDoc MedicationID, an OhioT1DM drug class, a Shanghai free-text string) to an FDA-identified drug with a dose that states its own unit. Use when a Medication ProcName needs a drug name, an NDC, a pharmacologic class, or a dose scale, or when a SourceFn must enrich medication data. Trigger: describe medication, medication to drug name, resolve MedicationID, NDC, RxNorm, dose unit, mednorm, 药物归一化."
+description: "Normalize a logged medication (any cohort's dialect: a partner app's MedicationID, an OhioT1DM drug class, a Shanghai free-text string) to an FDA-identified drug with a dose that states its own unit. Use when a Medication ProcName needs a drug name, an NDC, a pharmacologic class, or a dose scale, or when a SourceFn must enrich medication data. Trigger: describe medication, medication to drug name, resolve MedicationID, NDC, RxNorm, dose unit, mednorm, 药物归一化."
 metadata:
   version: "0.1.2"
   last_updated: "2026-11-02"
@@ -32,7 +32,7 @@ THE ONE-MINUTE VERSION
   a logged medication row, in one of three dialects
         │
         ├─ dialect.py ── types it ───────────────────────────────────────┐
-        │    coded         a WellDoc MedicationID       386,373  97.3%   │
+        │    coded         a partner MedicationID       386,373  97.3%   │
         │    named         a drug string (Shanghai)       5,805   1.5%   │
         │    class_only    a class (OhioT1DM)             5,026   1.3%  ✋ no bank
         │    sentinel      Dose 255 / id 1999999          ~7,100   1.8%  ✋
@@ -236,4 +236,4 @@ MEDNORM_URL=http://127.0.0.1:8070/medication python servers/api-medication/tests
 `MEDNORM_URL` (default `http://127.0.0.1:8070/medication`), `MEDNORM_TRANSPORT`
 (`local` | `http`), `MEDNORM_DB`, `MEDNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
-NOT authenticated, binds 127.0.0.1. Medication logs are PHI.
+NOT authenticated; it listens on one address, `$HAIPIPE_UTILS_HOST` (the SPACE's env.sh sets it; 127.0.0.1 when unset). Medication logs are PHI.

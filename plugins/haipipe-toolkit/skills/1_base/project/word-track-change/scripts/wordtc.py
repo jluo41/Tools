@@ -4,7 +4,7 @@
                      comments and tracked changes per author; --changes their words; --text every paragraph
                      as Word shows it (accepted view, W<nnnn> | text), the words a `find` must match;
                      words struck by formatting (not a tracked deletion) are listed, since they stay in the text
-    wordtc.py build  <base.docx> <edits.yaml> <out.docx> --author "Junjie Luo"   each edit a tracked change (track_changes.py)
+    wordtc.py build  <base.docx> <edits.yaml> <out.docx> --author "<Your Name>"   each edit a tracked change (track_changes.py)
     wordtc.py try    <base.docx> <edits.yaml>              which edits locate on their own (find missing, not unique)
     wordtc.py render <file.docx> [--out file.pdf]          PDF by Microsoft Word (AppleScript), else LibreOffice
     wordtc.py check  <base.docx> <out.docx> --author NAME  everyone else's marks and comments kept; ours counted

@@ -14,7 +14,9 @@ Run     runs/<run>/       run.yaml        haipipe-run (identity, card, receipt, 
 The address is read from the path, never computed: `b02j01t03r04` (compact), `b02.j01.t03.r04`
 (readable), `<project-slug>:b02j01t03r04` (global). A partial address keeps its letters (`j01t03`,
 `t03r04`); a bare number tuple is invalid. A staged pipeline Project numbers its Blocks by stage
-(`ref/pipeline-blocks.md`); any other Project numbers them by topic.
+(`ref/pipeline-blocks.md`); any other Project numbers them by topic. In a staged pipeline Project the
+number ranges of that file (Blocks `b00`, `b10`, `b11`+; Jobs `j01`-`j49` and `j51`-`j99`; Tasks
+`t01`-`t09`, `t11`+, `t91`+) are the one exception to § Names rule 2 below.
 
 ## The folder
 
@@ -32,6 +34,7 @@ tNN_<task>/
 │       ├── result/            what it wrote: runtime.yaml (the receipt), metrics.json, headline.txt,
 │       │                      small tables, figures, heavy.yaml (a pointer to its big files)
 │       └── passes/pNN-<MMDD>/ each execution's logs, when one Run executes more than once
+│                              (haipipe-run's contract; see "Retry history today" below)
 ├── notebooks/                 generated papermill copies, when the ticket makes them
 ├── draft/                     only when the Task writes: a draft Task's plan and sentences, or a
 │                              Task Page's plan (haipipe-draft)
@@ -79,8 +82,11 @@ This Task owns the ticket's body, the shared parts every type uses:
    the worker `REPO_ROOT`, `JOB_DIR`, `TASK_DIR`, `RUN_NAME`, `RUN_CONFIG`, `RESULT_DIR` and `HEAVY_DIR`.
    A ticket never loops over sibling tickets; a supervisor in `sbatch/` does.
 2. **The receipt**: the ticket writes `result/runtime.yaml` as `running` before expensive work and
-   marks it `complete` only after its declared Result gate passes, else `failed` or `partial`
+   marks it `complete` only after its declared Result gate passes, else `failed` or `blocked`
    (`ref/runtime-yaml-schema.md`). A zero exit with no evidence check is a smoke test, role `trial`.
+   **Retry history today**: the shared ticket template (`ref/run-sh-template.sh`) keeps a retry's
+   earlier receipt in `result/attempts/<six-digit-attempt>/runtime.yaml`; `passes/pNN-<MMDD>/` is
+   haipipe-run's contract for one folder per execution, and so far only the Stata reg runner writes it.
 3. **The worker** writes only where the ticket points it (`RESULT_DIR`); it never builds its own output
    path. A configured name that does not resolve raises and names what is missing.
 4. **A Result is light**: metrics, logs, small tables, figures. Big files go to the Run's `HEAVY_DIR`,

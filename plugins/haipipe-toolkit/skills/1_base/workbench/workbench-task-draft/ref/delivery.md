@@ -29,7 +29,7 @@ delivery/word/    <page>.docx · <page>.pdf (its twin) · <page>-view.html · ev
 delivery/slide/   <page>-deck.html
 ```
 
-Every file is written by code from the Page (AGENTS.md rule 6). A wrong word is
+Every file is written by code from the Page (the SPACE's AGENTS.md § Working rules). A wrong word is
 a Page or Draft edit, a wrong layout is an exporter fix; either way the lane's
 Run is rerun. No lane manifest, receipt or hash is written (rules 6 and 9), and
 a Delivery Run keeps no `results/` folder. Older `rdNN_<lane>` Runs and any

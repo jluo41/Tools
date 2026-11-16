@@ -154,9 +154,74 @@ def _write_sentence_locked(draft: Path, sid: str, orig: str, new: str) -> tuple:
     if not line or said != " ".join(orig.split()):
         return draft, f"{sid} is no longer the reviewed sentence; reload", False
     a, b = lo + line.start(), lo + line.end()
-    tail = (tail[:a] + tail[b + 1:]) if cut else (tail[:a] + line.group(1) + new + tail[b:])
+    parts = [] if cut else split_sentences(new)
+    if len(parts) > 1:                                  # a split: each sentence its own row, the first keeps its id, the
+        own = _sid(sid).rsplit(".", 1)[-1]               # rest take a letter (s12a) until a renumber; the paragraph's
+        n = int(re.match(r"- B(\d+)", line.group(1)).group(1))   # Bullets count on (B1 … B6) and the evidence targets
+        extra = len(parts) - 1                           # after it shift with them (JL 261115, t02 s1: adopt needs one
+        rows = [line.group(1) + parts[0]] + [f"- B{n + 1 + k} · {own}{chr(97 + k)} · {t}" for k, t in enumerate(parts[1:])]
+        nxt = re.search(r"(?m)^#{1,6}\s", tail[b:])        # Bullet per row)
+        pe = b + nxt.start() if nxt else len(tail)
+        rest = re.sub(r"(?m)^- B(\d+)([a-z]*) · ",
+                      lambda m: f"- B{int(m.group(1)) + extra}{m.group(2)} · " if int(m.group(1)) > n else m.group(0), tail[b:pe])
+        heads = re.findall(r"(?m)^#{1,6}\s*(C\d+\.P\d+)\b", tail[:a])
+        tail = tail[:a] + "\n".join(rows) + rest + tail[pe:]
+        if heads:
+            _shift_targets(draft, heads[-1], n, extra)
+            head = _split_structure(head, heads[-1], own, parts[1:])
+    else:
+        tail = (tail[:a] + tail[b + 1:]) if cut else (tail[:a] + line.group(1) + new + tail[b:])
     _write_atomic(draft, head + mark + tail)
     return draft, "", True
+
+
+def _split_structure(head: str, pid: str, own: str, more: list) -> str:
+    """The Draft's Structure list (above `## 3 ·`) follows a split: after sentence `own`'s row in paragraph pid, a row
+    for each new sentence (its slot word kept, its own opening words), the Bullets after it counting on."""
+    m = re.search(r"(?m)^#{1,6}\s*" + re.escape(pid) + r"\b.*$", head)
+    if not m:
+        return head
+    nxt = re.search(r"(?m)^#{1,6}\s", head[m.end():])
+    lo, hi = m.end(), m.end() + nxt.start() if nxt else len(head)
+    block = head[lo:hi]
+    row = re.search(r"(?m)^- B(\d+) · " + re.escape(own) + r" · (\[[^\]]*\])?.*$", block)
+    if not row:
+        return head
+    n, tag, extra = int(row.group(1)), (row.group(2) or "").strip(), len(more)
+    words = lambda t: " ".join(re.sub(r"\\\w+\{[^}]*\}", "", t).split()[:10]).rstrip(".,;")
+    add = "".join(f"\n- B{n + 1 + k} · {own}{chr(97 + k)} · {(tag + ' ') if tag else ''}{words(t)}" for k, t in enumerate(more))
+    after = re.sub(r"(?m)^- B(\d+)([a-z]*) · ",
+                   lambda x: f"- B{int(x.group(1)) + extra}{x.group(2)} · " if int(x.group(1)) > n else x.group(0),
+                   block[row.end():])
+    return head[:lo] + block[:row.end()] + add + after + head[hi:]
+
+
+def _shift_targets(draft: Path, pid: str, n: int, extra: int) -> None:
+    """After a split at Bullet n of paragraph pid, each evidence target <pid>.B<k> with k > n moves by `extra`, so an
+    item keeps pointing at its sentence."""
+    items = draft.parent / f'{draft.name.split("-draft-")[0]}-evidence-items.md'
+    if not items.is_file():
+        return
+    text = items.read_text(encoding="utf-8")
+    new = re.sub(re.escape(pid) + r"\.B(\d+)\b",
+                 lambda m: f"{pid}.B{int(m.group(1)) + extra}" if int(m.group(1)) > n else m.group(0), text)
+    if new != text:
+        _write_atomic(items, new)
+
+
+def split_sentences(text: str) -> list:
+    """A card's new words as sentences: split after . ! ? before a capital or a quote, never after an abbreviation
+    (et al., e.g., i.e., Fig., a single initial) or inside a citation's braces."""
+    out, start, depth = [], 0, 0
+    for i, ch in enumerate(text):
+        depth += ch in "{(" ; depth -= ch in "})"
+        if ch in ".!?" and depth <= 0 and i + 2 < len(text) and text[i + 1] == " " and (text[i + 2].isupper() or text[i + 2] in "\"“"):
+            word = text[start:i + 1].rsplit(" ", 1)[-1]
+            if re.fullmatch(r"(?:al|e\.g|i\.e|Fig|Eq|vs|[A-Z])\.", word, re.I):
+                continue
+            out.append(text[start:i + 1].strip()); start = i + 2
+    out.append(text[start:].strip())
+    return [x for x in out if x]
 
 
 def _span(tail: str, sid: str) -> tuple:
@@ -182,7 +247,8 @@ def _adopt(path: Path, p: dict) -> tuple:
     text = path.read_text(encoding="utf-8")
     if f"Expected: {new}\n" in text:
         return 409, {"ok": False, "err": "already a card with these words; reload"}
-    blocked = blind_refusal(path, new)                 # M-D07: a blind pair that said "meaning: no" blocks these words
+    from live.draft_step_revise_blind import not_a_sentence
+    blocked = blind_refusal(path, new) or (f"not written: {w}" if (w := not_a_sentence(new, orig)) else "")   # M-D07
     if blocked:
         return 409, {"ok": False, "err": blocked}
     when = f"{datetime.datetime.now():%Y-%m-%d %H:%M}"

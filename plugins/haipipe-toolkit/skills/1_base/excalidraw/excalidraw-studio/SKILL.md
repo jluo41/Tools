@@ -1,18 +1,14 @@
 ---
 name: excalidraw-studio
 description: >-
-  How a Studio topic's drawing looks and reads: nine principles (one frame as large as a screen; a workflow
-  map or a mind map inside; the frames as one story, in acts, joined by named arrows; a folder tree only for
-  real folders; big words and one slight colour for the key point; each frame's density measured; few words
-  in a workflow, fewest small ones; room between boxes; vivid, never a wall of text), the look
-  (the five-part drawing, the default since 261112: icons, coloured tables, stickies; black, red open, green a
-  change for the draw.py drawings; Nunito, names no one), the shapes that keep their own rules (screens,
-  s00, reports, slides), and one set of drawing helpers every builder imports (scripts/draw.py). Use before
-  drawing or redrawing any sNN topic, to check a drawing against the principles, or to pick a pattern (mind
-  map, flow, acts, folder tree, a checked picture). Loaded by /haipipe-studio before it draws or redraws a
-  topic; its new builders start on five_parts.py (draw.py for a special shape). The topic folder, face, numbering, sessions and the writer that
-  keeps a person's marks stay haipipe-studio's. Trigger: studio drawing, draw a topic, redraw, too many
-  frames, low density, mind map, workflow map, acts, named arrows, key point, folder tree, /excalidraw-studio.
+  How a Studio topic's drawing looks and reads: nine principles (one screen-sized frame, a workflow or mind
+  map inside, frames as one story joined by named arrows, big words and one key colour, measured density, room
+  between boxes), the look (the five-part drawing by default; draw.py for special shapes such as screens, an older Block's s00,
+  reports and slides), and the shared drawing helpers every builder imports (scripts/draw.py). Use before
+  drawing or redrawing any sNN topic, to check a drawing against the principles, or to pick a pattern. Loaded
+  by /haipipe-studio, which keeps the topic folder, face, numbering and sessions. Trigger: studio drawing,
+  draw a topic, redraw, too many frames, low density, mind map, workflow map, acts, named arrows, key point,
+  folder tree, /excalidraw-studio.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -48,7 +44,7 @@ workflow map, the density badge, an act) for a special shape. `check.py` comes a
 ```text
 /haipipe-studio  new_topic.py topic ─▶ /excalidraw-studio  principles · draw.py ─▶ builder ─▶ check.py
        ▲                                                                                        │
-       └──────────────── new_topic.py session: a pass of run-draw-<sNN> ◀──────────────────────┘
+       └──────────────── new_topic.py session: a round, passes/pNN-MMDD ◀──────────────────────┘
 ```
 
 
@@ -233,7 +229,7 @@ Asked 261012: "if I want to update the current draw with these principles, how s
 4 🧱 builder   rewrite it on scripts/draw.py: frame, mind_map or flow,      old builder, face and preview
                key, badge, acts, write                                    copied to history/ first
 5 🖼️ look      render_png.py, read the preview; check.py again            until ✅, or a reason written
-6 💾 save      a decision line in the face; a pass of run-draw-<sNN>       haipipe-studio new_topic.py session
+6 💾 save      a decision line in the face; a round in the topic's passes/  haipipe-studio new_topic.py session
 ```
 
 1. **One topic at a time**: a style asked for one topic stays on that topic until it is agreed here
@@ -252,7 +248,7 @@ Boundary
 |---|---|
 | `excalidraw-studio` | how a Studio topic's drawing looks and reads: the principles, the look, the patterns, `draw.py` |
 | `haipipe-studio` | the topic: folder, face, numbering, builders' place, sessions, `canvas.write` and its checks, `render_png.py`; it loads this skill before drawing; `new_topic.py --builder` starts a five_parts builder (`--builder draw` one on `draw.py`) |
-| `excalidraw-report` · `-slide` · `-read` · `-section` · `-job` | their own drawings (b31 s02 to s06) |
+| `excalidraw-report` · `-slide` · `-read` · `-draft` · `-job` | their own drawings (b31 s02 to s06) |
 
 
 Files

@@ -75,7 +75,7 @@ Commands
 
 ```text
 python scripts/mindmap.py new        <x.mindmap.md> [--title T]     a root and nothing under it yet
-python scripts/mindmap.py from-topic <studio/sNN-topic> [--out F]   the topic's mind map, sNN-<topic>.mindmap.md
+python scripts/mindmap.py from-topic <sNN-topic folder> [--out F]   the topic's mind map, sNN-<topic>.mindmap.md
 python scripts/mindmap.py from-work  <work/ | Block | Job> [--out F] Block → Job → Task → Run, goals and results
 python scripts/mindmap.py refresh    <x.mindmap.md>                  rebuild from disk; a person's words kept
 python scripts/mindmap.py render     <x.mindmap.md>                  the static page

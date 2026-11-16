@@ -170,7 +170,7 @@ acceptance.
 Inside a SPACE (the nearest folder holding `env.sh`), two storage rules hold. Every path a
 record keeps (a Run's `raw_path` and `config_path`, a package receipt's `owner` and
 `package`, a Page's `preparation-owner.yaml` and `preparation-ref.yaml`) is written relative
-to the SPACE root, never as `/Users/<name>/...` (AGENTS.md rule 7), and read back with
+to the SPACE root, never as `/Users/<name>/...` (the SPACE's AGENTS.md § Working rules), and read back with
 `resolve_stored`; an older absolute record still reads, and two records that differ only in
 how a path is written agree (`same_reference`). Every `*.private.*` artifact (normalized
 conversations, rejects, candidate items, lineage) is written to and read from

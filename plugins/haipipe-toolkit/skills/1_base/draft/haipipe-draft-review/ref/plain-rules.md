@@ -86,7 +86,7 @@ Semicolons stay only where someone else fixes the form: citations inside parenth
 
 ## 3a · Paragraphs
 
-**A paragraph holds 4 to 6 sentences** (JL 2026-11-04, said more than 4 times: "一个 paragraph 至少是 4~6 句话", "你只有两句话 有点奇怪吧"). A 1- to 3-sentence paragraph is merged with its neighbour on the same topic. One past 6 is split where its topic turns. After any cut (an anti-AI pass, a trimmed limit), recount: cutting sentences is what makes short paragraphs. `cli/paragraphs.py <file>` counts them.
+**A paragraph holds 4 to 7 sentences** (JL 2026-11-04, widened to 7 on 2026-11-12, said more than 4 times: "一个 paragraph 至少是 4~6 句话", "你只有两句话 有点奇怪吧"). A 1- to 3-sentence paragraph is merged with its neighbour on the same topic. One past 7 is split where its topic turns. After any cut (an anti-AI pass, a trimmed limit), recount: cutting sentences is what makes short paragraphs. `cli/paragraphs.py <file>` counts them.
 
 A venue's own form wins and is named as a departure: a journal's short Conclusions, a structured abstract, a numbered list of limitations.
 

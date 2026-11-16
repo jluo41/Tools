@@ -17,7 +17,7 @@ called the task theme until 2026-10-07; the Task as a ladder level (Block ->
 Job -> Task -> Run) belongs to every theme and keeps its name.
 
 ```text
-work/bNN_<topic>/                    a work Block: board.md, Questions, reports/, sNN topics
+work/bNN_<topic>/                    a work Block: board.md, Questions, sNN topics (an older Block: reports/)
 └── jNN_<series>/                     a Job: one series of Tasks (j0N, j1N, j5N ...)
     └── tNN_<task>/                   a work Task: plan -> build -> run -> read -> close
         └── runs/rNN_<noun>_<qualifier>/      Run card, ticket and config

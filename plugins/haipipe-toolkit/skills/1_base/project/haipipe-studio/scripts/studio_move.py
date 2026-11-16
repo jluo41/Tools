@@ -20,7 +20,7 @@ under the block folder"; JL 261030: "we just have sNN, along side with jNN, to m
 Result, receipt and archive folders are never walked (result/, results/, passes/, _runs/, delivery/, _old/,
 _legacy/, notebooks/: ladder.py's NO_RELINK; the one exception is a five-part topic's `result/first-drawing.excalidraw`,
 the kept input its drawing is rebuilt from, whose links to moved topics follow them before the rebuild), and
-generated files are never rewritten (AGENTS rule 6): `.html`, `.pptx`, `.png`, a file headed GENERATED FILE, and a
+generated files are never rewritten (the SPACE's AGENTS.md § Working rules): `.html`, `.pptx`, `.png`, a file headed GENERATED FILE, and a
 drawing an earlier script wrote (its `source`). Their generators are rerun after the move: the
 five-part drawing (studio_update.draw), a report drawing (build_report_drawing.py), and each moved mind map's page
 (mindmap.py render). /haipipe-project update runs this as its `studio` step.

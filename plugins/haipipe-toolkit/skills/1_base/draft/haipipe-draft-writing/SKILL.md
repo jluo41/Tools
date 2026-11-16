@@ -11,9 +11,9 @@ metadata:
 
 > In a paper Section, writing follows haipipe-paper-draft `ref/section-method.md`: the structure loop before prose, then the draft loop; adopt only kept rewrites, show every change as a card, never touch a sentence the person checked.
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every delivery artifact, and `## Content` itself (`cli/page.py adopt` writes it from the Draft's `## 3 · Draft`): change the Draft or the exporter, then rerun. A one-sentence change is the haipipe-draft fast path.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). Here that means every delivery artifact, and `## Content` itself (`cli/page.py adopt` writes it from the Draft's `## 3 · Draft`): change the Draft or the exporter, then rerun. A one-sentence change is the haipipe-draft fast path.
 
-> ⛔ **No content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Result, receipt or runtime.yaml.
+> ⛔ **No content hashes** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). A version is its number and date; staleness is file time or `git diff`. Never write, check, compare or pin a sha256 in a Result, receipt or runtime.yaml. The two exceptions, decided 2026-11-15: haipipe-insight's receipt `tables_sha256` (rerun compare) and haipipe-design's `method-sha` and inputs `manifest.yaml` sha256 (the Job fence); nothing else pins a hash.
 
 Load, in order: `haipipe-draft`, `haipipe-draft-workflow`, this skill,
 Folder-owning workflow or canonical family skill, exact Page Face owner,
@@ -45,7 +45,7 @@ Independence: whoever writes never reviews. The judge is `../haipipe-draft-revie
 
 ## ✍️ Writing prose
 
-**A paragraph is 4 to 6 sentences, and a limit is said once (JL 261104, said more than 4 times).** Merge a shorter paragraph, split a longer one, and recount after any cut with `../haipipe-draft-review/cli/paragraphs.py <file>`. A venue's own form (short Conclusions, structured abstract, numbered limitations) is a named departure. No over-defensive lines such as "causation cannot be established"; the words stay associational. Full rule: `../haipipe-draft-review/ref/plain-rules.md` § 3a and 3b.
+**A paragraph is 4 to 7 sentences, and a limit is said once (JL 261104, said more than 4 times).** Merge a shorter paragraph, split a longer one, and recount after any cut with `../haipipe-draft-review/cli/paragraphs.py <file>`. A venue's own form (short Conclusions, structured abstract, numbered limitations) is a named departure. No over-defensive lines such as "causation cannot be established"; the words stay associational. Full rule: `../haipipe-draft-review/ref/plain-rules.md` § 3a and 3b.
 
 **Examples first**: before a Section is written or rewritten whole, read how 3 to 4 published papers of the venue write the same Section (a Studio topic `sNN-<task>-<venue>-examples`, made by /excalidraw read when missing), and write to their pattern, naming each departure (`ref/writing.md` § 0, JL 261022). Then realize an approved plan and evidence slice as sentences, weave paragraphs, and revise existing prose by the surgical-revision rule. Read `ref/writing.md` first (its rules section is what every sentence is written by); it points to the rest of `ref/`. The plan, the evidence and the venue belong to the host workflow; a Page's human gate belongs to a person.
 
@@ -102,7 +102,7 @@ haipipe-draft-workflow.
 | Explicitly delegate a fresh paragraph without interactive review | Optional `ref/paragraph-run.md` profile |
 | Judge whole-Page completion | `haipipe-draft-review`, not the writer |
 
-A candidate may be drafted while Shape is unapproved or evidence is missing.
+A candidate may be drafted while evidence is missing, never while the plan is unsigned (§ Entry gates).
 It stays in the selected Outline Markdown as each Bullet's Draft.
 Those discussions do not have to wait for CONTENT's publication gates.
 Conversely, a saved Draft alone is not human
@@ -125,8 +125,8 @@ writer provides a multi-paragraph atomic transaction.
 
 For the interactive Page profile, an explicit user instruction such as “go ahead
 to the content and delivery” is the release decision once every planned Page Run
-and required Evidence Result is complete. Do not send the person back to OUTLINE
-solely because a historical `approved:` field still shows `⬜`; record the exact
+and required Evidence Result is complete. That instruction does not replace the plan's sign (§ Entry gates): when
+`approved:` still shows `⬜`, sign first with `page.py sign` from the person's own words, then record the exact
 instruction in the CONTENT receipt and suggest the next step after this pass.
 
 ## WRITE · four movements, not four Run identities
@@ -163,7 +163,7 @@ not historical Result trees unless a pointer disagrees.
 |---|---|
 | Authority | Current Folder/Page Face owner and Context policy resolved |
 | Runs | Every planned Page Run complete; required evidence Task Results ready and bound |
-| Shape | current checked Shape, or an explicit interactive user instruction to adopt the accepted Shape; do not block this Page profile on a duplicate `approved:` tick |
+| Shape | current checked Shape whose `approved:` starts with ✅ (`page.py sign`); an instruction to go ahead never stands in for the sign |
 | Writing | Exact target text accepted by the person, with actor, quoted decision and reviewed Run/Version/Step; no inferred acceptance |
 | Evidence | Every Bullet declares typed Items or justified `none`; required locally attainable Results ready and folded; CITE verification satisfied |
 | Source | Destination Page not saved since the adoption base was read (file time or `git diff`); target mapping matches |
@@ -277,7 +277,7 @@ Paper master's folders.
 
 For a complete delivery, provide the requested PDF/Word outputs and PDF page
 count. DISPLAY review uses current standalone `preview.pdf`; Page delivery
-uses `delivery/latex/<stem>.pdf`, never a paper master or legacy flat lane.
+uses `delivery/latex/<stem>.pdf` (for a Task in a Block, under `<block>/delivery/jNN_<job>/tNN_<task>/`), never a paper master or legacy flat lane.
 Draft PDFs may be offered honestly while named evidence remains owed.
 
 At formal completion, use a fresh read-only pre-check of the built version:

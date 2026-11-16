@@ -75,7 +75,7 @@ authority: haipipe-insight-wisdom
 actor: <person-who-authorized>
 workflow_runtime_id: <actual-runtime-id>
 page: <exact-page-mapping-from-index>
-signature: <initials-and-YYMMDD-exactly-as-on-Page>
+signature: <the-signed-value-exactly-as-on-Page: YYMMDD; an older Page may carry initials>
 dependencies: <exact-dependency-list-from-index>
 ```
 

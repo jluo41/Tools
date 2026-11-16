@@ -365,8 +365,9 @@ Resolve execution artifacts through the Folder owner's Run dialect: a
 Folder-local owner uses sibling `runs/` and `results/`; a canonical Task keeps
 its Ticket under the Task's `runs/` and its generated Result under the resolved
 `$OUTPUT_ROOT/<task>/results/<RUNNAME>/`. No LAND step may copy a Result merely to make it
-look local, create a new `outline/evidence/` lane, recreate a root
-`<page>/evidence/` category, or create a standalone Evidence tab.
+look local or create a new `outline/evidence/` lane. On an older Page only (one made before 2026-10-16, which
+uses these Runs), it also may not recreate a root `<page>/evidence/` category or a standalone Evidence tab; a draft
+Task made since keeps `evidence/cards.yaml` and its 3 · Evidence step (`../SKILL.md` § Where the cards live).
 
 Read fully only the target Page, checked v0 plan or approved G>=1 plan, Evidence Item table, named Run
 receipts, and Results required by the current item graph. Keep broad build logs

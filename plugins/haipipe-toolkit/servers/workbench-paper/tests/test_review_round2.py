@@ -157,9 +157,8 @@ class ReviewRound2Test(unittest.TestCase):
             self.assertNotIn("No text yet.", page, step)
             self.assertNotIn("\\citep", page, step)
         self.assertNotIn("<p class=pb-sess>", self.render(sec, "work", "draft"))   # the session line rides the copy only
-        plan = self.render(sec, "report", "plan")              # the aims, once Plan + Results' (that view went)
-        self.assertIn("&lt;the aim&gt;", plan)
-        self.assertIn("&lt;one opening line&gt;", plan)
+        plan = self.render(sec, "report", "plan")              # Structure and Examples only (JL 261115)
+        self.assertNotIn("What this Section must do", plan)
 
     def test_evidence_tasks_show_what_they_made_first(self):
         cite = self.b / "j03_evidence_cite" / "t01_cite"

@@ -57,8 +57,8 @@ work. Use its monotonic counter; never renumber. Generic slug text is lowercase
 ASCII, but fixed dialect tokens such as Page `P01` and Scratch `C1.P1` retain
 their required case. Do not normalize a valid native identity globally.
 
-Only hard Runs are numbered: a work Task's `rNN` counter (Design generate and verify
-included), Labeling's `rlNN`. A soft Run has no counter: it is named by its type and
+Only hard Runs are numbered: a work Task's `rNN` counter, Labeling's `rlNN` (Design names every Run
+`run-<type>-<target>`, its hard ones too). A soft Run has no counter: it is named by its type and
 target (`run-section-<target>`, `run-delivery-<lane>`), and the same target again is a
 new pass of the same Run, never a new name. Insight keeps its own naming under its
 binding (below). Paper's current naming and its

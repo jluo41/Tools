@@ -7,7 +7,12 @@ import types
 import unittest
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parents[1] / "src"
+import pytest
+
+# The judgment schema is pydantic; without it this module skips instead of erroring at collection.
+pytest.importorskip("pydantic")
+
+SRC =Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(SRC))
 
 # Parser tests are offline; these SDK symbols are imported but never called.

@@ -34,9 +34,23 @@ class NewJobTest(unittest.TestCase):
         new_job.add_task(job, "load", "Load", answers="Q01.E1")
         md = new_job.add_task(job, "write", "Write it up", kind="page")
         self.assertEqual(md.parent.name, "t02_write")
-        self.assertIn("task-kind: page", md.read_text())
+        self.assertIn("task-type: draft", md.read_text())        # the older --kind page
+        self.assertFalse((md.parent / "runs").exists())          # a draft Task's Runs live in draft/
         self.assertEqual(new_job.listed((job / "j01_first.md").read_text()), ["t01_load", "t02_write"])
         self.assertIn("2. t02_write · Write it up", (job / "j01_first.md").read_text())
+        self.assertEqual(new_job.check(job), [])
+
+    def test_a_task_has_the_face_contract_and_its_run_folders(self):
+        """haipipe-task § The face, and fn/run.md's scripts/, scripts/config/, runs/ (a fresh agent's trial, 261115)."""
+        job = new_job.new_job(self.block, "first", "First").parent
+        md = new_job.add_task(job, "clean_labs", "Clean lab records", kind="data")
+        text = md.read_text()
+        self.assertTrue(text.startswith("# Clean lab records\nstate: 🔴 OPEN\n"))
+        for line in ("goal: ", "close: ", "owner: ", "folder-kind: task", "task-type: data", "task: ."):
+            self.assertIn("\n" + line, text)
+        self.assertNotIn("task-kind", text)
+        self.assertTrue((md.parent / "scripts" / "config").is_dir())
+        self.assertTrue((md.parent / "runs").is_dir())
         self.assertEqual(new_job.check(job), [])
 
     def test_the_check_finds_a_folder_not_listed_and_a_name_not_on_disk(self):
@@ -92,7 +106,8 @@ class NewJobTest(unittest.TestCase):
         out = run("job", str(self.block), "--slug", "cli", "--title", "CLI")
         self.assertEqual(out.returncode, 0, out.stderr)
         job = self.block / "j01_cli"
-        self.assertEqual(run("task", str(job), "--slug", "one", "--title", "One").returncode, 0)
+        self.assertEqual(run("task", str(job), "--slug", "one", "--title", "One", "--type", "data").returncode, 0)
+        self.assertIn("task-type: data", (job / "t01_one" / "t01_one.md").read_text())
         self.assertEqual(run("check", str(job)).returncode, 0)
 
 

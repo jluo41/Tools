@@ -139,7 +139,7 @@ being guessed.
 
 - One sentence per line. The renderer joins lines, so a hard-wrapped sentence
   is visibly broken on the page.
-- No em-dashes. Use a colon, semicolon, comma, parentheses, or a new sentence.
+- No em-dashes and, in draft sentences, no semicolons. Use a colon, comma, parentheses, or a new sentence.
 - English only.
 - Real citations. A file path in `draft/records/<stem>-files.md` is a file you read, and every row
   says what that file does for this page.

@@ -24,7 +24,7 @@ copied out under its next version number; a topic's own `result/` stays messy an
 
 ```text
 haipipe-studio    sNN-<topic>/    think       one sNN numbering per Block, beside the Jobs (**At:** a rung)
-haipipe-report    reports/qNN_<topic>/   answer      every level its own
+haipipe-report    ## Questions           answer      in the topic that answers it (an older Block: reports/qNN_<topic>/)
 haipipe-delivery  delivery/              hand over   the Block's, each level under its address; a page rolls up
 ```
 
@@ -41,7 +41,7 @@ The folder
 ├── <lane>/                         the Block's own output (web · latex · word · ...)
 ├── jNN_<job>/                      a Job's output
 │   └── tNN_<task>/<lane>/          a Task's output, under its Job
-└── reports/qNN_<topic>/<lane>/     a Block Report's output
+└── reports/qNN_<topic>/<lane>/     an older Block's Report output
 ```
 
 1. **Block only**: Jobs and Tasks make outputs but keep no `delivery/`; they keep their own Report.
@@ -157,7 +157,7 @@ no `dNN` card or prefix (b10 s03-D05, JL 261011). Each send is one row of `deliv
 | date   | for        | from        | status |
 | 261009 | NMI        | jNN_<job>/  | sent   |
 | 261012 | co-authors | jNN_<job>/  | draft  |
-| 261019 | back from Gordon Gao | word/<name>-v9.docx | back |
+| 261019 | back from <co-author> | word/<name>-v9.docx | back |
 ```
 
 A resend or a second reader is a new row, never a copy of the folder. A build may add a `draft` row and a
@@ -207,7 +207,7 @@ Boundary
 | `haipipe-labeling-handoff` | the labeling handoff package |
 | `haipipe-studio` | the `sNN-<topic>/` topics, Delivery's twin: one numbering per Block, beside the Jobs |
 | `haipipe-related` | `related/`, the other twin: what came in, one row each in `related.md` |
-| `haipipe-report` | `reports/`, at every level |
+| `haipipe-report` | the Questions and their answers (an older Block's `reports/`) |
 
 
 Files

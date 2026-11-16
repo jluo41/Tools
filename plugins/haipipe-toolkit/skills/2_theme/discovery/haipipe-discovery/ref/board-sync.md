@@ -63,37 +63,37 @@ Task Pages from the direct tree and renders their current state.
 | Discovery event | Source change | Board action | What the user can read |
 |---|---|---|---|
 | `open-block` | create `board.md` with the Board head | `board_sync.py <block> --check --strict` | an empty Board with its spine, pipeline, and close rule |
-| `open-job` | create `jNN_<job>/` and refresh the managed Job span | sync, build, check | a new Group appears; its Task roster is still filesystem-derived |
-| `open` | create the `tNN_<task>/` Page Folder and root Page | sync, build, check | the Page appears under its Job with its current state |
-| `scope` / `prepare` | update manifest, Page context, or instrument | build, check | the Board stays structural; Page and Task facts remain on their owners |
-| `add` / `run` | add or update one `rNN` Run/Result pair | build, check at the Task or batch checkpoint | Page rows and derived status reflect the new evidence state |
-| `synthesize` | update the root Page and derived Evidence Bib | build, check after Page CHECK | the Board shows the checked Page and current aggregate status |
-| `close` | reconcile `discovery.yaml` report/status | build, check with `--strict` | the Board closes only when its `close:` condition is true |
+| `open-job` | create `jNN_<job>/` and refresh the managed Job span | sync, check | a new Group appears; its Task roster is still filesystem-derived |
+| `open` | create the `tNN_<task>/` Page Folder and root Page | sync, check | the Page appears under its Job with its current state |
+| `scope` / `prepare` | update manifest, Page context, or instrument | check | the Board stays structural; Page and Task facts remain on their owners |
+| `add` / `run` | add or update one `rNN` Run/Result pair | check at the Task or batch checkpoint | Page rows and derived status reflect the new evidence state |
+| `synthesize` | update the root Page and derived Evidence Bib | check after Page CHECK | the Board shows the checked Page and current aggregate status |
+| `close` | reconcile `discovery.yaml` report/status | check with `--strict` | the Board closes only when its `close:` condition is true |
 
 Run internal steps may batch their checkpoint. A Board refresh is required
 after a structural change, after a Run batch, after Page CHECK, and before any
-user-facing completion claim. It is not a new Run and it must not mutate the
-generated `board/` files by hand.
+user-facing completion claim. It is not a new Run and it builds nothing: the
+workbench reads the Block live (`--build` is accepted and ignored).
 
 ## Commands
 
 From the Discovery skill directory:
 
 ```bash
-python3 scripts/board_sync.py <path/to/discoveries/bNN_<block>>
-python3 scripts/board_sync.py <path/to/discoveries/bNN_<block>> --check --strict
+python3 scripts/board_sync.py <path/to/discovery/bNN_<block>>
+python3 scripts/board_sync.py <path/to/discovery/bNN_<block>> --check --strict
 ```
 
 At `open-block`, pass `--title`, `--spine`, and `--close` when the defaults do
 not express the agreed evidence program. Those values seed a new or repaired
 head; an already authored non-empty value is preserved.
 
-The helper is the narrow Discovery seam. For a Board-only edit, use the Board
-skill directly:
+The helper is the narrow Discovery seam. For a Board-only edit, use the
+`haipipe-draft` Board check directly:
 
 ```bash
 python3 <path/to/haipipe-draft>/cli/check.py <block> --strict
 ```
 
 If the checker fails, report the exact Page or Board finding and route back to
-the owner. Do not mark a Task or Board closed because the generated HTML exists.
+the owner. Do not mark a Task or Board closed because its page opens.

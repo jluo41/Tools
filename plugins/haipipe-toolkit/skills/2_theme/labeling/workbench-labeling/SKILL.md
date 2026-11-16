@@ -118,7 +118,7 @@ Plan + Results · Findings · Delivery, each view its 📋 Review Content then �
 and the eight shared sections (Studio, Interactions, Decisions, Things to Know, Checklist, Timeline, Skills, Files).
 Findings leads with what each Job released: its expression Task's final labels, then the approved guideline they
 follow (a Job's name on its bars only when a Block holds more than one). Plan + Results lists each Task and its Runs,
-and what waits for you. A Block's Job row says "N of M done", the words its Job's Tasks bar says. Delivery lists each signed release (`labeling_focus.delivery_html`: its final labels, rules,
+and what waits for you. A Block's Job row carries the shared mark beside its bar (🙋 when something waits, ✓ when done), never a state word or a done-of-total count. Delivery lists each signed release (`labeling_focus.delivery_html`: its final labels, rules,
 sign date and Run), then the Block's `delivery/`. A Task's own page is workbench-task-labeling's.
 
 ## 🧭 Guide · how the family works

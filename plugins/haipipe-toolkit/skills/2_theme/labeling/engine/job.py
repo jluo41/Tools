@@ -717,7 +717,7 @@ def create_contract(
         preparation = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(preparation)
         preparation_receipt = preparation.verify_package(source_job)
-        # the receipt keeps the owner relative to the SPACE root (AGENTS.md rule 7)
+        # the receipt keeps the owner relative to the SPACE root (the SPACE's AGENTS.md § Working rules)
         source_owner = preparation.resolve_stored(preparation_receipt["owner"], source_job)
         preparation_ref = preparation.preparation_reference(source_owner, source_job, preparation_receipt)
         owner_ref = job_root / "preparation-owner.yaml"

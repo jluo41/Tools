@@ -10,9 +10,9 @@ metadata:
 # /haipipe-paper · compose a paper from evidence-bearing Pages
 
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). For a paper that is its `delivery/` folder and every Page's `delivery/<lane>/`: fix the Page or the build code, then rebuild.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). For a paper that is its `delivery/` folder and every Page's `delivery/<lane>/`: fix the Page or the build code, then rebuild.
 >
-> ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; AGENTS.md rule 9). A version is its number and date; staleness is file time or `git diff`. Never write, check or pin a hash.
+> ⛔ **No sha256 or other content hashes** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). A version is its number and date; staleness is file time or `git diff`. Never write, check or pin a hash. The two exceptions, decided 2026-11-15: haipipe-insight's receipt `tables_sha256` (rerun compare) and haipipe-design's `method-sha` and inputs `manifest.yaml` sha256 (the Job fence); nothing else pins a hash.
 >
 > ⛔ **Must-check before JL sees it** (hard rule, JL 261115: "make them into the skills of /haipipe-paper, and ask them to be must check them"). [`ref/must-check.md`](ref/must-check.md) holds every paper rule JL has already given, each with its check. Before JL sees a Section, before a Section closes and before a send, run its gate: `auto` rules by script, `read` rules by a fresh reviewer that did not write the text; fix a failure or name its id and reason. A correction JL gives, directly or relayed by another session, changes that file in the same change as the fix; a rule already there means its check was too weak, so strengthen the check.
 
@@ -49,7 +49,7 @@ in the Project's `paper/` beside the Paper Boards. `paper_ladder.py board <paper
 with `board-kind: grant-board` and `use-case: Initial application`; `version`, `task`, `evidence`, `submission` and
 `paper_check.py` then work on it as on a Paper Board. The code that finds a paper Board by its name accepts both
 prefixes (haipipe-draft `common.py`, haipipe-project `ladder.py`, the workbench `address_links.py`, the evidence
-scripts). First example: `examples-0-cowork/Project-AITC-Dementia/paper/Grant-AITC-Dementia/` (an LOI).
+scripts). First example: `<examples world>/Project-<Name>/paper/Grant-<Slug>/` (an LOI).
 
 **Implementation boundary:** the Grant scaffold is implemented; there is no Grant renderer of its own (the
 workbench shows a grant Board with the paper views) and no grant-specific Section template or submission adapter
@@ -67,7 +67,7 @@ explore    internal: work Blocks    datasets and regressions on raw data
            external: discovery      papers and sources, each read by a Run
 evidence   j02_evidence_value       the printed numbers, one Task per group   ← internal Results
            j03_evidence_cite        the citations, one Task per claim group   ← external, verified CITE Results
-           j01_evidence_display     figures and tables (t01-t19 main, t51-t59 appendix), drawn from internal Results
+           j01_evidence_display     figures and tables (tNN_display-<letter>-<slug>), drawn from internal Results
 writing    j11_writing_v<MMDD>_<desk>, j12_writing_…   one Job per send: its Sections quote the evidence
 submission j21_submission_v<MMDD>_<desk>   one per send (face `for: <writing Job>`): t01_cover-letter, the walk of
            the venue's portal (every step and field), and the portal fill page to review and paste
@@ -82,7 +82,7 @@ still reads.
 
 ## ✅ Where a paper stands: `checklist.md`
 
-JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L5, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V5, ④ Writing W1-W7, ⑤ Delivery D1-D11. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
+JL 261031: "here we should also try to add the checklist.md, so everytime, the haipipe-paper we can have the things like check the progress"; JL 261101: "what is the final checklist we should have? what is the delivery, and what is the delivery requirements"; "make the checklist to be a sNN as well". [`checklist.md`](checklist.md) lists what a paper needs, from its question to the send: ⓪ Layout L1-L6, ① Plan P1-P9, ② Explore E1-E3, ③ Evidence V1-V11, ④ Writing W1-W7, ⑤ Delivery D1-D11. `scripts/paper_check.py <Paper-Board>` ticks every line a file can prove (✅ done, ⏳ under way, ⬜ not yet, 🙋 waits on a person). Run it whenever someone asks where a paper stands, and answer from its lines.
 
 ```text
 paper_check.py <Board>            print the checklist; change nothing
@@ -197,7 +197,7 @@ t05_back-matter the statements (corresponding author, contributions, conflicts, 
 A letter Task exported on its own still shows there, from its `word/` folder, but D3 stays ⏳ until the build makes it.
 
 The Writing view also shows two Board files when they exist, each as its own section (JL 261110): `revision-plan.md`
-first, "🗺️ Revision plan" (the round's steps as ⬜/✅ lines, counted done of total), and `writing-patterns.md`
+first, "🗺️ Revision plan" (the round's steps as ⬜/✅ lines, each keeping its own mark, no tally), and `writing-patterns.md`
 last, "🚫 Writing patterns to avoid" (the co-authors' patterns, `### N.` each; haipipe-paper-draft § Co-authors'
 patterns). Both are authored files on the Board, so a private paper's words never enter Tools.
 
@@ -253,8 +253,8 @@ lifecycle, Page Run namespace, Evidence Workspace, or Page release protocol.
 
 ### A Section, step by step (b32 s41, on screen 2026-10-20)
 
-A Section Task is a draft Task (`task-type: draft`), worked in haipipe-draft's seven steps. Its Work shows the five
-middle steps as views (1 Plan to 5 Revise; Display only when the Section calls or makes a display); Studio and
+A Section Task is a draft Task (`task-type: draft`), worked in haipipe-draft's seven steps. Its Report shows the five
+middle steps as views (Work is retired, JL 261111; workbench-paper) (1 Plan to 5 Revise; Display only when the Section calls or makes a display); Studio and
 Delivery are the top row's. The paper adds its own owner to four of the steps:
 
 | Step (tab) | In a paper | Owner |
@@ -263,11 +263,11 @@ Delivery are the top row's. The paper adds its own owner to four of the steps:
 | 📐 1 · Plan | §1 from the Section's contract (the face's reader-question … transition-out, from the version's `## Narrative` row); your Scratch, a note per paragraph; the venue's SUB-* rows beside the Requirement | haipipe-draft-logic · haipipe-paper-draft |
 | ✍️ 2 · Write | `## 3 · Draft` from §1 and its Scratch, the desk's sentence and word limits; you type in its boxes too | haipipe-paper-draft · haipipe-draft-writing |
 | 🔎 3 · Evidence | `evidence/cards.yaml` under the paper's rules (CITE from verified Results, one number everywhere); the prompt is `/haipipe-paper-evidence <task>` | haipipe-paper-evidence |
-| 🖼 4 · Display | the Section's Tables and Figures, `display/Display<n>-<slug>/`, numbered for the paper (`label: Table 1`) and within the venue's limit | haipipe-display · haipipe-paper-evidence |
+| 🖼 4 · Display | the Tables and Figures the Section cites, each the Board's display Task that names it in `cited-in:` (its one home, JL 261113; an older Board: a Section-side `display/Display<n>-<slug>/` or `results/` payload, still read), numbered for the paper (`label: Table 1`) and within the venue's limit | haipipe-display · haipipe-paper-evidence |
 | 🔁 5 · Revise | Revise cards, then comments' Review Items routed to the Section | haipipe-draft-writing · haipipe-paper-comments |
 | 📤 Delivery | the Section's lanes in `delivery/jNN_<version>/<tNN>/`; ◆ ready for the build | haipipe-delivery · haipipe-paper-assemble |
 
-The version's Work shows each Section as one row with its five step words (Plan, Write, Evidence, Display, Revise;
+The version's Report shows each Section as one row with its five step words (Plan, Write, Evidence, Display, Revise;
 `focus_draft.WORK`), each saying its state (done, next, sign, asked, send, optional, pass k, later) and opening that
 step (`paper_version.section_row`).
 
@@ -286,7 +286,7 @@ Page containers, status reads and gate records do not allocate Runs.
 | Plan | after the story: `s03-paper-dataflow/` (how the data becomes each answer), `s04-paper-workflow/` (the Sections and dates to the send) and `s06-paper-displays/` (each display and its Run, checked against the venue's display rules); `haipipe-paper-plan` |
 | Venue | shared evidence-backed desk contract; `haipipe-paper-venue` |
 | Section (draft) | one Section, the Abstract or a letter, a draft Task: its plan and sentences in `draft/`; `haipipe-paper-draft` (was haipipe-paper-section) |
-| Evidence | what backs each Section (`evidence/`, `display/`) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |
+| Evidence | what backs each Section (`evidence/`; its displays are the Board's display Tasks) and one ledger per version: citations, one number per result, displays; `haipipe-paper-evidence` |
 | Comments | one batch of comments (a review, a meeting, a coauthor pass) and its answers; `haipipe-paper-comments` |
 
 Use native receipts to report the current owner, accepted Result/version,
@@ -323,8 +323,8 @@ drawn (JL 261023: "this should be a plan, proposed to the author to think about 
 display with its number, title, the one question it answers, its layout (rows, columns or axes), its source Runs
 and its open choices, written from the team's own record (meeting notes, slides) in the Job face. The Sections write
 their numbers only after the drawn displays pass review and are accepted, so a sentence never describes a table
-that is still changing. A paper display unit only frames that Run's picture (question, caption, legend, number,
-size, review); no paper folder runs analysis or plotting code. The version face (or `board.md`) names the Block in a
+that is still changing. The display Task holds the display whole (question, caption, legend, number,
+size, review; JL 261113); its Run only draws from returned, aggregated Results, and no paper folder runs analysis on raw data. The version face (or `board.md`) names the Block in a
 `work-block:` line. The rules are haipipe-paper-evidence's rule 3.
 
 ## 🚪 Routing
@@ -349,11 +349,12 @@ Resolve the paper root and target Page before changing anything.
 | run one Page through its lifecycle | `haipipe-draft-workflow` |
 | compile or export one Page | `workbench-task-draft`, using its LaTeX or Word lane |
 | assemble the paper | `haipipe-paper-assemble` from the Section Pages' own `delivery/latex/` outputs and accepted bindings |
-| respond to reviewers | `haipipe-paper-comments`: a comments report in the version that answers it, its Review Items routed to the Sections |
+| respond to reviewers | `haipipe-paper-comments`: a review Job on the Board (`jNN_review_<kind>_v<MMDD>/`, `for:` the version), its Review Items routed to the Sections |
 | start a paper, a version, a Section or a Run | `scripts/paper_ladder.py` (`board`, `version`, `next`, `task`, `run`) |
 | bring an older paper folder onto the latest layout | `scripts/paper_ladder.py audit`, `update [--date MMDD] [--apply]` |
 | prepare a send's portal: the cover letter, what to paste into each field | § The submission Job: `scripts/paper_ladder.py submission`, then `scripts/portal_fill.py` |
 | where a paper stands, and its delivery | `checklist.md`, `scripts/paper_check.py <Board> [--write]`, the Board's `sNN-paper-checklist/` |
+| run the must-check gate on a Section or a version | `scripts/must_check.py <task or version-job> [--json]` (it runs `scripts/scope_guard.py <task>` and the evidence scripts, then names the reading agents to dispatch) |
 
 ### Paper verbs
 
@@ -413,9 +414,9 @@ screen's own rules are in `workbench-paper`.
 | Board › Description › Scope · Venue · Resources (frame layout only; on the focus page the venues sit in Story) | the face; `venues/<venue>/`; resources | `haipipe-paper` · `haipipe-paper-venue` |
 | Board › Audience Report › Ideation · Narrative · High-level logic + Low-level work · Related Questions · Related Papers (frame layout) | the ideation Questions; the story; each research question as Question │ Work │ Report; the reviewer and reader questions; the related papers by question | `haipipe-paper-ideation` · `haipipe-paper-story` · `haipipe-report` |
 | version › Description › Version · Venue rules (frame layout) | the version face; the venue's call | `haipipe-paper` · `haipipe-paper-venue` |
-| version › Work › Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations | each Section a row with its five step words, each opening that step; the evidence Jobs' Tasks | `haipipe-paper-draft` over `haipipe-draft`'s steps · `haipipe-paper-evidence` |
+| version › Report (Work is retired) › Draft-Main · Draft-Appendix · Display-Main · Display-Appendix · Values · Citations | each Section a row with its five step words, each opening that step; the evidence Jobs' Tasks | `haipipe-paper-draft` over `haipipe-draft`'s steps · `haipipe-paper-evidence` |
 | version › Audience Report › Questions · Draft-Main · Draft-Appendix · Comments · Cover letter (frame layout) | the standing J1-J5 and the version's Questions; each Section as Question │ Work │ Report; the Review Items of its comments reports; the letter, paragraph by paragraph | `haipipe-paper-comments` · `haipipe-paper-assemble` |
-| Section › Work › 1 Plan · 2 Write · 3 Evidence · 4 Display · 5 Revise | each step, Operation (Input, Sign, Prompt) over Result; the SUB-* rows in 1 Plan; Display only when the Section has one | `haipipe-draft` (the seven steps) · `haipipe-paper-draft` · `haipipe-paper-evidence` |
+| Section › Report (Work is retired) › 1 Plan · 2 Write · 3 Evidence · 4 Display · 5 Revise | each step, Operation (Input, Sign, Prompt) over Result; the SUB-* rows in 1 Plan; Display only when the Section has one | `haipipe-draft` (the seven steps) · `haipipe-paper-draft` · `haipipe-paper-evidence` |
 | Section › Report · Description · Delivery | the steps' Results, Table, Questions, Comments; the reader contract; ◆ ready for the build | `haipipe-paper-draft` · `haipipe-paper-comments` |
 | any level › Runs | that level's own Runs, by run type | the run cards (`haipipe-paper-workflow`) |
 
@@ -440,7 +441,7 @@ and migration rules. The Paper router only resolves the structure owner; it does
 not maintain a second naming or migration contract. In short: the evidence Jobs are `j01_evidence_display/`, `j02_evidence_value/`, `j03_evidence_cite/`; a version is a
 writing Job `j11_writing_v<MMDD>_<desk>/` (older: `jNN_v<MMDD>_<desk>/`) and its
 Tasks are named by series, `t00_abstract` · `t0N_` Main · `t2N_` Appendix · `t3N_` letters; a comments
-batch is a report of type comments, `reports/qNN_<kind>-<MMDD>/` (`scripts/carry_over/rename_tasks.py` renames an older
+batch is a review Job on the Board, `jNN_review_<kind>_v<MMDD>/` (an older Board: `reports/qNN_<kind>-<MMDD>/` in the version; `scripts/carry_over/rename_tasks.py` renames an older
 version once).
 
 ## 🧑‍💻 Section sessions

@@ -4,6 +4,7 @@ the segments, coverage across Jobs, the Jobs, the Runs and the handoff."""
 from __future__ import annotations
 
 from pathlib import Path
+from urllib.parse import quote
 
 from live import insight_plan_c as P
 from live.frame import Space, delivery_view, esc, rel, table, themes
@@ -62,7 +63,7 @@ def board_spaces(block: Path, root: Path, sub: str, href) -> dict:
                                  note="The latest Job's report: it is written and checked in that Job." if a_part == OVERALL else ""),
         "Idea Studio": Space(run_types=(_kind("Draw the question map", "Draw the question map of {folder} into studio/ (run-map-questions) "
                                               "(generated from the question files; view only)."),
-                                        _kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."))),
+                                        _kind("Add a topic", "Add or redraw a studio topic of {folder} (no Run: a pass in sNN-<topic>/passes/pNN-<MMDD>/): sNN-<topic>/, a pass per session."))),
         "Work Details": Space(html=_jobs(b, root, href, w_open), subspaces=("All",) + rels, open=w_open,
                               run_types=(_kind("Add a Job", "Add a Job to {folder} (run-add-<jNN>).",
                                                rows=_rows(b["runs"], root, "add")),
@@ -132,10 +133,12 @@ def _prototype_tabs(b: dict, root: Path, eid: str) -> str:
                          esc(q["change"] or "—")) for q in qs]
                 parts.append(f'<p class=pb-lv><b>{esc(name)}</b></p>'
                              + table(("#", "question", "change"), rows))
-        signed = str(r["face"].get("signed") or "")
-        items.append((r.get("label") or r["name"], f"signed {signed.lstrip('✅ ').strip()}" if signed.startswith("✅")
-                      else "not signed yet"))
-        panels.append("".join(parts) or "<p class=mut>This version asks no question yet.</p>")
+        signed = str(r["face"].get("signed") or "").startswith("✅")
+        items.append((r.get("label") or r["name"], "✅" if signed else "1 waits for you" if parts else "⬜"))
+        sign = ("" if signed or not parts or not r.get("job") else
+                f'<p class=fd-wait>🙋 <a class=fd-btn data-pop="{esc(r.get("label") or r["name"])}" '
+                f'href="/_board/workbench?path={quote(rel(Path(r["job"]), root))}&layout=focus&section=work&group=findings">Sign</a></p>')
+        panels.append(sign + "".join(parts) or "<p class=mut>This version asks no question yet.</p>")
     return _side_tabs(eid, items, panels) if items else ""       # the ideas are the Question Book's (shown once)
 
 
@@ -143,9 +146,6 @@ def _prototype(b: dict, root: Path, href) -> str:
     proto = b["prototype"]
     out = [f'<p class=mut>The questions live in the Question Book Block: {esc(rel(proto["path"], root)) if proto["path"].exists() else "—"}'
            ' (read only here; releases are cut there).</p>']
-    jobs_on = {}
-    for j in b["jobs"]:
-        jobs_on.setdefault(j["release"], []).append(j["name"])
     for k, r in enumerate(proto["releases"]):
         groups = []                     # one closed fold per DIKW level
         for lv, name, says in LEVELS:
@@ -159,8 +159,7 @@ def _prototype(b: dict, root: Path, href) -> str:
             groups.append(f'<details class=topic><summary><b>{esc(name)} questions</b> <span class=topic-meta>{esc(meta)}</span>'
                           f'<span class=lv-link>{esc(says)}</span></summary>'
                           f'<div style="padding:4px 14px 10px">{table(("#", "question", "in this release", "signed"), rows)}</div></details>')
-        meta = " · ".join(x for x in (str(r["face"].get("state") or ""), str(r["face"].get("signed") or "not signed yet"),
-                                      f'{len(jobs_on.get(r["name"], []))} Job(s)') if x)
+        meta = "✅" if str(r["face"].get("signed") or "").startswith("✅") else "⬜"
         out.append(_fold(f'release {r.get("label") or r["name"]}', meta, f'<div class=dikw>{"".join(groups)}</div>',
                          opened=k == len(proto["releases"]) - 1))
     props = [(_open(p["file"], root, p["title"]), esc(p.get("kind", "")), esc(p.get("from", "")), _st(p.get("state", "")))

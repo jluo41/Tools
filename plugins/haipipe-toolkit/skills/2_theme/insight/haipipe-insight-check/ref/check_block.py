@@ -33,6 +33,7 @@ from run_question import (META, QFILE, QFOLDER, LEVEL_DIR, GateError, asked_part
                           entry_script, expected_outputs, file_sha, space_root as root_of, front, live_needs,
                           question_folders, question_id, sha256, shared_digest)
 from scaffold_block import TICKET, wanted_runs  # noqa: E402
+import deliverables as DL  # noqa: E402
 
 NEED_ID = re.compile(r"\b[DIKW]\d{2}\.E\d+\b")
 LEVEL_LETTER = {"data": "D", "information": "I", "knowledge": "K", "wisdom": "W"}
@@ -190,6 +191,7 @@ def check_question(qid, qdir, q, qs, thresholds, partitions, prose=""):
                     p.append(f"{full}: judges from {f}, not a need")
             if not reads:
                 p.append(f"{full}: a judge names what it reads")
+    notes += DL.gaps(q)                                      # a judge with no test, a table with no figure
     if letter in "KW":
         read = {str(f) for n in live.values() if n.get("kind") == "judge"
                 for f in (n.get("from") if isinstance(n.get("from"), list) else [n.get("from")])}
@@ -358,6 +360,11 @@ def page_state(qf, qid, q):
 def run(block, strict=False):
     block = Path(block).resolve()
     problems, notes = [], []
+    here = next((d for d in (block, block.parent) if (d / "board.md").is_file()), None)
+    if here is None or front(here / "board.md")[0].get("board-kind") in ("insight-board", "prototype"):
+        return [f"{block.name} is an insight Board, a Job of one, or a Question Book, not the older Insight Block this "
+                "check reads: for stale receipts and the ladder run haipipe-insight scripts/insight_ladder.py audit "
+                "<Board>; for a question's delivery gaps run haipipe-insight ref/deliverables.py <question folder>"], {}, []
     try:
         meta = block_meta(block)
     except GateError as e:

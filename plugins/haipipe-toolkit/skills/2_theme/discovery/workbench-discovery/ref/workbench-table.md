@@ -7,7 +7,7 @@ its Questions, its links and its drawings; Work finds and reads the papers, one 
 each, and writes each Task's synthesis and the Questions' reports; Check reads every Run
 receipt and which citations still need a person; Delivery holds the answered reports and
 the Block's BibTeX. Folder is where the run writes: `Block ›` is the Block folder
-(`discovery/bNN_<block>/`), `Tools ›` the workbench's server folder (`servers/workbench-discovery/`); `none` writes no file,
+(`discovery/bNN_<block>/`), `Tools ›` the workbench's server folder (retired to `servers/_old/workbench-discovery/`; the Spaces below are that retired page's); `none` writes no file,
 only a verdict.
 
 Agents are the Discovery family's own (`skills/2_theme/discovery/agents/`): the orchestrator
@@ -31,7 +31,7 @@ Reports are Pages: `haipipe-draft-writing-agent` writes, `haipipe-draft-check-ag
 | board | Work | Tasks | Synthesize a Task | haipipe-discovery-creator-agent | haipipe-discovery-synthesize | none | Block › jNN_<job>/tNN_<task>/summary.md |
 | board | Work | Questions | Write the report | haipipe-draft-writing-agent | haipipe-draft-writing | none | Block › reports/qNN_<topic>/ |
 | board | Check | Runs | Review a Run | haipipe-discovery-reviewer-agent | haipipe-discovery-review | none | none |
-| board | Check | Citations | Verify a citation | haipipe-discovery-reviewer-agent | haipipe-discovery-search | the citation | Block › jNN_<job>/tNN_<task>/runs/rNN_<paper>/result/rNN_<paper>.bib |
+| board | Check | Citations | Verify a citation | haipipe-discovery-search-worker-agent | haipipe-discovery-search | the citation | Block › jNN_<job>/tNN_<task>/runs/rNN_<paper>/result/runtime.yaml (`bib.verification`; only a person sets `verified`) |
 | board | Check | Reports | Check a report | haipipe-draft-check-agent | haipipe-draft-review | release or hold | none |
 | board | Delivery | Reports | none | none | none | none | none |
 | board | Delivery | BibTeX | none | none | none | none | none |

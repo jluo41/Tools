@@ -112,7 +112,7 @@ raw table in any format      the table's full-read Run writes the card while it
                              with it. No second read of a large file.
 ```
 
-The full-read route (reference: WellDoc-SPACE Proj01 `b00_rawdata`,
+The full-read route (reference: a partner-data SPACE's Proj01 `b00_rawdata`,
 `r07_full_scan` in all 280 scanned tables):
 
 - The card is built batch by batch while the table is read once
@@ -165,7 +165,7 @@ work/bNN_<block>/
 - In a raw Block (`b00`), the Task sits beside the audit Tasks of each dataset
   Job. A dataset of many tables gets one Task per table
   (`t11_describe_<table>` onward, as `haipipe-task-for-raw` numbers them); a
-  dataset of one wide table gets one Task (DrFirst: `t12_describe_cohort_table`).
+  dataset of one wide table gets one Task (e.g. `t12_describe_cohort_table`).
 - The dictionary lives at the lowest folder that owns every version of the
   table: the Block's `src/` when several dataset Jobs carry the same table.
   One dictionary for all versions means a meaning is typed once.
@@ -316,13 +316,13 @@ Rules
 11. **A notebook is named for what it shows** (`<dataset>_<table>.ipynb`,
    `<dataset>_overview.ipynb`), never after its Run, so two open notebooks never
    share a name. Its cells stay short: the drawing code lives in the Block's
-   `src/` (WellDoc: `table_views.py`, `dataset_views.py`) and each cell is one
+   `src/` (e.g. `table_views.py`, `dataset_views.py`) and each cell is one
    call under its question, so the notebook reads from top to bottom (JL 260927).
 12. **Every table notebook shows its synth_df**, and every dataset notebook shows
    the same person through all its tables (§ synth_df). A notebook is generated
    from its `.py`: never edit it; change the `.py` and rebuild (JL 260929).
    Where the raw rows sit on this machine and the notebook may stay on it
-   (WellDoc Proj01 `b00`), the one table notebook draws three real people
+   (a partner-data SPACE's Proj01 `b00`), the one table notebook draws three real people
    instead, right after "What is this table?": one with few rows, one typical,
    one with many, picked with a fixed seed, shown as person 1 to 3 and never by
    id. That notebook holds real rows, so git ignores it (JL 260929).

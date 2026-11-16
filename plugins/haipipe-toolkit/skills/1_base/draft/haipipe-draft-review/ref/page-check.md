@@ -374,4 +374,4 @@ The Board engine owns execution and audit; this gate owns only its judgment and 
 **The Board page that argues this Run** is `QPw6-check` on `BoardSkillBoard-260722`, created 260818 when JL ruled one page per workflow step. Its `## Law` rows and its `### Decision Now` carry what this contract leaves open, currently whether WARNINGS may block CLOSE.
 
 **This CHECK contract in six fields** (❓ asks · 📥 reads · 📤 writes · 🚪 exits · ✋ tick · 🔀 routes):
-`../../haipipe-draft-workflow/ref/Run-cards.md` §CHECK. That file states every Run in the SAME fields, so one Run can be read next to another; this contract states the reasoning behind them.
+`../../haipipe-draft-workflow/ref/run-cards.md` §CHECK. That file states every Run in the SAME fields, so one Run can be read next to another; this contract states the reasoning behind them.

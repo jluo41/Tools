@@ -70,7 +70,7 @@ version's extract, so this step runs where the data is (the SPACE that holds `en
 python scripts/insight_ladder.py update <folder> --apply --rerun
 ```
 
-It runs each stale Run's own `run.sh` and compares the receipt's `tables_sha256` before and after. The last line
+It runs each stale Run's own `run.sh` and compares the receipt's `tables_sha256` before and after (one of the two decided exceptions to the no-hash rule in the SPACE's AGENTS.md § Working rules; the other is haipipe-design's Job fence). The last line
 counts the Runs whose tables are the same, changed, or failed. A rename changes words, never numbers: every Run
 should be "the same". Read each 🔶 changed and ❗ failed line before going on; a changed table means the data, a
 library or a script differs from the first run, and that is a finding for the person, not a thing to smooth over.

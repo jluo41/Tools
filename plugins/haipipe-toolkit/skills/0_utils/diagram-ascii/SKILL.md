@@ -106,7 +106,7 @@ worked pattern and its history remain in `ref/09-reply-boxes.txt`.
 
 ## Folder convention: one `diagram/` per module
 
-When a repo or module accumulates 4+ ASCII diagrams describing it, put them in a dedicated **`diagram/`** folder at the module's root — not in `docs/` next to prose docs. This keeps the "things you scan visually" separate from the "things you read line-by-line."
+This convention is for a code module only. Inside a Project ladder (a Block, Job or Task) `diagram/` is retired: a drawing there is a Studio topic, `sNN-<topic>/` beside the Jobs (haipipe-studio). When a repo or module accumulates 4+ ASCII diagrams describing it, put them in a dedicated **`diagram/`** folder at the module's root — not in `docs/` next to prose docs. This keeps the "things you scan visually" separate from the "things you read line-by-line."
 
 ```
 my-module/
@@ -115,15 +115,13 @@ my-module/
 └── diagram/                    ← ASCII diagrams live here
     ├── 00-index.txt            navigation across this diagram set
     ├── 01-repo-layout.txt
-    ├── 02-architecture.txt
-    └── canvas-YYMMDD.excalidraw   produced by diagram-ascii-canvas
+    └── 02-architecture.txt
 ```
 
 - Numbered prefix (`00-`, `01-`, …) for ordering and easy reference ("see 03").
 - Cross-references between diagrams use the relative path inside the folder (e.g. `diagram/03-foo.txt`), not `docs/...`. After a rename this stays correct.
-- `_pngs/` (intermediate renders) and `canvas-*.excalidraw` are produced by `diagram-ascii-canvas` and can stay in the same folder; gitignore them if you want.
 
-When you're producing a new diagram for a module that doesn't yet have a `diagram/` folder, create it. Don't add to `docs/`.
+When you're producing a new diagram for a code module that doesn't yet have a `diagram/` folder, create it. Don't add to `docs/`. Never create one inside a Block, Job or Task.
 
 ## Style — Optional Emoji
 
@@ -136,7 +134,7 @@ Use emoji only when they add clear meaning. Keep any chosen set small and consis
 | Data | 🗄️ database · 📊 metrics · 📂 folder · 📄 file · 📥 input · 📤 output |
 | AI / Model | 🧠 model · 🎯 target · 💡 idea |
 | Flow | 🔁 loop · 🔀 branch · ⚡ event · 🚀 launch |
-| Status | ✅ done · ❌ failed · ⏳ running · ⬜ pending · 🔥 hot · 🟢🟡🔴 |
+| Status | ✅ done · ❌ failed · 🏃 running · ⬜ pending · 🔥 hot · 🟢🟡🔴 |
 | Experiment | 🧪 experiment · 📥 load · ⚙️ preprocess · 🧠 train · 📊 eval · 🚀 deploy |
 | Issues | 🚩 flag · ⚠️ warning · 🐛 bug |
 
@@ -152,7 +150,7 @@ Single-line ASCII unless cramped. Don't mix styles in one diagram.
 
 ## Section dividers (for canvas-friendly files)
 
-When a `.txt` is going to be split into sections (for `diagram-ascii-canvas`, or just for human scanning), put an explicit divider line between sections:
+When a `.txt` is going to be split into sections (for a canvas tool, or just for human scanning), put an explicit divider line between sections:
 
 ```
 ─§ Section Title ────────────────────────────────────
@@ -456,11 +454,8 @@ For a worked-through method section using all of the above, see `ref/08-paper-se
 - **`haipipe-draft`** — owns the **board FOLDER** and its Pages; this skill owns **how to draw the diagrams that go inside it**. Clean split:
 
   ```
-  📁 haipipe-draft      the CONTAINER      <unit>/diagram/<NN>-<topic>-<YYMMDD>/  — dated at BIRTH
-                                          one folder per TOPIC; one `Q<A><n>-<slug>.md` per question
-                                          the comment protocol:  `> JL:`  ·  `>> CC{MMDD}:`
-  ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside each `## 图`
+  📁 haipipe-draft      the CONTAINER      a Page Folder (a Block's Page, or a Studio topic `sNN-<topic>/`)
+  ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside a drawing block
   ```
 
   When design decisions must persist, put them on a board (`haipipe-draft`) — do **not** invent a per-session log file here.
-- `diagram-ascii-canvas` — when you've produced 3+ `.txt` diagrams in one folder and the user wants to see them all on one canvas (for spatial layout, drawing connections between them, design review). Screenshots each `.txt` and embeds them into a single `.excalidraw` file. After producing multiple `.txt` files, offer this as a follow-up: *"要把这些拼成一张 Excalidraw 大图吗？"*

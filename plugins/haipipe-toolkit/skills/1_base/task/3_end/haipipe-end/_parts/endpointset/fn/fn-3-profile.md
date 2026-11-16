@@ -10,10 +10,10 @@ Two ways to run it; same instrumentation underneath (`endpoint_set.inference(pay
   2. LOCAL DOCKER               — set `ENABLE_PROFILING=true` on the container;
                                   app_predictor logs the timing summary per request.
 
-For a DURABLE, versioned profile (tracked across model releases, or to A/B a vectorization fix), scaffold a durable task instead via `/haipipe-task endpoint` (profiling folded into the endpoint domain) (task) — same breakdown, recorded as `results/<run>/latency.json`.
-Preferred placement: co-locate it in the project's ENDPOINT group as a sibling of the endpoint-build task (e.g.
-`work/C_endpoint/C2_inference_profile/` next to `C1_endpoint/`), so the group owns build → profile.
-Real example: `<project>/work/<endpoint-group>/NN_inference_profile/ (illustrative — original lived in a retired WellDoc project)`.
+For a DURABLE, versioned profile (tracked across model releases, or to A/B a vectorization fix), scaffold a durable task instead via `/haipipe-task endpoint` (profiling folded into the endpoint domain) (task) — same breakdown, recorded as `runs/<run>/result/latency.json`.
+Preferred placement: a sibling Task of the endpoint-build Task in the same packaging Job (e.g.
+`work/bNN_<endpoint_block>/j02_endpoint_package_<qualifier>/t02_inference_profile_<qualifier>/` next to `t01_endpoint_set_<qualifier>/`), so the Job owns build → profile.
+An older tree used `work/C_endpoint/C2_inference_profile/` next to `C1_endpoint/` (illustrative; the original lived in a retired project).
 
 
 Procedure (local)

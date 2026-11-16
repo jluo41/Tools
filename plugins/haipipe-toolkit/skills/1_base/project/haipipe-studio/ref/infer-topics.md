@@ -50,8 +50,8 @@ so the Studio and the Report share one bar (b10 s05-D05, D08). A person keeps or
 2. **Never the Block's name or a status**: `Aidatastore`, `Done`, `Open` say nothing (b10_aidatastore, 261012).
 3. **One topic, usually one group**; two topics share one only when they are halves of one subject.
 4. **Two to six per Block**: one per topic is fine; more than six means the subjects are cut too fine.
-5. **Order**: `studio/_groups.txt` lists them in topic order, s01 first; the Report's bar follows it.
-6. **s00 has none**: the background and index covers the whole Block.
+5. **Order**: `_studio_groups.txt` (an older Block: `studio/_groups.txt`) lists them in topic order, s01 first; the Report's bar follows it.
+6. **s00 has none** (retired 261029; only an older Block has one): the background and index covers the whole Block.
 
 The script's first guess is the Task kind or the split field (`profile` gives Profile, `raw-family` gives
 Family); the agent rewords it from the work before the tick.

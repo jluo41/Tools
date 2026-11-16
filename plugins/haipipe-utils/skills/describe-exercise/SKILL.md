@@ -77,13 +77,13 @@ and it measures the shape of the log, not the quality of the resolver.
 
 Where the 40,767 names came from:
 
-    session|codebook:validic   15,196     WellDoc's data dictionary
+    session|codebook:validic   15,196     the partner app's data dictionary
     session|codebook:apple     13,786     Apple's HKWorkoutActivityType
     session|text               11,785     a patient's own words
 
 Per cohort: mcphases-v1 96.5%, WellDoc2025ALS 48.9%, WellDoc2025CVS 31.2%,
 WellDoc2025LLY 23.1%, WellDoc2022CGM 21.9%, OhioT1DM 0.0% (221 rows, all
-'Unknown'). The WellDoc spread is not resolver quality -- it is how much of each
+'Unknown'). The partner-app cohorts' spread is not resolver quality -- it is how much of each
 cohort is device roll-up.
 
 Of the 32 distinct free-text values, 28 name an activity and all 28 resolve.
@@ -130,11 +130,11 @@ THE TWO DEFECTS THIS PACKAGE EXISTS TO PREVENT
 --------------------------------------------------------------------------------
 
 **The church supper.** The PA Compendium uses 5-digit activity codes, and three
-of them collide with WellDoc's EntrySourceID-20 codes by pure coincidence:
+of them collide with the partner app's EntrySourceID-20 codes by pure coincidence:
 
-    WellDoc 20050   median 42 min, 242 kcal  │  Compendium 20050  "Eating at church", MET 1.5
-    WellDoc 20037   median 32 min, 204 kcal  │  Compendium 20037  "Walking, 2.8-3.4 mph"
-    WellDoc 20020   median 30 min, 142 kcal  │  Compendium 20020  "Standing, singing in church"
+    Partner 20050   median 42 min, 242 kcal  │  Compendium 20050  "Eating at church", MET 1.5
+    Partner 20037   median 32 min, 204 kcal  │  Compendium 20037  "Walking, 2.8-3.4 mph"
+    Partner 20020   median 30 min, 142 kcal  │  Compendium 20020  "Standing, singing in church"
 
 Joining on the bare integer prices 1,218 real workouts as a church supper. The
 join is refused by `dialect.reject_code_join`, which is a raise and not a
@@ -152,7 +152,7 @@ THE CODE BOOKS — WHERE A CODE BECOMES A NAME
 --------------------------------------------------------------------------------
 
 `ExerciseType` is a vendor enum and `EntrySourceID` says whose. Measured over
-220,528 raw WellDoc rows, that key partitions the 129 distinct codes into four
+220,528 raw partner-app rows, that key partitions the 129 distinct codes into four
 disjoint spaces (one code, `25`, overlaps, 5,848 rows against 1):
 
     EntrySourceID           vendor                    codes   book
@@ -190,7 +190,7 @@ PARKED — WHAT THIS CANNOT DO, AND WHY
 --------------------------------------------------------------------------------
 
 **Google_Fit, 1,210 rows, 24 codes (`30001`..`30122`).** The one namespace with
-no book. Not in WellDoc's dictionary and not obviously a public enum. This is a
+no book. Not in the partner app's dictionary and not obviously a public enum. This is a
 KNOWN unknown and is typed `opaque_code`, which is deliberately NOT the same
 value as a bank miss.
 
@@ -223,7 +223,7 @@ Every pick and its reason is written out in `alias_dict.py`. It is a defensible
 population default and nothing more.
 
 **Two things still on the table, neither blocked by anything.**
-`CaloriesBurned` + body mass + minutes back-solves MET for 24,253 WellDoc rows
+`CaloriesBurned` + body mass + minutes back-solves MET for 24,253 partner-app rows
 without any book at all, and CGMacros carries 657,789 rows of device-estimated
 MET at one-minute cadence. Both are independent of the naming route and would
 cross-check it.
@@ -275,7 +275,7 @@ LAYOUT
     PROVENANCE.md         where it came from and why GOOD is capped
 
   _WorkSpace/0-RawDataStore/_WellDocInfo/Dictionary/
-    from-gdrive/          WellDoc's own dictionary, mirrored from the shared drive
+    from-gdrive/          the partner app's own dictionary, mirrored from the shared drive
     parsed/               EntrySourceID + Internal/ExternalExerciseType as CSV
     README.md             what it unlocked, and what it still does not cover
 ```
@@ -309,5 +309,5 @@ EXNORM_URL=http://127.0.0.1:8070/exercise python servers/api-exercise/tests/test
 `EXNORM_URL` (default `http://127.0.0.1:8070/exercise`), `EXNORM_TRANSPORT`
 (`local` | `http`), `EXNORM_DB`, `EXNORM_MAX_BATCH`; the host's port is `HAIPIPE_UTILS_PORT` (default 8070).
 
-The service is NOT authenticated and binds 127.0.0.1. Exercise logs are PHI;
+The service is NOT authenticated and listens on one address, `$HAIPIPE_UTILS_HOST` (the SPACE's env.sh sets it; 127.0.0.1 when unset). Exercise logs are PHI;
 put auth in front of it before it listens on anything routable.

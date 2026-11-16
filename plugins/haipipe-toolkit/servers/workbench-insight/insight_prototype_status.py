@@ -51,7 +51,7 @@ def _release_runs(r: dict, root: Path) -> str:
 
 def _release_waits(r: dict, proto: dict) -> str:
     """What a draft release waits on the person for: a proposal to triage, then its sign once every question is ready."""
-    if r_word(r).startswith("closed"):
+    if _closed_r(r):
         return ""
     open_ = [p for p in _proposals(proto, r) if str(p.get("state") or "open").lower() in ("open", "proposed", "")]
     if open_:

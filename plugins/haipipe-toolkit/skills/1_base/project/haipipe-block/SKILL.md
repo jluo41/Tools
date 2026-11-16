@@ -22,16 +22,17 @@ Standalone Pages without a Block retain their own output root.
 
 
 A Block is one topic in a Project's Theme folder, `bNN_<topic>/`, with its face `board.md`.
-It holds Jobs, its shared studio topics, its Questions and their reports, its soft Runs and
-its delivery. Recommend at most 10 sNN Studio topics per Block (haipipe-studio); this is a
-recommended count, not a hard limit or a range of topic numbers.
+It holds Jobs, its studio topics (each answering a Question holds that answer), its Questions register, its soft Runs and
+its delivery. A Block holds at most 9 sNN Studio topics (haipipe-studio; `new_topic.py` refuses a tenth
+unless `--over-limit`); the limit is a count, not a range of topic numbers.
 This skill owns the face and the Block level of the frame; the folder's shape
 is `haipipe-project`'s, and each theme adds its words over the face.
 
 ```text
 <Project>/<theme folder>/bNN_<topic>/
 ├── board.md             the face: # bNN · <title> · board-kind · spine · close · Topic
-├── studio/ reports/     Idea Studio (haipipe-studio) · Audience Report (haipipe-report)
+├── sNN-<topic>/         Studio topics, beside the Jobs (haipipe-studio); a Question's answer is in its topic
+│                        (haipipe-report; an older Block: studio/sNN-<topic>/ and reports/qNN_<topic>/)
 ├── runs/ delivery/      soft Runs (haipipe-run) · what it hands on
 └── jNN_<job>/           its Jobs (haipipe-job)
 ```
@@ -73,7 +74,7 @@ python $S/new_board.py <Project>/work --slug <topic> --title '<title>' [--no-que
    `haipipe-report`.
 5. **Born current**: a work Block's face also gets `workbench-layout: workflow` and an empty `## Deliverables`,
    so `/wb update <Block>` reports nothing missing; later, as Jobs arrive, `/wb update` keeps it current.
-5. **Check**: `haipipe-project audit <block>` for its shape.
+6. **Check**: `haipipe-project audit <block>` for its shape.
 
 
 The buttons it owns

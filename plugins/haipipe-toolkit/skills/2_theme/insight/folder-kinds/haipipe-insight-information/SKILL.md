@@ -22,6 +22,11 @@ metadata:
 
 # /haipipe-insight-information · derive the pattern
 
+> **Older layout (261008) below.** The per-segment page folders, `QI` ids and `answers.yaml` are the register
+> board's. On the insight ladder (`../../haipipe-insight/ref/insight-ladder.md`) the answering page is the Task's
+> `tNN_I<NN>_<slug>.md`, written by `run-write-t<NN>` from `runs/rNN_<segment>/result/`. What an Information page
+> may say still holds.
+
 Load `haipipe-insight` (`ref/board-contract.md`, `ref/report.md`,
 `ref/evidence-needs.md`) and the workflow. `folder-kind: information` and `page-type: information` remain
 read-only keys for boards made before page tickets.

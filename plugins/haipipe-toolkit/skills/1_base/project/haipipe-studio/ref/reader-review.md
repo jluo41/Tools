@@ -62,7 +62,7 @@ you know about the work. An answer that needs the face, a page or a receipt open
 4. Do I understand each step, and why it holds?
 5. What is red (unchecked), and why?
 
-**s00, a Block's background and index**: what the Block is for; which topics and Jobs it holds and how far each has
+**s00, a Block's background and index** (retired 261029; only an older Block has one): what the Block is for; which topics and Jobs it holds and how far each has
 come; where a newcomer starts; what is proposed next.
 
 **A concept or design topic**: what is decided, what the options were and why this one, what is open, who answers.

@@ -26,12 +26,15 @@ Required identity header:
 - cite: @Hou2024ZeroShotRankers
 - subject: doi:10.1007/978-3-031-56060-6_24
 - venue: ECIR 2024
-- verification: VERIFIED
+- status: complete
+- citation verification: pending person-level confirmation
 ```
 
-Then follow the Result Card sections in `paper-run-contract.md`: Question,
+(`paper_result_build.py` also writes `- address:` after `- run:`.) Then follow the
+Result Card sections in `paper-run-contract.md`: Question,
 Readout, Source access, Retrieval scope, Facts, optional Trigger claim audit,
-Limits, and Reuse. `VERIFIED`
+Limits, and Reuse. The authority is the receipt's `bib.verification.status`
+(`pending | verified`); on a card or a list, `VERIFIED`
 means exact title, authors, venue, and locator were confirmed against a trusted
 publisher/index by a person. Anything less remains `NEEDS-VERIFICATION`.
 That state does not prevent a technically complete Result when its Card,
@@ -82,8 +85,8 @@ Provider rank, citation count, venue, and publication date describe retrieval
 or source metadata. They do not, alone, establish relevance, study quality, or
 support for a claim.
 
-Keep one admission-decision receipt per screened candidate in the Task source
-map. Each receipt names the frozen rule version, candidate disposition
+Keep one admission-decision receipt per screened candidate in
+`discovery.yaml#sources` (`candidate_decisions`), not in the Source map. Each receipt names the frozen rule version, candidate disposition
 and rationale, evaluator, and timestamp. Link admitted candidates to their full
 readable/compact Run identity. For excluded or unresolved candidates, retain
 the exact result record that was screened by its saved URI; these candidates
@@ -124,7 +127,7 @@ One-off calls create no folder and return a numbered list:
 
 ```text
 1. Hou et al. (2024). Large Language Models are Zero-Shot Rankers for Recommender Systems.
-   ECIR 2024 · arXiv:2305.08845 · verification: VERIFIED
+   ECIR 2024 · arXiv:2305.08845 · verification: NEEDS-VERIFICATION
 ```
 
 If the user chooses to keep one, route it through `add`: resolve the canonical

@@ -40,7 +40,7 @@ def _sign_rows(x: dict) -> list:
     if j["state"] == "closed":
         close = ("Close the Job", "locked: its pages, Runs and comparison", _done(j["face"].get("signed")), "")
     elif waits:
-        close = ("Close the Job", "once every step before it is done: " + ", ".join(waits) + " still open",
+        close = ("Close the Job", "first: " + ", ".join(waits),
                  "waits on " + waits[0], '<button type=button class=fd-btn disabled>Close</button>')
     else:
         body = esc(json.dumps({"action": "close", "job": x["folder"]}))
@@ -91,7 +91,7 @@ def _overall_res(x: dict, eid: str = "ov") -> str:
                else f'{MOVED.get(j["moved"], j["moved"] or "—")}, from {j["previous"][:3]}')
     facts = [("questions", esc(V._rlabel(b, j["release"]))), ("data", esc(V._vlabel(b, j["data"]))),
              ("changed from the Job before", esc(changed))]
-    word = (("closed " + closed).strip() if j["state"] == "closed" else "open") + ("" if _plan_signed(x) else " · questions not signed")
+    word = ("closed " + closed).strip() if j["state"] == "closed" else "open"   # the sign waits in 🔏 Sign and close, not here
     return big + ov + _section("🧷 This Job", _kv(facts), word)
 
 

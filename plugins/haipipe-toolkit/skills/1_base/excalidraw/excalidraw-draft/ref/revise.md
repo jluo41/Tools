@@ -28,7 +28,7 @@ Commands
 --------
 
 ```bash
-R=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-revise/ref/read_revise.py
+R=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-draft/ref/read_revise.py
 .venv/bin/python $R seed    <face> --key <plan>    # the sentence draft, once; first the tracked file from the plan
 .venv/bin/python $R draw    <face> --key <plan>    # the drawing (a person's marks kept)
 .venv/bin/python $R edits   <face> --key <plan> [--apply]   # sentences a person changed on the drawing
@@ -59,7 +59,7 @@ Steps
 4. **The updated text is a draft** (`sentences: draft/`), in haipipe-draft's draft grammar, one Bullet per
    sentence. `seed` writes v1.0 once from the tracked Word file (plan `draft`) with its changes accepted; when
    that file does not exist yet, `seed` first writes it from the plan's changes (`track_changes.write_tracked`).
-   From then on the draft is the source: haipipe-writing works on it, a person edits sentences on the drawing
+   From then on the draft is the source: haipipe-draft-writing works on it, a person edits sentences on the drawing
    and `edits --apply` folds them in by address (C3.P5.B7).
 5. **One row per section**, cut from the PDF between its heading and the next (`stop_at` ends the last);
    running headers and footers are left out, the sides cut at the text's edge. See-through boxes, like a marker
@@ -89,9 +89,9 @@ Steps
 Worked examples
 ---------------
 
-- `examples-0-cowork/Project-SHIFT-Study/cowork/b31_prep_ai/s04-task31-updated-draft/`: Nes
-  Mathioudakis's Task 3.1 file, a co-author's draft (b32 s04 and b21 s04 are the same shape).
-- `examples-0-cowork/Project-Samsung/cowork/b01_irb/s03-for-cir2-changes/`: the study protocol (eForm A)
+- `<world>/Project-<Name>/cowork/b31_prep_ai/s04-task31-updated-draft/`: a co-author's
+  Task 3.1 file, a co-author's draft (b32 s04 and b21 s04 are the same shape).
+- `<world>/Project-<Name>/cowork/b01_irb/s03-for-cir2-changes/`: the study protocol (eForm A)
   for CIR 2, a Change in Research; its own filed file, `sections` for the form's headings, the tracked file
   first written from the plan, `deliver` into `delivery/j04_cir2_epic_data/`.
 
@@ -103,11 +103,11 @@ Boundary
 
 | Owner | Owns |
 |---|---|
-| `excalidraw-revise` | the plan's grammar, the side-by-side drawing, the tracked Word file and its checks |
+| `excalidraw-draft` (Revise mode, this page) | the plan's grammar, the side-by-side drawing, the tracked Word file and its checks |
 | `excalidraw-read` | reading one paper and linking it to ours; its `read_paper.py` cuts and draws the pages here |
-| `excalidraw-section` | a paper's own Section map (paper, Sections, paragraphs, Bullets, evidence) |
+| `excalidraw-draft` (Map mode, `ref/map.md`) | a paper's own Section map (paper, Sections, paragraphs, Bullets, evidence) |
 | `haipipe-draft` | the draft folder's grammar (`plan_layout`) that the sentences live in |
-| `haipipe-writing` | rewriting the sentences a change touches |
+| `haipipe-draft-writing` | rewriting the sentences a change touches |
 | `haipipe-studio` | the topic folder, its face, its builder's writer (`canvas.write`) and sessions |
 | `haipipe-related` | the copy in `related/files/` and its row |
 

@@ -45,7 +45,7 @@ The level a `delivery/` belongs to: a Page (a paper Section, a draft), a Task, a
 
 | whose | how many | the newest one |
 |---|---:|---|
-| Page | 82 | Tools plugins/haipipe-toolkit/skills/1_base/draft/pages-example/haipipe-page-guide/delivery |
+| Page | 82 | Tools plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/ref/pages-example/haipipe-page-guide/delivery |
 | Task | 32 | REACH Project-0-EHR-Description/discovery/b01_signal_evidence/j03_extraction_rules/t01_signal_rule_table/delivery |
 | Job | 7 | WellDoc ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist/j04_questions-before-visit_actionable-insights/delivery |
 | Block | 34 | Tools Project-Ladder/work/b12_theme_design/delivery |

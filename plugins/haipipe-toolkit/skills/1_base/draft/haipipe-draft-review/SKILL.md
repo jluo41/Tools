@@ -5,7 +5,7 @@ metadata:
   version: "0.9.0"
   last_updated: "2026-11-15"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
-allowed-tools: [Read, Write, Edit, Grep, Glob, AskUserQuestion]
+allowed-tools: [Read, Write, Edit, Grep, Glob, Bash, AskUserQuestion]
 ---
 
 # /haipipe-draft-review · judge prose, never write it
@@ -69,7 +69,7 @@ paragraphs. Do not turn a local check into a whole-Page review.
 0. **Sentence by sentence logic**: [ref/sentence-logic.md](ref/sentence-logic.md). For a paragraph or a Section,
    every sentence is read in its context and gets its own line: its link to the sentence before (the relation, and
    carried, weak or broken), whether every pointer and every setup's payoff hold, the specific problem, a logic
-   score and a read score out of 10, and the rewrite when it is below 8. It runs first, because a sentence that
+   score, a read score and an ai score out of 10, and the rewrite when any is below 8. It runs first, because a sentence that
    does not follow cannot be fixed by its words (JL 261021: "每句话都要看一下上下文，review 它的逻辑关系是否通顺").
 1. **Plain rules**: [ref/plain-rules.md](ref/plain-rules.md), including the semicolon
    rule. The test is whether a reader who does not read English well can follow it.
@@ -131,7 +131,7 @@ may not be its checker; only `verdict: pass` may route to CLOSE.
 ```text
 cli/anti_slop.py audit FILE   what exact AI-tell spans need a second look?
 cli/score.py       FILE       how many house words, and where? (floor, not proof)
-cli/paragraphs.py  FILE...    how many sentences in each paragraph? (4 to 6, JL 261104)
+cli/paragraphs.py  FILE...    how many sentences in each paragraph? (4 to 7, JL 261112)
 cli/holes.py       FILE       does every placeholder in ONE file have a real owner?
 cli/agree.py       DIR...     do two statements of one fact agree (version, cited path)?
 tests/test_anti_slop.py       rule and scanner regression tests
@@ -166,7 +166,7 @@ haipipe-draft-review/
 
 ## 🚧 What this skill does NOT own
 
-Drafting, revising, weaving, the change record and `wdiff.py` are `haipipe-draft-writing`
-(`ref/`). The plan, the evidence, the venue and final acceptance belong to the
+Drafting, revising, weaving and the change record are `haipipe-draft-writing` (`ref/`); `wdiff.py` is
+`haipipe-draft/cli/wdiff.py`. The plan, the evidence, the venue and final acceptance belong to the
 host workflow; a Page's human gate belongs to a person. Authority for what a Page
 must say comes from its Page Face owner.

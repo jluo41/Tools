@@ -37,7 +37,7 @@ pick one for them and build on it (JL 261022: "你一会儿再给我 propose 几
 then how the target venue's own papers write it, then the versions, then the pick (JL 261022: "我们第一步先脑子里有
 idea，然后看看别人怎么写的；基于这个 context，我们把我们的 structure 定一下").
 
-1. **Examples first, from the target venue only**: read how three to six papers of the journal we send to open the
+1. **Examples first, from the target venue only**: read how 3 to 4 papers of the journal we send to open the
    same Section (excalidraw-read, a Studio topic `sNN-<task>-<venue>-examples`); never mix in other venues (JL 261022:
    "我们尽量只用 NMI 的文章 ... 不要被其他地方给 confused"; "MUST NMI"). Each paper is named by its title first.
 2. **Two to four versions**: each names the venue papers it follows, its paragraphs and words, where the research
@@ -56,7 +56,7 @@ The door (the folder, the face, `page.py` build and serve) stays `../haipipe-dra
 
 - `ref/context.md`: PREPARE, `Page.context`. Collect, resolve and freeze what the plan must satisfy into `draft/records/<stem>-context.md`.
 - `ref/context-record.md`: the shape of that generated record (the generator is `../haipipe-draft/cli/context-record.py`).
-- `ref/structure.md`: SHAPE and SURVEY, `run-structure-<slug>`. The versioned plan, the Evidence Items, the Local Input.
+- `ref/structure.md`: SHAPE and SURVEY, `run-structure-<slug>`. The versioned plan, the Evidence Items, the Local Input; the Bullet is `ref/bullet.md`, the SURVEY cycle `ref/survey.md`.
 - `ref/scratch.md`: Save and Finish, `run-scratch-<target>`. A person's rough notes for one Section or paragraph group.
 - `ref/history/haipipe-draft-{context,structure,scratch}-CHANGELOG.md`: the histories of the three pages.
 - `CHANGELOG.md`: this skill's history.

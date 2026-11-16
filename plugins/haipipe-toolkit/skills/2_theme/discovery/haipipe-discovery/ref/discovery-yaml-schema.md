@@ -36,8 +36,8 @@ Task tNN, and Run rNN; D1 and Page numbers remain workflow records.
 The Block is a Board container from creation onward. Its
 `board.md` declares `board-kind: discovery-block`; the Job folders are Board
 Groups and the Task folders are Board Pages. The direct `jNN_/tNN_` tree is the
-membership authority. Keep the Board head and generated `board/` projection in
-sync with `scripts/board_sync.py`; do not copy Run inventories, Result prose,
+membership authority. Keep the Board head in
+sync with `scripts/board_sync.py` (nothing is built); do not copy Run inventories, Result prose,
 or Page bodies into the manifest or Board source.
 
 New manifests point `report.evidence_bib` to the Outline-owned
@@ -368,7 +368,7 @@ for another:
   `not-supported`, `not-assessed`, or `not-applicable`, with locators or a
   reason a locator is unavailable. Do not collapse these states into a global
   study-quality score.
-- **Source-extraction confidence** is the `2_review` packet's confidence that
+- **Source-extraction confidence** is the Review (`haipipe-discovery-review`) packet's confidence that
   it faithfully represents the inspected source. It is not study quality or
   Task synthesis confidence; its separate anchors are below.
 - **Synthesis confidence** (`report.confidence` and the typed summary/verdict/

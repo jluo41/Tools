@@ -14,7 +14,7 @@ $OUTPUT_ROOT/<task>/notebooks/<run>.ipynb
 ```
 
 The stem is always `rNN_<noun>_<qualifier>` and matches across the folder, the ticket, the config
-and the notebook. Shared Task config in `scripts/config/` omits the `rNN_` prefix. A Block not yet
+and the notebook (unless the Ticket sets `NOTEBOOK_NAME`, a notebook named for what it shows). Shared Task config in `scripts/config/` omits the `rNN_` prefix. A Block not yet
 moved keeps `runs/<run>.sh` beside `results/<run>/` (`ref/task-folder.md`).
 
 The notebook is generated: the Ticket converts the `# %%` worker `.py` and
@@ -57,7 +57,7 @@ checkout folder change per machine (`/Users/<name>/Desktop/<SPACE>/...`), so an
 absolute path breaks on the next machine and shows the user name (JL 260927).
 
 - Write every path relative to the SPACE root, the folder that holds `env.sh`
-  (for example `examples-2-tech/Proj10-LLM-Baseline/tasks/...`). This covers
+  (for example `examples/<Project>/work/...`). This covers
   configs, Tickets, the `config` parameter papermill writes into the notebook,
   anything a worker prints, `runtime.yaml`, `metrics.json`, and reports.
 - Preferred: the Ticket injects the config SPACE-relative
@@ -109,15 +109,17 @@ _meta:
 
 ## Review gates
 
-The creator writes code and config, then stops. The reviewer owns
-`CODE_REVIEW.md` and checks intent against implementation. The Ticket refuses
-launch when that review is absent or failed unless an explicit skip is
-recorded. A review carries no commit id: a commit never blocks a Ticket; when
+The creator writes code and config, then stops. The reviewer checks intent
+against implementation and returns the text of `CODE_REVIEW.md`; the reviewer is
+read-only, so the orchestrator saves it. The review is advisory: the Ticket
+stops only when it says `overall_verdict: fail` or `revise`; a missing review or
+a `warn` prints a warning and the Run goes ahead, and an explicit skip
+(`HAIPIPE_SKIP_REVIEW=1` or `_meta.skip_review: true`) is logged. A review carries no commit id: a commit never blocks a Ticket; when
 the code changes, the reviewer updates the review's notes and verdict
 (JL 260929).
 
-After execution, the reviewer verifies Results against the Plan and writes the
-Run audit. The same agent role may perform both gates, but it must start from
+After execution, the reviewer verifies Results against the Plan and returns the
+Run audit (`RUN_AUDIT.md`, saved by the orchestrator). The same agent role may perform both gates, but it must start from
 fresh context and may not have authored the code under review.
 
 ## Reproducibility
@@ -160,7 +162,7 @@ small tables, figures, logs, and pointers. Heavy output lives in `_WorkSpace/`:
    each file's path and bytes (no content hash, JL 260928).
 4. **Never in the Task folder**: no copy of a heavy file and no symlink to an
    absolute path or into `_WorkSpace/` (`data/`, `src/cache/`, ...). Such a link
-   stores an absolute path (AGENTS.md rule 7) and dangles on every other
+   stores an absolute path (the SPACE's AGENTS.md § Working rules) and dangles on every other
    machine; read the store through its variable instead. A relative link inside
    the repository (Tickets sharing one `_run.sh`) is fine.
 5. **Checked**: the Ticket runner warns when a Result holds a file over 10 MB

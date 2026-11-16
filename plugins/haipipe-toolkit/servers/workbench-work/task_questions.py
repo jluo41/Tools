@@ -261,7 +261,8 @@ TOPIC = re.compile(r"^s\d{2}-[a-z0-9-]+$")
 def studio_topics(level, root, group, source_url):
     """A level's studio topics, the haipipe-studio layout: sNN-<topic>/sNN-<topic>.excalidraw beside its Jobs or
     Tasks (JL 261030), then any in an older studio/, its face's first line as the title, its preview, and the
-    sessions saved as passes of runs/run-draw-<sNN>/ (each pass.md's title, newest first). A topic's builder keeps
+    sessions saved as its rounds, passes/pNN-<MMDD>/pass.md inside the topic (an older Block's
+    runs/run-draw-<sNN>/passes/ only when the topic has none; each title, newest first). A topic's builder keeps
     a person's marks, so it stays editable."""
     out, folders = [], []
     for base in (level, level / "studio"):
@@ -278,9 +279,9 @@ def studio_topics(level, root, group, source_url):
                           if line.strip()), "")
             title = first.lstrip("# ").strip() or title
         sessions = []
-        for pass_md in sorted([*(folder / "passes").glob("p*/pass.md"),      # its rounds, inside it (261029)
-                               *(level / "runs" / f"run-draw-{folder.name[:3]}" / "passes").glob("p*/pass.md")],
-                              key=lambda x: x.parent.name, reverse=True):
+        rounds = (sorted((folder / "passes").glob("p*/pass.md"))             # its rounds, inside it (261029)
+                  or sorted((level / "runs" / f"run-draw-{folder.name[:3]}" / "passes").glob("p*/pass.md")))
+        for pass_md in sorted(rounds, key=lambda x: x.parent.name, reverse=True):
             head = next((line[2:].strip() for line in pass_md.read_text(encoding="utf-8", errors="replace")
                          .splitlines() if line.startswith("# ")), pass_md.parent.name)
             sessions.append({"pass": pass_md.parent.name, "title": head,

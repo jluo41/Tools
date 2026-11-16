@@ -21,8 +21,6 @@ servers/
 │                        once servers/haipipe-page (JL 261014)
 ├── workbench-paper/     📄 the Paper workbench
 ├── workbench-work/      🧪 the work theme (once task): Questions as Logic / Work / Report, Studio
-├── workbench-cowork/    📨 CoWork Blocks: Jobs, who we wait on, Questions, emails, meetings
-├── workbench-discovery/ 🔭 Discovery Blocks: papers, Result cards, citations to verify, BibTeX
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
 ├── workbench-design/    🎨 Design Folder and Design Board
 └── workbench-labeling/  🏷 the Labeling workbench; `_host/serve.py --only labeling` serves it alone
@@ -44,8 +42,8 @@ every workbench reuses and so is served from `workbench/`:
 | `2_theme/design/workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `2_theme/paper/workbench-paper` | `workbench-paper/` |
 | `2_theme/work/workbench-work` | `workbench-work/` (the work theme) |
-| `2_theme/cowork/workbench-cowork` | `workbench-cowork/` |
-| `2_theme/discovery/workbench-discovery` | `workbench-discovery/` |
+| `2_theme/cowork/workbench-cowork` | `workbench/` (the shared frame) |
+| `2_theme/discovery/workbench-discovery` | `workbench/` (the shared frame) |
 | `2_theme/insight/workbench-insight` (+ `ref/insight-board.md`, the Board grain) | `workbench-insight/` |
 | `2_theme/labeling/workbench-labeling` | `workbench-labeling/` |
 
@@ -98,15 +96,10 @@ Task Blocks (`board-kind: task-block`) open at `/w/<block-folder>` or
 live Workbench without a static build. See [Task Workbench](workbench-work/README.md)
 for Question reports, the four working Views and the synthetic demo.
 
-CoWork Blocks (`board-kind: cowork-block`, `cowork/bNN_<topic>/`) open the same way at
-`/w/<block-folder>` or `/_board/cowork-board?path=<block>/board.md`; every Block of a
-Project at `/_board/cowork-board?path=<Project>/cowork`. The page reuses the Task
-Workbench's stylesheet and script (`skills/2_theme/cowork/workbench-cowork`).
-
-Discovery Blocks (`board-kind: discovery-block`, `discoveries/bNN_<block>/`) open the same
-way at `/w/<block-folder>` or `/_board/discovery-board?path=<block>/board.md`; every Block of
-a Project at `?path=<Project>/discoveries`. Task, CoWork and Discovery stay separate
-workbenches with one look (JL 261004).
+CoWork Blocks (`board-kind: cowork-block`, `cowork/bNN_<topic>/`) and Discovery Blocks
+(`board-kind: discovery-block`, `discoveries/bNN_<block>/`) open at `/w/<block-folder>` on
+the shared work frame (`workbench/page/`), the same page every Block, Job and Task takes. Their
+older servers (cowork-board, discovery-board) are retired to `_old/` for reading old links.
 
 Every family has one **Guide Space**. Its `Skill set`, `Methods`, `Workbench`,
 `Folder map` and `RoadMap Draw` Views appear directly below the Space row.
@@ -140,7 +133,14 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | The labeling host, for annotators | `python plugins/haipipe-toolkit/servers/_host/serve.py --only labeling --root <root>` |
 | One standalone Page Folder | `python skills/1_base/draft/haipipe-draft/cli/page.py serve <page>` (imports `servers/workbench/workbench-task-draft/reader/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
 | One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page/page_reader.py`) |
+| Start or restart this SPACE's host | `/wb restart` (`skills/1_base/workbench/workbench/cli/wb.py restart`, from inside the SPACE) |
+| Start it by hand, from the SPACE root | `<python> Tools/plugins/haipipe-toolkit/servers/_host/serve.py --root . --host <ip> --port <PORT> --no-terminal --daemon /tmp/<space>-<PORT>.log` |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
+
+The host needs Python 3.10 or newer with PyYAML. `<python>` is the SPACE's `.venv/bin/python` when it has both,
+else `~/.cache/haipipe/host-venv/bin/python`, which `wb.py` makes once with uv; `uv run --with` does not work with
+`--daemon`, since uv deletes its temporary env once the daemon forks away. A running host keeps the code it started with: after a Tools change, run `/wb restart`
+in each SPACE that should show it. Page chat answers 400 on a host whose python has no `claude_agent_sdk`.
 
 ## Adding a workbench · what every workbench does the same way
 

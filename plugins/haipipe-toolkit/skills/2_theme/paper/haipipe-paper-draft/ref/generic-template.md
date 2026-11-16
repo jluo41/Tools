@@ -10,7 +10,7 @@ generic outline into an invented venue rule.
 task-type: draft
 page-type: section
 section_kind: <kind>
-story-row: <Story<Letter>-<desk>-<idea-slug> §8 / <section-id> (resolve the actual row anchor) + Story version>
+story-row: <version> ## Narrative / <stem> (resolve the actual row; an older Board: Story<Letter>-<desk>-<idea-slug> §8 / <section-id> + Story version)>
 reader-question: <one question>
 entry-state: <reader state on entry>
 exit-state: <reader state on exit>

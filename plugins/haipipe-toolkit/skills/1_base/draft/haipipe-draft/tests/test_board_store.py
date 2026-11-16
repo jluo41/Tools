@@ -87,11 +87,14 @@ class BoardStoreContractTest(unittest.TestCase):
         self.assertIn("RESULT_STORE", text)
 
     def test_task_contract_uses_run_results(self):
-        text = (self.SKILLS / "1_base/task/haipipe-task/SKILL.md").read_text(encoding="utf-8")
-        self.assertIn("Run/Result pairing", text)
+        # the Run/Result contract moved from SKILL.md into ref/task-page.md
+        task = self.SKILLS / "1_base/task/haipipe-task"
+        text = (task / "ref/task-page.md").read_text(encoding="utf-8")
+        self.assertIn("## Run/Result boundary", text)
         self.assertIn("Supporting Run", text)
         self.assertIn("$OUTPUT_ROOT", text)
         self.assertNotIn("fn/qa.md", text)
+        self.assertNotIn("fn/qa.md", (task / "SKILL.md").read_text(encoding="utf-8"))
 
     def test_run_template_resolves_rather_than_hardcodes(self):
         text = (self.SKILLS / "1_base/task/haipipe-task/ref/run-sh-template.sh").read_text(encoding="utf-8")

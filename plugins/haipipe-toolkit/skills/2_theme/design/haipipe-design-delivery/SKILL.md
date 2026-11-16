@@ -19,6 +19,8 @@ metadata:
 
 # /haipipe-design delivery · the release and designs.json
 
+> Scripts here need Python 3.10+: where a command says `python3`, run it as `uv run --python 3.13 --with pyyaml python ...` (or a SPACE `.venv/bin/python`); see `plugins/haipipe-toolkit/skills/README.md` § Running a skill's scripts.
+
 
 Delivery storage (JL 261010)
 ---------------------------

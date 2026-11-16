@@ -1,17 +1,15 @@
 ---
 name: haipipe-ui
 description: >-
-  The rules every workbench page must pass so a reader quickly understands it and can act on it (the five-second
-  test, five rules, one verb per section: Report check, Work do, Studio think, Delivery hand over, Related take in),
-  the page shape at every level (Project, Theme, Block, Job, Task), how a page design is drawn (one view, one
-  screen, lettered A, B, C, settled one at a time), and the design loop: a fresh reviewer scores the drawing, then
-  the live page, on twelve rubrics, and the design is revised round after round until every rubric passes. The live
-  page is walked in Chrome as a person uses it (every view clicked, every canvas card hovered and pinned, every
-  pop-out opened, phone width, console errors) and measured against the paper UI as the bar: modern, plain, nothing
-  missing. Use to design or change a page, to check a page before calling a UI change done, to walk a page in
-  Chrome, or to compare a before and after. Owns how a page looks and acts; /workbench owns what data it reads. Trigger: review the UI,
-  ui rules, is this page clear, five-second test, page design, redesign this page, design loop, ui rubrics, walk the
-  page in chrome, click through the ui, /haipipe-ui.
+  The rules every workbench page must pass so a reader understands it fast and can act on it: the five-second
+  test, five rules, one verb per section (Report check, Work do, Studio think, Delivery hand over, Related
+  take in), the page shape at every level, how a page design is drawn (lettered A, B, C), and the design loop
+  (a fresh reviewer scores the drawing, then the live page, on twelve rubrics until all pass). The live page
+  is walked in Chrome as a person uses it. Use to design or change a page, check a page before calling a UI
+  change done, walk a page in Chrome, or compare a before and after. Owns how a page looks and acts;
+  /workbench owns what data it reads. Trigger: review the UI, ui rules, is this page clear, five-second test,
+  page design, redesign this page, design loop, ui rubrics, walk the page in chrome, click through the ui,
+  /haipipe-ui.
 metadata:
   version: "0.6.1"
   last_updated: "2026-11-04"
@@ -120,15 +118,16 @@ against b35's 6, since b01 listed its 15 Jobs flat. Grouping them took about 15 
    and its right-rail item says in a few words what it holds ("its Jobs", "what happened when"), never a count.
 4. **Content first.** No instruction paragraphs (they go in Guide). What a section holds shows directly, one item
    per line (JL 261028: "要么你就把它列出来 要么就把它去掉"). A fold may close a group of items (JL 261102: "group
-   them by topics and then we can open and close them"), but its closed row still says something: a mark row and a
-   tally (a dot per item, "21 of 24 answered"), and the most important group opens by default. A large view (a drawing, a mind
+   them by topics and then we can open and close them"), but its closed row still says something: a mark row (a
+   mark per item), never a count ("21 of 24 answered" is banned by AGENTS.md § Page words), and it starts closed like every fold. A large view (a drawing, a mind
    map, slides) opens in a popup over the page and closes back to the same place. One exception: a view's
-   sections (a heading each) fold by their heading, open by default, the reader's choice kept in the browser (JL
-   261031: "for the view page's subsection, could they be like collapse as well"); nothing opens folded.
-5. **Every mark has a word.** No unlabeled dot, pill, bar or icon: a state is a word ("explore", "agreed",
-   "waiting for you"). A row of dots, a strip or a progress bar is allowed when a tally in words sits beside it
-   and each mark has a hover title (JL 261102 liked the matrix cells' pages bar and X D I K W strip); a meaning held
-   only in a hover title fails, since a reader and a screenshot never see it. An action is a verb button on its row (`Draw`, `Mind map`, `Slides`, `Open`), at most three.
+   sections (a heading each) fold by their heading and start closed like every fold (JL 261104), the reader's choice kept in the browser (JL
+   261031: "for the view page's subsection, could they be like collapse as well").
+5. **A state is a mark, never a word or a tally** (AGENTS.md § Page words, JL 261113 and 261114). No unlabeled dot,
+   pill, bar or icon: a state shows as its emoji mark (✅ ⬜ 🏃 ❗ 🙋) with the word in its hover title
+   (`ui_parts.state_mark`); words stay only for a required action or a failure's reason. A row of marks or a strip
+   is allowed when each mark has a hover title (JL 261102 liked the matrix cells' pages bar and X D I K W strip); a mark outside
+   that shared set fails, since a reader and a screenshot cannot read it. An action is a verb button on its row (`Draw`, `Mind map`, `Slides`, `Open`), at most three.
    Names are the real folder and file names.
 
 
@@ -141,14 +140,14 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
 2. **Few words, nothing missing.** Short and fully presented: cut words, never information.
 3. **Closed by default.** Every numbered section starts closed and opens on a click ("默认的话，大家都是合着的"); a large
    thing opens in the pop-out. The mind map is the one thing always shown, and a Section's Text view stays open (it is
-   the text itself). A closed bar still says where it stands (261106): its **state word** on the right (answered,
-   2 wait for you, 3 of 5 done, nothing yet, current), read from the section's own content, never a fixed decoration;
+   the text itself). A closed bar still says where it stands (261106): its **mark** on the right (`ui_parts.word_span`: an orange 🙋 N when
+   something inside waits, a quiet ✓ when done, nothing otherwise; never a state word such as "answered" or "3 of 5 done"), read from the section's own content, never a fixed decoration;
    a section that waits on the person also shows **that one waiting item under its closed bar**, outside the fold
    (Findings' answer waiting for agreement, 🙋 Interaction's first open question, a Process step's first waiting row).
    Paper bars: `ui_parts._section(title, body, word, waits)` (`<span class=word>`, `<p class=fd-wait>`); work bars:
    `focus_page.band_sec` (`<p class=band-wait>` after the fold). The fold remembers a bar by its title alone. A count
    may be a state word when it is the answer ("2 wait for you"), never part of a title.
-4. **Left tabs, right content.** A list of items is side tabs: the names on the left, each with its state word, the
+4. **Left tabs, right content.** A list of items is side tabs: the names on the left, each with its state mark, the
    open one's content on the right, each side with its own scroll.
 5. **One standard part, everywhere.** The same part looks the same at Block, Job and Task, on every theme; 🙋
    Interaction is the last section of every Report and Work view, and it shows **that view's own items** (261106): on a
@@ -156,7 +155,7 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
    evidence Job's under Evidence or Displays, the rest under Writing); on a work page the forms at a Question's work
    under Findings, the forms below the page under Status, the page's own under MindMap; on a version, Section or
    evidence Job page its own forms (`focus_page.view_items`). The rail's Interactions keeps everything at the page or
-   below; an empty view says "Nothing asked yet.".
+   below; an empty section is not shown (rule 11).
 6. **Report is the one place (JL 261111: "the Work is no longer used").** Work repeated Report, and each part of its
    Process already has a section: waiting is Interactions, skills are Skills, what happened is Timeline, what left is
    Delivery. So a page has no Work section: what Process held (a view's to-do rows, its steps, how it is made) is the
@@ -199,7 +198,7 @@ Work       do          retired (JL 261111): Report holds its to-dos; paper: gone
 Studio     think       sNN topics: slides, drawing, mind map        one button per group, no All; Other last;
                                                                     Topics when no topic has a group
 Interactions answer  every interaction at this page or below       All · Needs your input · Answered (always on the
-                                                                    rail, Project to Task; "nothing asked yet" when empty)
+                                                                    rail, Project to Task)
 Delivery   hand over   what leaves this folder for someone else     its lanes, each previewed; always on the rail
 Related    take in     meetings, papers, emails that came in        Related (one button)
 Timeline   look back   what happened when: commits, Runs, passes    Timeline (one button)
@@ -290,13 +289,13 @@ results"): 1 What happened, 2 What it made (result/, the report first), 3 How it
 Rolled-up items carry where they live (`s22 · j02`). A Block opens on Report because its Questions are what it
 exists to answer; every other level opens where its goal is judged, its Work. A draft Task (`task-type: draft`, b32 s42) has a
 view-button-list per section: Work is 1 · Plan · 2 · Write · 3 · Evidence · 4 · Display · 5 · Revise · Runs, each
-step's state a word on its button; Report is MindMap (the paper content) · Text (sentence by sentence) · Status; Studio and Delivery stay on the
-right-rail. Under each view the content is sections, a heading each, never folds (JL 261031).
+step's state a mark on its button; Report is MindMap (the paper content) · Text (sentence by sentence) · Status; Studio and Delivery stay on the
+right-rail. Under each view the content is sections, a heading each, every one a fold that starts closed (JL 261104).
 
 
 ## Rows
 
-1. One item, one row, full width: its real name, one line of what it is, its state word, its verbs.
+1. One item, one row, full width: its real name, one line of what it is, its state mark, its verbs.
 2. A drag handle, an edit control or a group picker shows only on hover or focus.
 3. A row's picture (a figure, a drawing preview) shows in the row; a click opens it large in the popup.
 4. **A Studio row shows four things** (JL 261029: "the information here is a bit overwhelmed"): its picture (the

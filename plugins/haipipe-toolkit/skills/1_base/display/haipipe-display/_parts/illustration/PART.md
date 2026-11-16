@@ -287,7 +287,7 @@ at the caller-supplied path (see `../../../ref/display-unit-output-contract.md`)
 `--display-unit <unit-dir>` so the helper writes
 `assets/figure.png` + `float.tex` (only from the caller-approved caption + label + placement, never
 invented or changed) + `recipe/review_log.json`,
-then compile `preview.pdf` from the caller's asset-reference base.
+then compile `preview.pdf` with the door's one preview recipe (`scripts/build_preview.py`).
 
 ```bash
 # Write into the caller-supplied display unit:
@@ -301,10 +301,8 @@ python3 <skill-dir>/scripts/paper_illustration_image2.py finalize \
 # also drop the rebuild spec the helper does not author:
 #   <unit-dir>/recipe/prompt.md  (final prompt + bridge job + internal score)
 
-# compile from the caller's asset-reference base; write preview.pdf into the unit:
-WORK_ROOT=/path/to/caller-asset-reference-base
-UNIT_DIR=/path/to/caller-supplied-unit
-(cd "$WORK_ROOT" && pdflatex -output-directory "$UNIT_DIR" "$UNIT_DIR/preview.tex")
+# the door's one preview recipe; writes preview.pdf into the unit:
+python3 <haipipe-display>/scripts/build_preview.py <unit-dir>
 
 python3 <skill-dir>/scripts/paper_illustration_image2.py verify \
   --workspace <work-root> --display-unit <unit-dir> \

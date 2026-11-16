@@ -16,7 +16,8 @@ haipipe-labeling                       the one user-facing door
 ├── haipipe-labeling-building          Building side LAW: authority, human gates, verbs; its step
 │                                      order, allocation and receipts in ref/step-order.md
 ├── haipipe-labeling-scanning          Scanning side LAW; its step order in ref/step-order.md
-├── workbench-labeling                 the 🏷 Labeling workbench: four Spaces, one write door
+├── workbench-labeling                 the theme on the shared frame (Block, Job); workbench-task-labeling
+│                                      holds the Task screens: four Spaces and the write doors
 └── one view skill per workbench View, grouped by Space:
     1_data/       haipipe-labeling-preparation · -contract · -embedding
     2_labeling/   haipipe-labeling-definition · -rounds · -guideline
@@ -91,8 +92,8 @@ artifacts.
 | `/haipipe-labeling workflow` | `haipipe-labeling-workflow/` | Run Specs, dependencies, gates, Routes, handoff and invalidation |
 | `/haipipe-labeling preparation` | `1_data/haipipe-labeling-preparation/` | transcript units, group reservation and the source-owned Data → Preparation Runs |
 | `/haipipe-labeling-<view>` | `<N>_<space>/haipipe-labeling-<view>/` (11, grouped by Space) | one context Skill per workbench View; a Run Type also declares shared workflow, domain, and procedure Skills |
-| `/haipipe-page-for-labeling` | `page-types/haipipe-page-for-labeling/` | the Job Page type: one Page per corpus and target |
-| `/workbench-labeling` | `workbench-labeling/` | the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and one write door |
+| `/workbench-labeling` | `workbench-labeling/` | the labeling theme on the shared frame: a Block's and a Job's pages |
+| `/workbench-task-labeling` | `workbench-task-labeling/` | a labeling Task's screens and the 🏷 Labeling lane beside a Page: four Spaces, Runs panels and the write doors |
 
 Retired names route through the umbrella: `/label-init` and `/label-round` go
 to `/haipipe-labeling building`; `/label-evaluate` and `/label-complete` go to
@@ -115,7 +116,7 @@ plugins/haipipe-toolkit/
 │   ├── 3_quality/   haipipe-labeling-{test,evaluation,audit}/
 │   ├── 4_delivery/  haipipe-labeling-{handoff,scan,final-labels}/
 │   ├── haipipe-labeling-building/ref/            authority, artifact, Run, and Space contracts (ref-*.md)
-│   ├── workbench-labeling/  🏷 Labeling contract: four Spaces + one write door
+│   ├── workbench-labeling/ · workbench-task-labeling/   the theme's Block and Job pages · the Task screens and write doors
 │   └── engine/                        P0/P1 writers + partial legacy-era primitives
 ├── servers/workbench-labeling/        the served 🏷 face (see its README.md); the annotator-only
 │                                      host is `servers/_host/serve.py --only labeling`
@@ -135,6 +136,11 @@ CLOSE, later rounds, and all of P2-P5); it must not fall back to
 panel-majority gold, public-dataset convergence, or unvalidated
 nearest-neighbor inheritance.
 
+`engine/` stays at the family root, not under one door: Building and Scanning skills
+(`1_data/`, `2_labeling/`) run its writers, and `servers/workbench-labeling/` and
+`servers/workbench/workbench-task-draft/reader/standalone_server.py` import it by this path.
+Its tests' fixtures live in `engine/fixtures/` (`job-mini/` is the acceptance job).
+
 ## Final deliverables
 
 - `G*`: frozen human-and-machine-readable label policy;
@@ -148,5 +154,5 @@ Version 0.4.0 introduced the Application-style umbrella + sibling-door +
 workflow organization, the Building / Scanning names, and the signed Label
 Handoff boundary. Version 0.5.0 split each side into a LAW door and an ORDER
 workflow, defined the round unit, register, and rendered views, and shipped the
-`fixtures/job-mini/` job with its rendered board as the family's acceptance
+`engine/fixtures/job-mini/` job with its rendered board as the family's acceptance
 fixture.

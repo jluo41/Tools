@@ -62,6 +62,22 @@ When the user asks about work (where it lives, how far it got, which Run counts)
 └─ <jNN_D_reg_job>   ─▶ <tNN>  <rNN-rNN>      <state> <the question it answers>
 ```
 
+## Report
+
+A Report is a message a session working in a Block of some SPACE sends, by SendMessage, to the session that owns a theme's workbench and skills here, `Workbench-<Theme>-UI` (for example `Workbench-Insight-UI`). It lists topics. A topic is one thing worth keeping: a problem, a missing step, a rule that was unclear, or a way of working that proved right, with what happened and the cause by file and line. The owning session collects the reports, recognizes the topics (the same topic often arrives from several Blocks), documents each in the skill or reference that owns it under `plugins/haipipe-toolkit/skills/`, updates the skill, and replies with what changed and what the sender must rerun or restart. The reporting session changes no file here itself. Reports are routed by topic, not by sender: a session takes only the topics its theme owns and passes any other on to the session that owns it.
+
+### If you are a `Workbench-<Theme>-UI` session
+
+You own your theme's topics. A topic comes from a Report or from the user's own message; a message that names a problem is a topic even when it does not say "Report". For every topic:
+
+1. **Name it.** Ask what the topic is: the one thing behind the message, not the single case it showed up in.
+2. **Write it down** in your theme's workbench skill, `ref/topics.md` (for example `skills/2_theme/insight/workbench-insight/ref/topics.md`): the topic's name, the user's message word for word (or the Report's text and its sender), the questions it raises, and the date.
+3. **Work it.** Answer each question by reading the code and driving the real page or command, not from memory.
+4. **Check that it is fixed.** Repeat the case that raised it and look at the output. Mark the topic `fixed` only when that case now passes and something keeps it passing: a test, a check script, or a rule written into the skill.
+5. **Say what is still owed.** If the case passes today but nothing guarantees it, mark it `open` and write the extra work that would guarantee it. A fix with no guard is not finished.
+
+Reply to the sender with the state of each topic (`fixed` or `open`), what changed, and what they must rerun or restart.
+
 UI design
 =========
 

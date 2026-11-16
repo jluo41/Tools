@@ -3,13 +3,15 @@
     python new_job.py job <block> --slug <job> --title '<title>' [--nn NN | --name <folder>]
                           [--goal '…'] [--close '…'] [--answers Q01] [--dry-run]
     python new_job.py task <job> --slug <task> --title '<title>' [--nn NN | --name <folder>]
-                          [--kind page] [--answers Q01.E1] [--dry-run]
+                          [--kind <task-type>] [--answers Q01.E1] [--dry-run]
     python new_job.py check <job>
     python new_job.py face <job> [--dry-run]
 
 `job` writes `jNN_<job>/jNN_<job>.md`, the Job's face, with an empty `## Tasks` list. `task` makes the
-next `tNN_<task>/` with a bare face (title, task-kind, answers) and adds it to the Job's `## Tasks`, in
-order; the Task is then built by haipipe-task. `--name` gives a theme's own folder name instead of
+next `tNN_<task>/` with the face haipipe-task's SKILL.md § The face asks for (title, state, goal, close,
+owner, folder-kind, task-type, task, answers), its `scripts/config/` and `runs/` (none for a draft Task),
+and adds it to the Job's `## Tasks`, in order; the Task is then built by haipipe-task. `--kind` (alias
+`--type`) is the task-type; the older `--kind page` writes `task-type: draft`. `--name` gives a theme's own folder name instead of
 jNN_ / tNN_ (a paper's version group or Section), which its Theme.level_patterns must match for the
 frame to read it. `check` compares the `## Tasks` list with the Task folders on disk. `face` writes the face of an existing
 Job (or, given a Task folder, a bare Task face listing its Runs) that has none, from what is on disk: its title from the folder name, goal and close left open, its Tasks
@@ -89,18 +91,22 @@ def add_task(job: Path, slug: str, title: str, nn: int | None = None, name: str 
     jmd = face(job)
     if not jmd or jmd.name == "board.md":
         raise ValueError(f"{job}: no Job face ({job.name}.md)")
-    folder, label = _folder(job, "t", slug, nn, name)
-    lines = [f"# {label} · {title}", ""]
-    if kind:
-        lines.append(f"task-kind: {kind}")
+    folder, _ = _folder(job, "t", slug, nn, name)
+    kind = "draft" if kind == "page" else kind       # task-kind: page was the older field; ladder.py reads both
+    lines = [f"# {title}", "state: 🔴 OPEN", "goal: <what this Task delivers, one line a stranger reads>",
+             "close: <what must be true for this Task to close, one line>", "owner: <who>", "folder-kind: task",
+             f"task-type: {kind or '<a value from haipipe-task ref/types.md>'}", "task: ."]
     if answers:
         lines.append(f"answers: {answers}")
-    lines += ["", "<Built by haipipe-task: its Task Page from the task kind's template.>", ""]
+    lines += ["", "<Built by haipipe-task: its Opening, or the Task Page from ref/task-page-template.md.>", ""]
     md = folder / f"{folder.name}.md"
     if dry_run:
         return md
     folder.mkdir()
     md.write_text("\n".join(lines), encoding="utf-8")
+    if kind != "draft":                              # fn/run.md: a Task needs scripts/, scripts/config/, runs/
+        (folder / "scripts" / "config").mkdir(parents=True)
+        (folder / "runs").mkdir()
     text = jmd.read_text(encoding="utf-8")
     entry = f"{len(listed(text)) + 1}. {folder.name} · {title}"
     m = re.search(r"(?ms)^## Tasks[ \t]*\n(.*?)(?=^## |\Z)", text)
@@ -243,7 +249,7 @@ def main() -> int:
             p.add_argument("--goal", default="")
             p.add_argument("--close", default="")
         else:
-            p.add_argument("--kind", default="", help="task-kind, e.g. page")
+            p.add_argument("--kind", "--type", dest="kind", default="", help="task-type, e.g. data (ref/types.md)")
     p = sub.add_parser("check")
     p.add_argument("job", type=Path)
     p = sub.add_parser("face")

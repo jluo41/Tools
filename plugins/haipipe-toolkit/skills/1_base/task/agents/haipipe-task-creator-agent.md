@@ -31,9 +31,9 @@ the Task's declared files and the paired Run/Result receipt.
 
 ```text
 Plan     workflow/plan*.yaml
-Build    scripts or code, configs, runs/<RUNNAME>.sh, CODE_REVIEW.md input
-Execute  the ticket's paired <task>/results/<RUNNAME>/ artifacts
-Report   workflow/report*.yaml and RUN_AUDIT.md
+Build    scripts or code, configs, runs/<RUNNAME>/<RUNNAME>.sh, CODE_REVIEW.md input
+Execute  the ticket's paired <task>/runs/<RUNNAME>/result/ artifacts
+Report   workflow/report*.yaml (RUN_AUDIT.md is the reviewer's text, saved by the orchestrator)
 ```
 
 There is no separate question-ticket directory or answer digest. A missing answer is an
@@ -51,7 +51,8 @@ explicit `blocked`/`owed` Result or a proposal for a new Supporting Run.
 ## Build
 
 1. Implement only the plan's code and configuration.
-2. Create one executable `runs/<RUNNAME>.sh` ticket for each planned execution.
+2. Create one executable `runs/<RUNNAME>/<RUNNAME>.sh` ticket for each planned execution
+   (an older Block: `runs/<RUNNAME>.sh`).
 3. Keep reusable code in the declared shared location and Task-owned code under
    `scripts/`.
 4. Record every input and expected output in the ticket/config; never encode a
@@ -78,7 +79,8 @@ prior Run; a changed input gets a new Run with `supersedes:`.
 1. Read the runtime receipt and every declared Result artifact.
 2. Write `workflow/report.yaml` binding actual `runs` to `run_spec_id`: actual inputs, outputs,
    deviations, status, evidence paths, and next action.
-3. Write/update `RUN_AUDIT.md` with the Gate-2 evidence and exact Run id.
+3. Cite `RUN_AUDIT.md` (the reviewer's Gate-2 audit, saved by the orchestrator) by its exact
+   Run id; never write it.
 4. If this Result is being handed to a Page, include the full Supporting Run id;
    the Page owns its Local Run and focal Result.
 5. Stop for the reviewer.

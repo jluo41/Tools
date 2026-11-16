@@ -71,7 +71,7 @@ originally evaluated. No inventory of external live Boards is implied.
 A version bump edits no page, yet it can move the frontier: a new closing check un-closes every page that fails it, and the register then contradicts its own pages with nobody having touched either. Two rules make that safe:
 
 ```text
-① every bump SHIPS ITS MIGRATION NOTE, the way ../../haipipe-insight/ref/partition.md marks the
+① every bump SHIPS ITS MIGRATION NOTE, the way ../../haipipe-insight/ref/segment.md marks the
   pre-261001 letter grammar as history: what happens to artifacts settled under the older version.
   The default is OWE-ON-NEXT-TOUCH — settled cells stay settled, the page owes the
   new check when next opened. The exception is a bump that ADDS A HUMAN GATE

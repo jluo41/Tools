@@ -6,6 +6,7 @@ from __future__ import annotations
 import html
 import re
 from dataclasses import dataclass, field
+import os
 from pathlib import Path
 from typing import Callable
 from urllib.parse import quote, urlencode
@@ -180,14 +181,36 @@ def chain(folder: Path, root: Path) -> dict:
         cur = cur.parent
 
 
+_CHILDREN: dict = {}                      # (folder, level) -> (signature, children)
+
+
+def _dir_signature(folder: Path) -> tuple:
+    """The folder's mtime and each sub-folder's: a child added, removed, renamed, or given its face changes one."""
+    with os.scandir(folder) as it:
+        subs = tuple(sorted((e.name, e.stat().st_mtime_ns) for e in it if e.is_dir()))
+    return folder.stat().st_mtime_ns, subs
+
+
 def children(folder: Path, level: str) -> list:
     """The child folders one level down: a Block's Jobs, a Job's Tasks (jNN_ / tNN_, or the theme's
-    own names, Theme.level_patterns)."""
+    own names, Theme.level_patterns). Kept while no folder in it changed: a busy host re-listed and re-resolved the
+    same folders on every render of every open page."""
     want = {"Block": "Job", "Job": "Task"}.get(level)
-    if not want or not folder.is_dir():
+    if not want:
         return []
-    return sorted(p for p in folder.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))
-                  and folder.resolve() in p.resolve().parents and level_of(p) == want)
+    try:
+        sig = _dir_signature(folder)
+    except OSError:
+        return []
+    key = (str(folder), level)
+    hit = _CHILDREN.get(key)
+    if hit and hit[0] == sig:
+        return list(hit[1])
+    real = folder.resolve()
+    out = sorted(p for p in folder.iterdir() if p.is_dir() and not p.name.startswith((".", "_"))
+                 and real in p.resolve().parents and level_of(p) == want)
+    _CHILDREN[key] = (sig, out)
+    return list(out)
 
 
 def face(folder: Path) -> Path | None:

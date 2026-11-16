@@ -58,7 +58,7 @@ def run_of(folder, ref, data):
 
 
 def item_state(item, root, data, with_hits=False):
-    """✅ when every file is on disk and its Run (when named) finished; 🚧 or ❌ from that Run; 🔶 some files; ⬜ none."""
+    """✅ when every file is on disk and its Run (when named) finished; 🏃 or ❌ from that Run; 🔶 some files; ⬜ none."""
     pats = item.get("files") or []
     pats = [str(x) for x in (pats if isinstance(pats, list) else [pats])]
     hits = set()
@@ -82,7 +82,7 @@ def item_state(item, root, data, with_hits=False):
 
 
 def group_state(states):
-    """A Task, Job or goal: ✅ when every item is, 🚧 while one runs, else 🔶 in progress; never ❌ for one open item
+    """A Task, Job or goal: ✅ when every item is, 🏃 while one runs, else 🔶 in progress; never ❌ for one open item
     (JL 261020: "we should not call it X, it is very negative")."""
     if states and all(s == "done" for s in states):
         return "done"

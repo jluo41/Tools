@@ -181,8 +181,30 @@ class ExportMixin(ExportBibliographyMixin, ExportLatexMixin, ExportWordMixin, Ex
             if lab:
                 aliases.extend("\\%s{%s}" % (command, lab.group(1))
                                for command in ("ref", "autoref", "Cref", "cref"))
+            # A table unit may carry its tabular inside float.tex, with no
+            # assets/table-body.tex (the j01 display Runs of ScalingGlucose,
+            # JL 261115: "why the displays are not embeded in the draft?").
+            # That inline body, from after the label (or caption) to
+            # \end{table}, is the table to print.
+            inline_table = ""
+            if kind and kind.group(1) == "table" and not (d / "assets" / "table-body.tex").is_file():
+                end = tex.rfind("\\end{table}")
+                # after the label, else after the caption's closing brace
+                start = lab.end() if lab else (i + 9 + len(cap) + 1 if i >= 0 else -1)
+                if 0 <= start < end and "\\begin{tabular" in tex[start:end]:
+                    inline_table = tex[start:end].strip()
+            # A legend Section (Extended Data, Supplementary) prints each
+            # display under its own heading: the unit's README names where it
+            # prints (`## Placement` then e.g. "Extended Data Fig. 1").
+            legend_name = ""
+            readme = d / "README.md"
+            if readme.is_file():
+                pm = re.search(r"(?m)^## Placement\s*\n+\s*(.+?)\s*$",
+                               readme.read_text(encoding="utf-8", errors="replace"))
+                if pm and re.match(r"(?:Extended Data|Supplementary) (?:Fig\.|Figure|Table) ", pm.group(1)):
+                    legend_name = pm.group(1)
             has_output_asset = (
-                (d / "assets" / "table-body.tex").is_file()
+                ((d / "assets" / "table-body.tex").is_file() or bool(inline_table))
                 if kind and kind.group(1) == "table"
                 else any((d / "assets" / asset).is_file()
                          for asset in ("figure.pdf", "figure.png", "figure.jpg"))
@@ -198,7 +220,8 @@ class ExportMixin(ExportBibliographyMixin, ExportLatexMixin, ExportWordMixin, Ex
                          "caption": cap, "note": note, "aliases": aliases,
                          # the unit's own width, from its float.tex (JL 261113: two figures on a 2-page LOI)
                          "width": (re.search(r"\\includegraphics\[[^\]]*width=([^,\]]+)", tex) or [None, None])[1],
-                         "has_output_asset": has_output_asset}))
+                         "has_output_asset": has_output_asset,
+                         "inline_table": inline_table, "legend_name": legend_name}))
 
         # Current typed Results are the sole source once a Page has one. A
         # broken pointer fails closed in both delivery exports instead of

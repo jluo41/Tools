@@ -3,9 +3,9 @@
 **Scope since 261001.** This adapter governs the board's PAGES: MT00 (Meta),
 the four registers MT01–MT04, every Wisdom page, and the frozen Data,
 Information and Knowledge pages of boards made before reports. A Data,
-Information or Knowledge answer on a current board is a task run plus a report
-(`board-contract.md`, `report.md`), not a Page, and none of this lifecycle
-applies to it.
+Information or Knowledge answer on a register board is task runs plus an answering
+page written through the `haipipe-draft` flow (`report.md` § The flow;
+`haipipe-insight-workflow` `ref/run-workflow.md`, JL 261001), not a Page Folder of its own.
 
 Every Insight Page is a Page, but the two workflows answer different
 questions:

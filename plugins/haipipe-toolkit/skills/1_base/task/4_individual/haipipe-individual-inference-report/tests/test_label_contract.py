@@ -7,7 +7,11 @@ import types
 import unittest
 from pathlib import Path
 
-from pydantic import ValidationError
+import pytest
+
+# The Report model is pydantic; without it this module skips instead of erroring at collection.
+pytest.importorskip("pydantic")
+from pydantic import ValidationError  # noqa: E402
 
 SRC = Path(__file__).resolve().parents[1] / "src"
 sys.path.insert(0, str(SRC))

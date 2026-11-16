@@ -35,7 +35,7 @@ construct:
   scope: "what texts and behaviors the project intends to judge"
 
 authority:
-  human_id: JL
+  human_id: <initials>
   mode: single_human_semantic_authority
   creates_human_gold: true
   meaning_confirmed: false             # written true only by confirm_meaning

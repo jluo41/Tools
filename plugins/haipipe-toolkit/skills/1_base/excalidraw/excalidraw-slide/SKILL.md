@@ -1,18 +1,13 @@
 ---
 name: excalidraw-slide
 description: >-
-  Draw a slide draft: a deck proposed on one Excalidraw canvas before it is built, as a studio topic
-  s61-s69. It starts from the ask: a topic before the draft (s01 what they want) holds who the deck is
-  for, how long, when it is shown, and each pain with the slide that answers it. Then one `slides.py` is
-  the ONE source that the drawing and the deck both read (AUDIENCE · LENGTH · SHOWN · GROUPS · SLIDES ·
-  OPEN; each slide n · slug · group · title · headline · ONE visual · caption · source · next · notes, an
-  optional ask in red). The canvas reads left to right: 1 logic flow (one box per slide, why the next
-  follows) · 2 the slides at half size in one skeleton · 3 on disk and the open questions. Black around
-  the slides; inside a slide one accent marks its key thing. A screen is retaken by a script, never
-  pasted. The deck is generated into the topic's own delivery/. The slide job to copy is j51
-  (DrFirst-SPACE: a meeting, the ask, 14 slides, a deck). Use to take the ask, propose, draw, check or
-  revise a deck before building it. Trigger: slide draft, propose a deck, what they want, the ask,
-  slides.py, deck outline, logic flow of a talk, s61, presentation draft, /excalidraw-slide.
+  Draw a slide draft: a deck proposed on one Excalidraw canvas before it is built, as a studio topic s61-s69.
+  It starts from the ask (who the deck is for, how long, when it is shown, each pain with the slide that
+  answers it); one `slides.py` is the one source the drawing and the deck both read. The canvas reads left to
+  right: the logic flow, the slides at half size, then what is on disk and the open questions. The deck is
+  generated into the topic's own delivery/. Use to take the ask, propose, draw, check or revise a deck before
+  building it. Trigger: slide draft, propose a deck, what they want, the ask, slides.py, deck outline, logic
+  flow of a talk, s61, presentation draft, /excalidraw-slide.
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -40,8 +35,8 @@ colour exception, the fields of `slides.py`, screens and figures, and the deck w
 The slide job to copy: j51
 --------------------------
 
-j51 (`j51_insight_design_demo`, DrFirst-SPACE, under
-`examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/`) is a five-minute demo of
+j51 (`j51_insight_design_demo`, in a SPACE, under
+`<world>/Project-<Name>/paper/Paper-<Name>/`) is a five-minute demo of
 looped experimental learning for leadership and product. It went from a 36-minute meeting on 2026-10-05
 to a 14-slide deck shown on 2026-10-08, and its `slides.py` passes `slide_kit.py check` clean. b31
 s03-excalidraw-slide (`Tools/blueprints/Project-PageParts/work/b31_excalidraw/studio/`) draws the whole job: its map, its deck,
@@ -50,7 +45,7 @@ its two drawings, and what this skill took from it.
 ```text
 j51_insight_design_demo/
 ├── j51_insight_design_demo.md        the Job face: kind, audience, length, due, the narrative, delivery
-└── studio/
+└── studio/                           an older Job: a new one keeps its topics beside its Tasks
     ├── s01-what-they-want/           the ask: who, how long, what is due when, each pain → its slide
     └── s61-demo-layout/              the slide draft
         ├── slides.py                 14 slides in 3 groups: Why · The loop · What it solves

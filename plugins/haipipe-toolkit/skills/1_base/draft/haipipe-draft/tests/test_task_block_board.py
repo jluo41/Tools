@@ -11,7 +11,7 @@ from src.page_parse import parse_page
 
 ENGINE = Path(__file__).resolve().parents[1]
 BOARD_CHECKER = ENGINE / "cli" / "check.py"
-TASK_CHECKER = next(p for p in ENGINE.parents if p.name == "skills") / "1_base" / "task" / "haipipe-task" / "ref" / "check_task_tree.py"
+TASK_CHECKER = next(p for p in ENGINE.parents if p.name == "skills") / "1_base" / "task" / "haipipe-task" / "scripts" / "check_task_tree.py"
 
 
 def _task_check(block):

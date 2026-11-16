@@ -167,6 +167,10 @@ def main(argv=None):
     sign_n.add_argument("--quote", required=True)
     sign_n.add_argument("--who", default="JL")
     sign_n.add_argument("--dry-run", action="store_true")
+    sync_n = commands.add_parser(
+        "sync-narrative", help="Propose a version Job's Narrative rows rebuilt from its Section plans, as a diff")
+    sync_n.add_argument("job", type=Path, help="the version Job folder or its face")
+    sync_n.add_argument("--apply", action="store_true", help="write the rows; the Narrative is then unsigned")
     adopt = commands.add_parser(
         "adopt",
         help="Write the current Draft's sentences into the Page's Content, in Draft order; "
@@ -197,7 +201,7 @@ def main(argv=None):
     )
     export.add_argument("pages", type=Path, nargs="+", help="Page Folders or Page Face .md files")
     export.add_argument("--lane", choices=("web", "latex", "word", "all"), default="all")
-    export.add_argument("--author", help='Name on the Word comments (papers: "Junjie Luo")')
+    export.add_argument("--author", help='Name on the Word comments (the person annotating, e.g. "<Your Name>")')
     export.add_argument("--root", type=Path,
                         help="Root the view links assume (default: the repository root, as the Board server)")
     export.add_argument("--accept-dropped-keys", action="store_true",
@@ -348,6 +352,10 @@ def main(argv=None):
             print(render(report))
             if not report["ok"]:
                 sys.exit(1)
+            return
+        elif args.command == "sync-narrative":
+            from src import narrative_sync
+            print(narrative_sync.apply(args.job)["message"] if args.apply else narrative_sync.render(args.job))
             return
         elif args.command == "adopt":
             from src.page_adopt import render, run

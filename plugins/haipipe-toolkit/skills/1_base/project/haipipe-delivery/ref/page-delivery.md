@@ -2,7 +2,7 @@
 
 # Page delivery Runs · one fixed Run per lane, rerun in place
 
-> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; AGENTS.md rule 6). Here that means every file under `delivery/<lane>/`: fix the Page or the exporter, then rerun the lane's Run.
+> ⛔ **Generated files: never modify them directly; change the code that writes them (or its source), then rerun it** (hard rule, JL 260928; the SPACE's AGENTS.md § Working rules). Here that means every file under `delivery/<lane>/`: fix the Page or the exporter, then rerun the lane's Run.
 
 **Load nothing else to rebuild.** A rebuild is one command; this file is all of it.
 
@@ -31,7 +31,7 @@ release, send or submission approval.
 ## 🔁 Rebuild = rerun the same Run
 
 ```bash
-.venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder> [--lane web|latex|word|all] [--author "Junjie Luo"]
+.venv/bin/python Tools/plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/cli/page.py export <page-folder> [--lane web|latex|word|all] [--author "<Your Name>"]
 # or, after the first export has written it:  bash <page-folder>/runs/run-delivery-<lane>.sh
 ```
 
@@ -40,7 +40,7 @@ release, send or submission approval.
 2. **Code writes the ticket.** `page.py export` writes `runs/run-delivery-<lane>.sh`
    with the exact command it ran; nobody types it.
 3. **No record to write.** No `runtime.yaml`, no receipt, no
-   `build-manifest.json`, no hash (AGENTS.md rules 6 and 9). The files in
+   `build-manifest.json`, no hash (the SPACE's AGENTS.md § Working rules). The files in
    `delivery/<lane>/` and their file time are the whole record.
 4. **The state shows itself.** The Delivery Space and the Runs panel call a lane
    current (`Done`) when its files are at least as new as the Page, and stale
@@ -49,8 +49,8 @@ release, send or submission approval.
    person wants to read or send the file. A current lane is not a whole-Page
    acceptance; `haipipe-draft-review` is the only whole-Page close gate.
 
-The author of Word comments is the person annotating; for JL's papers it is
-"Junjie Luo" (AGENTS.md, Papers). Slides keep the same one-Run rule
+The author of Word comments is the person annotating: pass their own name as
+`--author "<Your Name>"`. Slides keep the same one-Run rule
 (`run-delivery-slides`), but only the explicit ✨ press in the Delivery Space
 starts it, because a model writes the deck (minutes, money). A render is the
 pages of a built or returned file as pictures (`run-delivery-render`): for a Word

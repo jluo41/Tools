@@ -71,7 +71,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
                                               rows=_rows(j["runs"], root, "compare")),) if prev else ())
                       + (propose, _kind("Close the Job", "Close the Job {folder} after its checks and the comparison (run-close): frozen.",
                                rows=_rows(j["runs"], root, "close")),)),
-        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (run-draw-<sNN>): sNN-<topic>/, a pass per session."),)),
+        "Idea Studio": Space(run_types=(_kind("Add a topic", "Add or redraw a studio topic of {folder} (no Run: a pass in sNN-<topic>/passes/pNN-<MMDD>/): sNN-<topic>/, a pass per session."),)),
         # page=True: the frame takes this Space's runs and third row as set, even none (frame.lays_out_page)
         "Delivery": Space(html=delivery_view(jdir, root, themes()["insight"]) + _job_delivery(j, b, root),
                           run_types=(), page=True,

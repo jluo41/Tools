@@ -349,7 +349,7 @@ class Tracker:
 
 
 def INITIALS(author):
-    """Word comment initials: the first letter of each name ("Junjie Luo" -> "JL")."""
+    """Word comment initials: the first letter of each name ("Ada Lovelace" -> "AL")."""
     return "".join(w[0] for w in author.split() if w[:1].isalpha()).upper()[:3] or author[:2]
 
 

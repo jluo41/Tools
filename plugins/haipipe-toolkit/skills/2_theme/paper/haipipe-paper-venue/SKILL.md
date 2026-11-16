@@ -53,8 +53,8 @@ target and does not write the paper's Story or its Section Narrative rows.
 
 ```text
 Venue Page   what this external desk requires, rewards, rejects, and costs
-Story        how this paper is told for that desk (§8 Section Narrative rows)
-Section      how one unit satisfies its Story row and desk constraints
+Story        what this paper claims (§8); each version's ## Narrative rows tell it for that desk
+Section      how one unit satisfies its Narrative row and desk constraints
 ```
 
 A target may be a journal, funder, conference, regulator, or patent office. Use
@@ -64,7 +64,7 @@ the target's own document units when journal section kinds do not apply.
 shared QBv bank and sit outside the paper journey: nothing about a paper
 advances by writing one. Ideation records a person's intended target/category
 at G0 after deep fit; the Story confirms it as the paper's operational target
-and binds the bank contract in its Section Narrative rows. A later target change
+and each version binds the bank contract in its `## Narrative` rows. A later target change
 is a new human paper-journey receipt plus Story rebind, never a Venue Page
 decision. A missing or stale desk contract is refreshed before the gate.
 
@@ -197,7 +197,7 @@ source refresh. Preserve prior versions before replacing a consumed block.
 
 7  Gaps and Handoff
    stale or missing facts · desk/pack conflicts · versioned contract state ·
-   verified contract consumed by Ideation and the Story's Section Narrative rows
+   verified contract consumed by Ideation and the version's Narrative rows
 ```
 
 The exact number of Unit Guidance divisions may vary with the target. Keep the
@@ -230,7 +230,7 @@ Run/Result identity. A bare uncited number still owes its source.
 
 ## 📤 Handoff
 
-Ideation deep fit, the Story's Section Narrative rows, and Section Pages consume
+Ideation deep fit, the version's `## Narrative` rows, and Section Pages consume
 the named versioned Venue contract rather than copying the whole Page:
 
 ```text
@@ -253,7 +253,7 @@ contract version, state, verification date, and official-source Result paths
 - Structure totals and per-unit guidance are reconciled or explicitly conflict.
 - The machine-readable contract block is present, checked, and honestly
   `current`, `partial`, `stale`, or `superseded`.
-- The Story's Section Narrative rows can consume a bounded, versioned venue contract.
+- The version's `## Narrative` rows can consume a bounded, versioned venue contract.
 - CHECK judges the rendered Page and its linked evidence before closure.
 
 `page_ruling: none` is explicit: Venue CHECK may close the bank Page when its

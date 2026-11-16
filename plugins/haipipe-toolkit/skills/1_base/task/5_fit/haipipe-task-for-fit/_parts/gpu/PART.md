@@ -46,7 +46,7 @@ Every queued Run must have its own Run folder `runs/<run>/` (Ticket, config,
 
 1. Start one declared Run at a time for an exclusive GPU set.
 2. Wait for that Run's receipt to become terminal (`complete`, `failed`,
-   `blocked`, or `cancelled`) rather than trusting only a shell exit code.
+   or `blocked`; the status words are `haipipe-task/ref/runtime-yaml-schema.md`'s) rather than trusting only a shell exit code.
 3. Wait for the Run's CUDA processes to tear down, then launch the next Ticket
    without an arbitrary long idle sleep.
 4. Preserve the failed receipt and logs. A failure may select an explicitly

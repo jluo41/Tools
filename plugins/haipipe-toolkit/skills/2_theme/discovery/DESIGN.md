@@ -20,23 +20,23 @@ win.
 
 ## Family layout
 
-Every skill we wrote sits flat at the family root. The numbered folders hold
-only vendored originals from `references/`, one folder per stage that has any:
-the numbers are the stage vocabulary (1 Search, 2 Review, 3 Synthesize), and
-Synthesize has no external original, so there is no `3_synthesize/` folder.
+Every skill we wrote sits flat at the family root. Vendored originals from
+`references/` are parts of the skill that calls them (`_parts/`); the numbers
+1 Search, 2 Review, 3 Synthesize are stage vocabulary only, not folders
+(an older tree: `1_search/`, `2_review/`).
 `writing/` and `ideation/` follow the same law; `task/` is the exception, its
 numbers being permanent domain ids.
 
 ~~~text
 discovery/
 ├── haipipe-discovery/                 public door
+│   └── _parts/                        vendored originals
+│       ├── research-lit · comm-lit-review                                  ARIS · review craft
+│       └── academic-researcher                                             nature-paper-skills
 ├── haipipe-discovery-inquiry/         D1 Run controller (the former workflow-phases/ path)
 ├── haipipe-discovery-review/          2 · per-Subject reading and Result writing
 ├── haipipe-discovery-synthesize/      3 · cross-Result synthesis into the Task Page
 ├── workbench-discovery/               the Block's live view
-│   └── _parts/                        vendored originals
-│       ├── research-lit · comm-lit-review                                  ARIS · review craft
-│       └── academic-researcher                                             nature-paper-skills
 └── agents/                            execution roles (agent definitions only)
 
 1_base/search/                         Search moved here to serve every theme
@@ -92,8 +92,8 @@ address is `bNNjNNtNNrNN`; `discovery/` is a bank and contributes no segment.
 
 The Block is the Board container from its first durable write. `board.md`
 declares `board-kind: discovery-block`; Job folders render as Groups and Task
-Folders render as Pages. The direct BJTR tree is membership authority, while
-`board/` is the generated projection. Discovery refreshes that split through
+Folders render as Pages. The direct BJTR tree is membership authority, and
+nothing is built: the workbench reads it live. Discovery checks the Board through
 `haipipe-discovery/scripts/board_sync.py` at structural, Run-batch, Page-CHECK,
 and close checkpoints.
 

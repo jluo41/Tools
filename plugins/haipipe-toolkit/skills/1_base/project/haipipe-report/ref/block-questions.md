@@ -12,13 +12,13 @@ resources. `haipipe-report` owns this register (moved from `haipipe-task`,
 ```text
 work/bNN_<block>/
 ├── board.md                         Question and resource registers
-├── sNN-<name>/                      Block Studio topics; a report's drawing, its face Feeds: the report
-├── reports/
+├── sNN-<name>/                      Block Studio topics; the one that answers a Question holds its `Q01 · Answer`
+├── reports/                         an older Block only (no new reports/ since 261110)
 │   └── q01_<topic>/
 │       ├── q01_<topic>.md            ordinary same-stem Page: Opening → Content
 │       ├── page.toml                explicit registration with the native Page reader
 │       ├── draft/                   created by the normal Page writing flow
-│       └── runs/, results/          only the Page's own Runs, when needed
+│       └── runs/<run>/              only the Page's own Runs, when needed
 └── jNN_<job>/tNN_<task>/             executable work and its native Results
 ```
 
@@ -27,7 +27,7 @@ excalidraw"). A report has exactly one `.excalidraw`, linked once from its `### 
 more views are frames inside it, and a screenshot or figure the report cites is an image
 inside it too ("some png can be put into the excalidraw as well"), never a second link
 (`excalidraw-report` rules 6, 9 and 11). It is a Block Studio topic, `sNN-<name>/` beside the
-Jobs, whose face **Feeds:** the report (JL 261031, b35 r02: no `studio/` folder anywhere; the
+Jobs, whose face **Feeds:** the report (JL 261031, b35 r02: no `studio/` folder for topics; the
 old `reports/qNN_<topic>/studio/` drawings became Block sNN the same way), or, drawn by a Block
 builder, `reports/qNN_<topic>/qNN_<topic>.excalidraw` beside the Page. `--drawing <name>` (once)
 makes the topic through haipipe-studio's `new_topic.py`, which numbers it, keeps the Block at
@@ -35,7 +35,7 @@ its nine topics and gives it its quick drawing, and lists that drawing under `##
 links (else its own, unlinked); a second drawing or a linked picture is a finding in Check.
 
 A CoWork Block (`cowork/bNN_<topic>/board.md`, `board-kind: cowork-block`, owned by
-`haipipe-cowork`) keeps the same register and `reports/` folder. There a Question's
+`haipipe-cowork`) keeps the same register (an older one also a `reports/` folder). There a Question's
 `work:` names files inside the Block (a ticket page, a design note) instead of Task
 Folders; the helper below checks that each named file exists.
 

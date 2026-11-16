@@ -46,6 +46,10 @@ reader ignores a leftover hash field in an older receipt.
 Before an unchanged-contract retry, the Ticket preserves the previous receipt
 at `attempts/<six-digit-attempt>/runtime.yaml` and increments `attempt`.
 These archives are history, not additional Runs or current receipts.
+What is true today: the shared ticket template (`ref/run-sh-template.sh`) writes
+this `attempts/` archive inside the Run's `result/`; `passes/pNN-<MMDD>/` is
+haipipe-run's contract for one folder per execution, and so far only the Stata
+reg runner writes it (`ref/task-folder.md` § A Run inside the Task).
 The contract counts as changed when the Ticket, config, worker, or a declared
 input is newer (file modification time) than the prior receipt, or when the
 Ticket arguments differ from `settings.ticket_args`. A changed contract
@@ -100,7 +104,7 @@ failure: null
 address: b01j01t01r01
 git_sha: e2d67d63
 git_dirty: false
-host: aikong/jluo41
+host: <host>/<user>
 config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
 settings:
   config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
@@ -131,7 +135,7 @@ failure: null
 address: b01j01t01r01
 git_sha: e2d67d63
 git_dirty: false
-host: aikong/jluo41
+host: <host>/<user>
 exit_code: 0
 config_file: t01_example/scripts/config/r01_page-evidence-item_e01-display-effect.yaml
 settings:

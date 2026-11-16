@@ -204,9 +204,9 @@ def validate_contract(contract: FolderContract) -> list[str]:
         problems.append(
             f"{rel}: legacy_page_type {contract.legacy_page_type!r} is not kebab-case"
         )
-    if contract.legacy_page_type and not re.search(r"(?m)^  outline:\s*$", _frontmatter(text)):
+    if contract.legacy_page_type and not re.search(r"(?m)^  (?:outline|report):\s*$", _frontmatter(text)):
         problems.append(
-            f"{rel}: legacy_page_type requires metadata.outline for plan-shape compatibility"
+            f"{rel}: legacy_page_type requires metadata.outline or metadata.report for plan-shape compatibility"
         )
     return problems
 

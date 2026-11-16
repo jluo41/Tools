@@ -73,15 +73,17 @@ Recipe — create a job instance:
 
 ```
 1. cp code/scripts/haistepnb/<N>_<stage>_nb.py  <task>/scripts/<worker>.py
-2. set the CONFIG default to <task>/scripts/config/rNN_<run>.yaml
+2. set the CONFIG default to <task>/runs/rNN_<run>/config.yaml
 3. update the docstring with project-specific info
-4. bash <task>/runs/rNN_<run>.sh
+4. bash <task>/runs/rNN_<run>/rNN_<run>.sh
 ```
+
+An older Block keeps `<task>/scripts/config/rNN_<run>.yaml` and the flat `<task>/runs/rNN_<run>.sh`.
 
 The `.py` is source of truth.
 The `.ipynb` is auto-generated at runtime by `convert_to_notebooks.py` — it is intermediate output, not source.
 
-In a PHI SPACE (REACH) none of this applies: no `.ipynb` is ever made. Every
+In a PHI SPACE none of this applies: no `.ipynb` is ever made. Every
 Run is a `.cmd` Databricks ticket running the Task's one entry
 `scripts/run_<task>.py` inline (see `haipipe-task-for-data` § SourceFn Block
 pattern). The Fns of b01 to b03 and b10 are generated from Run configs; each stage
@@ -123,9 +125,9 @@ When parsing free-form input, infer stage from these keywords:
 ```
 raw, RawStore, raw cohort, lifecycle, data point      -> raw
 visit timeline, fog of war, single data point         -> raw
-SourceFn, HumanFn, ingest, raw frame, source layer    -> source
-RecordFn, TriggerFn, record, record-centered          -> record
-CaseFn, case, cohort, sampling, trigger event         -> case
+SourceFn, ingest, raw frame, source layer             -> source
+HumanFn, RecordFn, record, record-centered            -> record
+TriggerFn, CaseFn, case, cohort, sampling, trigger event -> case
 TfmFn, SplitFn, AIData, tensor, split, model input    -> aidata
 external, NDC, NPI, reference data, join external     -> external
 asset, asset.yaml, release, feature store, vendor API    -> external
@@ -265,7 +267,7 @@ Disambiguation Rules
 ---------------------
 
   - Stage unclear and no keywords match -> list 4 stage options, wait.
-  - Verb unclear, stage clear -> default to `dashboard` for that stage.
+  - Verb unclear, stage clear -> the stage's ref-only view (Routing Logic step 3), never a guessed verb.
   - Both clear, but extra free-form context present -> pass full context as
     trailing arg so specialist can use it.
   - Multi-stage request ("run stages 1 to 3") -> dispatch sequentially:
@@ -297,7 +299,8 @@ ref/0-overview.md       cross-stage architecture + cooking metaphor
 fn/fn-0-dashboard.md    dashboard procedure (used by every specialist)
 fn/fn-1-load.md         load procedure
 fn/fn-2-cook.md         cook procedure
-fn/fn-3-design-chef.md  design-chef procedure
+fn/fn-3-design-chef.md  design-chef procedure (workflow, source, record, universal rules)
+fn/fn-3-design-chef-case-aidata.md  design-chef stage references for case and aidata
 fn/fn-4-design-kitchen.md   design-kitchen procedure
 fn/fn-explain.md        explain procedure (used inline by this skill)
 fn/fn-review.md         review procedure

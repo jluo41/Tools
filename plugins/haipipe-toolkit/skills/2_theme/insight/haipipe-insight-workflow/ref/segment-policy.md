@@ -1,7 +1,7 @@
 # Segment decisions and cross-partition dependencies
 
 Load for segment registration, cross routing, pooling, or late arrivals.
-The disk/config grammar is [partition.md](../../haipipe-insight/ref/partition.md);
+The disk/config grammar is [segment.md](../../haipipe-insight/ref/segment.md);
 Question Group membership is [question-groups.md](../../haipipe-insight/ref/question-groups.md).
 
 ## Question Groups and audience routing
@@ -24,10 +24,10 @@ Segment proposals have three resource owners:
 noticed   Information/Knowledge   a run's grouping column diverges, or a K page's boundary names a segment
 asked     Question      a register row: does this segment deserve its own ladder?
 born      Meta      one MT00 partition-register row (name · filter · config) +
-                  one group folder before 9-cross/ · the door's `partition` verb
+                  one group folder before 9-cross/ (the door has no `partition` verb now)
 ```
 
-The ladder notices, the register asks, Meta births — a segment is born at Meta and nowhere else, and it is a CONFIG, never a code change (`../../haipipe-insight/ref/partition.md`).
+The ladder notices, the register asks, Meta births — a segment is born at Meta and nowhere else, and it is a CONFIG, never a code change (`../../haipipe-insight/ref/segment.md`).
 
 **The segment test, at Meta.** A segment is an AUDIENCE stratum: a grouping of the unit the counsel is FOR — in a messaging application, the humans receiving it. Not every segment of the data qualifies; birth requires three yeses, each mechanically checkable:
 
@@ -60,7 +60,7 @@ The second named case is the COVARIATE, and it fails ① rather than ②:
 
 ```text
 a covariate            a ZIP attribute, an income     fails ① → an I COLUMN, never a
-                       band, a drug class, an         group · `../../haipipe-insight/ref/partition.md` names
+                       band, a drug class, an         group · `../../haipipe-insight/ref/segment.md` names
                        exposure history               the failure: a board past a
                                                       handful of audiences is almost
                                                       always misreading covariates as
@@ -179,4 +179,4 @@ L2  a child InsightBoard                   the verdict page is its birth certifi
 ④ every OTHER partition's pages, tickets and results are untouched
 ```
 
-A segment may become its own board only by citing a SPLIT verdict; `../../haipipe-insight/ref/partition.md` stays the grammar's single source.
+A segment may become its own board only by citing a SPLIT verdict; `../../haipipe-insight/ref/segment.md` stays the grammar's single source.

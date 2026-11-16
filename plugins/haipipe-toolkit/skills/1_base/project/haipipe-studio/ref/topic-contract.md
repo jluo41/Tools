@@ -1,25 +1,26 @@
 Topic count and ownership
 =========================
 
-The Block owns sNN topics; Job and Task views share them. Recommend at most 10
-topics per Block, counting folders rather than the highest sNN number. Reuse a
-related topic or split an independent area into a peer Block before adding an
-eleventh. This is a recommended maximum, not a refusal or an instruction to
-delete or renumber existing topics. Older local topics and their sessions stay
+One sNN numbering per Block; a topic sits at the level that uses its delivery. A level holds at most 9 topics at a Block, 5 at a
+Job and 3 at a Task, counting folders rather than the highest sNN number; `new_topic.py` refuses one past the
+limit unless `--over-limit`. Reuse a related topic or split an independent area into a peer Block first. The
+limit never deletes or renumbers existing topics. Older local topics and their sessions stay
 readable until explicitly moved.
 
-# The topic contract · Block-owned sNN-<topic>/
+# The topic contract · sNN-<topic>/ beside the Jobs or Tasks
 
-Read before adding, redrawing or saving a studio topic, or writing a builder. The Block
-owns the shared `studio/` folder shown from Block, Job and Task: one topic per folder,
+Read before adding, redrawing or saving a studio topic, or writing a builder. There is no
+`studio/` folder for topics (JL 261031): each `sNN-<topic>/` sits beside the Jobs or Tasks of the
+level it serves, one topic per folder,
 each a drawing to think on together and a short face that says what it settles. How a
-drawing should look (a dense scratch, a plain design prototype, a report picture) is
-`excalidraw-report`'s; this contract is the folder, its face, its builder and its sessions.
+topic's drawing should look is `excalidraw-studio`'s (a report picture or a scratch:
+`excalidraw-report`'s); this contract is the folder, its face, its builder and its sessions.
+A Page's own `studio/` (its chat and draw lanes, workbench `ref/roster.md`) is a different folder and stays.
 
 ## The folder
 
 ```text
-<block>/studio/
+<Block, Job or Task>/               (an older Block: <block>/studio/, still read until studio_move.py moves it)
 ├── sNN-<topic>/
 │   ├── sNN-<topic>.md              the face: Topic · Feeds · Files · Decided · Open
 │   ├── sNN-<topic>.excalidraw      its drawing (the first one the Idea Studio shows)
@@ -31,14 +32,13 @@ drawing should look (a dense scratch, a plain design prototype, a report picture
 │   ├── history/                    older builders or drawings kept on a redesign
 │   ├── passes/pNN-<MMDD>/          one round each: a working session or a meeting
 │   └── result/                     its own working output, messy is fine (b35 s01-D10); never a copy of a Run's
-├── _build/                         the level's shared builder helpers and make.sh
-└── <loose>.excalidraw              a loose drawing: its own topic
+└── studio/_build/                  loose items only: the level's shared builder helpers and make.sh
 ```
 
 1. **One topic, one folder**: a topic is a question being thought through, not a picture.
-2. **Block ownership**: the Block's `studio/` owns the topics. A Job or Task links to
-   those topics; older local topics stay readable until moved. A report's own drawing
-   goes in its report folder (`haipipe-report`).
+2. **Where it sits**: at the level that uses its delivery, a Block's beside its `jNN_` folders, a
+   Job's beside its `tNN_` folders, a Task's beside `runs/`; a page shows its own topics and its
+   children's. An older `studio/sNN-<topic>/` stays readable until moved.
 3. **Its drawings**: the first `.excalidraw` is the one the Idea Studio opens across the row;
    more are links beside it. A topic with a builder opens view only; one drawn by hand edits
    in place.
@@ -168,7 +168,7 @@ The stage (b10 s09-D03): how far along the topic is, one word on its **Stage:** 
 ```text
 🌱 explore   rough drawing, many red ?, no plan yet
 🔶 shaping   decisions made, open points and red ? still left
-✅ agreed    no red ? and no open point left; JL signs; a Job may be built from it
+✅ agreed    no red ? and no open point left; the person signs; a Job may be built from it
 📦 closed    its Jobs closed, the Reports it feeds answered; frozen
 ```
 
@@ -188,6 +188,9 @@ The Idea Studio reads the face by these marks, so keep them:
 
 ## The look
 
+The five-part drawing (the default, `five_parts.py`, JL 261112) draws in colour, its icons, coloured tables and
+stickies its own (`five_parts.marks_writer`, `palette=False`). The black look below is for a draw.py drawing, a
+special shape and a topic drawn before 261112 (SKILL.md § The look).
 Trees, lines and boxes in black; red only for an uncertain or open question; green only for a change
 we made, where we made it (JL 261007). No other colour and no fills: `canvas.INK`, `canvas.RED`,
 `canvas.GREEN`. `canvas.write` enforces it on what the builder draws (`apply_palette`: any other
@@ -284,14 +287,14 @@ What went wrong on the way, so it is not done again (all JL 261010, on s03):
 ❗ evidence stacked under each point       text rows spread apart        ✅ evidence laid out on its own
 ```
 
-The builders to copy from (WellDoc-SPACE, `examples-0-cowork/Project-SHIFT-Study/cowork/b21_event_cgm/studio/`):
+The builders to copy from (in the SPACE that holds the worked example, `<world>/Project-<Name>/cowork/b21_event_cgm/studio/`):
 `s03-related-work-structure/idea_frame.py` draws ① and ②; `draft_pages.py` ④; `task21_section.py` ⑤, with
 its line routing (`evidence_route`); `build_s03_related_work_structure.py` reads the face and the draft,
 draws ③ and sets the rows; `_build/draw_kit.py` and `_build/word_pdf.py` are the level's helpers.
 
 ## A slide draft (s61-s69)
 
-A topic that proposes a deck before it is built: `studio/s6N-<deck>/` with its face, one `slides.py`
+A topic that proposes a deck before it is built: `s6N-<deck>/` with its face, one `slides.py`
 (the ONE source), its builder, its drawing, `build_deck.py` and the deck in its own `delivery/`. The
 studio writer leaves its colours as drawn (`canvas.is_slide_draft`). Its drawing contract (frames left
 to right, the half-size slide skeleton, the accent inside a slide, the fields of `slides.py`, the deck
@@ -321,7 +324,7 @@ canvas.write(out, els, "build_sNN_<topic>.py", redraw_frames=())
    preview, so one command rebuilds the whole studio.
 6. **Marks**: an open point drawn in red. Every change to a drawing, asked for or found on a
    redraw, gets a short green note right where it changed (`✎ <YYMMDD> <what changed>`, made by
-   `canvas.change_note`) and the same line in the title frame (JL 261007: "leave the short green
+   `canvas.change_note`), never a list of changes in the title frame or a corner (JL 261010; JL 261007: "leave the short green
    comments to where we changed"). Old notes stay; a note goes only with the thing it marks. A slide
    draft keeps a note about one slide only under that slide (`excalidraw-slide`, JL 261008).
 

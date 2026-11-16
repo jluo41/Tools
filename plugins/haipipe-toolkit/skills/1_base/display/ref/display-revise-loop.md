@@ -28,15 +28,16 @@ after r04 with no pass ─▶ 🙋 stop; hand the person the open problems
 1. **Make.** The renderer builds each unit by the output contract, with a `question:` in its README,
    the paper's one colour scheme, and a folder name that says what the unit is (the rules below).
 2. **Blind review.** A FRESH agent, one that never saw the making, reviews the round. It reads only
-   each unit's `preview.pdf` and `assets/figure.png` (when the unit has one): no `recipe/`, no
+   page 1 of each unit's `preview.pdf` (the display and its caption; never the Message and method
+   pages after it) and `assets/figure.png` (when the unit has one): no `recipe/`, no
    README, no `intake/`, no paper text. Give it the brief below, verbatim.
 3. **Record.** Save the reviewer's text for each unit as `<unit>/review/rNN.md` (the record below)
    and update the README `review:` line.
 4. **Revise.** The maker fixes what the review names, re-renders and recompiles `preview.pdf`. Each
    fix goes where it lives: a caption, legend, label or folder-name change is the caller's (they are
    caller-owned); a picture change goes to the code that draws the picture. In a paper that code is
-   a Run of the paper's work Block, and the unit only frames its `result/` (haipipe-paper-evidence,
-   rule 3): fix that Run's script and rerun the Run, never patch the copy in the unit. The maker
+   a Run of the display's Task in the Board's `j01_evidence_display` (haipipe-paper-evidence,
+   rule 3): fix that Run's script and draw a new Run, never patch a drawn file. The maker
    never scores its own work and never edits a review record.
 5. **Review again** with ANOTHER fresh reviewer (not the round before's), and repeat until the pass
    rule holds or round 4 ends.
@@ -95,7 +96,7 @@ words). It has two parts, and nothing else:
 
 - **One colour scheme for the whole paper (or report).** It is one small file the recipes read
   (`colour-scheme.yaml`: a thing, its hex code, what it means); a recipe never types its own hex
-  codes. A paper keeps it once per version (haipipe-paper-evidence says where).
+  codes. A paper keeps one, in its display Job (`j01_evidence_display/colour-scheme.yaml`, haipipe-paper-evidence).
 - **The same thing gets the same colour in every display**, and **a colour never means two things**:
   the colour of one source or company is not reused for an outcome category, and an outcome's colour
   is not reused for a group.
@@ -115,7 +116,7 @@ display's job changes, and sweep every place that cites the old name in the same
 ## The reviewer brief (paste into a fresh agent)
 
 Make a review packet first: a new empty folder outside the project, one subfolder per unit named as
-the unit, holding only a copy of its `preview.pdf` and `assets/figure.png` (when it has one). Give
+the unit, holding only page 1 of its `preview.pdf` (saved as `preview.pdf`) and `assets/figure.png` (when it has one). Give
 the reviewer the packet path, so it can not wander into recipes or the paper. Fill `{units}` with one
 line per display, in reading order: its number in the paper, its folder name and its packet path.
 Fill `{venue}` with the journal or the reader (for example "a general medical journal").
@@ -142,7 +143,7 @@ For EACH display, in order:
    is drawn), and anything a journal would send back.
 4. Score each from 0 to 10 on one line, exactly in this form:
    scores: question N · readability N · honesty N · journal-ready N · overall N
-   question = it answers one clear question, and the caption says which;
+   question = it answers one clear question, and the picture with its caption lets you name it;
    readability = a reader gets it in 10 seconds without the text;
    honesty = scales, denominators, intervals and comparisons are fair, and no
    structural artefact (a floor, a ceiling, a forced zero) is shown as a finding;

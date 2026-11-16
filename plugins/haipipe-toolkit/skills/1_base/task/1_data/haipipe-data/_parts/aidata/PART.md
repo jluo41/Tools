@@ -47,7 +47,8 @@ Invocation       This skill's ref            Umbrella's fn doc
 dashboard        ref/concepts.md             ../../fn/fn-0-dashboard.md
 load             ref/concepts.md             ../../fn/fn-1-load.md
 cook             ref/concepts.md             ../../fn/fn-2-cook.md
-design-chef      ref/concepts.md             ../../fn/fn-3-design-chef.md
+design-chef      ref/concepts.md             ../../fn/fn-3-design-chef.md +
+                                             ../../fn/fn-3-design-chef-case-aidata.md
 design-kitchen   ref/concepts.md             ../../fn/fn-4-design-kitchen.md
 review           ref/concepts.md             ../../fn/fn-review.md
 (no fn arg)      ref/concepts.md             (ref-only mode)

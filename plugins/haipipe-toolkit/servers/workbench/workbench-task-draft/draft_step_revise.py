@@ -5,6 +5,8 @@ from __future__ import annotations
 import datetime
 import difflib
 import re
+
+from live.draft_step_flow_card import body as flow_body, map_html as flow_map
 from pathlib import Path
 from urllib.parse import quote
 
@@ -80,6 +82,8 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     from live.draft_card_text import ref_names, ref_text   # \ref prints its display's number ("Figure 2"), as LaTeX does
     refs = ref_names(task)
     text = ref_text(text, refs)
+    from live.draft_step_support import support_marks   # each sentence's VALUE, CITE and DISPLAY support (M-D18)
+    text = support_marks(text, d, task)
     # every sentence by its key: its full address when the Draft repeats a bare id, else its bare id (M-D05)
     keys = Keys(d)
     words = keys.words()
@@ -137,6 +141,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # a checked sentence shows its ✓ only: no ★, no low tint and no suggestion, from any pass (M-D06)
     said = [x for x in said if x["s"] not in ok]
     sids = {pid: keys.sentences_of(pid) for pid in keys.paras}
+    plan = _plan_paras(d)                              # § 1, drawn by each paragraph's 🧩 map
     flows = [(k, v, keys.flow_pid(k)) for k, v in
              re.findall(r"(?m)^Flow (C\d+\.P\d+|P\d+): (.*)$", rep.get("body", "").partition("\nSentences:")[2])] if rep else []
     # each sentence's evidence beside it, the rows 3 · Evidence shows there (JL 261021: "这里最好也加一下 evidence ...
@@ -148,6 +153,32 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
                 k = keys.resolve(sid)
                 if k in words:
                     evs.setdefault(k, []).append((c, it, n))
+    # every CITE item of draft/<stem>-evidence-items.md that no card holds gets its ❝ card too (M-D20)
+    from live.draft_step_cite_items import cite_entries
+    for a, c, it, n in cite_entries(task, d, ev, root):
+        k = keys.resolve(a)
+        if k in words:
+            evs.setdefault(k, []).append((c, it, n))
+    # a DISPLAY or TABLE item that targets a sentence gives it a 🖼 mark too (JL 261115: t02 s2 "(Fig. 1)" showed only
+    # its value mark); one no evidence card already holds, read from draft/<stem>-evidence-items.md
+    from live.draft_step_support import _targets, evidence_items
+    # (and a VALUE item its 📊 the same way, once the resolved ✓ chip left the row)
+    held = {str(it.get(f) or "") for c in ev.get("cards", []) if c.get("kind") in ("display", "value")
+            for it in c["items"] for f in ("item", "id")} - {""}
+    tmap = _targets(d)
+    for n, it in enumerate((x for x in evidence_items(task) if x["kind"] in ("DISPLAY", "TABLE", "VALUE")), 1):
+        if f'{it["id"]}-{it["kind"]}-{it["slug"]}' in held or it["id"] in held:
+            continue
+        kind, icon = ("value", "📊") if it["kind"] == "VALUE" else ("display", "🖼")
+        dcard = {"kind": kind, "label": it["kind"], "source": "", "title": "", "items": []}
+        run = str(it.get("local_run") or "").split("→")[-1].strip()
+        line = {"from_items": True, "peek": f'{icon} {it.get("label") or it["slug"]}',
+                "html": f'<div class="ev-item ev-ref">{icon} <b>{esc(it["id"])}</b> {esc(it.get("label") or it["slug"])}'
+                        + (f' <span class=ev-run>Run {esc(run)}</span>' if run else "") + '</div>'}
+        for tg in it["targets"]:                       # never `t`: that is the Section's own name, read below
+            k = keys.resolve(tmap.get(tg) or tmap.get(tg.lower()) or "")
+            if k in words:
+                evs.setdefault(k, []).append((dcard, line, n))
     right = list(html for _, html in sorted(
         [((_reading_key(h, d), 2), _revise_card(h, c, t, title)) for h, c in cards if not whole(h)]
         + [((_reading_key(h, d), 0), _revise_card(h, c, t, title, _first_para(whole(h).group(1), d))) for h, c in cards
@@ -155,7 +186,7 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
         + [((_reading_key(f"Comment · {c['target']}", d), 0), _note_card(c, by.get(c["n"], []))) for c in notes]
         + [((_reading_key(f"Review · {x['s']}", d), 1), _logic_card(x, words.get(x["s"], ""))) for x in said]
         + [((_reading_key(f"Ev · {sid}", d), 1.5), _ev_side_card(sid, items, root, words.get(sid, ""))) for sid, items in evs.items()]
-        + [((_reading_key(f"Flow · {sids[pid][-1]}", d), 3), _flow_card(k, v, pid, sids[pid])) for k, v, pid in flows
+        + [((_reading_key(f"Flow · {sids[pid][-1]}", d), 3), _flow_card(k, v, pid, sids[pid], plan.get(pid))) for k, v, pid in flows
            if pid and sids.get(pid)]
         + [((_reading_key(f"History · {sid}", d), 4), _history_card(sid, rows))
            for sid, rows in _sentence_history(d, path).items()],
@@ -169,12 +200,11 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the text, so the head is empty unless there is nothing yet
     head = (''
             if cs or notes or said or evs else '<p class=space-empty>No Revise cards yet.</p>')
-    # where the Section stands in haipipe-paper-draft's eight steps, marks only (ref/section-method.md)
-    from live.draft_step_revise_stands import stands, stands_line
-    head = stands_line(stands(d, path, task, cs, words, ok, title if rep else "")) + head
-    tail = ""
-    body = (f'<p class=space-reads>{_code(d["file"], root)}' + (f' · {_code(path, root)}' if path.is_file() else "")
-            + (f' · {_code(notes_at, root)}' if notes_at.is_file() else "") + '</p>'
+    # no step line over the text (JL 261115 agreed to delete it: three of eight marks had no record and one counted
+    # cards but not comments; a wrong state reads worse than none, must-check M-D16)
+    tail = _map_assets() if any("lg-maptpl" in h for h in right) else ""
+    # no file-link row over the text: the Draft, revise and comments files are in Files (JL 261115)
+    body = (''
             f'<div class=rv-board data-task="{esc(t)}">{head}{top}'
             f'{_sx_board(_sx_fill(text, right, _sx_paras(d), "Cards on no sentence in this text") + tail)}</div>')
     proposed = sum((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
@@ -260,7 +290,11 @@ def _logic_card(x: dict, now: str = "") -> str:
     scores += f" · {nw} words" if nw else ""
     applied = now and x["fix"] and " ".join(now.split()) == " ".join(x["fix"].split())
     fix = ""
-    if x["fix"] and not x.get("stale"):           # a suggestion for words the sentence no longer has is not offered
+    from live.draft_step_revise_blind import not_a_sentence
+    note = not_a_sentence(x["fix"], now) if x["fix"] and not applied else ""
+    if note and not x.get("stale"):               # a pointer or a fragment is a note, never a replacement (JL 261115:
+        fix = (f'<div class="lg-text lg-sugg"><span class=lg-lab>Fix</span> {_inline(x["fix"], {})}</div>')  # "very bad")
+    elif x["fix"] and not x.get("stale"):         # a suggestion for words the sentence no longer has is not offered
         fix = ('<div class="lg-text lg-sugg"><span class=lg-lab>✓ Fixed: the suggestion is in the text now; the score above '
                'was for the old wording</span></div>' if applied else
                f'<div class="lg-text lg-sugg"><span class=lg-lab>Suggested</span> '
@@ -268,39 +302,41 @@ def _logic_card(x: dict, now: str = "") -> str:
                # take the reviewer's sentence (JL 261113: "I think this is good, how could I accept it?")
                f' <button type=button class="work-act lg-use" data-adopt="{esc(x["s"])}" data-orig="{esc(now or "")}" '
                f'data-new="{esc(x["fix"])}">✓ Use this</button> <span class="lg-msg mut"></span></div>')
+    # the reviewer's count, `topics 1, points 2: <topic>;` at the problem's start, as its own chip (JL 261115: "one
+    # sentence one topic, usually one or two points, at most three points"); marked when over
+    prob, tp = x["problem"], ""
+    m = re.match(r"\s*topics?\s+(\d+)\s*,\s*points?\s+(\d+)\s*:?\s*([^;]*?)\s*(?:;\s*|$)", prob or "", re.I)
+    if m:
+        nt, npt, topic = int(m.group(1)), int(m.group(2)), m.group(3).strip()
+        over = nt > 1 or npt > 3
+        tp = (f'<span class="lg-tp{" over" if over else ""}" title="{esc("topic: " + topic if topic else "topics and points")}'
+              f'{esc(" · over the limit: one topic, at most three points" if over else "")}">'
+              f'{nt} topic{"s" if nt != 1 else ""} · {npt} point{"s" if npt != 1 else ""}</span>')
+        prob = prob[m.end():]
     # one line until clicked, so each card stays about as tall as its sentence and beside it
     return (f'<div class="rv-card rv-rev" data-s="{esc(x["s"])}" data-state="review" data-low="{low:g}" '
             f'data-scores="{esc(scores)}"{" data-fixed=1" if applied else " data-stale=1" if x.get("stale") else ""}>'
             f'<div class=lg-head><b class=lg-q>★{low:g} {esc(word)}</b>'
-            f'<span class=lg-sc title="9-10 good · 8 passes · 7 weak · 6 or less needs work">{esc(scores)}</span></div>'
-            + (f'<div class="lg-text lg-prob">{_inline(x["problem"][:1].upper() + x["problem"][1:], {})}.</div>'
-               if x["problem"] else "")
+            f'<span class=lg-sc title="9-10 good · 8 passes · 7 weak · 6 or less needs work">{esc(scores)}</span>{tp}</div>'
+            + (f'<div class="lg-text lg-prob">{_inline(prob[:1].upper() + prob[1:], {})}.</div>'
+               if prob else "")
             + fix + '</div>')
 
 
 def _bib_ref(result) -> dict:
     """A discovery Run's one-entry .bib as a reference: who ("Ibrahim and Zaki"), year, title, venue, and a link (its DOI,
     else its URL, else its arXiv id)."""
+    from live.draft_step_cite_items import bib_text_ref
     bib = next(Path(result).glob("*.bib"), None)
-    text = bib.read_text(encoding="utf-8", errors="replace") if bib else ""
-    get = lambda k: ((m := re.search(r"\b" + k + r"\s*=\s*\{([^{}]*(?:\{[^{}]*\}[^{}]*)*)\}", text)) and
-                     re.sub(r"[{}]", "", m[1]).strip()) or ""
-    raw = re.search(r"\bauthor\s*=\s*\{\s*\{([^{}]+)\}\s*\}", text)        # {{U.S. Congress}}: one name, kept whole
-    names = [raw[1].strip()] if raw else [a.strip() for a in get("author").split(" and ") if a.strip()]
-    last = lambda a: a.split(",")[0].strip() if "," in a else a.split()[-1]
-    who = ((names[0] if raw else last(names[0])) + (" et al." if len(names) > 2 else f" and {last(names[1])}"
-           if len(names) == 2 else "")) if names else ""
-    doi, url, eprint = get("doi"), get("url") or get("howpublished").replace("\\url", "").strip(), get("eprint")
-    link = (f"https://doi.org/{doi}" if doi else url if url.startswith("http") else
-            f"https://arxiv.org/abs/{eprint}" if eprint else "")
-    venue = get("journal") or get("booktitle") or ("arXiv" if eprint else get("howpublished") if not get("howpublished").startswith("\\url") else "")
-    return {"who": who, "year": get("year"), "title": get("title"), "venue": venue, "link": link}
+    return bib_text_ref(bib.read_text(encoding="utf-8", errors="replace") if bib else "")
 
 
 def _ev_item(c: dict, it: dict, n: int, root: Path | None) -> str:
     """One evidence item beside its sentence (JL 261021: "我需要 evidence 对应的是哪一个 paper ... 你得给个链接、给个 reference"):
     its label and state; for a citation, the paper (who, year, title, venue, linked), the sentences quoted from it and
     the words they back; for a value, the value and the file and key it is read from; and the Run that read it."""
+    if it.get("from_items"):                        # a CITE item no card holds (draft_step_cite_items)
+        return it["html"]
     ink = INK.get(c["kind"], INK["value"])
     res, addr = it.get("result"), f'{c["source"]}.{it["run"]}' if it.get("run") else ""
     card = Path(res) / f"{Path(res).parent.name}.md" if res else None      # the Run's Result Card, result/<run>.md
@@ -339,7 +375,9 @@ def _ev_side_card(sid: str, items: list, root: Path | None = None, text: str = "
     one still needs; then, opened, each item with its reference, link, quoted sentences and the Run that read it."""
     names = []
     for c, it, n in items:
-        if c["kind"] == "cite" and it.get("result"):
+        if it.get("from_items"):
+            names.append(it["peek"])
+        elif c["kind"] == "cite" and it.get("result"):
             r = _bib_ref(it["result"]); names.append(f'{r["who"]} {r["year"]}'.strip() or it.get("cite", ""))
         elif it.get("need"):
             names.append("pending: " + str(it["need"]).split(":")[0][:48])
@@ -355,14 +393,44 @@ def _ev_side_card(sid: str, items: list, root: Path | None = None, text: str = "
             + "".join(_ev_item(c, it, n, root) for c, it, n in items) + '</div>')
 
 
-def _flow_card(k: str, text: str, pid: str, sids: list) -> str:
+def _flow_card(k: str, text: str, pid: str, sids: list, para=None) -> str:
     """A paragraph's flow as the reviewer reads it, `S1 the shift → S2 … · weakest join S3 to S5`, a Logic card under
     the paragraph's last sentence (so it never pushes the first one down); pointing at it lights all its sentences."""
-    steps, _, weak = text.partition(" · weakest join ")
-    return (f'<div class="rv-card rv-rev rv-flow" data-s="{esc(" ".join(sids))}" data-p="{esc(pid)}" data-state="review">'
-            f'<div class=lg-head><span class=rv-handle><b class=lg-k>Logic</b><span class=nt-s>{esc(k)} flow</span></span></div>'
-            f'<div class="lg-text lg-clip2">{_inline(steps, {})}</div>'
-            + (f'<div class="lg-text mut">weakest join {esc(weak)}</div>' if weak else "") + '</div>')
+    scores = [int(n) for n in re.findall(r"\b(\d{1,2})/10\b", text)]   # the paragraph's score, shown on its heading
+    plow = f' data-plow="{min(scores)}"' if scores else ""             # (JL 261115: "why no ... per paragraph eval?")
+    return (f'<div class="rv-card rv-rev rv-flow" data-s="{esc(" ".join(sids))}" data-p="{esc(pid)}"{plow} data-state="review">'
+            f'<div class=lg-head><span class=rv-handle><b class=lg-k>Logic{" · ★" + str(min(scores)) + "/10" if scores else ""}</b><span class=nt-s>{esc(k)} flow</span></span></div>'
+            + (_flow_with_map(text, m) if (m := flow_map(text, _inline, para)) else flow_body(text, _inline))
+            + (f'<template class=lg-maptpl>{m}</template>' if m else "") + '</div>')
+
+
+def _flow_with_map(text: str, m: str) -> str:
+    """The Logic card as the Structure view draws the paragraph (JL 261115: "why not just have the thins like the
+    mindmap graph"): its problem, the map in place of the step rows, its Fix."""
+    from live.draft_step_flow_card import parse
+    f = parse(text)
+    return ((f'<div class="lg-prob">{_inline(f["problem"], {})}</div>' if f["problem"] else "")
+            + f'<div class=pmap-box>{m}</div>'
+            + (f'<div class="lg-text"><span class=lg-lab>Fix</span> {_inline(f["fix"], {})}</div>' if f["fix"] else ""))
+
+
+def _plan_paras(d: dict) -> dict:
+    """{C1.P7: (C1.P7, its name, [(s35, role, point, note)])} from § 1, the rows the Structure view draws."""
+    try:
+        from live.draft_steps_common import _plan_tree
+        return {p[0]: p for p in _plan_tree(d["structure"][1])[2]} if d and d.get("structure") else {}
+    except Exception:
+        return {}
+
+
+def _map_assets() -> str:
+    """The Structure map's look and its curves (haipipe-mindmap mapview.py), once, for every 🧩 map on the page."""
+    try:
+        from live.draft_step_plan import _mapview
+        mv = _mapview()
+        return mv.CSS + mv.JS
+    except Exception:
+        return ""
 
 
 def _review_report(path: Path) -> str:
@@ -395,7 +463,7 @@ def _review_report(path: Path) -> str:
         chip = (f'<span class="{VERDICT_CHIP.get(verdict.strip().upper(), "st")}" style="white-space:nowrap">'
                 f'{esc(verdict.strip())}</span>')
         rows.append((f"<b>{esc(AXIS_NAME.get(axis, axis))}</b>", chip,
-                     f'<b>{sc.group(1)}</b><span class=mut>/{sc.group(2)}</span>' if sc else '<span class=mut>—</span>',
+                     f'<b>★{sc.group(1)}</b><span class=mut>/{sc.group(2)}</span>' if sc else '<span class=mut>—</span>',
                      _inline(reading, {}), _inline(fix, {}) if fix else '<span class=mut>—</span>'))
     table = _change("Section question", field("Now"), field("Proposed")) if field("Now") and field("Proposed") else ""
     # each sentence in its context, as the reviewer reads it (JL 261021: "让 AI 也来评评每句话，作为一个 reviewer"; "每句话
@@ -409,11 +477,11 @@ def _review_report(path: Path) -> str:
     mean = lambda xs: f"{sum(xs) / len(xs):.1f}"
     # the lines themselves are Logic cards beside the text (_logic_card); the report keeps their sum
     sentences = ((f'<p style="margin:10px 0 0"><b>Each sentence, in its context:</b> '
-                  + (f'logic {mean(logic)} · ' if logic else "") + f'read {mean(read)} of 10 · '
+                  + (f'logic ★{mean(logic)} · ' if logic else "") + f'read ★{mean(read)}/10 · '
                   f'{len(lines) - fail} of {len(lines)} pass (8 or more{" on both" if logic else ""}, no broken link) '
                   '<span class=mut>· each sentence\'s Logic card is beside it below</span></p>') if lines else "")
     # the score and the table only (JL 261113: no Reviewer, Verdict or "cards below" prose)
-    out = ((f'<p style="margin:0 0 6px"><b>Score {sum(scores) / len(scores):.1f} of 10</b> <span class=mut>· the mean '
+    out = ((f'<p style="margin:0 0 6px"><b>Score ★{sum(scores) / len(scores):.1f}/10</b> <span class=mut>· the mean '
               f'of {len(scores)} rows; a reading aid, never a pass mark</span></p>' if scores else "")
            + (_table(("rubric", "verdict", "score", "how the draft reads", "smallest fix"), rows) if rows else "")
            + sentences

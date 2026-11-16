@@ -1,0 +1,14 @@
+{
+  "schema_version": "subjective-label/sealed-v2",
+  "status": "reserved",
+  "custodian": "fixture-custodian",
+  "invalidation_state": "valid",
+  "n_items": 1,
+  "frame": {
+    "rule": "one fixture item reserved before development read",
+    "sampling": "fixture"
+  },
+  "access_policy": [
+    "no development read, embed, index, retrieve, dedup, or prelabel"
+  ]
+}

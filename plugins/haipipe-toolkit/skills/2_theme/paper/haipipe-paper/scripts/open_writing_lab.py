@@ -7,7 +7,8 @@
     python open_writing_lab.py <paper-root> --apply         write the workspace files and open them
         [--prefix <Short>]      session names <Short>-<unit>; default board.md `session-prefix:`
         [--per-window 4]        terminals per VS Code window (default 4)
-        [--appendix]            add the Appendix unit (default: the Main Sections only)
+        [--appendix]            add the Appendix unit (default: the Main Sections only); --no-appendix drops it
+        [--sizes 5 2]           units per window, in order (default: an even split by --per-window)
         [--no-board]            leave out the Board session (default: it opens first, in Lab-A)
         [--pages <id> ...]      only these units
         [--terminal vscode]     vscode (default): VS Code windows whose own terminals open the sessions
@@ -23,6 +24,7 @@ A unit is what one Section session owns (create_section_sessions.py builds the u
 split as evenly as possible over ceil(n / per-window) windows. By default each window is a VS Code
 window (a `.code-workspace` whose `haipipeLab.terminals` the Paper Writing Lab extension, ../vscode-lab, opens as
 VS Code terminals in a grid); --terminal tmux makes it a tmux session shown in Terminal instead.
+--appendix and --sizes are kept in the lab folder's layout.json on --apply, so the next lab opens the same way.
 Files go under ~/.config/haipipe/labs/<paper>/. Each pane runs lab_launch.py: it resumes the unit's `session:` when its transcript exists, else starts a new
 session with that id and the unit's read-only first turn. A unit with no `session:`, or one naming another
 unit's session, gets a new id written into its page header on --apply.
@@ -111,6 +113,26 @@ def windows(items, per):
         out.append(items[i:i + k])
         i += k
     return out
+
+
+LAYOUT = "layout.json"
+
+
+def by_sizes(items, sizes):
+    """The windows the person asked for: --sizes 5 2 puts the first five units in Lab-A, the next two in Lab-B."""
+    out, i = [], 0
+    for k in sizes:
+        out.append(items[i:i + k])
+        i += k
+    return out
+
+
+def saved_layout(out_dir):
+    """What the last --apply kept for this paper: {"appendix": bool, "sizes": [..]}; {} when none or unreadable."""
+    try:
+        return json.loads((out_dir / LAYOUT).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
 
 
 def board_origin(root):
@@ -218,7 +240,8 @@ def main():
     ap.add_argument("paper", help="the paper root (the folder holding board.md)")
     ap.add_argument("--prefix")
     ap.add_argument("--per-window", type=int, default=4)
-    ap.add_argument("--appendix", action="store_true", help="add the Appendix unit")
+    ap.add_argument("--appendix", action=argparse.BooleanOptionalAction, default=None, help="add the Appendix unit")
+    ap.add_argument("--sizes", type=int, nargs="+", help="units per window, in order, e.g. 5 2")
     ap.add_argument("--no-board", action="store_true", help="leave out the Board session")
     ap.add_argument("--pages", nargs="*", default=None)
     ap.add_argument("--apply", action="store_true", help="write the files and open them (default: plan only)")
@@ -251,12 +274,17 @@ def main():
     if not story or not version:
         sys.exit("no writing Job with a `haipipe:compile-order` block: settle the Section structure first")
 
-    units = plan_units(paper, prefix, a.appendix, a.pages)
+    out_dir = LABS / paper.name
+    kept = saved_layout(out_dir)
+    appendix = kept.get("appendix", False) if a.appendix is None else a.appendix
+    units = plan_units(paper, prefix, appendix, a.pages)
     if not units:
         sys.exit("no Section units found")
     lab = ([] if a.no_board or a.pages else [board_unit(paper, prefix)]) + units
-    groups = windows(lab, a.per_window)
-    out_dir = LABS / paper.name
+    sizes = a.sizes or ([] if a.pages or a.no_board else kept.get("sizes") or [])
+    if a.sizes and (sum(sizes) != len(lab) or min(sizes) < 1):
+        sys.exit(f"--sizes {' '.join(map(str, sizes))} must add up to the {len(lab)} units of this lab")
+    groups = by_sizes(lab, sizes) if sizes and sum(sizes) == len(lab) else windows(lab, a.per_window)
     letters = "ABCDEFGHIJ"
     for w, g in enumerate(groups):
         print(f"{prefix}-Lab-{letters[w]}")
@@ -270,6 +298,9 @@ def main():
         css.record_prefix(paper, prefix)
     prompts = out_dir / "prompts"
     prompts.mkdir(parents=True, exist_ok=True)
+    if not a.pages and not a.no_board:
+        (out_dir / LAYOUT).write_text(json.dumps({"appendix": appendix, "sizes": [len(g) for g in groups] if sizes else []})
+                                      + "\n", encoding="utf-8")
     for old in out_dir.glob("*.code-workspace"):
         old.unlink()   # only the current layout stays
     files = []

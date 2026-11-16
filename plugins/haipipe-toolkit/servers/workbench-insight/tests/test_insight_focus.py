@@ -379,3 +379,16 @@ class RoundOneTest(unittest.TestCase):
         self.assertNotIn("A new segment", work["work-answer"][1]())
         self.assertIn("Gather what it cites", work["work-answer"][1]())
         self.assertNotIn("Run every segment", work["work-answer"][1]())
+
+
+class QuestionMapTest(unittest.TestCase):
+    def test_the_dots_map_keeps_executive_on_top(self):
+        """Dots: Executive is a row across the top in number order, never a fifth column; its lines are marked so
+        they stay faint until lit (workbench-insight ref/topics.md T08)."""
+        from live import question_canvas as QC
+        net = QC.JS[QC.JS.index("function drawNet()"):QC.JS.index("function dot(")]
+        self.assertIn("cols=['D','I','K','W']", net)
+        self.assertNotIn("'W','X']", net)
+        self.assertIn("keep('X').sort(num)", net)
+        self.assertIn("'e ex'", net)
+        self.assertIn("path.e.ex:not(.down):not(.up)", QC.CSS)

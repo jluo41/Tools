@@ -46,8 +46,8 @@ What is next
 ```text
 release   a question with no plan → run-plan-evidence · not agreed → run-review-plan · a compute need with no
           script → run-write-script · segments not set → run-set-segments · all set → run-sign-release (a person)
-Question Book no release → run-open-version-p1 · the newest signed and proposals open → triage, then the next release
-Board     no data version → run-add-version-v1 · no Job → run-add-j01 · the newest Job closed and a new data
+Question Book no release → run-open-version-question-v1 · the newest signed and proposals open → triage, then the next release
+Board     no data version → run-add-version-data-v1 · no Job → run-add-j01 · the newest Job closed and a new data
           version or a new signed release waiting → run-add-j<NN> (one clock) · else the readings
 Job       not launched → run-launch · a segment not run → its run.sh · a page not written → run-write · not checked →
           run-check · all checked and a Job before it → run-compare · then run-close (a person)

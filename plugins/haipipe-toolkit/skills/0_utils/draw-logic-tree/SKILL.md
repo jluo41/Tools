@@ -18,6 +18,8 @@ metadata:
 
 # /draw-logic-tree · claim → reasons → Bullets, left to right
 
+> Scripts here need Python 3.10+: where a command says `python3`, run it as `uv run --python 3.13 --with pyyaml python ...` (or a SPACE `.venv/bin/python`); see `plugins/haipipe-toolkit/skills/README.md` § Running a skill's scripts.
+
 A **logic tree** shows why a Page's claim holds, so that reading the boxes alone tells
 what the Page argues (JL 261003: "concise and high level, after reading the structure of
 the draw, we know what it is about"; "make it deeper"; "make the logic clear"). It lives

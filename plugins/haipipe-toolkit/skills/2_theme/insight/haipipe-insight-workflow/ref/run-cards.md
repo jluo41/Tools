@@ -4,7 +4,7 @@ What the insight workbench shows in each level's Runs panel: one card per button
 of its Run and the prompt the button copies. The cards follow the insight ladder (`haipipe-insight/ref/insight-ladder.md`;
 b11 s11 · s12 · s13 · s21, JL 261007 plan C): the Question Book (its Block, a release, a question) and the insight Board
 (its Block, a Job, a Task). The owning skills keep their authority; `haipipe-insight-workflow` routes the Runs and is
-the card's skill only where it signs, launches or closes.
+no card's skill: each card names the skill that does the work.
 
 A `🔘 BUTTON` line is `label · <Level> › <Space> · ticket pattern · views <names>`. Level is the insight Board's
 `Block`, `Job` or `Task`, the Question Book's `Question Book`, `Release` or `Question`, or the `Guide` (on every tab); Space is one of the six
@@ -37,7 +37,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-meta
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-meta add the next data version to {folder}: one entry in board.md versions: (version · extract, SPACE-relative · frozen · rows · what is new) and a line in meta/meta.md, as run-add-version-data-v<M>; the extract is frozen once added, and say whether it accumulates the earlier rows.
+💬 PROMPT   /haipipe-insight-meta add the next data version to {folder}: one entry in board.md versions: (version · folder, the SPACE-relative data folder · frozen · what is new; a lone file: extract · rows) and a line in meta/meta.md, as run-add-version-data-v<M>; the extract is frozen once added, and say whether it accumulates the earlier rows.
 
 🔘 BUTTON   Add a Job · Block › Description · ^run-add-j\d+$ · views map
 🧩 SKILL    haipipe-insight
@@ -187,7 +187,7 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-report check a question's page in {folder} in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
+💬 PROMPT   /haipipe-report check a question's page in {folder} in a fresh context, as run-check-t<NN>: one verdict per need against its pass: line (haipipe-insight ref/deliverables.py <Task> lists them), every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
 
 🔘 BUTTON   Pool or split · Job › Audience Report · ^run-pool-t\d+$ · views cross
 🧩 SKILL    haipipe-insight-knowledge
@@ -276,7 +276,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-report check each written page in {folder} not checked yet, in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows; write the verdict on the page's check: line.
+💬 PROMPT   /haipipe-report check each written page in {folder} not checked yet, in a fresh context, as run-check-t<NN>: one verdict per need against its pass: line (haipipe-insight ref/deliverables.py <Task> lists them), every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows; write the verdict on the page's check: line.
 
 🔘 BUTTON   Compare with the Job before · Job › Work Details · ^run-compare-j\d+$ · views compare
 🧩 SKILL    haipipe-insight-knowledge
@@ -364,7 +364,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-report
 🤖 AGENT    haipipe-draft-check-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-report check the page of {folder} in a fresh context, as run-check-t<NN>: every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
+💬 PROMPT   /haipipe-report check the page of {folder} in a fresh context, as run-check-t<NN>: one verdict per need against its pass: line (haipipe-insight ref/deliverables.py <Task> lists them), every number traces to its Run's result/, every need is cited, and nothing claims more than its level allows.
 
 🔘 BUTTON   Pool or split · Task › Audience Report · ^run-pool-t\d+$ · views reading
 🧩 SKILL    haipipe-insight-knowledge

@@ -1,18 +1,15 @@
 ---
 name: excalidraw-story
 description: >-
-  A paper's story drawn as one Studio topic: the story is the list of research questions it answers, and read in
-  order the questions are its narrative. One large main frame shows the paper's question, then each research
-  question as a step down and to the right, titled by its narrative question, with one wide frame beside it, three
-  panels read left to right: its card (why it matters, the answer so far, its theories, its Runs), what we expect and why (each
-  hypothesis with the theory it comes from and the evidence rows that test it), and what the paper can say (its
-  claims), marked ✅ answered, 🔶 partly or ⬜ nothing yet (red, dashed). Small frames explain it as stairs: the
-  theory (§4's table, by role), what we will not claim, the venues, and the Runs still to make until the paper's
-  plan (haipipe-paper-plan) takes them over. Read from the telling's face on every build (haipipe-paper-story's §2,
-  §3, §4, §5 and §7), so the drawing never says what the story does not. haipipe-paper-story calls it for
-  studio/sNN-story-<desk>-<idea>/. Use to draw or redraw a story, to see which research questions are answered and
-  which are missing, or to give a new paper's story the same shape. Trigger: draw the story, story drawing, s02
-  story, research questions as steps, which questions are answered, what supports each question, /excalidraw-story.
+  A paper's story drawn as one Studio topic: its research questions, read in order, are its narrative. A main
+  frame shows the paper's question, then each research question as a step down and to the right, with three
+  panels: its card, what we expect and why (hypotheses, their theory, the evidence rows that test them), and
+  what the paper can say (its claims), marked ✅ answered, 🔶 partly or ⬜ nothing yet. Small frames add the
+  theory, what we will not claim, the venues and the Runs still to make. Read from haipipe-paper-story's face
+  on every build; that skill calls it for studio/sNN-story-<desk>-<idea>/. Use to draw or redraw a story, see
+  which research questions are answered, or give a new paper's story the same shape. Trigger: draw the story,
+  story drawing, s02 story, research questions as steps, which questions are answered, what supports each
+  question, /excalidraw-story.
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -51,7 +48,7 @@ space; JL 261013), and like excalidraw-job it is read from disk on every build.
 What it reads
 -------------
 
-Everything comes from the telling's face, `studio/sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md`, in
+Everything comes from the telling's face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Board's Jobs (an older Board: in `studio/`), in
 haipipe-paper-story's form. Nothing is copied into a second words file.
 
 | drawing | from the face |
@@ -85,8 +82,8 @@ Use
 
 ```bash
 S=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-story/scripts/story_drawing.py
-.venv/bin/python $S make studio/s02-story-<desk>-<idea>     # once: the topic's forwarding builder
-.venv/bin/python studio/s02-story-<desk>-<idea>/build_s02_story_<desk>_<idea>.py     # every redraw
+.venv/bin/python $S make <Board>/s02-story-<desk>-<idea>     # once: the topic's forwarding builder
+.venv/bin/python <Board>/s02-story-<desk>-<idea>/build_s02_story_<desk>_<idea>.py     # every redraw
 ```
 
 1. **Write the face first**: the list of questions in reading order, one block per question, each number naming its
@@ -94,7 +91,7 @@ S=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-story/script
 2. **Mark honestly**: an answer state starts ✅ only when a Run's Result answers it, 🔶 when a Run answers part of it
    or only one model, ⬜ when nothing does. A ⬜ is drawn red and dashed, so the missing shows at once.
 3. **What is missing becomes Runs**: a ⬜ question names its T rows in §7 with who starts them; a Run that costs new
-   model calls says `JL starts`, and nothing is started from the drawing.
+   model calls says `<person> starts`, and nothing is started from the drawing.
 4. **G0 is a mark, not a gate**: a story may exist before G0 (JL 261019: "there are not s02, why????"); the face's
    `**G0:**` line says whether JL has chosen it, and the path ends on G0 until then.
 5. **Never edit the drawing by hand**: a person's marks on the canvas are kept (haipipe-studio canvas.write); the

@@ -55,8 +55,8 @@ work is its Tasks; the response letter (`t32_response`, a letter Task) stays in 
 
 This skill owns the comments batch Page and its `page-type: comments` contract. A review batch opens on a
 feedback batch any time after a build exists, and closes through gate G5: every concern in the table belongs to
-one Review Item and is routed exactly once (the Story's §5 support and §6/§7 needs for new evidence, a Story §8
-Section Narrative row for retelling, a Section for rework), and a person approves the response receipt. A
+one Review Item and is routed exactly once (the Story's §5 support and §6/§7 needs for new evidence, a Story §8 claim or the
+version's `## Narrative` row for retelling, a Section for rework), and a person approves the response receipt. A
 meeting, advisor or internal batch closes when every point has a terminal state and its proposed questions are
 decided. `haipipe-paper-workflow` holds the full gate assertions; this block only binds the Page owner. The page
 itself always runs through `/haipipe-draft` and `haipipe-draft-workflow` (OUTLINE → … → CHECK), never a private
@@ -149,7 +149,7 @@ Bc-<desk>-Round/CM03-<desk>-review-<YYYYMMDD>/   older shelves (legacy, read as 
 - On the ladder a batch is a Job, `jNN_review_<kind>_v<MMDD>/`, typed by its face (`page-type: comments`), or a
   Studio topic when nothing runs; never a Task, so never `t3N_` (that band is letters: t31 cover
   letter, t32 response). Its `batch-id` stays `CM<NN>` (a legacy batch keeps `RD<NN>`) inside the Page. On older desk shelves it
-  keeps `CM<NN>-…`. `haipipe-paper/scripts/carry_over/rename_tasks.py` moves an old `RD<NN>-…` batch into `reports/`.
+  keeps `CM<NN>-…`. `haipipe-paper/scripts/carry_over/rename_tasks.py` moves an old `RD<NN>-…` batch into `reports/` (the older shelf, still read).
 - `CM<NN>` is unique across the paper. Existing `RD<NN>-…` Pages keep their names: Runs, receipts and Story
   rows cite them. Do not shorten `CM` to `C` (a claim id) or reuse `RD` for a new batch.
 - The Page stem is `CM<NN>-<desk|story>-<kind>-<YYYYMMDD>`, with ASCII lowercase letters, digits and single
@@ -185,9 +185,11 @@ CONTENT  record human decisions, owning-page returns, replies and proposed quest
 CHECK    verify coverage, snapshot builds, reply trace, deferred handoffs, approval
 ```
 
-## ✉️ A submission batch carries the cover letter
+## ✉️ The cover letter is a letter Task; an older submission batch carried it
 
-A batch that begins with a submission (`CM<NN>-<desk>-submission-<YYYYMMDD>`, kind `editor`) holds the cover
+The cover letter's words live in a letter Task (`t31_cover-letter` in the writing Job, else `t01_cover-letter` of the
+submission Job; haipipe-paper-assemble `ref/cover-letter-lane.md`). An older Board only: a
+batch that begins with a submission (`CM<NN>-<desk>-submission-<YYYYMMDD>`, kind `editor`) holds the cover
 letter's words in a `### Cover letter` division of its Content, drafted in `draft/` and adopted after the
 person's approval like any page. `run-delivery-coverletter` (haipipe-paper-assemble) fills the facts, renders
 PDF and DOCX into `delivery/cover-letter/`, and `build.py send <batch-id>` freezes the letter with the manuscript
@@ -307,12 +309,12 @@ Keep authority with the artifact being changed:
 | Item is about | Owning destination |
 |---|---|
 | evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's §5 evidence proposition plus the corresponding §6 Discovery or §7 Task need |
-| contribution, claim role, or paper order | the Story's §8 Section Narrative row (and its compile-order block) |
+| contribution, claim role, or paper order | the Story's §8 claims; the version face's `## Narrative` row and its compile-order block for the order |
 | section argument, wording, placement, or limitation | owning Section Page |
 | missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story §7 |
-| citation request | consuming Page's CITE Evidence Item and verified source set |
-| number correction | consuming Page's VALUE Evidence Item and accepted local Result |
-| table or figure change | consuming Page's DISPLAY Evidence Item and accepted `results/<re-run>/payload/<unit>/` |
+| citation request | the Board's citation Job (`j03_evidence_cite`) and the Section's CITE card; an older Section: its CITE Evidence Item |
+| number correction | the Board's value Job (`j02_evidence_value`) and the Section's VALUE binding; an older Section: its VALUE Evidence Item |
+| table or figure change | the Board's display Task (`j01_evidence_display`); an older Section: its DISPLAY Evidence Item and `results/<re-run>/payload/<unit>/` |
 | a question every reader would ask | a proposed Board question (below) |
 | response wording and coverage | this batch Page |
 
@@ -417,7 +419,7 @@ After closure, treat the batch as a historical record. Later comments open a new
 the closed one.
 
 It owns one script, `scripts/review_items.py` (b16 Q05), the runner of its three run cards (`Job › Audience
-Report`, view comments): `add` files a batch as a comments report in the version that answers it (Add comments),
+Report`, view comments): `add` files a batch as a review Job on the Board, `for:` the version that answers it (Add comments),
 `route` sets one Review Item's `lands on`, `work` and state (Route an item), and `reply` sets its `reply` and state
 (Reply to an item). Each keeps the old text with a record (`.paper-version-N.yaml`) so `rollback` restores it, and
 none writes into another Page's folder: a route prints the `feedback.py collect` and `page.py open-run` commands

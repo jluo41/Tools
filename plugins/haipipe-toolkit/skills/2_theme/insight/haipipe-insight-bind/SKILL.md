@@ -80,7 +80,7 @@ Project's DIKW task Block (`work/b5N_<topic>_dikw/`).
   that answers it; a second question gets its own run, even from the same code.
 - Never write the page's text, its `results-read:` line or a register cell.
 - Aggregate output only; heavy output goes to `HEAVY_DIR` with a `heavy.yaml`
-  pointer (AGENTS.md rule 10).
+  pointer (the SPACE's AGENTS.md § Working rules).
 
 ## Output
 

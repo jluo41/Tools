@@ -81,13 +81,13 @@ Page Runs use the shared full names (`run-<kind>-<slug>`). Paper judgments use
 Supporting Runs stay in Task/Discovery/other native stores. A local evidence Run and
 its native Ticket refer to the same work; index it once with aliases.
 
-A commissioned compile uses the neutral folder-local executable dialect:
-`<paper>/delivery/runs/<rNN_compile-slug>.sh` pairs with
-`<paper>/delivery/results/<rNN_compile-slug>/`. Its Ticket freezes the config
+A commissioned compile is the version's Build Run, `runs/run-delivery-<target>/` in the
+writing Job (the Build card; the `haipipe-run` folder; an older Board:
+`<paper>/delivery/runs/<rNN_compile-slug>.sh` with `delivery/results/<rNN_compile-slug>/`). Its Ticket freezes the config
 path, source versions and engine/profile references, and invokes the existing
 `delivery/build.py` wrapper. The Result records outcome and exact paths,
 including a byte-for-byte snapshot of the build manifest. That snapshot is
-historical evidence; `delivery/build-manifest.json` remains the sole current
+historical evidence; `delivery/<writing Job>/build-manifest.json` remains the sole current
 delivery receipt. No content hash is written or compared (JL 260928). Before
 execution, recheck the frozen source versions and whether the config or a
 source file is newer than the Ticket (file time or `git diff`); if they

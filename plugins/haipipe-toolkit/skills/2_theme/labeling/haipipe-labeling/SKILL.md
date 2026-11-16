@@ -38,7 +38,7 @@ The person's one start message (JL 261014: "from /haipipe-labeling <path to job>
 and guide me step by step"). A labeling Job is one dataset × one label; its Tasks are typed by their faces'
 `task-type:` lines (items · ground truth · building · scanning · score), and the work goes items → building → scanning.
 A Job that runs the two loops (b15 s58, since 261101) types its building as two Tasks, 🧭 meaning
-(`labeling-meaning`: Frame, then loops of Report → Preferences → Update; the only Task that asks the person) and 🛠
+(`labeling-meaning`: Frame, then loops of Prepare (the interaction report) → Preferences → Update; the only Task that asks the person) and 🛠
 expression (`labeling-expression`: rounds of Rewrite → Run → Evaluate under a signed meaning), and goes items →
 meaning ⇄ expression → scanning. Each of their steps is a prompt the workbench page copies; route it below.
 
@@ -150,9 +150,9 @@ their gate receipts win whenever a rendered view disagrees.
 ```text
 enter | status            resolve the job and derive both frontiers from disk
 building | build | teach  forward to /haipipe-labeling building (law), which hands execution
-                          to /haipipe-labeling building (order)
+                          to its ref/step-order.md (order)
 scanning | scan           forward to /haipipe-labeling scanning (law), which hands execution
-                          to /haipipe-labeling scanning (order)
+                          to its ref/step-order.md (order)
 workflow | run | drive    forward to /haipipe-labeling workflow, which hands the
                           runnable side to its ORDER machine
 one Run | one view        forward to that view's skill (/haipipe-labeling-<view>),

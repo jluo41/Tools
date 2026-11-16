@@ -33,8 +33,8 @@ jNN_/tNN_/runs/rNN/result/ ──────▶   j02_evidence_value/ tNN_value
                                        │ values first: its copies and its ids are all a display reads
                                        ▼
 discovery/bNN_ … CITE Results ──▶    j01_evidence_display/ colour-scheme.yaml ─▶ cited in tNN_<section> (cited-in:)
-                                       t01_figure1-<slug>/runs/rNN/result/figure.pdf
-                                       t51_etable1-<slug>/runs/rNN/result/table-body.tex
+                                       t01_display-a-<slug>/runs/rNN/result/figure.pdf
+                                       t02_display-b-<slug>/runs/rNN/result/table-body.tex
                                      j03_evidence_cite/  tNN_<claim group>/  ───▶ \citep keys in the Section
 ```
 
@@ -69,11 +69,11 @@ The rules
    onto the Board 261031): one Task per group of printed numbers, each a value map and one Run, and the Section's
    VALUE cards bind each printed number to its value by id (the standard shape below, 0.7.0). Every printed value
    names its Runs (`checks:`), its research question and where it is printed. A setting stated in words stays on its card.
-3. **Displays are the paper's.** Each `Display<n>-<slug>/` is built on cards (haipipe-display). The paper numbers them
+3. **Displays are the paper's.** Each display is built on cards (haipipe-display). The paper numbers them
    in Section order: the main text Display 1, 2 …, the appendix (`t2N_`) eDisplay 1, 2 …; each is cited in its
    Section's text; the main text stays within the venue's limit (its call, or what the person says).
    **A display is drawn in the paper's display Job, from the value Job's copies of work's returned Results, and
-   framed by the Section** (JL 261022; moved to the paper Board 261031):
+   cited by the Section** (JL 261022; moved to the paper Board 261031):
    - **Values first, then displays** (JL 261110: "we want the data first prepared ready in the Values, and then these
      data will be used to support the Displays"). A display Run reads only `j02_evidence_value/<Task>/runs/<value
      Run>/result/`, never a path under `work/`: the tables it plots are the value Run's copies, and every number it
@@ -81,8 +81,8 @@ The rules
      out again in the drawing script. A number with no id gets its id in the value Job first. The displays of one
      version read one value Run; when a newer value Run changes a file a display reads, that display is drawn again
      as a new Run. The display Run's `run.yaml` `reads:` lists those value files, so the check can compare them.
-   - The paper Board owns one display Job, `j01_evidence_display`, with one Task per display (`t01_figure1-<slug>`,
-     `t02_table1-<slug>`, …; appendix `t51_etable1-<slug>`, …), each face with `label:`, `status:`, `answers:`,
+   - The paper Board owns one display Job, `j01_evidence_display`, with one Task per display (`t01_display-a-<slug>`,
+     `t02_display-b-<slug>`, …, `tNN_display-<letter>-<slug>`; main or appendix is the plan's call), each face with `label:`, `status:`, `answers:`,
      `cited-in:`, `layout:`, `sources:`, `made-by:`. The Job face opens with the **display plan** the
      authors agree before any Run draws (JL 261023): per display its number, title, one question, layout (rows,
      columns or axes), source Runs and open choices, taken from the team's meeting notes and slides in the Block's
@@ -92,13 +92,14 @@ The rules
      `table-body.tex`, plus `figures.md`). A display that reads several question Jobs still lives in that one Job.
    - **One display, one home (JL 261113).** The display Task holds all of it: question, caption, legend, number,
      venue size, `cited-in:` and its `review/rNN.md`, beside the Runs that draw it. A Section keeps no
-     `display/Display<n>-<slug>/` copy; its text cites the label. An older Section's unit moves its caption and
-     reviews into the Task, then goes to `display/_old/`. A display Run only draws from returned, aggregated
+     `display/Display<n>-<slug>/` copy; its text cites the label. An older Board's Section-side unit
+     (`display/Display<n>-<slug>/` or a `results/` payload) is still read by the build and the workbench. A display Run only draws from returned, aggregated
      Results; no paper folder runs analysis on raw data.
    - VALUE (Ework) cards point at the same work Block's Runs, so one Block is the source of every number and
      every picture.
    - The revise loop sends each fix where it lives: a picture problem (colour, scale, panel, denominator) goes to
-     the work Run's script, which reruns; a caption, legend or question problem goes to the paper unit.
+     the display Task's Run script, drawn again as a new Run (a wrong number goes back to the work Run that computed
+     it); a caption, legend or question problem goes to the display Task.
    **Every main-text and eAppendix display passes the display revise loop before the version leaves DRAFT** (JL
    261022: "display should also have a loop, like the draft is a loop; a display matters as much as the main
    text"). The loop is haipipe-display's `1_base/display/ref/display-revise-loop.md`; the paper adds three things,
@@ -127,7 +128,7 @@ The chain: work → value → display → writing
 Every number the paper prints passes down one chain, and each layer only does its own job (JL 261110, after a paper
 whose displays drifted from its values: medians worked out in drawing scripts, displays on an older value Run, a
 forecast set beside another scored on different windows, ids from an older setup mixed with current ones, and a raw
-table built before a rescoring that nobody marked stale). Eight rules keep it solid:
+table built before a rescoring that nobody marked stale). Nine rules keep it solid:
 
 ```text
 work Run ─▶ value Run (copies, gives ids) ─▶ display Run (draws by id) ─▶ Section (quotes by id)
@@ -230,7 +231,7 @@ paper/Paper-X/j02_evidence_value/
 paper/Paper-X/j03_evidence_cite/
 ├── tNN_<claim group>/scripts/claim_group.yaml   label, question, what, discovery, keys
 │   └── runs/r01_check_citations/result/         citations.csv · citations.html · values.yaml · headline.txt
-└── t99_paper_citation_check/                   all keys; checks.md, proposed-cards/<section>.yaml, proposals/
+└── t99_paper_citation_check/                   all keys; checks.md (proposed-cards/ only for a Section with evidence/cards.yaml)
 ```
 
 1. **A paper's j02 holds only value maps; its j03 only claim groups.** Everything else is made by the scripts:
@@ -264,7 +265,14 @@ paper/Paper-X/j03_evidence_cite/
 9. **Citation statuses** (cite_tasks.py), in order: TOADD, missing-bib, verified (a bib entry and a person's
    signature: a page-local CITE Result, or a card item `verified: ✅ <person> <date>`), card-only, bib-only; plus no
    DOI, one key with two DOIs, back-to-back sentences, citing sentences with no CITE card, and the card edits; only
-   `cite_tasks.py apply`, run by a person, writes a Section's CITE items.
+   `cite_tasks.py apply`, run by a person, writes a Section's CITE items, and only into an evidence/cards.yaml that
+   exists.
+10. **A Section's CITE items name the Run that checked them** (must-check M-D20). A Section whose evidence lives in
+   `draft/<stem>-evidence-items.md` is bound, never carded: `cite_tasks.py bind <Section Task>` (cite_bind.py) prints
+   each CITE item's new `Local Run` (`Page · Evidence Item · reuse · P.j03.t01.r01 → j03_evidence_cite/.../result/
+   citations.csv`, and its discovery Run as `Supporting Runs` when it names none), matched by BibTeX key; `--apply`
+   writes it. An item that names a Run is kept. Draft Lab draws its ❝ card from the bound Run, else the check's row,
+   else its BibTeX marked "not read yet"; `page.py health` WARNs on an unbound item and FAILs under `--final`.
 
 ```bash
 E=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scripts
@@ -272,15 +280,16 @@ E=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scri
 bash <paper>/j02_evidence_value/tNN_<group>/runs/r01_read_values/r01_read_values.sh
 .venv/bin/python $E/values_ledger.py bind <paper>/j02_evidence_value --propose   # then tick, then --adopt
 .venv/bin/python $E/cite_tasks.py gen <paper>/j03_evidence_cite             # then each Task's ticket
+.venv/bin/python $E/cite_tasks.py bind <paper>/jNN_writing_*/tNN_<section>  # dry run; --apply writes the Local Runs
 ```
 
 **Migration of the two papers that made the pattern** (not done here; each in its own paper session):
-1. **MISQ first** (`Paper-AgreeablePrescriptionDiscretion`): its bindings already exist, typed in b52's
+1. **MISQ first** (`Paper-<the MISQ paper>`): its bindings already exist, typed in b52's
    `bind_paper_cards.py` BINDINGS and written into each Section's cards; write one value map per j02 Task from b52's
    values, keep the cards (an item with `file` + `key` still checks), run the new Runs, and require every status the
    old `values_ledger.py` gave (match, differs, missing, owed, pending) to come back the same: the old bindings are the
    regression test. Then its j03 moves to claim_group.yaml from `scripts/cite_tasks.py` GROUPS.
-2. **Then JAMA** (`Paper-AgreeableOpioid-Jama`): its value maps already have the shape (`tNN_values-*/scripts/
+2. **Then JAMA** (`Paper-<the JAMA paper>`): its value maps already have the shape (`tNN_values-*/scripts/
    value_map.yaml`); run `gen_value_runs.py`, then `bind --propose`, tick, `--adopt`: its bindings are seeded by the
    search, so its ledger gains differs and missing it could not say before. Its `src/` scripts retire after that.
 
@@ -467,8 +476,8 @@ Sections in the version face's `haipipe:compile-order` block are numbered, count
 
 **What it does not read yet**: numbers typed into table bodies or prose, and wording that drifts between Sections
 ("no association" in one, "close to zero" in another). Those stay a person's read of the built PDF
-(haipipe-paper-assemble's cold read). **The venue's limit** is passed by hand: a venue's call (`venues/<venue>/call.md`)
-or the person says it; a QBv desk record may not hold it.
+(haipipe-paper-assemble's cold read). **The venue's limit** is read from the venue's call (`venues/<venue>/call.md`, `## Displays` main limit),
+or passed by hand with `--max-displays` when the person says it; a QBv desk record may not hold it.
 
 It changes no file of the paper: the ledger is a view of the Tasks' own files, so nothing generated is tracked (`-B`
 keeps Python from writing its bytecode cache beside the script). Exit 1 on a ❗. A ❗ is fixed in the Section that is
@@ -481,7 +490,7 @@ Where it sits on the ladder
 ```text
 Board     💡 s01 idea · 📖 s02 story (§7 allots evidence to Sections) · 🔍 s10-s19 related · ❓ reports/qNN_
   └─ Job  jNN_writing_v<MMDD>_<desk>: the Narrative order · 🧾 this ledger, once per send
-      └─ Task tNN_<section>: draft/ ✎ (haipipe-paper-draft) · evidence/ 🧾 · display/ 📊 (this skill)
+      └─ Task tNN_<section>: draft/ ✎ (haipipe-paper-draft) · evidence/ 🧾 (this skill); its displays 📊 are the Board's display Tasks
 ```
 
 Who calls it: a Section's CHECK (haipipe-paper-draft's closing checks), `haipipe-paper-assemble` before a build (gate

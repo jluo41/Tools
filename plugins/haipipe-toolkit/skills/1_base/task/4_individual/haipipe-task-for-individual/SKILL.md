@@ -16,8 +16,8 @@ Skill: haipipe-task-for-individual
 Scaffolds an **individual-centric query job**.
 Pulls one individual's Source / Record data, applies a view (timeline, treatment-event plot, meal-vs-glucose overlay), and writes a small PDF + CSV to `$OUTPUT_ROOT/<task>/runs/rNN_<run>/result/`.
 
-**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during Phase 2: Build, then authors the `<TASK>.py` body).
-Always end with the structured return block (status / summary / artifacts / next — the same tail every task skill emits).
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`haipipe-task-creator-agent` calls this skill during the Build command, then authors the `<TASK>.py` body).
+Always end with the structured return block of `../../haipipe-task/ref/types.md` § Asked or silent (see Return contract below).
 
 ## Type contract
 
@@ -46,8 +46,8 @@ work/bNN_<block>/
     ├── src/                         shared code + config-defaults.yaml
     └── tNN_<task>/
         ├── tNN_<task>.md
-        ├── draft/
-        ├── workflow/                plan.yaml + report.yaml
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
         ├── scripts/<worker>.py
         └── runs/rNN_<run>/              one folder per Run
             ├── rNN_<run>.sh             the ticket
@@ -80,7 +80,7 @@ Summary:
 
   1. Identify project + block.
   2. Collect metadata (NN, name, type-specific extras, _meta block).
-  3. Create the canonical Task Page, workflow/, worker and one Run folder runs/rNN_<run>/ (Ticket, config.yaml, run.yaml); resolve generated output through OUTPUT_ROOT.
+  3. Create the canonical Task Page, workflow/ (only when a plan pays), worker and one Run folder runs/rNN_<run>/ (Ticket, config.yaml, run.yaml); resolve generated output through OUTPUT_ROOT.
   4. Seed config from `ref/config-seed.yaml`.
   5. Copy run-script from `../../haipipe-task/ref/run-sh-template.sh`.
   6. Suggest next via cross-skill link.
@@ -89,6 +89,9 @@ Summary:
 
 Return contract
 ---------------
+
+Every call ends with the block in `../../haipipe-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
 
 ```
 status:    ok | blocked | failed
@@ -102,7 +105,7 @@ next:      suggested next command (run.sh / /haipipe-individual)
 Workflow plan
 --------------
 
-When `/haipipe-task plan` targets an existing job of this type, the generated plan-script YAML should follow the type-specific sample:
+When `/haipipe-task plan` targets an existing job of this type, the sole `workflow/plan.yaml` Run Spec roster (`../../haipipe-task/fn/stage-plan.md`) follows the type-specific sample:
 
 ```
 ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps

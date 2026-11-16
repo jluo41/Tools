@@ -20,7 +20,7 @@ model, or project profile from spelling.
 Every active Project carries:
 
 ```text
-README.md       human entry: mission, boundary, current shape, entry points
+project.md      the face, required: mission, boundary, current shape, entry points (README.md optional)
 project.yaml    machine entry: identity, profile, Git mode, state, migration debt
 ```
 
@@ -64,14 +64,14 @@ move has happened. Omit it when the Project root is clean.
 
 ```text
 examples/<project>/
-├── README.md             REQUIRED
+├── project.md            REQUIRED (README.md optional)
 ├── project.yaml          REQUIRED
 │
 ├── work/                LAZY · internal computational executor
 ├── discovery/          LAZY · external-evidence executor
 ├── cowork/               LAZY · coordination text and project-level Boards
 ├── paper/               LAZY · academic consumers
-├── insight/             LAZY · older register-kind Insight boards (new: a work/ Block)
+├── insight/             LAZY · Insight Question Books and Boards (haipipe-insight)
 ├── design/              LAZY · Design boards and Design Folders
 ├── labeling/            LAZY · labeling Blocks; a Job is one dataset with one label
 ├── ideation/            LAZY · Ideation directions (bNN/jNN/tNN, no Runs)
@@ -101,7 +101,7 @@ work/ ──────────────────────┘     
 | `discovery/` | external-evidence bank | `haipipe-discovery`; its current BJTR contract |
 | `cowork/` | coordination: who we work with and what we wait on | tickets, people, emails, meetings, design notes, drawings, project-level Boards; see `cowork/` below |
 | `paper/` | academic consumer | `haipipe-paper`; may contain nested submodules |
-| `insight/` | older register-kind Insight boards; new Insight work is a `work/` Block (one Task per question) | `haipipe-insight`; see `insight/` below |
+| `insight/` | Insight Question Books and Boards; an older topic is a `work/` Block (one Task per question) | `haipipe-insight`; see `insight/` below |
 | `design/` | Design boards, reading signed Insight handoffs | `haipipe-design` |
 | `labeling/` | labeling: a Block (`bNN_<block>`) groups Jobs like any Block; a Job is one dataset with one label (`jNN_<dataset>_<label>`, holding the label's `schema.yaml`) with many Tasks: its data preparation, its keys, its labeling Page (the engine's `labeling/` lane), its scoring | `haipipe-labeling`; a dataset with no label yet stays in `work/` |
 | `ideation/` | research directions and their candidate idea cards, before a paper picks one | `haipipe-ideation`; Blocks, Jobs and Tasks only: a Run it needs is commissioned in `work/` or `discovery/` |
@@ -172,8 +172,8 @@ split into **Jobs** (JL 261004). `haipipe-cowork` owns the Block: its number ran
 | Name | Holds |
 |---|---|
 | `board.md` | required: header (state, spine, close, status), text, Questions register |
-| `studio/` | drawings, decks, video; their build scripts in `studio/_build/` |
-| `reports/` | a Question's report Page, `reports/qNN_<topic>/` (haipipe-report) |
+| `sNN-<topic>/` | Studio topics, beside the Jobs (haipipe-studio); a `studio/` folder keeps only loose items such as `studio/_build/` |
+| `reports/` | an older Block only: a Question's report Page, `reports/qNN_<topic>/`; an answer now lives in its Studio topic (haipipe-report) |
 | `_old/` | replaced material; do not use |
 | `j00_people/` | required: who to ask for help (a Job with state 📇 REFERENCE) |
 | `jNN_<job>/` | one line of work: `jNN_<job>.md` (its header holds state, waiting-on, since, next), `Timeline.md`, `CHECKLIST.md`, and `design/`, `materials/`, `emails/`, `meetings/` only when it has them |
@@ -215,7 +215,7 @@ Boards to their owning world. No routine update moves an active Board.
 dataset is a Board `insight/Insight-<name>/`. haipipe-insight's SKILL.md is the authority; the
 `b5N_<topic>_dikw` Block below is its older layout (`ref/prototype_from_block.py` carries it).
 
-Insight work is a task Block since JL 261005 (the Question Book + Instance pair is retired): an
+The older layout (JL 261005, before the current one above): an
 Insight topic is one Block `work/b5N_<topic>_dikw/` whose board.md says `workbench: insight`,
 one Job per DIKW level and one Task per question, each Task holding its question, its one
 script, its runs and its answering page. A new dataset is a new entry in the Block's
@@ -238,7 +238,7 @@ insight/
   question the Task, a `<dataset>_<partition>` run the Run (no per-run config).
 - **The studio lives at Block level.** `studio/question-map.excalidraw` is generated
   from the question files and never edited, and each hand sketch is its own file.
-- **`insight/` keeps only older boards.** A register-kind `<Dataset>-InsightBoard/`
+- **Older boards in `insight/`.** A register-kind `<Dataset>-InsightBoard/`
   keeps its layout until it is carried over into a Block; it is not migration debt.
 
 The internals belong to `haipipe-insight` (`ref/block-contract.md`); a Project audit

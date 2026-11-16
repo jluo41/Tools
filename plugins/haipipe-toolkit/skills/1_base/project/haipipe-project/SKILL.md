@@ -45,7 +45,7 @@ examples/ProjNN-<domain>-<purpose>/
 ├── platforms/      optional/lazy · project-owned code repos as submodules
 │                   (software and hybrid profiles only)
 ├── paper/         optional/lazy · academic consumers
-├── insight/       optional/lazy · older register-kind Insight boards (new: a work/ Block)
+├── insight/       optional/lazy · Insight Question Books and Boards (haipipe-insight)
 ├── design/        optional/lazy · Design boards and folders
 ├── labeling/      optional/lazy · labeling Blocks; a Job is one dataset with one label
 ├── ideation/      optional/lazy · Ideation directions (bNN/jNN/tNN, no Runs)
@@ -105,17 +105,17 @@ Read `ref/project-structure.md` before creating, auditing, or updating a Project
 work/          → haipipe-task       BJTR execution; a Task may hold a draft; Run = identity
 discovery/    → haipipe-discovery  Discovery BJTR and Paper/Source Runs
 paper/         → haipipe-paper      academic consumer
-insight/       → haipipe-insight    older register-kind <Dataset>-InsightBoard/ only (new work: an Insight Block in work/)
+insight/       → haipipe-insight    InsightQuestionBook-<Topic>/ and Insight-<name>/ (older: a work/ b5N_<topic>_dikw Block)
 design/        → haipipe-design     Design boards and Design Folders
-labeling/      → subjective-label   bNN_<block>/ Blocks; a Job jNN_<dataset>_<label>/
+labeling/      → haipipe-labeling   bNN_<block>/ Blocks; a Job jNN_<dataset>_<label>/
 ideation/      → haipipe-ideation   one direction per Task; its Runs live in work/ or discovery/
 cowork/         → this skill owns the boundary; haipipe-cowork owns each bNN_ Block
 platforms/      → each repo owns its code; this skill owns only the link
 external/       → this skill owns only the read-only root boundary
 ```
 
-Insight and Design are peer worlds (JL 261001: "no more applications"). An
-Insight topic is one task Block (JL 261005; the Question Book + Instance pair is retired):
+Insight and Design are peer worlds (JL 261001: "no more applications"). An older
+Insight topic (JL 261005, before the current layout below) is one task Block:
 `work/b5N_<topic>_dikw/` with `workbench: insight` in its board.md, one Job per DIKW
 level, one Task per question holding its question, its one script, its runs and its
 answering page. A new dataset is a new `datasets:` entry, never a copy of the code.

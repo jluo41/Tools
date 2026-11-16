@@ -64,11 +64,11 @@ release, send or submission approval.
 
 Ranges, the same idea as Task Blocks; each range starts at x1.
 
-| Range | Holds | Example (Project-Samsung) |
+| Range | Holds | Example (Project-<Name>) |
 |---|---|---|
 | `b0x` | gates: approvals everything else waits for | `b01_irb` |
-| `b1x` | systems we build or connect | `b11_azure_account`, `b12_epic_streaming`, `b13_smartwatch_connector` |
-| `b2x` | partners and vendors | `b21_welldoc_app` |
+| `b1x` | systems we build or connect | `b11_cloud_account`, `b12_record_streaming`, `b13_device_connector` |
+| `b2x` | partners and vendors | `b21_<partner>_app` |
 | `b3x` | study operations: recruitment, enrollment, SOPs, site visits | `b31_patient_recruitment` |
 
 The name after the number is lowercase words joined by `_`. A Block number never
@@ -76,7 +76,7 @@ changes once other files cite it.
 
 ## Jobs
 
-A Job is one line of work: one request to one office (`j02_hopkins_rit4630`), one
+A Job is one line of work: one request to one office (`j02_<office>_<ticket>`), one
 change to file (`j02_cir_watch_app`), one stage of a process (`j03_baseline_visit`).
 Number Jobs from `j01` in the order the work runs; `j00_people` is always first. A
 Job's files stay with it, so one folder answers "who are we waiting on, and what did
@@ -92,8 +92,8 @@ state: 🟡 ACTIVE          🔴 OPEN · 🟡 ACTIVE · ⏸️ ON HOLD · ✅ DO
 waiting-on: us            us, the person whose move it is, or nobody
 since: 2026-10-02         when the current wait began
 next: send the v3 diagram and the IRB wording
-ticket: RIT-4630          the office's number, when it has one
-url: https://jira.jh.edu/browse/RIT-4630
+ticket: <ID>              the office's number, when it has one
+url: https://<tracker>/browse/<ID>
 ```
 
 Then the text: what we asked for, why, where it stands. `Timeline.md` gets a dated
@@ -147,15 +147,15 @@ a Question's `work:` names files inside the Block) and `## Related resources`.
    empty ones (the Question stays in board.md), then move `reports/` to `_old/reports/`.
    `haipipe-studio` `studio_update.py audit` lists faces with no `view:`, no `**Why:**`, or
    `**Feeds:**` still pointing at `reports/`.
-6. **Paths are Block-relative** inside a Block (`j02_hopkins_rit4630/emails/...`) and
+6. **Paths are Block-relative** inside a Block (`j02_<office>_<ticket>/emails/...`) and
    Project-relative elsewhere; never `/Users/...`.
 
 ## Open the workbench
 
-`/w/<block-folder>` opens a Block in the base frame, `/_board/workbench?path=<Block>` (since
-261007), with the cowork theme on it (`servers/workbench-cowork/cowork_theme.py`); a Job opens
-with `path=<Block>/<jNN_job>`. The older page `/_board/cowork-board?path=<Block>/board.md`
-still answers, and lists every Block of a Project at `?path=<Project>/cowork`.
+`/w/<block-folder>` (or `/wb <Block>`) opens a Block on the shared frame, `/_board/workbench?path=<Block>` (since
+261007); a Job opens with `path=<Block>/<jNN_job>`. A cowork page takes the work shape
+(`servers/workbench/page/focus_base.py` `WORK_SHAPE`). The older page `/_board/cowork-board` is retired: its
+route is no longer registered and its code sits in `servers/_old/workbench-cowork/`.
 
 ## Create or migrate a Block
 

@@ -18,7 +18,7 @@ does not make itself always-on, and this checkout has no root `CLAUDE.md` that
 activates it.
 
 When a loaded skill defines a reply shape for a specific request, that scoped
-shape takes precedence for that request. In particular, `/task-table`'s
+shape takes precedence for that request. In particular, `/table-workbench`'s
 table-only response and `/remote-error`'s required report sections are explicit
 exceptions to the general answer-first scan format below. Do not combine both
 shapes in one reply.
@@ -123,8 +123,8 @@ points to its page under `Tools/blueprints/bNN_<name>/`; a board's own data, que
 and results point to their page in the Project.
 
 ```
-**See:** [Paper-PersonalityPDMPMandate › Interactions](<host>/_board/workbench?path=examples-2-cms%2FProject-Personality-OpioidRx%2Fpaper%2FPaper-PersonalityPDMPMandate&layout=focus&section=interactions): the 16 questions, my picks ticked.
-**See:** [Paper-PersonalityPDMPMandate › Studio › s02-story-personality-pdmp-mandate](<host>/_board/workbench?path=examples-2-cms%2FProject-Personality-OpioidRx%2Fpaper%2FPaper-PersonalityPDMPMandate&layout=focus&section=studio&group=Story#s02-story-personality-pdmp-mandate): the Story and its log.
+**See:** [Paper-<Name> › Interactions](<host>/_board/workbench?path=<world>%2FProject-<Name>%2Fpaper%2FPaper-<Name>&layout=focus&section=interactions): the 16 questions, my picks ticked.
+**See:** [Paper-<Name> › Studio › s02-story-<idea>](<host>/_board/workbench?path=<world>%2FProject-<Name>%2Fpaper%2FPaper-<Name>&layout=focus&section=studio&group=Story#s02-story-<idea>): the Story and its log.
 ```
 
 **No page yet**: write the folder path in backticks, unlinked, and say so; never
@@ -227,7 +227,7 @@ Sections
 - **Header shape** — `## N. [emoji] Short Headline`: the section's
   number (1, 2, 3 ... in reading order; 2026-10-02), one emoji, a 2 to 5 word
   headline in title case, and nothing after it (the trailing dot padding was dropped
-  2026-10-03 as clutter; the question moved to the section's last line, 2026-10-03). Not kebab-case; write it like a headline a human scans.
+  2026-10-03 as clutter). Not kebab-case; write it like a headline a human scans.
   With numbered sections, "2.3" names section 2, point 3.
 - **Emoji palette**, suggestive and not fixed — 🧩 short answer · 🎯 recommendation ·
   ⚠️ caveat or risk · 🛠️ how-to · 📋 summary and next (the last section) ·
@@ -340,7 +340,7 @@ Carried over, unchanged
 - **Never a bare `rNN`, `jNN`, `tNN` or `sNN`** (JL 261104: "when you say rNN, etc, please also add the name as
   well"). The rule above holds for a short mention too, in points, sketches, tables and prose, on every mention,
   not only the first, and even when the Job or Task is already named: write the folder's whole name,
-  `r15_cgm5mindfcase_fairglucose_vwearable261101`, never `r15`; `j55_welldoc2025cvs_source`, never `j55`. A list of
+  `r15_cgm5mindfcase_fairglucose_vwearable261101`, never `r15`; `j55_<partner>2025_source`, never `j55`. A list of
   several Runs lists each name, never `r02, r03`. If the name would overflow a sketch line, use two lines. A shorthand
   of your own for a step (`Lambda pull`) is spelled out too: say the command and what it does.
 - **No em-dashes.** Use a colon, a semicolon, a comma, parentheses, or a new sentence.
@@ -386,7 +386,7 @@ git -C <submodule> status --short      # if a submodule such as Tools/ was touch
 
 Every file this task actually changed belongs in its section's file lines.
 Mention a material unclaimed side effect of this task in one sentence in the
-closing `## 📋 Summary and Next`. Pre-existing unrelated changes are outside this
+closing `## N. 📋 Summary and Next`. Pre-existing unrelated changes are outside this
 reply's file inventory. Discussion-only replies require no Git check or checkout
 inventory. There is no `📁 File Changes` section (2026-09-27): a reply ends on where
 things stand and what comes next.
@@ -451,7 +451,7 @@ model is picked, the training Run can start from this CaseSet.
 
 ## 🌳 Work tree: the Block map (JL 261108)
 
-When JL asks about work (where it lives, how far it got, which Run counts, how a Block is
+When the person asks about work (where it lives, how far it got, which Run counts, how a Block is
 organized), the sketch is the Block map: the Block on top, one line per Job, its Task and
 Run range in aligned columns, then the state and what that Job builds or answers. It is a
 template; fill it with the real names each time.

@@ -185,6 +185,14 @@ def step_html(folder: Path, root: Path, step: str) -> str:
     rows = "".join(f'<div class=fd-row><span class=n>{esc(n)}</span><span class=d>{esc(v)}</span></div>' for n, v in aims(folder))
     if step == "1 · Plan" and rows:             # the aims and opening, once Plan + Results' (JL 261113: that view went)
         results = _section("🎯 What this Section must do", rows, "from its face") + results   # every bar says its state
+    if step == "1 · Plan":                      # only the Structure and the Examples (JL 261115: "why we need so many,
+        assets = "".join(re.findall(r"<style\b.*?</style>|<script\b.*?</script>", results, re.S))   # I think we just
+        ex = lambda t: "examples" in t.lower() or "Section canvas" in t     # the canvas holds our text and the examples
+        keep = [(a, b, t) for a, b, t in _top_sections(results) if "Structure" in t or ex(t)]  # need to have Structure
+        keep.sort(key=lambda x: ex(x[2]))                                   # and Example, others can drop")
+        name = lambda h, t: re.sub(r"(<h3 class=fd-h>)[^<]*", r"\g<1>📚 Examples", h, count=1) if ex(t) else h
+        results = (assets + "".join(name(results[a:b], t) for a, b, t in keep)) if keep else results
+        process = ""
     if step == "3 · Evidence":                  # the Section's own bib, one row per key, where a [key] in the text opens
         results += bib_section(folder, root)    # (r03: no .bib on Evidence or Files)
     # The focused Task uses the common Report frame. Keep its existing editors,

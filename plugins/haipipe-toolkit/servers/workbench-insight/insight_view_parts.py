@@ -56,7 +56,7 @@ RUNS = {"Add a data version": "run-add-version-data-v<M>", "Add a Job": "run-add
         "Ask a Block question": "run-ask-<qNN>", "Write the report": "run-report-<qNN>",
         "Write the counsel": "run-write-counsel", "Draft the handoff": "run-draft-handoff",
         "Draw the question map": "run-map-questions", "Run a segment": "rNN_<segment>",
-        "Check alignment": "run-check-alignment-<tNN>", "Add a topic": "run-draw-<sNN>", "Write a report": "run-write-<tNN>",
+        "Check alignment": "run-check-alignment-<tNN>", "Add a topic": "sNN-<topic>/passes/pNN-<MMDD>", "Write a report": "run-write-<tNN>",
         "Write the Data report": "run-write-<tNN>", "Write the Information report": "run-write-<tNN>",
         "Write the Knowledge report": "run-write-<tNN>", "Write the Wisdom report": "run-write-<tNN>",
         "Write the overall report": "run-overall-<jNN>"}

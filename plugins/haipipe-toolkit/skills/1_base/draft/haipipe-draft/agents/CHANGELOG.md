@@ -1,3 +1,14 @@
+## 2026-11-15 · the must-check gate's reading agents
+
+- New, each 0.1.0: `haipipe-draft-eval-structure-agent` (S1, S2), `haipipe-draft-eval-paragraph-agent` and
+  `haipipe-draft-eval-sentence-agent` (D1), `haipipe-draft-ab-reader-agent` (D2), `haipipe-draft-evidence-value-agent`,
+  `haipipe-draft-evidence-cite-agent`, `haipipe-draft-evidence-display-agent`, `haipipe-draft-consistency-agent`.
+  Scripts do what can be computed (`haipipe-paper/scripts/must_check.py`, `scope_guard.py`); these agents only read.
+- `haipipe-draft-writing-agent` 0.4.0: adds D2's writer role (a rewrite per item under 8, adopt only pairs kept as
+  easier and same meaning, ask for a re-rate); WRITE unchanged.
+- `haipipe-draft-approver-agent` 0.4.0: deterministic rule checks only; value R4, cite R6, display R11 and R12 are
+  read by the three evidence agents and marked `moved`. `approve-rules/` keeps its rules as written.
+
 ## 2026-10-16 · moved to haipipe-draft/agents/ (JL 261016, s21-D05)
 
 - All Page agents, `approve-rules/` and this README left `skills/1_base/draft/workbench/agents/` for `skills/1_base/draft/haipipe-draft/agents/`; the `~/.claude/agents/` links point here.

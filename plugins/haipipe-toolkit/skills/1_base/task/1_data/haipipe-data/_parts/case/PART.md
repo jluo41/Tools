@@ -45,7 +45,8 @@ load             ref/concepts.md             ../../fn/fn-1-load.md
 cook             ref/concepts.md             ../../fn/fn-2-cook.md
 design-chef      ref/concepts.md +
                  ../aidata/
-                   ref/concepts.md           ../../fn/fn-3-design-chef.md
+                   ref/concepts.md           ../../fn/fn-3-design-chef.md +
+                                             ../../fn/fn-3-design-chef-case-aidata.md
 design-kitchen   ref/concepts.md             ../../fn/fn-4-design-kitchen.md
 review           ref/concepts.md             ../../fn/fn-review.md
 (no fn arg)      ref/concepts.md             (ref-only mode)

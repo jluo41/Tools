@@ -63,7 +63,7 @@ LABEL_HINT = re.compile(r"(gold|label|harm|safe|toxic|Q_|answer|rating|score|ver
 
 # ── small helpers ─────────────────────────────────────────────────────────────────────────────────
 def space_root(path: Path) -> Path:
-    """The SPACE: the nearest folder above holding env.sh (AGENTS rule 7)."""
+    """The SPACE: the nearest folder above holding env.sh (the SPACE's AGENTS.md § Working rules)."""
     path = path.resolve()
     for p in (path, *path.parents):
         if (p / "env.sh").is_file():

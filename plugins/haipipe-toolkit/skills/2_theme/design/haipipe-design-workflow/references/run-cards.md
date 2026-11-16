@@ -42,13 +42,13 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 🧩 SKILL    haipipe-design
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-design launch a Job in {folder}: a signed goal × a registered method version × a frozen inputs version, jNN_<goal>_method-vN-<slug>_inputs-vM/ with its pins, as run-add-job-j<NN>; tell me which one clock moved from the Job before it.
+💬 PROMPT   /haipipe-design launch a Job in {folder}: a signed goal × a registered method version × a frozen inputs version, jNN_<goal name>_M0x-<slug>-mK_inputs-vM/ with its pins, as run-add-job-j<NN>; tell me which one clock moved from the Job before it.
 
 🔘 BUTTON   Propose a method change · Block › Description · ^run-propose-method- · views methods
 🧩 SKILL    haipipe-design-method
 🤖 AGENT    haipipe-designer-agent
 ✍️ SIGNS    the proposal
-💬 PROMPT   /haipipe-design-method propose a change to a registered method from what {folder}'s Jobs and scores show, as run-propose-method-<slug>; the registry cuts the next version, never this Block.
+💬 PROMPT   /haipipe-design-method propose a change to a registered method from what {folder}'s Jobs and scores show, as run-propose-method-<slug>; on a Board with a Book the proposal lands in the Book's proposals/ and a person signs the type's next version there, else the registry cuts it, never this Block.
 
 ## Block › Audience Report · questions, cost, predicted vs observed, the scorecard
 
@@ -64,11 +64,8 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-report write the report of one Block question in {folder}/reports/qNN_<topic>/ from the Jobs it names, as run-report-q<NN>; another agent checks it.
 
-🔘 BUTTON   Build the one-page summary · Block › Audience Report · ^run-build-summary · views summary
-🧩 SKILL    haipipe-design-delivery
-🤖 AGENT    haipipe-designer-agent
-✍️ SIGNS    none
-💬 PROMPT   /haipipe-design delivery build the one-page summary of {folder} with scripts/summary.py (--example jNN:dNN to trace a chosen design) into delivery/summary.html · summary.pdf, check the PDF is one page, and say what it shows; as run-build-summary.
+The one-page summary has no button here: `scripts/summary.py` (`haipipe-design-delivery`) builds
+`delivery/summary.html` and `summary.pdf` from what the Runs wrote, with no Run folder and no Run type.
 
 🔘 BUTTON   Add the Exp's data · Block › Audience Report · ^run-add-observed- · views predicted-vs-observed
 🧩 SKILL    haipipe-design-method
@@ -84,11 +81,9 @@ page's workbench (`servers/workbench-design/design.py`) reads them, and their on
 
 ## Block › Idea Studio
 
-🔘 BUTTON   Draw a topic · Block › Idea Studio · ^run-draw-
-🧩 SKILL    excalidraw-report
-🤖 AGENT    haipipe-designer-agent
-✍️ SIGNS    none
-💬 PROMPT   /excalidraw report draw a studio topic of {folder}: sNN-<topic>/ with its builder, as run-draw-s<NN>; keep every mark a person made.
+No card: a Studio topic has no Run of its own. The page's "Add a topic" button hands the work to
+`haipipe-studio` (`new_topic.py topic`, then one round per working session in `sNN-<topic>/passes/pNN-<MMDD>/`).
+An older `runs/run-draw-s<NN>/` stays readable.
 
 ## Job › Description · goal, method, inputs
 

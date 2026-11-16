@@ -230,17 +230,59 @@ class HistoryAndCiteTest(unittest.TestCase):
             self.assertEqual(html.count(">not in Bib<"), 2)                       # TOADD, and an entry with no year
 
 class StandsTest(unittest.TestCase):
-    def test_the_section_shows_its_eight_steps_as_marks(self):
-        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One.\n- B2 · s2 · Two.\n"
-        cards = "### Edit · s2 · x\nWhy: w\nOriginal: Two.\nExpected: Deux.\nState: proposed\n\n"
+    def test_no_step_line_over_the_text(self):
+        # deleted 261115: a state line with marks that had no record read worse than none (must-check M-D16)
+        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One.\n"
         with tempfile.TemporaryDirectory() as tmp:
-            task = _task(Path(tmp), draft, _revise(_line("s2", 9), "Pass 1 · 261115 · on draft v0.2", cards), "v0.2",
-                         checked="- s1 · 2026-11-15 10:00 · One.\n")
-            (task / "draft/previous").mkdir()
-            (task / "draft/previous/t01_note-draft-v0.1.md").write_text(draft)
-            line = re.sub(r"<[^>]*>", "", re.search(r"<p class=sx-stands.*?</p>", _html(Path(tmp), task)).group(0))
-            self.assertEqual(line, "S1 ⬜ S2 ⬜ S3 ✅ · D1 ✅ D2 ⬜ D3 ⬜ D4 🙋 D5 ⬜")
+            task = _task(Path(tmp), draft, _revise(_line("s1", 9), "Pass 1 · 261115 · on draft v0.2"), "v0.2")
+            self.assertNotIn("sx-stands", _html(Path(tmp), task))
 
+
+    def test_only_what_needs_the_person_shows(self):
+        # M-D17 (JL 261115 "remove all unnecessary things"): no file row over the text, a star only under 8, one id,
+        # history only inside an opened sentence
+        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One.\n- B2 · s2 · Two.\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            task = _task(Path(tmp), draft, _revise(_line("s1", 9) + _line("s2", 6), "Pass 1 · 261115 · on draft v0.2"), "v0.2")
+            html = _html(Path(tmp), task)
+        self.assertNotIn("space-reads", html)
+        self.assertIn("rv&&!fx&&lo>=8&&!so?'<span class=\"sx-ai pass\"", html)   # 8+: a small grey number, under 8 the star
+        self.assertIn(".sx-row:not(.sx-open) .sx-marks .sx-clk{display:none}", html)
+        self.assertNotIn("li[data-s]>.s-no{display:none}", html)       # both numbers show (JL 261115: "where is the sNN")
+        self.assertIn("li[data-s]>.s-no{grid-column:2;grid-row:2", html)   # the sNN under the 1, 2, 3
+
+    def test_the_review_card_shows_topics_and_points_and_marks_over_the_limit(self):
+        # JL 261115: "one sentence one topic, usually one or two points, at most three points"
+        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One.\n- B2 · s2 · Two.\n"
+        rev = _revise("- s1 · logic 9/10 · read 9/10 · ai 9/10 · link: opens, carried · topics 1, points 2: loss; clear · Fix: none\n"
+                      "- s2 · logic 9/10 · read 7/10 · ai 9/10 · link: continues, carried · topics 2, points 2: loss and judging; "
+                      "two topics joined by and · Fix: none\n", "Pass 1 · 261115 · on draft v0.2")
+        with tempfile.TemporaryDirectory() as tmp:
+            html = _html(Path(tmp), _task(Path(tmp), draft, rev, "v0.2"))
+        self.assertIn(">1 topic · 2 points</span>", html)
+        self.assertIn('class="lg-tp over"', html)
+        self.assertIn("Two topics joined by and.", html)              # the count leaves the problem's words
+
+    def test_the_board_keeps_its_section_name_with_display_items(self):
+        # JL 261115 "the check doesn't work": a DISPLAY item's targets once overwrote the board's data-task
+        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One (Fig. 1).\n"
+        with tempfile.TemporaryDirectory() as tmp:
+            task = _task(Path(tmp), draft, _revise(_line("s1", 9), "Pass 1 · 261115 · on draft v0.2"), "v0.2")
+            (task / "draft" / f"{task.name}-evidence-items.md").write_text(
+                "### E01-DISPLAY-fig1 · Figure 1\n- **Target**: C1.P1.B1\n", encoding="utf-8")
+            html = _html(Path(tmp), task)
+        board = re.search(r'class=rv-board data-task="([^"]+)"', html).group(1)
+        self.assertTrue(board.endswith(task.name), board)
+
+    def test_a_paragraph_heading_shows_its_flow_score(self):
+        # JL 261115 "why no ... per paragraph eval?": the Flow line's score rides on the flow card for the heading
+        draft = "# Note · draft v0.2\n\n## 3 · Draft\n\n### C1.P1 · Why\n- B1 · s1 · One.\n- B2 · s2 · Two.\n"
+        rev = _revise(_line("s1", 9) + _line("s2", 9) + "Flow C1.P1: logic 7/10 · topic s1 · weakest join s1 to s2\n",
+                      "Pass 1 · 261115 · on draft v0.2")
+        with tempfile.TemporaryDirectory() as tmp:
+            html = _html(Path(tmp), _task(Path(tmp), draft, rev, "v0.2"))
+        self.assertIn('data-p="C1.P1" data-plow="7"', html)
+        self.assertIn("sx-pscore", html)
 
 if __name__ == "__main__":
     unittest.main()

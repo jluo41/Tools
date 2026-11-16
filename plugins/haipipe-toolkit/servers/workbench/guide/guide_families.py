@@ -32,8 +32,7 @@ def skill(name, role):
 FAMILIES = {
     # "paper", the Paper family's Guide, lives in servers/workbench-paper/guide/guide.yaml (261007)
     # "task", the work theme's Guide, lives in servers/workbench-work/guide/guide.yaml (261007)
-    # "cowork", the CoWork Guide, lives in servers/workbench-cowork/guide/guide.yaml (261007)
-    # "discovery" lives in servers/workbench-discovery/guide/guide.yaml (261007)
+    # "cowork" and "discovery" open on the shared work frame; their old Guides are retired to servers/_old/
     # "page", the Page Task's Guide, lives in servers/workbench/workbench-task-draft/guide/guide.yaml (261007)
     # "insight", the Insight family's Guide, lives in servers/workbench-insight/guide/guide.yaml (261007)
     # "design", the design theme's Guide, lives in servers/workbench-design/guide/guide.yaml (261007)

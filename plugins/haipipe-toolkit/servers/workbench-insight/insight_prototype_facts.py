@@ -101,16 +101,15 @@ def _ready(q: dict) -> bool:
     return a == "agreed" and s in ("script reviewed", "cites the answers below")
 
 
-def r_word(r: dict) -> str:
-    """A release's state and sign, as release.yaml's face holds them."""
-    signed = str(r["face"].get("signed") or "")
-    if str(r["face"].get("state")) == "closed" or signed.startswith("✅"):
-        return "closed · " + (f"signed {signed}" if signed.startswith("✅") else "not signed")
-    return "draft · not signed yet"
-
-
 def _closed_r(r: dict) -> bool:
-    return r_word(r).startswith("closed")
+    """A release that takes no more change: release.yaml's face says closed, or carries a person's sign."""
+    return str(r["face"].get("state")) == "closed" or str(r["face"].get("signed") or "").startswith("✅")
+
+
+def r_word(r: dict) -> str:
+    """A release's mark, never a state word: ✅ once a person signed it, ⬜ until then. What waits on the person (a
+    proposal to triage, the sign itself) is the section's 🙋 line (insight_prototype_status._release_waits)."""
+    return "✅" if str(r["face"].get("signed") or "").startswith("✅") else "⬜"
 
 
 def tally_word(r: dict) -> str:
@@ -135,7 +134,7 @@ def _proposals(proto: dict, r: dict | None = None) -> list:
     ps = proto["proposals"]
     if r is None:
         return ps
-    draft = not r_word(r).startswith("closed")
+    draft = not _closed_r(r)
     return [p for p in ps if str(p.get("taken-in") or "") == r["name"]
             or (draft and str(p.get("state") or "open").lower() in ("open", "proposed", ""))]
 

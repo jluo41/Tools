@@ -1,6 +1,6 @@
 ---
 name: ask-questions
-description: "Finds and sharpens the questions in a long conversation: matches response sections to existing Block questions, proposes distinct new ones, and asks a focused clarification only when the answer would change. Trigger: ask questions, session questions, question association, propose a question, 提问, 追问, 问题归属."
+description: "Finds and sharpens the questions in a long conversation: matches response sections to existing Block questions, proposes distinct new ones, and asks a focused clarification only when the answer would change. Trigger: ask questions, session questions, question association, propose a session question, 提问, 追问, 问题归属."
 metadata:
   version: "0.2.1"
   last_updated: "2026-10-26"
@@ -87,7 +87,8 @@ that the user must answer another prompt.
 
 ## Continue into a Report when requested
 
-A board's questions live in `reports/qNN_<topic>/`, beside `studio/`.
+A board's questions live in its `board.md` `## Questions` register; an answer is the `Q01 · Answer` part of the
+Studio topic that answers it (an older Block: `reports/qNN_<topic>/`).
 Associate an existing Q with its actual record path, including an older layout
 when that is where the record lives. Question attribution alone creates no folders,
 allocates no stable ids, and changes no answer or Page state.

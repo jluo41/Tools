@@ -44,16 +44,16 @@ Draw
 ----
 
 ```bash
-X=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-section/ref/excalidraw_section.py
-.venv/bin/python $X <page.md>                   # one Section → <page>/studio/<stem>-sections.excalidraw
-.venv/bin/python $X --paper <paper folder>      # the paper → <paper>/studio/paper-sections.excalidraw
+X=Tools/plugins/haipipe-toolkit/skills/1_base/excalidraw/excalidraw-draft/ref/excalidraw_section.py
+.venv/bin/python $X <page.md>                   # one Section → <page>/<stem>-sections.excalidraw, beside the page face
+.venv/bin/python $X --paper <paper folder>      # the paper → <paper>/paper-sections.excalidraw, beside the Board's face
     --depth section|paragraph|bullet|evidence   # paper default: paragraph; a Section: evidence
     --check                                     # build and print counts; write nothing
 ```
 
 The paper map stops at paragraphs by default, so a paper of twenty Sections stays
 readable; `--depth evidence` draws every Bullet and card. Story › RoadMap Draw lists every
-drawing in the paper's `studio/`, so the paper map shows there.
+drawing beside the paper's face (an older paper: in its `studio/`), so the paper map shows there.
 
 
 Boundary
@@ -64,4 +64,4 @@ This skill draws the structure; it writes nothing else. The plan and its Bullets
 to the paper board (`haipipe-paper`). Why a Section's claim holds is `draw-logic-tree`. A
 manuscript figure is a display unit (`haipipe-display`); this map is a working drawing.
 A file we change, shown section by section beside its updated sentences with the tracked Word
-file built last (a co-author's draft, an IRB protocol), is `excalidraw-revise`, not this map.
+file built last (a co-author's draft, an IRB protocol), is this skill's Revise mode (`ref/revise.md`), not this map.

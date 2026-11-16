@@ -12,7 +12,15 @@ structure holds.
 **A Section's Revise cards** (the draft Task's 5 · Revise tab, b32 s41): `/haipipe-draft <task> revise` reads the
 person's notes and writes `draft/records/<stem>-revise.md`, one card per change, each a `### ` heading named by its
 kind and sentence (`### Edit · s1 · split into three sentences`; kinds Edit, Review, Section question, never R1-R7),
-then four lines: `Why:`, `Original:`, `Expected:`, `State: proposed`. The person accepts or rejects each; an accepted
+then four lines: `Why:`, `Original:`, `Expected:`, `State: proposed`. **`Why:` scans (JL 261115: "the previous version and content is good,
+Just think about how to make it more readable"):** keep the full reason, written as numbered points on one line,
+`(1) … (2) … (3) …`, which the card draws one per row below the change. A source's quoted words or a list of candidate
+papers go in an optional fifth line, `Detail:`, which the card shows closed (must-check M-D21). **Every problem gets a card (JL 261115: "for the
+sentences with problem, please show the editing card with reasoning and suggestion options"):** after a sentence
+review, each sentence under 8 on any score, with a weak or broken link, or over the point rule gets an `### Edit` card:
+its Why the reviewer's problem as numbered points, its Expected the Fix, and, when the reviewer gave `A … | B …`, an
+Option per choice. A split's Expected holds the sentences in order; Accept writes each on its own row (s12, s12a)
+until the next renumber (must-check M-D22). The person accepts or rejects each; an accepted
 card goes into `## 3 · Draft` by its sentence's address as the next version. A pass that rewrites the cards file reads
 it first and keeps every decision the person made (a `State:` accepted, rejected or edited, a `Chosen:` option), the card
 otherwise refreshed; only a card still proposed, or written by the writer, takes a new State (JL 261021, whose ✓ on a
@@ -60,8 +68,8 @@ reviewer gets it as constraints.
 
 **Every sentence passes.** After the axis rows, the report lists `Sentences:`, one line per sentence
 read in its context (haipipe-draft-review `ref/sentence-logic.md`: its link to the sentence before, the specific
-problem, a logic and a read score out of 10, the rewrite when below 8), then a `Flow P<k>:` line per paragraph; the
-tab shows them as a table. The loop of blind reviews ends only when every sentence scores 8 or more on both, with no
+problem, a logic, a read and an ai score out of 10, the rewrite when any is below 8), then a `Flow P<k>:` line per paragraph; the
+tab shows them as a table. The loop of blind reviews ends only when every sentence scores 8 or more on all three, with no
 broken link (JL 261021: "你需要给每一个 sentence 句句过关"; "每句话都要看一下上下文，review 它的逻辑关系是否通顺").
 
 **Sentence numbers follow the text.** After a pass adds, moves or merges a sentence, run `page.py renumber <page>`
@@ -109,8 +117,9 @@ identity   run-revise-<target>  target: C1 · C1.P1 · P03-P05 · or `page` (old
 inputs     text A and text B, named by path and version: two Versions of one writing
            Run, an accepted Version and a delegated paragraph Result, or two
            built Page versions (their delivery manifests)
-ticket     runs/run-revise-<target>.md, written when the run opens; keeps the text before
-result     results/run-revise-<target>/  runtime.yaml · working.md · v001.md, written at close
+ticket     runs/run-revise-<target>/run-revise-<target>.md, written when the run opens; keeps the text before
+result     runs/run-revise-<target>/passes/pNN-<MMDD>/  runtime.yaml and the ledger, one pass per close
+           (an older Page: runs/run-revise-<target>.md and results/run-revise-<target>/)
            the journal's Saved result holds the change ledger (ref/revise/change-ledger.md)
 actor      a fresh agent or the person; never the writer of text B
 close      every change decided; the accepted text is handed to the owning

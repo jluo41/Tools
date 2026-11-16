@@ -50,7 +50,7 @@ actions    POST /_board/labeling/act · confirm_meaning · release_round · open
 
 | part | contract |
 |---|---|
-| STORAGE | `<page>/labeling/`, exactly the job layout in `haipipe-labeling/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
+| STORAGE | `<page>/labeling/`, exactly the job layout in `../haipipe-labeling-building/ref/ref-assets.md`; MIXED because canonical PRIMARY receipts and rendered views coexist |
 | SURFACE | a Board-backed Page offers an optional `🏷 Labeling` right-pane tab; the direct Page-folder route opens the same four Spaces, each with Views on the left and a Runs panel on the right. The current adapter keeps P0-P5 as compatibility capability tags in the Workflow drawer's Phases card (`?drawer=workflow`); they are not Workflow nodes, Run owners, or Route authority |
 | WRITER | `haipipe-labeling-workflow` defines the Run Spec graph and Routes; the Building/Scanning guides document operation order. Their Keeper, human event writer, runner, reconciler, and auditor own named artifacts. In the browser the only writer is `POST /_board/labeling/act`, which calls `engine/job.py` and `engine/calibration.py` |
 | BOUNDARY | Board discovery never enters `labeling/`; overview views never render item text, sealed ids, or private judgments in the page HTML (`Labeling → Rounds` lists the drawn item ids with their map group); an item waiting in a round batch shows its text only in its round's table in `Labeling → Rounds`, and only once the chat has shown it (its `show` event); `Data → Embedding` fetches the text of other development items only on request (a group's typical items, or a picked dot), and each fetch is appended to `labeling/exposure/group_examples.jsonl`; an observed file is never treated as a validated gate |
@@ -58,7 +58,7 @@ actions    POST /_board/labeling/act · confirm_meaning · release_round · open
 ## 🪜 On the shared frame: a Job's Task types
 
 A labeling Task on the shared frame (`servers/workbench-labeling/workbench-task-labeling/task_labeling.py`, b15 s13,
-JL 261014; moved out of `labeling_theme.py` 261016, s41-D15) reads a labeling Job as one dataset × one label whose Tasks come in five types, each named
+JL 261014; moved out of `labeling_theme.py` 261016, s41-D15) reads a labeling Job as one dataset × one label whose Tasks come in these types, each named
 by the Task face's `task-type:` line, never by its number:
 
 ```text
@@ -120,8 +120,8 @@ expression  Rewrite · Run · Evaluate · Release; "🔒 approved meaning mNN" o
             signed: it waits); each round box says its own state (released, report sent) and opens its round report
 ```
 
-Every numbered bar carries its state word on its right, read from the files (`agreed`, `waiting for you`, `m02
-approved`, `3 cases`, `all met`, `not run yet`), and the bar of a step that waits on the person shows that one thing
+Every numbered bar carries a mark, never a state word (`ui_parts.word_span`: 🙋 when its step waits on the person,
+✓ when done, nothing otherwise; the word read from the files only picks the mark), and the bar of a step that waits on the person shows that one thing
 under it while the bar is closed (`ui_parts._section(title, body, word, waits)`; JL 261106). A step's word is its
 button's, said as waiting on you where it waits (`sign m02` → `waits for your sign`; `labeling_steps.bar_word`). The
 items Task's step heading says the same (`✓ done`, `→ next`, `✍ waits for your sign`, `· later`), and while the recipe
@@ -326,8 +326,9 @@ write-door action. Chat may inspect and discuss; it cannot cross the gate.
 - A backward route appends invalidation and creates new lineage; no closed
   checkpoint, handoff, scorecard, production run, or audit is rewritten.
 
-The browser is not purely read-only anymore. It has exactly one write door,
-`POST /_board/labeling/act`, with exactly eleven actions. Each action exists
+The browser is not purely read-only anymore. The Page-local job has exactly one write door,
+`POST /_board/labeling/act`, with exactly eleven actions (the Task pages add the narrow
+`/_board/labeling/items` and `/_board/labeling/approve` doors named above). Each action exists
 because its writer and its authority check exist end to end:
 
 | action | where it is pressed | engine call |
@@ -345,7 +346,8 @@ because its writer and its authority check exist end to end:
 | `item_page` | `Data → Preparation` · `Show items` / `Show 20 more` in Items to label | `corpus_view.item_page` (20 development items at a time with context and text; held-back items never read; an item waiting in a round keeps its text for Rounds; appends to `exposure/group_examples.jsonl`; refuses on HOLD) |
 
 What each call writes, and the event order, is owned by
-`../haipipe-labeling-building/ref/step-order.md` (§P0 Contract and §P1 Round).
+`../haipipe-labeling-building/ref/step-order.md` (§Contract order and §Round order); the events
+file's fields are in `../2_labeling/haipipe-labeling-rounds/SKILL.md` §JUDGE.
 
 The door refuses before any engine call when:
 
@@ -363,8 +365,8 @@ has passed (for the four P1 actions), the event order holds, and sealed
 custody holds (a sealed item is never drawn, shown, or revealed). A refusal
 returns HTTP 409 with the engine's reason; a malformed value returns HTTP 400.
 
-There is still no approve, freeze, reveal-all, or final-for-all button, and no
-generic run button: `Run embedding` and `Start round 1` are the only buttons that
+On the Page-local job there is still no approve, freeze, reveal-all, or final-for-all button (a meaning
+Task's ✍️ Approve mNN is its own door), and no generic run button: `Run embedding` and `Start round 1` are the only buttons that
 start work, each through its own checked door action.
 A new action ships only when its writer and authority check exist end to end.
 
@@ -502,7 +504,7 @@ second job root, and no write lands outside the folded lane.
   surface reads
 - `../haipipe-labeling-building/ref/ref-label-handoff.md` · the only Building → Scanning crossing
 - `../haipipe-labeling-building/ref/step-order.md` · P0 fence/create/discuss/confirm and P1
-  CARD, PREPARE, JUDGE order, including the events file
+  CARD, PREPARE, JUDGE order (the events file's fields: `../2_labeling/haipipe-labeling-rounds/SKILL.md` §JUDGE)
 - `../haipipe-labeling-workflow/SKILL.md` · P0-P5, G0-G6, receipt chain
 - `ref/view-structure.md` · every View block by block: what it reads and shows today, and what would complete it
 - the Board-engine paths in the implementation list above

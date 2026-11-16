@@ -9,7 +9,7 @@ description: >-
   haipipe-report). Never answers a question and never signs. Use to
   propose, triage, ask, change, retire or review an insight question, or to
   read the older question registers until they are carried over. Trigger:
-  insight question, propose a question, proposals, triage, ask a question,
+  insight question, propose an insight question, proposals, triage, ask a question,
   question review, folder-kind question, /haipipe-insight-question.
 metadata:
   version: "2.0.1"
@@ -52,7 +52,7 @@ an answer. Its id `<L><NN>` fixes its level; its `tNN` stays the same in every r
 
 ```yaml
 ---
-kind: new question          # new question · fix · retire · segment
+kind: new question          # new question · fix · retire · cut (cut = a segment)
 level: information          # the DIKW level it would sit at, or executive (X); blank for a segment
 from: j03                   # the Job, report or reading it came from (coverage, q02, a vs-previous row)
 state: open                 # open · taken · declined
