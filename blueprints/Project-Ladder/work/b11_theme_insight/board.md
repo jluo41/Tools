@@ -182,7 +182,7 @@ questions:
 ```yaml
 resources:
 - title: haipipe-insight skill (the Insight door, the Block contract, carry over)
-  url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight
+  url: plugins/haipipe-toolkit/skills/2_theme/insight/haipipe-insight
   questions:
   - Q01
   - Q02
@@ -191,7 +191,7 @@ resources:
   contribution: Owns the Insight Block contract (one Job per level, one Task per question) and the register-board laws.
   notes: ''
 - title: workbench-insight skill (the served Insight workbench)
-  url: https://github.com/jluo41/Tools/tree/main/plugins/haipipe-toolkit/skills/2_theme/insight/workbench-insight
+  url: plugins/haipipe-toolkit/skills/2_theme/insight/workbench-insight
   questions:
   - Q01
   - Q02

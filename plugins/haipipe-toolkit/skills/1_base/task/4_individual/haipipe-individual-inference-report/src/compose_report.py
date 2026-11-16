@@ -7,9 +7,8 @@ Layered call:
   4. Parse XML → Report pydantic model
   5. Return Report + telemetry
 
-SDK pattern adapted from
-  /home/jluo41/Physician-SPACE/examples/ProjA-PhyTraitLandScape/
-    tasks/A3_cross_family_judge/run_sdk_judge.py
+SDK pattern adapted from an earlier project's cross-family judge Task
+  (its run_sdk_judge.py)
 """
 
 from __future__ import annotations

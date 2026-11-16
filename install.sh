@@ -4,7 +4,7 @@
 # junctions (native symlinks need admin/Developer Mode on Windows).
 #
 # Usage:
-#   git clone --recursive git@github.com:jluo41/Tools.git
+#   git clone --recursive <this repository's URL>
 #   cd Tools && ./install.sh
 #
 # Options:
@@ -46,7 +46,7 @@ CLAUDE_DIR="$HOME/.claude"
 # The marketplace's name is this checkout's own (.claude-plugin/marketplace.json `name`), so two checkouts with
 # different names register side by side; a checkout without it keeps the original name.
 MARKETPLACE_NAME="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["name"])' \
-    "$SCRIPT_DIR/.claude-plugin/marketplace.json" 2>/dev/null || echo jluo41-tools)"
+    "$SCRIPT_DIR/.claude-plugin/marketplace.json" 2>/dev/null || basename "$SCRIPT_DIR")"
 MARKETPLACE_DIR="$CLAUDE_DIR/plugins/marketplaces/$MARKETPLACE_NAME"
 KNOWN_FILE="$CLAUDE_DIR/plugins/known_marketplaces.json"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"

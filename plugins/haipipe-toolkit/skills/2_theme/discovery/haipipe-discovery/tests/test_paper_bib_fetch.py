@@ -340,7 +340,7 @@ class RuntimeStampTest(unittest.TestCase):
     VERIFIED = (
         "  verification:\n"
         "    status: verified\n"
-        '    by: "person:jluo41"\n'
+        '    by: "person:someone"\n'
         '    at: "2026-09-28T23:59:00-04:00"\n'
     )
 

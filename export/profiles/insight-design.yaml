@@ -68,6 +68,7 @@ exclude:
   - "**/node_modules/**"
   - "**/.server_config/**"
   - "**/_old/**"
+  - "**/_notes/**"                 # the source's development notes
   # the share door publishes a workbench beyond this machine; a target that leaves it out has none
   - plugins/haipipe-toolkit/skills/1_base/workbench/workbench/cli/wb_share.py
   - plugins/haipipe-toolkit/servers/_host/tests/test_share.py

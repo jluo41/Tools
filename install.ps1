@@ -195,7 +195,7 @@ function Get-Agents {
 # The manifest is what makes the guard honest. A name in it is ours, so it gets
 # overwritten and, once the agent disappears upstream, deleted. A name not in it
 # is the user's own file and is never touched.
-$MarketplaceName = try { (Get-Content -Raw -LiteralPath (Join-Path $ScriptDir ".claude-plugin\marketplace.json") | ConvertFrom-Json).name } catch { "" }; if (-not $MarketplaceName) { $MarketplaceName = "jluo41-tools" }; $AgentManifestName = ".$MarketplaceName-agents.json"   # the name is this checkout's own, as in install.sh
+$MarketplaceName = try { (Get-Content -Raw -LiteralPath (Join-Path $ScriptDir ".claude-plugin\marketplace.json") | ConvertFrom-Json).name } catch { "" }; if (-not $MarketplaceName) { $MarketplaceName = Split-Path -Leaf $ScriptDir }; $AgentManifestName = ".$MarketplaceName-agents.json"   # the name is this checkout's own, as in install.sh
 
 function Get-AgentManifest {
     param([string]$AgentsDir)
