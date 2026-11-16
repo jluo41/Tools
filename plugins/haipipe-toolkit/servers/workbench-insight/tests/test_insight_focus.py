@@ -321,6 +321,26 @@ class RoundOneTest(unittest.TestCase):
         self.assertEqual(levels[0], "❓ Questions")                             # by DIKW level at a release
         self.assertEqual(levels[1], "✅")                                       # its state as a mark
 
+    def test_the_questions_list_leads_with_executive_and_starts_closed(self):
+        """The Question Book's Questions: a closed fold per level in reading order (Executive first, then the
+        ladder), its bar the level's name with no count; a question row carries an id a link can land on, and the
+        list brings the script that opens the fold such a link lands in (workbench-insight ref/topics.md T09)."""
+        import re
+        from live import insight_prototype_parts as PP
+        from live.insight_prototype_facts import READ_ORDER, LEVEL
+        qs = [{"id": i, "question": "q " + i} for i in ("D01", "I01", "K01", "W01", "X01", "X02")]
+        html = PP._by_level(qs, self.root, fold=True)
+        self.assertEqual(re.findall(r"<details class=pb-fold data-lv=(\w)>", html), list(READ_ORDER))
+        self.assertEqual(READ_ORDER[0], "X")
+        self.assertNotIn("<details class=pb-fold open", html)
+        for bar in re.findall(r"<summary class=pb-lv>(.*?)</summary>", html):
+            self.assertRegex(bar, r"^<b>(%s)</b>( <span class=mut>✓</span>)?$" % "|".join(LEVEL.values()))
+        self.assertIn('<li id="pq-X02">', html)
+        self.assertIn("details.pb-fold", html)
+        self.assertNotIn("<details", PP._by_level(qs, self.root))              # a version's level tabs keep plain lists
+        body = IF.prototype_parts(self.proto, self.root, "Block")[0][2]
+        self.assertIn("<details class=pb-fold", body)
+
     def test_a_prototype_is_signed_and_triaged_on_its_own_work(self):
         """Round 2: the Question Book's Work · Findings carries the triage and the sign, each a Copy prompt for
         /haipipe-insight; Status says "nothing to do" when nothing waits; a release's map groups its questions by
@@ -383,12 +403,13 @@ class RoundOneTest(unittest.TestCase):
 
 class QuestionMapTest(unittest.TestCase):
     def test_the_dots_map_keeps_executive_on_top(self):
-        """Dots: Executive is a row across the top in number order, never a fifth column; its lines are marked so
-        they stay faint until lit (workbench-insight ref/topics.md T08)."""
+        """Dots: Executive is a row of titled cards across the top in number order, never a fifth column of dots;
+        its lines are marked so none shows until one is lit (workbench-insight ref/topics.md T08)."""
         from live import question_canvas as QC
         net = QC.JS[QC.JS.index("function drawNet()"):QC.JS.index("function dot(")]
         self.assertIn("cols=['D','I','K','W']", net)
         self.assertNotIn("'W','X']", net)
         self.assertIn("keep('X').sort(num)", net)
+        self.assertRegex(net, r"xs\.forEach\(function\(n,i\)\{[^}]*card\(n,")
         self.assertIn("'e ex'", net)
-        self.assertIn("path.e.ex:not(.down):not(.up)", QC.CSS)
+        self.assertIn("path.e.ex:not(.down):not(.up){opacity:0}", QC.CSS)

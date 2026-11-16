@@ -201,5 +201,10 @@ keeps it fixed) are kept in `ref/topics.md`; a new one is added there before it 
 AGENTS.md § Report).
 
 The question map draws the Executive questions on top in both styles, in number order, with the evidence levels
-under them (Data to Wisdom, left to right); in Dots an Executive question's lines stay faint until it is hovered
-or pinned. The phone shows one level at a time, Executive first.
+under them (Data to Wisdom, left to right); in Dots the Executive questions are titled cards and their lines are drawn only while one is
+hovered or pinned. The phone shows one level at a time, Executive first.
+
+A list of questions a person reads is grouped Executive first, then Data to Wisdom (`READ_ORDER`); the order the
+work is done in (`ORDER`, Data first) stays on the Work views. On the Question Book's page each level is a closed
+fold whose bar is the level's name, with ✓ once all of it is agreed and scripted; a link to `#<question id>` opens
+the fold it lands in.

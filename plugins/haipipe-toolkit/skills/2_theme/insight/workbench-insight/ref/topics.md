@@ -13,6 +13,7 @@ T05  a refused Run looks like a missing Run    fixed
 T06  Question Book gaps a check could catch    open
 T07  a Question Book in /lab; host basics      fixed (host launch passed on)
 T08  Executive questions on top of the map     fixed
+T09  the Questions list: Executive first, closed  fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -101,17 +102,42 @@ T08  Executive questions on top of the map     fixed
 ## T08 · The Executive questions sit on top of the question map · fixed
 
 - **From**: the user, relayed by the session Insight-QB-SMS with a screenshot of the map's right edge, 261115:
-  "for the dot, how do you think you can make the X in the top? what is your thoughts?"
+  "for the dot, how do you think you can make the X in the top? what is your thoughts?" Then, on the design
+  Insight-QB-SMS proposed (a top row in number order, each a card with its title, the four levels as columns
+  under it, an Executive question's lines only on hover or pin): "plsae go ahead and do it".
 - **Questions**: which style drew Executive last? Does the layout assume one column a level everywhere? Does a top
   row fit six questions, and ten? What happens to the lines, since an Executive question cites every level? Does
   the phone need a change?
 - **Answer**: only the Dots style (`question_canvas.py` `drawNet`) drew Executive as a fifth column, in an order
   chosen to cross fewer lines. Cards already had the Executive row on top and the phone leads with its Executive
-  tab. Dots now draws Executive as a row across the top in number order (it wraps and centres a short last row
-  when the canvas has no room for all), the four evidence levels as columns under it, and every line to or from
-  an Executive question faint until that question is hovered or pinned. The segment picker, hover card and pinned
+  tab. Dots now draws Executive as a row of titled cards across the top in number order (it wraps and centres a
+  short last row when the canvas has no room for all: six fit from about 780 px, ten wrap to two rows there), the
+  four evidence levels as columns of dots under it, and no line to or from an Executive question until that
+  question, or one in its chain, is hovered or pinned. The phone list is untouched. The segment picker, hover card and pinned
   panel read a card's own position, so nothing else assumed a column.
-- **Case**: on the reported Question Book at 828 px the six Executive dots sit in one row, X01 to X06 left to
-  right; hovering X04 lights its chain in green.
+- **Case**: on the reported Question Book at 828 px the six Executive cards sit in one row, X01 to X06 left to
+  right, with none of their 34 lines showing; hovering X03 draws its chain in green.
 - **Guard**: `servers/workbench-insight/tests/test_insight_focus.py`
   `test_the_dots_map_keeps_executive_on_top`; the rule in this skill's SKILL.md (the question map).
+
+## T09 · The Questions list leads with Executive and starts closed · fixed
+
+- **From**: the user, relayed by the session Insight-QB-SMS with a screenshot of the Question Book page's section
+  "1 · Questions" (groups headed Data, Information, …), 261115: "for things here, could we make the X to be the
+  top and each group to be collapsed? do you understand what I mean?"
+- **Questions**: is the level order one constant shared with the map and the phone tabs? Does a link that jumps
+  to a question open the closed group it lands in? Does the same list render on a Board Job's page? What does a
+  closed group's bar say?
+- **Answer**: the list read `ORDER = "DIKWX"`, the order the work is done in, which the Work views still need.
+  Reading lists now use `READ_ORDER = "XDIKW"` (`insight_prototype_facts.py`), the order the map and the phone
+  tabs already show. On the Question Book's page each level is a closed fold (`insight_prototype_parts.py`
+  `_by_level(fold=True)`); a link to `#<question id>` opens the fold and the page section it lands in. A version's
+  own page keeps its level tabs, now Executive first too. A Board Job's page draws its own list (level tabs or
+  folds from `insight_view_parts.py`), already Executive first and closed.
+- **A bar's words**: the level's name, and ✓ once every question in it is agreed and scripted. No count and no
+  tally ("Executive · 6 · 6 script written" was the sender's suggestion): the repository's AGENTS.md § Page words
+  keeps counts and progress tallies off a label; each question shows its own state in its row.
+- **Case**: on the reported Question Book the folds read Executive, Data, Information, Knowledge, Wisdom, all
+  closed; opening the page at `#K05` opens Knowledge and the Questions section and scrolls K05 into view.
+- **Guard**: `servers/workbench-insight/tests/test_insight_focus.py`
+  `test_the_questions_list_leads_with_executive_and_starts_closed`; the rule at the end of this skill's SKILL.md.

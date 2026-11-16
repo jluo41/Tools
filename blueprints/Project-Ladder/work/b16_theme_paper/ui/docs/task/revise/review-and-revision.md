@@ -120,6 +120,7 @@ three points), the problem, a suggestion. Code: `_logic_card` in draft_step_revi
 | --- | --- | --- | --- |
 | 11-15 | "one sentence one topic, usually one or two points, at most three points. check s12" | ScalingGlucose t01 | rubric: a point defined, four or more caps read at 7, the count written on the line; card: a "1 topic · 2 points" chip, amber when over |
 | 11-15 | "this is the weird expression, for the sentence level evaluation, and one rule is to identify the weird non-human expression, like this." (s12 "need not mean") | ScalingGlucose t01 | rubric: a Natural phrasing check, each unnatural phrase named with its plain wording, caps ai at 7, five worked examples; the sentence reader reads aloud; must-check M-D23 |
+| 11-15 | "the editing card is very bad, report to Workbench to avoid it again" ("Fix: see the card" offered with ✓ Use this, the whole sentence struck) | ScalingGlucose t03 | a Fix is offered as a new sentence only when it is one (ends in . ? !, no pointer, at least 40% of the length, shares a word); otherwise it shows as a plain Fix note; ✓ Use this refuses the same on the server |
 
 ## 🖱️ Topic: Row highlight
 

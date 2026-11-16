@@ -140,7 +140,7 @@ CSS = """
 .qc-svg .card.s-drafted circle,.qc-svg .card.s-returned circle{fill:#fff1c2}.qc-svg .card.s-new circle{fill:#dbe9ff}
 .qc-svg .card.s-changed circle{fill:#fff1c2}.qc-svg .card.s-new rect{fill:#dbe9ff}.qc-svg .card.s-changed rect{fill:#fff1c2}.qc-svg .card.s-retired circle,.qc-svg .card.s-asked circle{stroke-dasharray:4 3}
 .qc-svg.net path.e{opacity:.55;stroke:#9aa1ab;stroke-width:1.3}
-.qc-svg.net path.e.ex:not(.down):not(.up){opacity:.1}
+.qc-svg.net path.e.ex:not(.down):not(.up){opacity:0}
 .qc-svg.lit .card:not(.on):not(.up):not(.down) circle{fill:#fff;stroke:#e1e4e8}
 .qc-svg .card.on circle{stroke-width:3;stroke:#1f6feb}.qc-svg .card.down circle{stroke:#1a7f37;stroke-width:2.4}.qc-svg .card.up circle{stroke:#bc4c00;stroke-width:2.4}
 .qc-seg{padding:3px 6px;border:1px solid #c9ccd1;border-radius:6px;font:inherit;background:#fff}
@@ -184,19 +184,20 @@ function drawList(){
   light(pinned);panel(pinned);
 }
 function drawNet(){
-  // the questions as a network: Executive across the top in number order (what a reader opens the Book for), under it
-  // one column a level, Data on the left to Wisdom on the right; a dot a question, a line from each answer to every
-  // question that uses it. An Executive question cites every level, so its lines stay faint until it is lit
+  // the questions as a network: Executive across the top as cards with their titles, in number order (what a reader
+  // opens the Book for); under it one column a level, Data on the left to Wisdom on the right, a dot a question, a line
+  // from each answer to every question that uses it. An Executive question cites every level, so its lines are drawn
+  // only while it, or a question in its chain, is hovered or pinned
   svg.innerHTML='';pos={};
   var eg=el('g',{},svg), cg=el('g',{},svg), cols=['D','I','K','W'], names={};D.levels.forEach(function(L){names[L[0]]=L[1];});
   function keep(lv){return D.nodes.filter(function(n){return n.lv===lv&&(!onlyLinked||linked(n));});}
   function num(a,b){return parseInt(a.id.slice(1))-parseInt(b.id.slice(1));}
   var colW=(W-16)/4, R=16, SP=74, y0=44, most=Math.max.apply(null,cols.map(function(lv){return keep(lv).length;}).concat([1]));
-  var xs=keep('X').sort(num), per=Math.max(1,Math.min(xs.length,Math.floor((W-16)/104))), xw=(W-16)/per;
+  var xs=keep('X').sort(num), per=Math.max(1,Math.min(xs.length,Math.floor((W-16)/128))), xw=(W-16)/per, XH=30, XS=38;
   if(xs.length){var t0=el('text',{x:W/2,y:16,'class':'colt'},cg);t0.textContent=(names.X||'X').toUpperCase();
     xs.forEach(function(n,i){var k=i%per, inRow=Math.min(per,xs.length-(i-k)), left=8+(W-16-inRow*xw)/2;   // a short last row is centred
-      dot(n,left+xw*k+xw/2,32+R+Math.floor(i/per)*SP,R,xw-8,cg);});
-    y0=32+Math.ceil(xs.length/per)*SP+34;}
+      card(n,left+xw*k+4,26+Math.floor(i/per)*XS,xw-8,XH);});
+    y0=26+Math.ceil(xs.length/per)*XS+40;}
   cols.forEach(function(lv,c){var ns=keep(lv), cx=8+colW*c+colW/2;
     ns.sort(function(a,b){function k(n){var ys=down[n.id].concat(up[n.id]).filter(function(i){return pos[i]&&pos[i].lv!=='X';}).map(function(i){return pos[i].y;});
       return ys.length?ys.reduce(function(s,v){return s+v;},0)/ys.length:1e5+parseInt(n.id.slice(1));}return k(a)-k(b);});
@@ -204,9 +205,9 @@ function drawNet(){
     var off=y0+R+(most-ns.length)*SP/2;
     ns.forEach(function(n,i){dot(n,cx,off+i*SP,R,colW-8,cg);});});
   D.edges.forEach(function(e){var a=pos[e[0]],b=pos[e[1]];if(!a||!b)return;var d,ay=a.y+R,by_=b.y+R,ex=a.lv==='X'||b.lv==='X';
-    if(a.lv==='X'&&b.lv==='X'){var ax=a.x+R,bx=b.x+R,lift=a.y===b.y?22:0;   // two Executive questions: an arc over the row
+    if(a.lv==='X'&&b.lv==='X'){var ax=a.x+a.w/2,bx=b.x+b.w/2,lift=a.y===b.y?14:0;   // two Executive questions: an arc over the row
       d='M'+ax+','+a.y+' C'+ax+','+(a.y-lift)+' '+bx+','+(b.y-lift)+' '+bx+','+b.y;}
-    else if(ex){var T=a.lv==='X'?a:b,B=a.lv==='X'?b:a,x1=T.x+R,y1=T.y+2*R+20,x2=B.x+R,y2=B.y,m=(y1+y2)/2;   // from under its name, down
+    else if(ex){var T=a.lv==='X'?a:b,B=a.lv==='X'?b:a,x1=T.x+T.w/2,y1=T.y+T.h,x2=B.x+B.w/2,y2=B.y,m=(y1+y2)/2;   // from under its card, down
       d='M'+x1+','+y1+' C'+x1+','+m+' '+x2+','+m+' '+x2+','+y2;}
     else if(a.lv===b.lv){var rx=a.x+2*R;d='M'+rx+','+ay+' C'+(rx+30)+','+ay+' '+(rx+30)+','+by_+' '+rx+','+by_;}
     else{var L=b.x<a.x?b:a,Rr=b.x<a.x?a:b,x1=L.x+2*R,y1=L.y+R,x2=Rr.x,y2=Rr.y+R,mx=(x1+x2)/2,

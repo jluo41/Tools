@@ -12,7 +12,8 @@ from live import insight_views as V
 from live.frame import rel
 
 
-ORDER = "DIKWX"                                   # the ladder, the Executive answers last
+ORDER = "DIKWX"                                   # the ladder, the Executive answers last: the order the work is done in
+READ_ORDER = "XDIKW"                              # the order a reader meets them: Executive first, as the map and the phone tabs
 LEVEL = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom", "X": "Executive"}
 RUN_WORDS = {"plan-evidence": "Plan the evidence", "review-plan": "Review the plan", "write-script": "Write the script",
              "review-script": "Review the script", "review-questions": "Review the questions", "set-segments": "Set the segments",

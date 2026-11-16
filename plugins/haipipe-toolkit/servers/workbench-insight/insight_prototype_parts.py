@@ -11,7 +11,7 @@ from live.frame import esc, pop
 from live.ui_parts import _kv
 from live.insight_view_parts import _pill, _side_tabs
 from live.insight_prototype_facts import (
-    ORDER, LEVEL, CSS, _proto, _computes, _scripts, q_state, q_word, _ready, r_word, _closed_r, _label, _proposals,
+    READ_ORDER, LEVEL, CSS, _proto, _computes, _scripts, q_state, q_word, _ready, r_word, _closed_r, _label, _proposals,
     _p_word, _focus, KIND_WORD)
 from live.insight_prototype_status import _open_btn, _release_waits
 
@@ -24,20 +24,36 @@ def _q_row(q: dict, root: Path, with_change: bool = False) -> str:
     links = [V._open(s, root, s.name) for s in _scripts(q)]
     links.append(pop(_focus(Path(q["task"]), root), q["id"], "its page ↗") if q.get("task") else "")
     change = str(q.get("change") or "")
-    return (f'<li><div class=h><b>{esc(q["id"])}</b><span>{esc(short[:1].upper() + short[1:])}</span>{_pill(q_word(q))}</div>'
+    return (f'<li id="pq-{esc(q["id"])}"><div class=h><b>{esc(q["id"])}</b><span>{esc(short[:1].upper() + short[1:])}</span>{_pill(q_word(q))}</div>'
             + (f'<p class=ask>{esc(ask)}</p>' if ask and not ask.startswith("<") else "")
             + f'<p class=by>{"".join(x for x in links if x)}'
             + (f'<span>{esc(change)}</span>' if with_change and change else "") + '</p></li>')
 
 
-def _by_level(qs: list, root: Path, with_change: bool = False) -> str:
+def _by_level(qs: list, root: Path, with_change: bool = False, fold: bool = False) -> str:
+    """The questions grouped by level, Executive first. With `fold`, each level is a closed fold whose bar is its
+    name alone, ✓ beside it once every question in it is agreed and scripted; a link to #<question id> opens its fold."""
     out = []
-    for lv in ORDER:
+    for lv in READ_ORDER:
         mine = [q for q in qs if q["id"][:1] == lv]
-        if mine:
-            out.append(f'<p class=pb-lv><b>{esc(LEVEL[lv])}</b></p><ul class=pq>'
-                       + "".join(_q_row(q, root, with_change) for q in mine) + '</ul>')
-    return "".join(out)
+        if not mine:
+            continue
+        rows = '<ul class=pq>' + "".join(_q_row(q, root, with_change) for q in mine) + '</ul>'
+        if fold:
+            done = ' <span class=mut>✓</span>' if all(_ready(q) for q in mine) else ""
+            out.append(f'<details class=pb-fold data-lv={lv}><summary class=pb-lv><b>{esc(LEVEL[lv])}</b>{done}</summary>{rows}</details>')
+        else:
+            out.append(f'<p class=pb-lv><b>{esc(LEVEL[lv])}</b></p>{rows}')
+    return "".join(out) + (FOLD_JS if fold and out else "")
+
+
+# a link that lands on a question inside a closed level opens that level first (#K05, from the map or another page)
+FOLD_JS = ("<style>.pb-fold>summary{cursor:pointer}.pb-fold{margin:2px 0}</style>"
+           "<script>(function(){function go(){var m=location.hash.match(/^#([DIKWX]\\d+)$/);if(!m)return;"
+           "var li=document.getElementById('pq-'+m[1]);if(!li)return;var d=li.closest('details.pb-fold');"
+           "if(d)d.open=true;var h=li.closest('.fd-sec');h=h&&h.querySelector('.fd-h');"   # the page's own section bar
+           "if(h&&h.getAttribute('aria-expanded')==='false')h.click();li.scrollIntoView({block:'center'});}"
+           "window.addEventListener('hashchange',go);window.addEventListener('load',function(){setTimeout(go,60);});})();</script>")
 
 
 def _level_word(qs: list) -> str:
@@ -64,7 +80,7 @@ def _questions_newest(proto: dict, root: Path) -> tuple | None:
     if not proto["releases"]:
         return None
     r = proto["releases"][-1]
-    body = _by_level(list(r["questions"].values()), root, True) or "<p>This version asks no question yet.</p>"
+    body = _by_level(list(r["questions"].values()), root, True, fold=True) or "<p>This version asks no question yet.</p>"
     return ("❓ Questions", f"{_label(r)} · {r_word(r)}", CSS + body, "")
 
 
@@ -89,7 +105,7 @@ def _version_part(proto: dict, r: dict, root: Path) -> tuple:
 
 def _questions_by_level(r: dict, root: Path) -> tuple | None:
     qs = list(r["questions"].values())
-    lvs = [lv for lv in ORDER if any(q["id"][:1] == lv for q in qs)]
+    lvs = [lv for lv in READ_ORDER if any(q["id"][:1] == lv for q in qs)]
     if not lvs:
         return None
     items = [(LEVEL[lv], _level_word([q for q in qs if q["id"][:1] == lv])) for lv in lvs]

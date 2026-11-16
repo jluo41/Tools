@@ -268,7 +268,6 @@ class DesignBoardSnapshotTest(unittest.TestCase):
             papers = render_theory_embed(snap, "papers")
             # the Paper workbench's Related Papers card: the title, then who, when and which journal
             for label in ('<div class="view on" data-view="papers">',
-                          '<div class="rp-head">4 papers · 2 key · 3 classic · 0 review · 1 evidence · 1 in UTD24 journals · 0 with a PDF</div>',
                           '<div class="lw-k">By exploring<span class="lw-kn">1</span></div>',
                           '<div class="lw-k">All methods<span class="lw-kn">1</span></div>',
                           '<div class="lw-k">By theory<span class="lw-kn">2</span></div>',
@@ -277,6 +276,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                           'href="https://doi.org/10.1037/a0032853"', "theory use not reliably linked to effect",
                           "4 journals and publishers", "No free full text here"):
                 self.assertIn(label, papers)
+            self.assertNotIn("4 papers ·", papers)                                   # a page carries no tally (AGENTS.md § Page words)
             # Guide frames this page to read, not to run (JL 261002): no Runs panel, no "Add a paper"
             self.assertNotIn("class=runs-panel", papers)
             # a band shows its key papers and folds the rest; a band with none shows them all (JL 261002)
@@ -396,7 +396,7 @@ class DesignBoardSnapshotTest(unittest.TestCase):
                 if pdf:
                     (res / "paper.pdf").write_bytes(b"%PDF-1.4\n")
             page = papers_page(board, root, table)
-            self.assertIn("4 papers · 2 key · 1 classic · 0 review · 3 evidence · 1 in UTD24 journals · 2 with a PDF", page)
+            self.assertNotIn("4 papers ·", page)                                     # no tally line above the cards
             kept = "/Tools/ref/papers/dow2010_parallel.pdf"
             lent = "/Proj/discoveries/b01_x/j01_y/t01_z/results/r01_doshi2024_creativity/paper.pdf"
             # each PDF loads only when its card opens (data-pdf, not src), and opens in a tab too
