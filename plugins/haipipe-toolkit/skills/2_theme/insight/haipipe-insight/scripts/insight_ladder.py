@@ -13,12 +13,20 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py board     <Project>/insight/Insight-<name> --dataset <D> --prototype insight/InsightQuestionBook-<name>
                                                                         [--title "…"] [--accumulates yes|no|?]
     python insight_ladder.py data      <board> data-v<M> --data-folder <SPACE-relative data folder>/ [--label "first 5 days"] [--new "…"]
+                                       [--prep <the signed prep version, or its Run, that made the folder>]
                                        (or --extract <SPACE-relative .parquet> [--rows <n>], a lone file)
     python insight_ladder.py job       <board> --release question-v<N> --data data-v<M>   the next Job jNN_question-vN-<slug>_data-vM/
+    python insight_ladder.py dataprep  <Project>/insight/InsightDataPrep-<Set> --set <Set> --serves insight/Insight-<name>[,…]
+                                                                        [--store <SPACE-relative folder>] [--title "…"]
+    python insight_ladder.py dataset   <dataprep> <Name> --raw <SPACE-relative raw folder> [--why "…"]   a dataset of the Set
+    python insight_ladder.py prep      <dataprep> --slug <what-it-is> [--from <carried-from folder>]   the next jNN_prep-vK_<slug>/
+    python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   a step Task tNN_<slug>/
+    python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed; pins the tools' hash; freezes it
+    python insight_ladder.py run       <step> dataset <name>             a hard Run runs/rNN_<name>/: ticket, card, config
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> segment <name|all>   a hard Run runs/rNN_<segment>/ (planned)
     python insight_ladder.py goals     <Board, Question Book, Job or Task>     write each face's missing `goal:` line
-    python insight_ladder.py audit     <Board, Question Book or Project>       what an older folder lacks, and the step that fixes it
+    python insight_ladder.py audit     <Board, Question Book, DataPrep or Project>   what a folder lacks, and the step that fixes it
     python insight_ladder.py review    <Board or Question Book>                read-only: answers to reread or check, refused Runs,
                                        and what the Question Book leaves unsaid (scripts/insight_ladder_review.py)
     python insight_ladder.py update    <Board, Question Book or Project> [--apply]   the names, the goal lines, each Job's hash
@@ -64,6 +72,7 @@ from insight_ladder_book import (  # noqa: E402,F401 · this module keeps answer
 from insight_ladder_runs import (  # noqa: E402,F401 · this module keeps answering these names
     level_of, _default_target, _partitions, hard_run, run)
 import open_job as OJ  # noqa: E402  (ref/, put on the path by insight_ladder_base)
+import insight_ladder_prep as PR  # noqa: E402  (the DataPrep Block: ref/dataprep.md)
 
 
 def board_goal(title: str, dataset: str) -> str:
@@ -97,7 +106,8 @@ def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, pl
     runs_readme(path, "board", plan)
 
 
-def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, folder: str = "", label: str = "") -> None:
+def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, folder: str = "", label: str = "",
+         prep: str = "") -> None:
     if face_kind(path) != "board":
         sys.exit(f"{path.name} is not an insight Board (board.md board-kind: insight-board)")
     if not re.fullmatch(r"data-v\d+", ver or "") or not (extract or folder):
@@ -115,6 +125,9 @@ def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, fo
     # reads them all, the Runs find the data file in it (run_job.version_extract)
     entry = ({"version": ver, "folder": folder.rstrip("/") + "/", "frozen": today()} if folder else
              {"version": ver, "extract": extract, "frozen": today(), "rows": rows or "<n>"})
+    if prep:                                   # the signed prep version (or its Run) that made the folder (ref/dataprep.md)
+        PR.prep_of(project_of(path), prep)
+        entry["prep"] = prep
     if label:                                  # the data version's few words, shown as data-v<M> · <label>
         entry = {"version": ver, "label": label, **{k: v for k, v in entry.items() if k != "version"}}
     fields.setdefault("versions", []).append(dict(entry, new=new or "<what is new>"))
@@ -308,6 +321,8 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
     (Board, check, count, the step that fixes it). Read-only."""
     import rename_code_data as RN
     import rename_segment as RS
+    if face_kind(folder) == "dataprep":                     # a DataPrep Block has its own checks (ref/dataprep.md)
+        return PR.audit(folder, quiet)
     rows = []
     for b in boards_of(folder) or [folder.resolve()]:
         step = older_layout(b)
@@ -328,6 +343,9 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
         rows.append((b, "hash", len(pins), "update --apply (each Job's hash: re-pinned to its release)"))
         st = stale_receipts(b) if not (edits or renames or move) else []
         rows.append((b, "receipts", len(st), "update --apply --rerun (each ticket's run.sh; needs env.sh at the SPACE root)"))
+        unmade = [v for v in front(b / "board.md")[0].get("versions") or [] if not v.get("prep")] if PR.serving(b) else []
+        rows.append((b, "prep", len(unmade), "data … --prep: each data version names the signed prep version that made it "
+                     "(ref/dataprep.md); an older one is named by hand"))
     if not quiet:
         for b, check, n, step in rows:
             print(f"{'✅' if n == 0 else '❗'} {b.name:<28} {check:<9} {n:>4}" + ("" if n == 0 else f"   ▶ {step}"))
@@ -420,7 +438,8 @@ def update(folder: Path, apply: bool, again: bool = False) -> list[tuple]:
 def main(argv=None) -> list[Path]:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=("prototype", "version", "question", "change", "retire", "sign", "propose",
-                                        "board", "data", "job", "run", "goals", "audit", "review", "update"))
+                                        "board", "data", "job", "run", "goals", "audit", "review", "update",
+                                        "dataprep", "dataset", "prep", "step"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
@@ -444,6 +463,10 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--label", default="")
     ap.add_argument("--release", default="")
     ap.add_argument("--data", default="")
+    ap.add_argument("--set", dest="set_name", default="", help="dataprep: the family of datasets it prepares")
+    ap.add_argument("--store", default="", help="dataprep: the SPACE-relative folder its Runs write the data to")
+    ap.add_argument("--raw", default="", help="dataset: the SPACE-relative folder its raw rows sit in")
+    ap.add_argument("--prep", default="", help="data: the signed prep version (or its Run) that made the data folder")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply", action="store_true", help="update: write (a dry run without it)")
     ap.add_argument("--rerun", action="store_true", help="update --apply: run each stale receipt's ticket again")
@@ -460,14 +483,24 @@ def main(argv=None) -> list[Path]:
         change(a.folder, a.what, a.why, plan)
     elif c == "retire":
         retire(a.folder, a.what, a.why, plan)
+    elif c == "sign" and PR.PREP.match(a.folder.name):
+        PR.sign_prep(a.folder, a.date, plan)
     elif c == "sign":
         sign(a.folder, a.date, plan)
+    elif c == "dataprep":
+        PR.dataprep(a.folder, a.set_name, a.serves, a.store, a.title, plan)
+    elif c == "dataset":
+        PR.add_dataset(a.folder, a.what, a.raw, a.why, plan)
+    elif c == "prep":
+        PR.prep(a.folder, a.slug, a.source, plan)
+    elif c == "step":
+        PR.step(a.folder, a.what, a.ask, plan)
     elif c == "propose":
         propose(a.folder, a.what, WORDS.get(a.kind, a.kind), a.source, a.level, a.why, plan)
     elif c == "board":
         board(a.folder, a.dataset, a.prototype, a.title, a.accumulates, plan)
     elif c == "data":
-        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label)
+        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label, a.prep)
     elif c == "job":
         job(a.folder, a.release, a.data, plan)
     elif c == "goals":

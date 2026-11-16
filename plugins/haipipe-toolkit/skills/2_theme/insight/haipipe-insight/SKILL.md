@@ -1,10 +1,10 @@
 ---
 name: haipipe-insight
-description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, data version, DIKW, segment, pooling, signed Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
+description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release), a DataPrep Block (insight/InsightDataPrep-<Set>/, the tools that make the data versions, one Job per prep version) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, DataPrep, data prep, prep version, data version, DIKW, segment, pooling, signed Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.9.0"
-  last_updated: "2026-11-09"
+  version: "3.10.1"
+  last_updated: "2026-11-16"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 
@@ -47,6 +47,7 @@ Resolve the folder first, by its `board.md` (never its folder name), then load o
 | a Question Book (`board-kind: prototype`) | proposals · a version · a question | this door → the version's Run owner (§ Runs) |
 | an insight Board (`board-kind: insight-board`, or `prototype:` in board.md) | data versions · Jobs · readings | this door → the Board's Run owner |
 | a Board Job `jNN_question-vN-<slug>_data-vM/` or its Task `tNN_<L><NN>_<slug>/` | hard Runs · pages · compare | this door → `haipipe-insight-workflow` |
+| a DataPrep Block (`board-kind: insight-dataprep`), a prep version `jNN_prep-vK_<slug>/` or a step `tNN_<step>/` | the tools that make data versions · a Run per dataset | [`ref/dataprep.md`](ref/dataprep.md); a step's script and Runs → `haipipe-task-for-data` |
 | a new topic | — | `insight_ladder.py prototype`, then `board` (ref/insight-ladder.md § Scripts) |
 | update, audit, bring an older Board up to date | Board · Question Book · Project | § Update below |
 | a dataset-first topic for one Task Board | Task-side | `haipipe-task` → `fn/insight.md` → `haipipe-page-insight` |

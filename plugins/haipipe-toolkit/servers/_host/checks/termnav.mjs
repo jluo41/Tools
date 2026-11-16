@@ -13,7 +13,7 @@ const HOSTPORT = process.env.CHECK_HOSTPORT || '127.0.0.1:5599';
 const BASE = `http://${HOSTPORT}${BOARD}/board`;
 const CDP = process.env.CHECK_CDP || '127.0.0.1:9333';
 const FIGDIR = process.env.CHECK_FIGDIR
-  || ('/Users/jluo41/Desktop/Physician-SPACE' + BOARD + '/fig');
+  || ((process.env.SPACE_ROOT || process.cwd()) + BOARD + '/fig');
 
 const targets = await (await fetch(`http://${CDP}/json`)).json();
 const page = targets.find(t => t.type === 'page');

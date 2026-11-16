@@ -1,5 +1,5 @@
 #!/bin/bash
-# Install jluo41-tools as a Claude Code marketplace (macOS / Linux).
+# Install this checkout as a Claude Code marketplace (macOS / Linux); its name is .claude-plugin/marketplace.json's.
 # Windows users: run install.ps1 in PowerShell instead — it creates directory
 # junctions (native symlinks need admin/Developer Mode on Windows).
 #
@@ -43,7 +43,11 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CLAUDE_DIR="$HOME/.claude"
-MARKETPLACE_DIR="$CLAUDE_DIR/plugins/marketplaces/jluo41-tools"
+# The marketplace's name is this checkout's own (.claude-plugin/marketplace.json `name`), so two checkouts with
+# different names register side by side; a checkout without it keeps the original name.
+MARKETPLACE_NAME="$(python3 -c 'import json, sys; print(json.load(open(sys.argv[1]))["name"])' \
+    "$SCRIPT_DIR/.claude-plugin/marketplace.json" 2>/dev/null || echo jluo41-tools)"
+MARKETPLACE_DIR="$CLAUDE_DIR/plugins/marketplaces/$MARKETPLACE_NAME"
 KNOWN_FILE="$CLAUDE_DIR/plugins/known_marketplaces.json"
 SETTINGS_FILE="$CLAUDE_DIR/settings.json"
 
@@ -89,7 +93,7 @@ fi
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
 
 if [ "$DO_MARKETPLACE" = true ]; then
-    echo "Installing jluo41-tools marketplace..."
+    echo "Installing $MARKETPLACE_NAME marketplace..."
 
     mkdir -p "$CLAUDE_DIR/plugins/marketplaces"
 
@@ -105,15 +109,18 @@ if [ "$DO_MARKETPLACE" = true ]; then
     echo "  Symlinked $SCRIPT_DIR -> $MARKETPLACE_DIR"
 
     if [ -f "$KNOWN_FILE" ]; then
-        python3 - "$KNOWN_FILE" "$MARKETPLACE_DIR" << 'PYEOF'
-import datetime, json, sys
+        python3 - "$KNOWN_FILE" "$MARKETPLACE_DIR" "$MARKETPLACE_NAME" "$SCRIPT_DIR" << 'PYEOF'
+import datetime, json, re, subprocess, sys
 with open(sys.argv[1], 'r') as f:
     data = json.load(f)
-data['jluo41-tools'] = {
-    'source': {
-        'source': 'github',
-        'repo': 'jluo41/Tools'
-    },
+# The source is this checkout's own remote: a GitHub repo by its owner/name, any other git host by its URL, and a
+# checkout with no remote by its folder.
+url = subprocess.run(['git', '-C', sys.argv[4], 'remote', 'get-url', 'origin'], capture_output=True, text=True).stdout.strip()
+gh = re.match(r'(?:https://github\.com/|git@github\.com:)([^/]+/[^/]+?)(?:\.git)?$', url)
+source = {'source': 'github', 'repo': gh.group(1)} if gh else (
+    {'source': 'git', 'url': url} if url else {'source': 'directory', 'path': sys.argv[4]})
+data[sys.argv[3]] = {
+    'source': source,
     'installLocation': sys.argv[2],
     'lastUpdated': datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.000Z')
 }
@@ -161,8 +168,8 @@ for d in sorted(os.listdir(root)):
 PYEOF
     echo ""
     echo "Install in Claude Code with e.g.:"
-    echo "  /plugin install haipipe@jluo41-tools"
-    echo "  /plugin install inlab-human@jluo41-tools"
+    python3 -c 'import json, sys; [print(f"  /plugin install {p[\"name\"]}@{sys.argv[2]}") for p in json.load(open(sys.argv[1]))["plugins"]]' \
+        "$SCRIPT_DIR/.claude-plugin/marketplace.json" "$MARKETPLACE_NAME" 2>/dev/null || echo "  /plugin install haipipe@$MARKETPLACE_NAME"
 fi
 
 # ─── 2. Global skill installation (--global) ─────────────────────────────────

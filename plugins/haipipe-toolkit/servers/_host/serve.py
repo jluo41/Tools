@@ -114,7 +114,18 @@ from host_registry import WORKBENCH_ROUTES, route_allowed, static_path_allowed  
 # sibling workbench's servers/workbench-* (see _host/live/__init__.py).
 from live.base import BaseMixin, HOLD, TERMS, RUNS, ASKS, ALWAYS, ASK_SEQ
 from live.auth import AuthMixin, AuthConfigError, host_is_loopback
-from live.share import ShareMixin  # --share: emailed-code sign-in, access per Block (b10 s52)
+try:
+    from live.share import ShareMixin  # --share: emailed-code sign-in, access per Block (b10 s52)
+except ModuleNotFoundError as _no_share:  # a toolkit exported without the share door (export/profiles): never shares
+    if _no_share.name != "live.share":
+        raise
+
+    class ShareMixin:
+        share = share_codes = share_user = None
+
+        @classmethod
+        def configure_share(cls, root):
+            raise ValueError("this toolkit has no share door")
 from live.activity import ActivityMixin
 from live.home import HomeMixin
 from live.write import WriteMixin

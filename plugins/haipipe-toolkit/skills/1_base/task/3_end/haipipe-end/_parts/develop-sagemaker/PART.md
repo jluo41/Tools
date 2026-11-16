@@ -185,7 +185,7 @@ These same constraints apply to the sibling `haipipe-end deploy sagemaker` skill
 
 **1.
 SSO role needs SageMaker action permissions explicitly.** The
-   `df-rxinform-nonprod-jhuuser` permission set (and most baseline DrFirst
+   non-prod permission set an account is given (and most baseline
    SSO sets) does NOT grant `sagemaker:*` by default. Without it the first
    `DescribeEndpoint` / `CreatePipeline` call returns:
 

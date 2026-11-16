@@ -112,8 +112,9 @@ Other options:
                               # Tools no longer uses
 ```
 
-The default shell installer registers this repository as the `jluo41-tools`
-marketplace. It auto-detects a parent workspace when that directory contains
+The default shell installer registers this repository as a marketplace under the
+`name` in `.claude-plugin/marketplace.json` (`jluo41-tools` here), with this
+checkout's own git remote as its source; `install.ps1` does the same. It auto-detects a parent workspace when that directory contains
 `.git` or `pyproject.toml`; use `--project` to select a target explicitly.
 Marketplace commands use the package names listed in
 `.claude-plugin/marketplace.json`.

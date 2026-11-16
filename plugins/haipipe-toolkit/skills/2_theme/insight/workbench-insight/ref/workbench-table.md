@@ -77,3 +77,9 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Question | Work Details | every view | Review the evidence plan | haipipe-insight-reviewer-agent | haipipe-insight-evidence-plan | none | Question › runs/`run-review-plan-<l><nn>/` |
 | Question | Work Details | every view | Write the script | haipipe-task-creator-agent | haipipe-insight | none | Question › runs/`run-write-script-<l><nn>/` |
 | Question | Work Details | every view | Review the script | haipipe-task-reviewer-agent | haipipe-insight | none | Question › runs/`run-review-script-<l><nn>/` |
+| Data Prep | Work Details | every view | Open a prep version | haipipe-insight-agent | haipipe-insight | none | DataPrep › runs/`run-open-version-prep-v<N>/` |
+| Prep | Work Details | every view | Review the steps | haipipe-insight-reviewer-agent | haipipe-insight | none | Prep version › runs/`run-review-steps-prep-v<N>/` |
+| Prep | Delivery | every view | Sign the prep version | haipipe-insight-agent | haipipe-insight | the prep version | Prep version › runs/`run-sign-prep-v<N>/` |
+| Step | Work Details | every view | Write the step's script | haipipe-task-creator-agent | haipipe-task-for-data | none | Step › runs/`run-write-script-t<NN>/` |
+| Step | Work Details | every view | Review the step's script | haipipe-task-reviewer-agent | haipipe-task-for-data | none | Step › runs/`run-review-script-t<NN>/` |
+| Step | Runs | every view | Run a dataset | haipipe-task-orchestrator-agent | haipipe-task-for-data | none | Step › runs/`rNN_<segment>/` |

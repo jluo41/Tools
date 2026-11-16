@@ -30,8 +30,8 @@ def write(p: Path, text: str) -> None:
 
 class EmailAndTableTest(unittest.TestCase):
     def test_jhu_addresses_fold_and_match_exactly(self):
-        self.assertEqual(S.canonical_email(" Rgao28@JH.edu "), "rgao28@jhu.edu")       # one inbox, two names
-        self.assertEqual(S.canonical_email("rgao28@jhmi.edu"), "rgao28@jhmi.edu")      # its own mailbox
+        self.assertEqual(S.canonical_email(" Another@JH.edu "), "another@jhu.edu")       # one inbox, two names
+        self.assertEqual(S.canonical_email("another@jhmi.edu"), "another@jhmi.edu")      # its own mailbox
         self.assertIsNone(S.canonical_email("not an email"))
         for ok in ("a@jhu.edu", "a@jhmi.edu", "a@cs.jhu.edu"):
             self.assertTrue(S.accepted(ok), ok)
@@ -54,15 +54,15 @@ class EmailAndTableTest(unittest.TestCase):
             self.assertEqual(cfg.port, 0)                                                # no door port named
 
     def test_mail_goes_as_typed_signed_with_the_standard_library(self):
-        """261012: zdi1@jh.edu got nothing; the code went to the folded zdi1@jhu.edu, and five doors' Python had no
+        """261012: person@jh.edu got nothing; the code went to the folded person@jhu.edu, and five doors' Python had no
         azure package. The address is the one typed; the call is ACS's HMAC scheme, checked here by recomputing it."""
         import base64
         import hashlib
         import hmac
         import json
         import urllib.request
-        self.assertEqual(S.mail_to("  ZDI1@JH.edu "), "zdi1@jh.edu")
-        self.assertEqual(S.canonical_email("zdi1@jh.edu"), "zdi1@jhu.edu")             # still one person to match
+        self.assertEqual(S.mail_to("  PERSON@JH.edu "), "person@jh.edu")
+        self.assertEqual(S.canonical_email("person@jh.edu"), "person@jhu.edu")             # still one person to match
         self.assertIsNone(S.mail_to("not an address"))
         key = base64.b64encode(b"k" * 32).decode()
         seen = {}
@@ -76,13 +76,13 @@ class EmailAndTableTest(unittest.TestCase):
         real = urllib.request.urlopen
         urllib.request.urlopen = lambda req, timeout=0: seen.setdefault("req", req) and Reply()
         try:
-            S.acs_send(f"endpoint=https://acs.example.com/;accesskey={key}", "noreply@cdhai.com", "zdi1@jh.edu",
+            S.acs_send(f"endpoint=https://acs.example.com/;accesskey={key}", "noreply@example.test", "person@jh.edu",
                        "Your sign-in code", "Your sign-in code is 123456.")
         finally:
             urllib.request.urlopen = real
         req = seen["req"]
         self.assertEqual(req.full_url, "https://acs.example.com/emails:send?api-version=" + S.ACS_API)
-        self.assertEqual(json.loads(req.data)["recipients"]["to"], [{"address": "zdi1@jh.edu"}])
+        self.assertEqual(json.loads(req.data)["recipients"]["to"], [{"address": "person@jh.edu"}])
         h = {k.lower(): v for k, v in req.header_items()}
         digest = base64.b64encode(hashlib.sha256(req.data).digest()).decode()
         self.assertEqual(h["x-ms-content-sha256"], digest)

@@ -1,3 +1,9 @@
+## 2.0.4 · 2026-11-16 · the ticket runs in an insight DataPrep Block
+
+- `ref/run-sh-template.sh` admits a Block `InsightDataPrep-<Set>` directly under `insight/` when its Job is a prep
+  version (`jNN_prep-vK_<slug>`; haipipe-insight `ref/dataprep.md`), mirrored below `insight/` in a store. Any other
+  Block in `insight/` is refused, and a DataPrep Block anywhere else is refused.
+
 ## 2.0.1 · 2026-10-22 · the ticket's notebook step is SPACE-relative again
 
 Found running Proj11-CGM-FM b51 (JL 261022: "能跑的都跑"): a ticket launched from the SPACE root died with "Kernel

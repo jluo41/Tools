@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from insight_ladder_base import (
-    SOFT, VERSION, JOB, TASK, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front, dump_yaml,
+    SOFT, VERSION, JOB, TASK, PREP, STEP, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front, dump_yaml,
     project_of, face, face_kind)
 import open_job as OJ  # noqa: E402  (ref/, put on the path by insight_ladder_base)
 
@@ -23,13 +23,17 @@ def level_of(folder: Path) -> str:
         return "version"
     if JOB.match(name) and face_kind(folder.parent) == "board":
         return "job"
+    if PREP.match(name) and face_kind(folder.parent) == "dataprep":
+        return "prep"
+    if STEP.match(name) and PREP.match(folder.parent.name) and face_kind(folder.parent.parent) == "dataprep":
+        return "step"
     if TASK.match(name):                       # an older Board Job's name (j01_p1_<D>v1) fits VERSION: ask the face above
         above = face_kind(folder.parent.parent)
         if VERSION.match(folder.parent.name) and above == "prototype":
             return "question"
         if JOB.match(folder.parent.name) and above == "board":
             return "task"
-    sys.exit(f"not an insight Block, version, Job or Task folder: {folder}")
+    sys.exit(f"not an insight Block, version, Job, Task, prep version or step folder: {folder}")
 
 
 def _default_target(folder: Path, level: str, rtype: str) -> str:
@@ -38,6 +42,12 @@ def _default_target(folder: Path, level: str, rtype: str) -> str:
     name = folder.name
     if level == "version":
         return VERSION.match(name).group(2)                        # question-v2
+    if level == "dataprep":                                        # the next prep version: prep-v3
+        return f"prep-v{sum(1 for p in folder.iterdir() if p.is_dir() and PREP.match(p.name)) + 1}"
+    if level == "prep":
+        return PREP.match(name).group(2)                           # prep-v2
+    if level == "step":
+        return name.split("_", 1)[0]                               # t01
     if level == "question":
         return TASK.match(name).group(2).lower()                   # k01
     if level == "job":
@@ -85,6 +95,9 @@ def run(folder: Path, rtype: str, target: str, plan: Plan) -> list[Path]:
     if (level, rtype) not in TYPES:
         sys.exit(f"run-{rtype} does not run at the {level} level; its run types: {RUN_TYPES[level]}")
     skill, agent, signs, hard = TYPES[(level, rtype)]
+    if hard and level == "step":
+        from insight_ladder_prep import dataset_run
+        return [dataset_run(folder, target, plan)]
     if hard:
         return hard_run(folder, target or "all", plan)
     if level == "task" and rtype == "write":

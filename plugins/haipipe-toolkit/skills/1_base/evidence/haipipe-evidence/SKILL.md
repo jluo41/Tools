@@ -17,7 +17,7 @@ proposes; it never runs a discovery or a work Task itself, and it never writes t
 ```text
 kind   comes from                         colour   example card
 CITE   discovery/ world (external paper)  blue     CITE 3 · b01.j21.t05 · Glucose forecasters with meal ... inputs
-VALUE  work/ world (a number our Run wrote) violet VALUE 1 · b51.j02.t01 · Lab against the Hopkins design
+VALUE  work/ world (a number our Run wrote) violet VALUE 1 · b51.j02.t01 · Lab against the reference design
 needed an item with no Run yet            red      ❓ inside its topic's card, CITE 1.2
 ```
 

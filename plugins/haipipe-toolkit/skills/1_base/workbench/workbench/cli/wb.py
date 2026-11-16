@@ -503,14 +503,22 @@ def by_name(name: str, found: list[Place]) -> list[Place]:
     return [p for p in found if Path(p.path).name.lower() == name.lower()]
 
 
+def _share_door():
+    """cli/wb_share.py, or a plain refusal in a toolkit exported without it (export/profiles: no share door)."""
+    try:
+        import wb_share
+    except ImportError:
+        raise SystemExit("wb: this toolkit has no share door; a workbench here is opened on this machine only")
+    return wb_share
+
+
 def main(argv: list[str] | None = None) -> int:
     argv = sys.argv[1:] if argv is None else argv
     if argv[:1] == ["update"]:                      # /wb update <block>: cli/wb_update.py (b10 s10)
         import wb_update
         return wb_update.main(argv[1:])
     if argv[:1] == ["share"]:                       # /wb share <folder> <email>: cli/wb_share.py (b10 s52)
-        import wb_share
-        return wb_share.main(argv[1:])
+        return _share_door().main(argv[1:])
     if argv[:1] == ["restart"]:                     # /wb restart: after a Tools code change, a running host keeps old code
         root = Path(argv[2]).resolve() if argv[1:2] == ["--root"] and argv[2:3] else space_root(Path.cwd().resolve())
         if root is None:
@@ -527,8 +535,7 @@ def main(argv: list[str] | None = None) -> int:
         root = space_root(Path.cwd().resolve())
         folder = resolve_path(argv[0], root) if root else None
         if folder is not None and folder.is_dir():
-            import wb_share
-            return wb_share.main([str(folder), *argv[2:]])
+            return _share_door().main([str(folder), *argv[2:]])
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("words", nargs="*")
     ap.add_argument("--root")

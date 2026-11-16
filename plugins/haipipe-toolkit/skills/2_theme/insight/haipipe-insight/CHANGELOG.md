@@ -1,5 +1,29 @@
 # haipipe-insight · version history
 
+## 3.10.1 · 2026-11-16 · a prep Run writes only a new folder; audit reads a DataPrep Block
+
+- From drfirst-space-b7's Report on the carried DrFirstExp Block (workbench-insight T11-T14).
+- A Run's config names its dataset and a new output folder `…@prep-vK`, read by the worker through
+  `$HAIPIPE_CONFIG`; no `env:` stub, since the ticket exports none. `sign` refuses, and `audit` lists (`outputs`), a
+  config that would write a folder made before or one a Board's data version names. The next prep version re-aims
+  copied configs at its own folders.
+- `audit <DataPrep>` has its own rows: serves, workers, configs, outputs, agreed, hash.
+- run-review-steps is haipipe-insight-reviewer-agent's, the reviewer that may write `agreed:`; its prompt asks for
+  checks that are enforced, no default dataset, and `outputs 0`.
+
+## 3.10.0 · 2026-11-16 · the DataPrep Block makes the data versions
+
+- JL 261116 (workbench-insight topic T10, with drfirst-space-b7's Report): a third insight Block,
+  `insight/InsightDataPrep-<Set>/` (`board-kind: insight-dataprep`), holds the tools that turn a Set of raw datasets
+  into analysis-ready data. One Job per prep version `jNN_prep-vK_<slug>`, frozen once a person signs it (its tools'
+  `hash:` pinned); a step is a Task by the haipipe-task contract; a hard Run `rNN_<dataset>` makes one dataset's folder
+  in the store. Contract: `ref/dataprep.md`.
+- `insight_ladder.py` gains `dataprep`, `dataset`, `prep`, `step`, `sign <prep version>`, `run <step> dataset <name>`
+  (`scripts/insight_ladder_prep.py`); `data … --prep` refuses an unsigned prep version and writes `prep:` on the
+  Board's versions row; `audit` adds a `prep` row for each Board a DataPrep Block serves.
+- Run cards for the Data Prep, Prep and Step levels (`haipipe-insight-workflow/ref/run-cards.md`); guard
+  `tests/test_dataprep.py`.
+
 ## 3.9.0 · 2026-11-09 · update carries the words and reruns the receipts
 
 - `/haipipe-insight update <Board>` is one procedure (`ref/update.md`): audit, dry run, apply, rerun, verify.

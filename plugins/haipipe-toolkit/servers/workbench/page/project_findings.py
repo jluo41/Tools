@@ -124,7 +124,7 @@ def data_section(block: Path, root: Path) -> tuple:
             '<th>How many</th><th>Who can read it</th></tr></thead><tbody>' + "".join(out) + '</tbody></table>'), ""
 
 
-VERSION_DIR = re.compile(r"^v[A-Za-z0-9]*?(\d{6})$")       # a generated Fn's version folder, vReachJhuADHD261111
+VERSION_DIR = re.compile(r"^v[A-Za-z0-9]*?(\d{6})$")       # a generated Fn's version folder, vDemoSet261111
 
 
 def fn_file(task: Path, root: Path):

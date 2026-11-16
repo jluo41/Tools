@@ -214,15 +214,15 @@ Shorter description (808 -> 407 characters): what it does, when to use it, its t
 
 ## 1.24.1 · 2026-10-12 · A share code reaches jh.edu, and every door sends mail
 
-- JL 261012, from zdi1: "This link will automatically use @jhu.edu ... So I can't get code from zdi1@jh.edu."
-  Two faults. share.py folded jh.edu into jhu.edu for the mail too, so the code went to zdi1@jhu.edu, which is not
+- JL 261012, from a reader: "This link will automatically use @jhu.edu ... So I can't get code from person@jh.edu."
+  Two faults. share.py folded jh.edu into jhu.edu for the mail too, so the code went to person@jhu.edu, which is not
   always a mailbox; and five of the six doors ran on a SPACE .venv without the azure package, so no code was ever
-  sent (the log: `mail to zdi1@jhu.edu failed: ModuleNotFoundError: No module named 'azure'`, four times).
+  sent (the log: `mail to person@jhu.edu failed: ModuleNotFoundError: No module named 'azure'`, four times).
 - `share.mail_to`: the code goes to the address as typed; `canonical_email` still makes jh.edu and jhu.edu one person
   when matching a grant. The page says "Sent to" the typed address.
 - `share.acs_request` / `acs_send`: Azure Communication Services through its REST API and HMAC-SHA256 signing, the
   standard library only, so any SPACE's Python sends. Checked on the real key: a signed empty send 400, a wrong key
-  401; then one code each to jluo41@jhu.edu and zdi1@jh.edu, both accepted. The six doors restarted on it.
+  401; then one code each to owner@jhu.edu and person@jh.edu, both accepted. The six doors restarted on it.
 - Tests: `test_mail_goes_as_typed_signed_with_the_standard_library`; the sign-in test now expects the typed address.
   118 server tests; the 13 share tests also pass on Physician-SPACE's .venv (no azure).
 

@@ -18,8 +18,8 @@ Rules, each as Debate-AI keeps them unless said:
 
 1. **Email**: jhu.edu, jh.edu, jhmi.edu and their subdomains (and `extra_domains`); jh.edu and jhu.edu are one
    person when matching a grant, jhmi.edu stays its own; a domain matches exactly or as a subdomain, never by its
-   ending alone. The code goes to the address as typed (JL 261012: zdi1@jh.edu got nothing while it went to
-   zdi1@jhu.edu, which is not always a mailbox).
+   ending alone. The code goes to the address as typed (JL 261012: person@jh.edu got nothing while it went to
+   person@jhu.edu, which is not always a mailbox).
 2. **Code**: six digits, 10 minutes, one use, five wrong tries; ten codes an hour per email, and any code
    still within its 10 minutes works (JL 261012: a newer code had made the one in the inbox fail); kept hashed.
 3. **Only named people get one** (not Debate-AI's rule): a code goes only to an owner or an email the table names,
@@ -585,7 +585,7 @@ class ShareMixin:
             if email and accepted(email, self.share.extra_domains) and self.share.named(email):
                 code = self.share_codes.issue(email)
                 if code:
-                    send_code(self.share, typed, code)       # as typed: zdi1@jh.edu, never folded (261012)
+                    send_code(self.share, typed, code)       # as typed: person@jh.edu, never folded (261012)
             shown = html.escape(typed or form.get("email", ""))
             self.share_send(200, f'<h1>Check your inbox</h1><p>{SAME_ANSWER}</p>'
                             '<form method="post" action="/_share/verify">'

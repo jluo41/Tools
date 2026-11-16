@@ -487,6 +487,49 @@ the person's notes, what is running, what a person signs) over its result. `view
 💬 PROMPT   /haipipe-insight review the script of {folder} against its agreed needs in a fresh context, as run-review-script-<l><nn>: it computes what each spec says and nothing else; return it with what is wrong, never fix it yourself.
 
 
+## Data Prep › Work Details · the prep versions (ref/dataprep.md)
+
+🔘 BUTTON   Open a prep version · Data Prep › Work Details · ^run-open-version-prep-v\d+$
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight open the next prep version of {folder} from the newest signed one (insight_ladder.py prep --slug <what-it-changes>), as run-open-version-prep-v<N>: every step carried, its agreed line cleared; name the change it is for.
+
+## Prep › Work Details · its steps
+
+🔘 BUTTON   Review the steps · Prep › Work Details · ^run-review-steps-prep-v\d+$
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-reviewer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight review every step of {folder} in a fresh context, as run-review-steps-prep-v<N>: each worker does what its face says it reads, writes and checks; every check on the face is enforced (the Run stops when it fails), not only listed; the worker reads its dataset and output folder from its config ($HAIPIPE_CONFIG, or a carried ticket's env:) and stops without them, never defaulting to a dataset; it writes only a new folder ending @prep-v<N> (insight_ladder.py audit shows outputs 0); no step reads an outcome. Write agreed: ✅ <YYMMDD> on a step that passes (your one write); return the rest with what is wrong, never fix them yourself.
+
+🔘 BUTTON   Sign the prep version · Prep › Delivery · ^run-sign-prep-v\d+$
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    the prep version
+💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-prep-v<N>: every step agreed, every dataset Run passed its checks; show me the steps and their checks, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after, its tools' hash pinned.
+
+## Step › Work Details · its script and its datasets
+
+🔘 BUTTON   Write the step's script · Step › Work Details · ^run-write-script-t\d+$
+🧩 SKILL    haipipe-task-for-data
+🤖 AGENT    haipipe-task-creator-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-task-for-data write the worker of {folder}: scripts/<worker>.py doing what its face says it reads, writes and checks, one config per dataset in scripts/config/, writing rows only to the store, as run-write-script-t<NN>.
+
+🔘 BUTTON   Review the step's script · Step › Work Details · ^run-review-script-t\d+$
+🧩 SKILL    haipipe-task-for-data
+🤖 AGENT    haipipe-task-reviewer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-task-for-data review the worker of {folder} against its face in a fresh context, as run-review-script-t<NN>: it reads, writes and checks what the face says and nothing else, no outcome shapes a row; return it with what is wrong, never fix it yourself.
+
+🔘 BUTTON   Run a dataset · Step › Runs · ^r\d\d_
+🧩 SKILL    haipipe-task-for-data
+🤖 AGENT    haipipe-task-orchestrator-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-task-for-data run {folder} on one dataset (insight_ladder.py run {folder} dataset <name>, then its ticket), as rNN_<dataset>: the rows land in the store its config names, the Result keeps the receipt, the checks and the dictionary, never a row.
+
+
 ## Gates
 
 Each gate belongs to one level and one Run; the Run that passes it records it, and the scaffold refuses to go past
@@ -507,4 +550,7 @@ the output gated         Task       rNN_<segment>             the tables equal t
 a page checked           Task       run-check-t<NN>             another agent's CHECK closed after the Run's content
 a Job closed             Job        run-close-j<NN>             every page checked, the comparison written; a person signed
 a handoff signed         Block      run-draft-handoff           a person signed; Design reads only a signed handoff
+a step agreed            Step       run-review-steps-prep-v<N>  another agent passed its script against its face (agreed: ✅)
+a prep version signed    Prep       run-sign-prep-v<N>          every step agreed; a person signed; the tools' hash pinned
+a data version made      Block      run-add-version-data-v<M>   names the signed prep version (or its Run) that made it
 ```

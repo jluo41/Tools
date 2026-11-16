@@ -1,4 +1,4 @@
-# install.ps1 - Windows installer for jluo41-tools (PowerShell port of install.sh)
+# install.ps1 - Windows installer for this checkout's marketplace (PowerShell port of install.sh)
 #
 # Usage (from the Tools/ directory):
 #   .\install.ps1                       # marketplace + auto-detected project skills
@@ -195,7 +195,7 @@ function Get-Agents {
 # The manifest is what makes the guard honest. A name in it is ours, so it gets
 # overwritten and, once the agent disappears upstream, deleted. A name not in it
 # is the user's own file and is never touched.
-$AgentManifestName = ".jluo41-tools-agents.json"
+$MarketplaceName = try { (Get-Content -Raw -LiteralPath (Join-Path $ScriptDir ".claude-plugin\marketplace.json") | ConvertFrom-Json).name } catch { "" }; if (-not $MarketplaceName) { $MarketplaceName = "jluo41-tools" }; $AgentManifestName = ".$MarketplaceName-agents.json"   # the name is this checkout's own, as in install.sh
 
 function Get-AgentManifest {
     param([string]$AgentsDir)
@@ -538,9 +538,9 @@ if ($Verify) {
 
 # ─── 1. Marketplace registration ─────────────────────────────────────────────
 if (-not $NoMarketplace) {
-    Write-Host "Installing jluo41-tools marketplace..."
+    Write-Host "Installing $MarketplaceName marketplace..."
     $marketplaces = Join-Path $ClaudeDir "plugins\marketplaces"
-    $marketplaceDir = Join-Path $marketplaces "jluo41-tools"
+    $marketplaceDir = Join-Path $marketplaces $MarketplaceName
     New-Item -ItemType Directory -Force -Path $marketplaces | Out-Null
 
     if (Test-Path -LiteralPath $marketplaceDir) {
@@ -563,11 +563,11 @@ if (-not $NoMarketplace) {
     if (Test-Path -LiteralPath $knownFile) {
         $known = Get-Content -Raw -LiteralPath $knownFile | ConvertFrom-Json
         $entry = [pscustomobject]@{
-            source          = [pscustomobject]@{ source = "github"; repo = "jluo41/Tools" }
+            source          = $(if (($u = (git -C $ScriptDir remote get-url origin 2>$null)) -match '^(?:https://github\.com/|git@github\.com:)([^/]+/[^/]+?)(?:\.git)?$') { [pscustomobject]@{ source = "github"; repo = $Matches[1] } } elseif ($u) { [pscustomobject]@{ source = "git"; url = "$u" } } else { [pscustomobject]@{ source = "directory"; path = $ScriptDir } })   # this checkout's own remote, as in install.sh
             installLocation = $marketplaceDir
             lastUpdated     = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.000Z")
         }
-        $known | Add-Member -NotePropertyName "jluo41-tools" -NotePropertyValue $entry -Force
+        $known | Add-Member -NotePropertyName $MarketplaceName -NotePropertyValue $entry -Force
         Write-JsonFile -Path $knownFile -Object $known
         Write-Host "  Registered in known_marketplaces.json"
     } else {
@@ -689,7 +689,7 @@ foreach ($d in (Get-ChildItem -LiteralPath $PluginsRoot -Directory | Sort-Object
     Write-Host ("  {0,-18}- {1}" -f $name, $desc)
 }
 Write-Host ""
-Write-Host "Install in Claude Code with e.g.: /plugin install haipipe@jluo41-tools"
+Write-Host "Install in Claude Code with e.g.: /plugin install haipipe@$MarketplaceName"
 Write-Host ""
 Write-Host "Run with flags for more:"
 Write-Host "  .\install.ps1 -Global           Link skills into ~\.claude\skills"

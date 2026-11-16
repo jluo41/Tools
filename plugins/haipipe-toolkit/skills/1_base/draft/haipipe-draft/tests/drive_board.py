@@ -20,7 +20,7 @@ try:
 except ImportError:                                        # pragma: no cover
     sys.exit("needs playwright: python3 -m pip install playwright")
 
-BASE = "http://100.121.165.84:5599"
+BASE = "http://127.0.0.1:5599"       # this machine's host; another one by editing this line
 BOARD = "/Tools/plugins/haipipe-toolkit/skills/diagrams/BoardSkillBoard-260722"
 
 
