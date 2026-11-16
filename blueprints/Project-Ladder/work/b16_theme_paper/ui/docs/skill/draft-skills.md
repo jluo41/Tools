@@ -30,3 +30,15 @@ session kept rating under the morning's rules, with nothing to tell it.
 | When | Asked | Through | What changed |
 | --- | --- | --- | --- |
 | 11-15 | document each skill's ref files so a Section session can tell when the rating standard changed | AITC-LOI t01 | proposed: a `Standard:` line on every review Pass (rule files and their dates), and a check that says "rated under an older standard: rate again"; waits for JL |
+
+## 🔁 Topic: Section workflow ▸ Auto draft loop
+
+A new Section runs step by step to a draft close to review: plan, examples, write, rate, a fix loop the AI accepts
+itself when the blind A/B reader keeps a rewrite, a stop after two rounds with nothing kept, comments where it is
+not sure; then the person joins. Each step one command and one Run; the page reads where it stands from those Runs.
+
+| When | Asked | Through | What changed |
+| --- | --- | --- | --- |
+| 11-16 | "I want to have a /haipipe-paper-draft workflow, so when I open a new secton draft, then I can run the tasks one by one and get a close to review draft" | JL directly | proposed W1 plan, W2 check-examples, W3 write, W4 rate, W5 fix loop |
+| 11-16 | "the editing should be accept by AI themselves, after several rounds of no imrpovements, or something not sure, the AI will leave the comments, and human will join" | JL directly | proposed: blind A/B keeps decide the wording, two rounds with nothing kept stop the loop, unsure items become comments; a 🤖 mark on each AI-changed sentence (Draft Lab ▸ Marks) |
+| 11-16 | "for the Draft Lab Workflow, could we use it and does it work now?" | JL directly | written: haipipe-paper-draft `ref/workflow.md` (W0 to W5) and `cli/section_workflow.py` (where a Section stands, the next step); not yet: a Run per step, the 🤖 mark, the step line on the page, the installed agents |

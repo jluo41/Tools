@@ -30,6 +30,7 @@ Code: `.sx-evm`, `.sx-evm.unv` in draft_step_evidence_rows.py; `chips()` in draf
 | 11-15 | "if it is not check, you should highlight that" | ScalingGlucose t01 | ❝ lit while a citation is unverified; the inline ? removed |
 | 11-15 | all 14 ❝ orange read as alarm | ScalingGlucose Board | an unverified ❝ is soft: amber, dotted underline, no fill |
 | 11-15 | t02 s2 "(Fig. 1)" showed only its value mark, no display mark | ScalingGlucose t02 | every VALUE, DISPLAY and TABLE item of the evidence-items file gives its sentence 📊 or 🖼 |
+| 11-16 | the ⚠ chip and health's new support row should agree; Extended Data legends print numbers their display backs | ScalingGlucose t04 (for the Board) | a DISPLAY or TABLE item now clears ⚠, as VALUE and CITE do, the same rule as `page.py health` row support |
 
 ## ★ Topic: Scores
 
@@ -109,6 +110,7 @@ The person's own mark on a sentence. Code: the `.sx-ok` click in draft_step_evid
 | When | Asked | Through | What changed |
 | --- | --- | --- | --- |
 | 11-15 | "the check doesn't work"; "I can't click this." | ScalingGlucose t01 | cause: the 📊/🖼 change reused the name holding the Section, so every ✓ and card sent "C1.P7.B5" and got 400; fixed, with a test; a refused ✓ now says why beside it |
+| 11-16 | a ✓ on the ScalingGlucose Abstract s5 did nothing | ScalingGlucose Board | the checked file mixed old "S1" and new "s2" ids and their sort crashed; the sort now lowercases and keeps numbers and letters apart (fixed by the Board session) |
 
 ## 🔍 Topic: Review card
 

@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-evidence
-description: "A paper's evidence rules on top of haipipe-evidence and haipipe-display: citations only from verified CITE Results, one number per result in every Section, displays numbered and within the venue limit, each passing the display revise loop. Owns the Board's value Job (value maps, bindings, the check: values_ledger.py) and citation Job (claim groups: cite_tasks.py); reads a whole version as one ledger and flags what disagrees (evidence_ledger.py); each display version's preview.pdf is the display, then how it was made (method.md). Use before a build or a send. Trigger: paper evidence, evidence ledger, value ledger, value map, citation check, numbers disagree, verify citations, paper displays, display preview, display method, /haipipe-paper-evidence, /haipipe-paper-display."
+description: "A paper's evidence rules: verified citations, one number per result, displays within the venue limit; owns the value and citation Jobs. Use before a build or a send. Trigger: paper evidence, value ledger, citation check, numbers disagree, /haipipe-paper-evidence, /haipipe-paper-display."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.18.0"
@@ -58,7 +58,8 @@ The rules
 
 1. **Citations come from verified CITE Results.** A CITE card names a discovery Run; its one-entry BibTeX is the
    citation. The Page export freezes `delivery/latex/selected-bibliography/<page>.bib` from the selected, verified
-   CITE Results, and `haipipe-paper-assemble` merges them; both are generated, never edited. Never touch
+   CITE Results, and `haipipe-paper-assemble` merges them; both are generated, never edited. Each Section keeps its
+   own `draft/evidence/bibex/<task>.bib`, the source the build merges into that generated file. Never touch
    `bank.bib` or the paper's `delivery/reference.bib`. A source with no Result yet is `\citep{TOADD}` and a red
    card with `need`. Check every entry against Google Scholar or its DOI record before the Section closes. Never cite
    one paper in back-to-back sentences.
@@ -82,9 +83,9 @@ The rules
      version read one value Run; when a newer value Run changes a file a display reads, that display is drawn again
      as a new Run. The display Run's `run.yaml` `reads:` lists those value files, so the check can compare them.
    - The paper Board owns one display Job, `j01_evidence_display`, with one Task per display (`t01_display-a-<slug>`,
-     `t02_display-b-<slug>`, …, `tNN_display-<letter>-<slug>`; main or appendix is the plan's call), each face with `label:`, `status:`, `answers:`,
-     `cited-in:`, `layout:`, `sources:`, `made-by:`. The Job face opens with the **display plan** the
-     authors agree before any Run draws (JL 261023): per display its number, title, one question, layout (rows,
+     `t02_display-b-<slug>`, …, `tNN_display-<letter>-<slug>`, numbered continuously; main or appendix is the plan's call; older Boards: `t01_figure1-<slug>` in number bands, still read), each face with `label:`, `status:`, `answers:`,
+     `cited-in:`, `layout:`, `sources:`, `made-by:`. The **display plan** is the
+     `s06-paper-displays` Studio topic (older Boards: in the Job face), which the authors agree before any Run draws (JL 261023): per display its number, title, one question, layout (rows,
      columns or axes), source Runs and open choices, taken from the team's meeting notes and slides in the Block's
      `related/`. Drawing starts after the plan is agreed; Sections write their numbers after the drawn displays pass
      review and are accepted.
@@ -169,7 +170,11 @@ work Run ─▶ value Run (copies, gives ids) ─▶ display Run (draws by id) �
    (JL 261113: "Similarly, we have the displays that are in the block level as well ... we should update it to be
    the same"): a Section keeps no display unit; each display Task's `cited-in:` names the Sections that cite it, and
    a Section's 4 · Display view shows those Tasks, read only: picture, label, `status:`, accepted Run and the newest
-   review score.
+   review score. A Section that only points to a display another Section prints ("(Extended Data Table 4)" in the
+   Discussion, printed by the Extended Data Section) writes a DISPLAY item with `Expected` and `Local Input` and **no
+   `Local Run` line**: a Local Run is only for a display the Section prints itself, framed into
+   `results/re-display-<n>`; one pointing elsewhere fails `page.py export` ("selected Result is missing", "is not one
+   of this Page's own run results") (t03_discussion 261116).
 
 **The check**, `scripts/chain_check.py`:
 
@@ -448,7 +453,7 @@ L=Tools/plugins/haipipe-toolkit/skills/2_theme/paper/haipipe-paper-evidence/scri
 
 It reads each Task in either shape: `evidence/cards.yaml` (haipipe-evidence, since 261016) or an older Page's
 `draft/<stem>-evidence-items.md` (read by haipipe-draft's `item_table`, the parser the Page workbench uses), its
-`display/Display<n>-*/`, and its `.bib` files (`draft/evidence/bibex/` on an older Page, else each CITE card's Run).
+`display/Display<n>-*/`, and its `.bib` files (its own `draft/evidence/bibex/`, else each CITE card's Run).
 Parts by Task number: `t00` the Abstract, `t01`-`t19` the main text, `t2N` the appendix, `t3N` the letters. Only the
 Sections in the version face's `haipipe:compile-order` block are numbered, counted and compared; the rest show
 `⏸ off`.

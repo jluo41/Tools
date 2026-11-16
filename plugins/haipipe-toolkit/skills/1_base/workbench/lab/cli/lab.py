@@ -262,7 +262,7 @@ def main(argv: list[str] | None = None) -> int:
         print("The Lab extension is not installed, so the windows open without their terminals. Install it once:"
               f" bash '{vsix}' && code --install-extension '{vsix.parent / 'paper-lab.vsix'}'")
     for f in files:
-        subprocess.run(["code", "--new-window", str(f)], check=False)
+        subprocess.run(["code", "--new-window", str(f)], env=owl.fresh_env(), check=False)
         print(f"opened {f.name}")
         time.sleep(3)                                        # two quick --new-window calls can drop a window
     return 0

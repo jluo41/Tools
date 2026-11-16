@@ -399,7 +399,10 @@ def _check_act(folder: Path, md: Path, revise: Path, p: dict) -> tuple:
     lines = [l for l in lines if keys.resolve(l[2:].split(" · ")[0], l.split(" · ", 2)[-1]) != sid]
     if p.get("act") == "check":
         lines.append(f"- {sid} · {datetime.datetime.now():%Y-%m-%d %H:%M} · {words}")
-    key = lambda l: [int(x) if x.isdigit() else x for x in re.findall(r"\d+|[a-z]", l.split(" · ")[0][2:])]
+    # each part a (kind, value) pair, so a number never meets a letter, and case-blind, so an old "S0" line sorts beside
+    # "s2" (an int-vs-str sort crashed the ✓ click on the ScalingGlucose Abstract, 261116)
+    key = lambda l: [(0, int(x), "") if x.isdigit() else (1, 0, x)
+                     for x in re.findall(r"\d+|[a-z]", l.split(" · ")[0][2:].lower())]
     path.parent.mkdir(parents=True, exist_ok=True)
     _write_atomic(path, head + "\n".join(sorted(lines, key=key)) + "\n")
     return 200, {"ok": True, "checked": p.get("act") == "check"}

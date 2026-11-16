@@ -559,6 +559,8 @@ def folder_health(target: Path, final: bool = False) -> dict:
         check_evidence(folder, stem, plan_text, out)
         from .cite_health import check_cite_runs   # every CITE item names its Run (M-D20)
         check_cite_runs(plan_dir(folder) / f"{stem}-evidence-items.md", folder, out, Finding, WARN)
+        from .support_health import check_support  # a number with no item: the page's ⚠ no item (JL 261116)
+        check_support(plan_dir(folder) / f"{stem}-evidence-items.md", plan_text, out, Finding, WARN, OK)
     check_delivery(folder, page, out)
     check_steps(folder, page, plan, out)
     from .page_adopt import content_gap
