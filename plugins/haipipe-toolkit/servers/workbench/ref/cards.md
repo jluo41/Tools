@@ -18,6 +18,9 @@ Only content a person reads and judges carries marks and cards; structure does n
 session content, it is the structure, maybe we don't need the element emoji cards ... but for some text content, we
 might want to add them").
 
+A content item is a **Brick** (JL 261117): its types, its three places (file, cards, page), 📍 and its life are in
+[`haipipe-paper/ref/bricks.md`](../../../skills/2_theme/paper/haipipe-paper/ref/bricks.md).
+
 | Content: marks and cards | Structure: no marks of its own |
 | --- | --- |
 | a Draft sentence, the paper's question, a Research Question row | a Job, Task or Run row that links to its own page |
