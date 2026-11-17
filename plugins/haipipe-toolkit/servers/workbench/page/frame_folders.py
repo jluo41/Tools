@@ -6,9 +6,10 @@ import datetime
 import re
 from pathlib import Path
 
-from live.frame_base import _e, _file_url, _rel, _title, face, pop
+from live.frame_base import _e, _file_url, _rel, _title, chain, face, pop
 from live.frame_studio import _draw_url
 from live.frame_delivery import _size
+from live.frame_sessions import touched_set
 
 
 FOLDER_SKIP = {"__pycache__", "node_modules", ".ipynb_checkpoints"}
@@ -64,6 +65,13 @@ def folder_rows(folder: Path, root: Path, most: int | None = 300) -> str:
     except OSError:
         return '<li class=mut>This folder could not be read.</li>'
     rows, top = [], root.resolve()
+    block = chain(folder, root).get("Block")
+    marked = touched_set(block) if block else set()      # 🧵: an episode touched it (Studio › Sessions)
+
+    def thread(p: Path) -> str:
+        return (f'<button type=button class=fd-th data-th="{_e(_rel(p, root))}" title="Sessions">🧵</button>'
+                if p.resolve() in marked else "")
+
     for p in kids[:most]:
         if not p.resolve().is_relative_to(top):
             rows.append(f'<li class=fd-file><span class=fd-row><span class=fd-i>🔗</span>{_e(p.name)}'
@@ -78,7 +86,8 @@ def folder_rows(folder: Path, root: Path, most: int | None = 300) -> str:
             word = folder_word(p)
             rows.append(f'<li class=fd-dir><details data-dir="{_e(rel)}"><summary class=fd-row title="{_e(rel)}/">'
                         f'<span class=fd-name>{_e(p.name)}/</span><span class=fd-n>{n}</span>'
-                        + (f'<span class=fd-word>{_e(word)}</span>' if word else "") + '</summary><ul></ul></details></li>')
+                        + (f'<span class=fd-word>{_e(word)}</span>' if word else "") + thread(p)
+                        + '</summary><ul></ul></details></li>')
             continue
         try:
             st = p.stat()
@@ -87,7 +96,7 @@ def folder_rows(folder: Path, root: Path, most: int | None = 300) -> str:
         href = _draw_url(p, root) if p.suffix == ".excalidraw" else _file_url(p, root)
         rows.append(f'<li class=fd-file><span class=fd-row title="{_e(rel)}"><span class=fd-i>'
                     f'{FILE_ICONS.get(p.suffix.lower(), "📄")}</span>{pop(href, p.name)}'
-                    f'<span class=fd-n>{_size(st.st_size)}</span><span class=fd-when>{_when(st.st_mtime)}</span></span></li>')
+                    f'<span class=fd-n>{_size(st.st_size)}</span><span class=fd-when>{_when(st.st_mtime)}</span>{thread(p)}</span></li>')
     if most is not None and len(kids) > most:
         rows.append(f'<li class=fd-more><button type=button data-dir="{_e(_rel(folder, root))}">'
                     f'Show the other {len(kids) - most}</button></li>')

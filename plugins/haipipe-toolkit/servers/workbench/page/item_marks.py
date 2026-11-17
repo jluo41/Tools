@@ -15,8 +15,9 @@ from __future__ import annotations
 
 from live.frame import esc
 
-# derived marks a workbench may pass, in strip order: 🙋 decisions waiting (orange), ★ score, evidence, 🕘 versions
-DERIVED = ("🙋", "★", "📊", "❝", "🖼️", "📎", "🕘")
+# derived marks a workbench may pass, in strip order: 🙋 decisions waiting (orange), ★ score, evidence, 🕘 versions,
+# 🧵 the sessions that changed it (ref/three-views.md § 4.4)
+DERIVED = ("🙋", "★", "📊", "❝", "🖼️", "📎", "🕘", "🧵")
 ORANGE = {"🙋", "📝"}
 
 

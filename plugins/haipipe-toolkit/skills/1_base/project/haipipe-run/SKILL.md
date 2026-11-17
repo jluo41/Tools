@@ -114,7 +114,13 @@ A soft Run's card and passes are written by a tool, never typed:
 S=Tools/plugins/haipipe-toolkit/skills/1_base/project/haipipe-run/scripts
 python $S/soft_run.py new  <scope> --type <type> --target <target> [--skill S] [--feeds …]
 python $S/soft_run.py pass <scope>/runs/run-<type>-<target> --title '…' [--ask …] [--changed …]
+                       [--session <saved name>] [--provider claude|codex] [--cards <addresses>]
 ```
+
+A session closes each goal it worked with one `pass`, naming itself (`--session`), every file it wrote
+(`--changed`, from its own Edit and Write calls) and the card addresses it changed (`--cards`). That pass is
+one episode of the workbench Session view (`servers/workbench/ref/three-views.md`); without it the episode
+has no folders to join.
 
 `new` refuses a target that looks like a date and a second Run for the same target (a new
 round is a pass); `pass` adds `passes/pNN-<MMDD>/pass.md` and updates `passes`, `status` and

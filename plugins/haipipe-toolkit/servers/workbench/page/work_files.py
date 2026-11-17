@@ -9,6 +9,8 @@ from urllib.parse import quote, urlencode
 from host_registry import static_path_allowed
 from live import frame
 from live.ui_parts import FOLDER_ICON, PB_CSS, PB_JS, _side_tabs
+from live.frame_base import chain
+from live.frame_sessions import sessions_part, touched_set
 
 SKIP = {'.git', 'node_modules', '__pycache__', '.venv', 'venv'}
 
@@ -121,12 +123,22 @@ def allowed_source(path, root):
     return (path.is_file() or path.is_dir()) and not path.is_symlink() and path.name not in SKIP and static_path_allowed(root, path)
 
 
+def thread_mark(path, root):
+    """🧵 when an episode touched this path (ref/three-views.md); a click shows those episodes in Sessions."""
+    block = chain(path if path.is_dir() else path.parent, root).get("Block")
+    if not block or path.resolve() not in touched_set(block):
+        return ''
+    return ('<button type="button" class="fd-th" data-th="' + frame.esc(frame.rel(path, root))
+            + '" title="Sessions">🧵</button>')
+
+
 def file_node(item, root):
     url = (frame._draw_url(item, root) if item.suffix.lower() == '.excalidraw' else
            frame._file_url(item, root) if item.suffix.lower() in ('.pdf', '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.html', '.htm', '.docx', '.pptx', '.eml') else
            frame.ROUTE + '?' + urlencode({'view': 'focus-file', 'path': frame.rel(item, root)}))
     return ('<li class="file-leaf"><a data-pop="' + frame.esc(item.name) + '" href="'
-            + frame.esc(url) + '"><span aria-hidden="true">▤</span> ' + frame.esc(item.name) + '</a></li>')
+            + frame.esc(url) + '"><span aria-hidden="true">▤</span> ' + frame.esc(item.name) + '</a>'
+            + thread_mark(item, root) + '</li>')
 
 
 def folder_url(path, root, fragment=False):
@@ -141,7 +153,8 @@ def folder_node(path, root, label=None, children=None):
               'data-folder-src="' + frame.esc(folder_url(path, root, True)) + '"')
     return ('<li><details class="file-branch" ' + source
             + '><summary>' + FOLDER_ICON + '<span title="' + frame.esc(frame.rel(path, root)) + '">'
-            + frame.esc(label or path.name) + '</span></summary><div class="folder-children">'
+            + frame.esc(label or path.name) + '</span>' + thread_mark(path, root)
+            + '</summary><div class="folder-children">'
             + (children or '') + '</div></details></li>')
 
 
@@ -188,7 +201,10 @@ def render(folder, root, view=None, topics=(), pages=(), *, scope=None, skill_ro
     for name, paths in groups:
         panels.append('<section class="folder-type-content file-tree" aria-label="' + frame.esc(name)
                       + '"><ul>' + grouped_tree(paths, root) + '</ul></section>')
-    return PB_CSS + TYPE_STYLE + '<div class="folder-types">' + _side_tabs('folder-type-', [(n, '') for n, _ in groups], panels) + '</div>' + PB_JS + TYPE_SCRIPT
+    block = chain(folder, root).get("Block")
+    sessions = sessions_part(block, root, under=folder) if block else ''      # the episodes that changed it
+    return (PB_CSS + TYPE_STYLE + '<div class="folder-types">' + _side_tabs('folder-type-', [(n, '') for n, _ in groups], panels)
+            + '</div>' + PB_JS + TYPE_SCRIPT + sessions)
 
 
 def browse(folder, root):
@@ -209,7 +225,7 @@ TYPE_STYLE = '''<style>
 .file-tree summary::-webkit-details-marker{display:none}.file-tree summary::before{content:"▸";flex:none;width:10px}
 .file-tree details[open]>summary::before{content:"▾"}.file-tree summary>span{min-width:0;overflow-wrap:anywhere}
 .file-tree .folder-icon{margin-top:2px}.file-leaf a{display:block;padding:5px 0 5px 17px;overflow-wrap:anywhere;text-decoration:none;color:var(--accent);font-size:13px}
-.file-leaf a:hover{text-decoration:underline}.file-leaf a>span{color:var(--muted);margin-right:5px}.folder-children>.mut{font-size:13px;margin:4px 0 8px 28px}
+.file-leaf:has(.fd-th){display:flex;align-items:center}.file-tree .fd-th{flex:none}.file-leaf a:hover{text-decoration:underline}.file-leaf a>span{color:var(--muted);margin-right:5px}.folder-children>.mut{font-size:13px;margin:4px 0 8px 28px}
 @media(max-width:600px){.folder-types>.pb-side{grid-template-columns:1fr}.folder-types .pb-list{position:static;display:flex;flex-direction:row;flex-wrap:wrap}.file-tree summary,.file-leaf a{min-height:32px}}
 </style>'''
 TYPE_SCRIPT = '''<script>(function(){

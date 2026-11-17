@@ -5,12 +5,15 @@ b03 s21, 261007). The tool that writes `run.yaml` for a soft Run, so no person t
                             [--signs a,b] [--ask '…'] [--close '…'] [--feeds a,b] [--writes a,b]
     python soft_run.py pass <scope>/runs/run-<type>-<target> --title '…' [--ask '…'] [--summary '…']
                             [--changed a,b] [--date MMDD] [--status done]
+                            [--session NAME] [--provider claude|codex] [--cards a,b]
 
 A type may be hyphenated (`add-venue`, `freeze-predictions`): the name is `run-<type>-<target>` and
 the target is always given, so the name never has to be split. `new` makes the Run once per target (a second `new` for the same type and target is refused: a new
 round is a pass). Its name carries no date (JL 261006): a target that looks like a date is refused.
 `pass` adds `passes/pNN-<MMDD>/pass.md` (title, ask, summary, what it changed) and updates the card:
-`passes`, `status`, `writes`. The scope is any Block, Job or Task folder; `scope:` in the card is
+`passes`, `status`, `writes`. A pass is one episode of the Session view (servers/workbench/ref/three-views.md):
+with --session, --provider or --cards its pass.md opens with front matter (session, provider, date, goal, paths,
+cards), and --changed paths that exist on disk are written relative to the SPACE root. The scope is any Block, Job or Task folder; `scope:` in the card is
 SPACE-relative (the nearest folder above holding env.sh), else null.
 """
 from __future__ import annotations
@@ -78,8 +81,22 @@ def new(scope: Path, rtype: str, target: str, skill: str = "", agent: str = "", 
     return run
 
 
+def space_path(value: str, run: Path) -> str:
+    """A changed path as the Session view keys it: relative to the SPACE root when it exists on disk, else as given."""
+    top = space_root(run)
+    p = Path(value).expanduser()
+    for cand in ([p] if p.is_absolute() else [Path.cwd() / p, *([top / p] if top else [])]):
+        try:
+            if top and cand.exists():
+                return cand.resolve().relative_to(top.resolve()).as_posix()
+        except ValueError:
+            break                               # outside the SPACE: keep it as given
+    return value
+
+
 def add_pass(run: Path, title: str, ask: str = "", summary: str = "", changed: list[str] | None = None,
-             date: str = "", status: str = "done") -> Path:
+             date: str = "", status: str = "done", session: str = "", provider: str = "",
+             cards: list[str] | None = None) -> Path:
     if not (run / "run.yaml").is_file():
         raise ValueError(f"{run}: no run.yaml; make the Run with `new` first")
     if status not in STATES:
@@ -92,8 +109,14 @@ def add_pass(run: Path, title: str, ask: str = "", summary: str = "", changed: l
         if passes.is_dir() else []
     folder = passes / f"p{(max(nums) + 1 if nums else 1):02d}-{date}"
     folder.mkdir(parents=True)
-    changed = changed or []
-    body = [f"# {title}", "", "## Ask", "", ask or "<the session's ask>", "", "## Summary", "",
+    changed = [space_path(c, run) for c in changed or []]
+    head = []
+    if session or provider or cards:            # an episode record: who, when, what it touched (three-views.md § 4.2)
+        year = dt.date.today().year
+        meta = {"session": session or None, "provider": provider or None,
+                "date": f"{year}-{date[:2]}-{date[2:]}", "goal": title, "paths": changed, "cards": cards or []}
+        head = ["---", yaml.safe_dump(meta, sort_keys=False, allow_unicode=True).rstrip(), "---", ""]
+    body = head + [f"# {title}", "", "## Ask", "", ask or "<the session's ask>", "", "## Summary", "",
             summary or "<what it did>", "", "## Changed", ""] + [f"- `{c}`" for c in changed] + \
            ([] if changed else ["<nothing>"]) + [""]
     (folder / "pass.md").write_text("\n".join(body), encoding="utf-8")
@@ -117,7 +140,7 @@ def main() -> int:
     p = sub.add_parser("pass")
     p.add_argument("run", type=Path)
     p.add_argument("--title", required=True)
-    for k in ("ask", "summary", "changed", "date"):
+    for k in ("ask", "summary", "changed", "date", "session", "provider", "cards"):
         p.add_argument(f"--{k}", default="")
     p.add_argument("--status", default="done")
     a = ap.parse_args()
@@ -126,7 +149,8 @@ def main() -> int:
             out = new(a.scope, a.type, a.target, a.skill, a.agent, a.ask, a.close, _list(a.feeds), _list(a.writes),
                       _list(a.signs))
         else:
-            out = add_pass(a.run, a.title, a.ask, a.summary, _list(a.changed), a.date, a.status)
+            out = add_pass(a.run, a.title, a.ask, a.summary, _list(a.changed), a.date, a.status,
+                           a.session, a.provider, _list(a.cards))
     except ValueError as err:
         print(f"refused: {err}", file=sys.stderr)
         return 2

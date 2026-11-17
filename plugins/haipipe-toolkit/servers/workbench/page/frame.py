@@ -117,6 +117,7 @@ from live.frame_timeline import (TIMELINE_KINDS as TIMELINE_KINDS, TIMELINE_LEVE
                                  _NOTES_SEEN as _NOTES_SEEN, _YYMMDD as _YYMMDD, _decisions as _decisions,
                                  _drawing_notes as _drawing_notes, _session_day as _session_day, _yymmdd as _yymmdd,
                                  studio_timeline as studio_timeline, timeline_events as timeline_events)
+from live.frame_sessions import sessions_part as sessions_part
 from live.frame_folders import (FILE_ICONS as FILE_ICONS, FOLDER_SKIP as FOLDER_SKIP, FOLDER_WORDS as FOLDER_WORDS,
                                 _run_word as _run_word, _shown as _shown, _when as _when, folder_rows as folder_rows,
                                 folder_word as folder_word, studio_folder as studio_folder)
@@ -163,7 +164,8 @@ def render(theme: Theme, root: Path, folder: Path, space: str = "", sub: str = "
         # then Delivery, the third: what went out (JL 261014); Runs, the fourth: each Task's hard Runs and their
         # status (JL 261019); Timeline, the fifth: what moved when (JL 261011); Folder, the sixth: what the folder holds
         view = replace(view, html=view.html + part.html + studio_delivery(owner, root, theme)
-                       + studio_runs(owner, root, theme) + studio_timeline(owner, root) + studio_folder(owner, root),
+                       + studio_runs(owner, root, theme) + studio_timeline(owner, root) + studio_folder(owner, root)
+                       + sessions_part(owner, root),
                        run_types=tuple(view.run_types) + tuple(part.run_types),
                        disk=tuple(view.disk) + tuple(part.disk))
     rel = _rel(owner, root)
