@@ -1,5 +1,15 @@
 # haipipe-insight · version history
 
+## 3.10.3 · 2026-11-19 · references, a second Run, the carried card; a Board names a dictionary with record values
+
+- From Insight-Use-Case's Reports and JL's decisions of 261119 (workbench-insight T15-T19).
+- `ref/dataprep.md`: a carried version writes no experiment card either, and its signature approves both
+  exceptions; `references: [{name, path, version, why}]` are allowed inputs (`insight_ladder.py reference`, audit
+  row `references`); § A second Run of a dataset (`run <step> dataset <name> --again`, `supersedes:`, then
+  haipipe-run `prune_runs.py --only`).
+- `audit <Board>` has a `records` row: a data version whose dictionary holds a sample column (T19). No row of a
+  data version reaches a page; `preview:` is no longer read (`ref/insight-ladder.md` rule 6).
+
 ## 3.10.2 · 2026-11-18 · a step reads only its raw export, and no page shows a record value
 
 - From drfirst-space-b7's Reports on the DrFirstExp Block (workbench-insight T15-T18).

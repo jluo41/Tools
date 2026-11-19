@@ -192,8 +192,8 @@ def test_a_run_never_writes_a_folder_made_before_and_audit_reads_the_block(space
     cfg.write_text("env:\n  OUT_NAME: demo_a_v1\noutput:\n  prepare_dir: _WorkSpace/<store>/demo_a_v1\n")   # as carried
     _agree(v1 / "t01_prepare")
     rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
-    assert rows == {"serves": 0, "raw": 0, "workers": 0, "configs": 0, "outputs": 2, "inputs": 0, "records": 0,
-                    "agreed": 0, "hash": 0}
+    assert rows == {"serves": 0, "raw": 0, "references": 0, "workers": 0, "configs": 0, "outputs": 2, "inputs": 0,
+                    "records": 0, "agreed": 0, "hash": 0}
     assert ("t01_prepare/r01_demoa", "_WorkSpace/<store>/demo_a_v1") in IL.PR.outputs(v1)
     with pytest.raises(SystemExit, match="a folder made before, or one a Board's data version names"):
         L("sign", v1, "--date", "261116")
@@ -236,3 +236,55 @@ def test_a_step_reads_only_its_raw_export_and_shows_no_record_value(space, tmp_p
                      "t01_prepare/scripts/prepare.py:3"]
     rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
     assert (rows["raw"], rows["outputs"], rows["inputs"], rows["records"]) == (1, 1, 3, 3)
+
+
+def test_a_second_run_supersedes_the_newest_and_keeps_its_ticket_and_config(space):
+    _, p, prep = space
+    L("prep", prep, "--slug", "carried")
+    v1 = prep / "j01_prep-v1_carried"
+    L("step", v1, "prepare")
+    step = v1 / "t01_prepare"
+    L("run", step, "dataset", "demoa")
+    first = step / "runs" / "r01_demoa"
+    (first / "r01_demoa.sh").write_text((first / "r01_demoa.sh").read_text() + "# a carried line\n")
+    (step / "scripts" / "config" / "r01_demoa.yaml").write_text("dataset: DemoA\noutput:\n  prepare_dir: s/a@prep-v1\n")
+    L("run", step, "dataset", "demoa")                                         # no --again: the same Run back
+    assert not (step / "runs" / "r02_demoa").exists()
+    L("run", step, "dataset", "demoa", "--again")
+    second = step / "runs" / "r02_demoa"
+    card = yaml.safe_load((second / "run.yaml").read_text())
+    assert (card["supersedes"], card["status"], card["prep"]) == ("r01_demoa", "planned", "prep-v1")
+    assert (second / "r02_demoa.sh").read_text().endswith("# a carried line\n")      # the carried ticket, kept
+    assert (step / "scripts" / "config" / "r02_demoa.yaml").read_text() == (
+        step / "scripts" / "config" / "r01_demoa.yaml").read_text()
+    L("run", step, "dataset", "demoa", "--again")
+    assert yaml.safe_load((step / "runs" / "r03_demoa" / "run.yaml").read_text())["supersedes"] == "r02_demoa"
+
+
+def test_a_reference_names_its_version_and_is_there(space):
+    root, p, prep = space
+    (root / "_WorkSpace" / "ext").mkdir(parents=True)
+    (root / "_WorkSpace" / "ext" / "area.csv").write_text("code,area\n")
+    L("reference", prep, "area", "--path", "_WorkSpace/ext/area.csv", "--version", "v1", "--why", "<why>")
+    with pytest.raises(SystemExit, match="already a reference"):
+        L("reference", prep, "area", "--path", "_WorkSpace/ext/area.csv", "--version", "v1")
+    with pytest.raises(SystemExit, match="--version"):
+        L("reference", prep, "prescriber", "--path", "_WorkSpace/ext/p.csv")
+    L("reference", prep, "prescriber", "--path", "_WorkSpace/ext/gone.csv", "--version", "v2")
+    assert [r["name"] for r in _front(prep / "board.md")["references"]] == ["area", "prescriber"]
+    assert IL.PR.references_off(prep) == ["prescriber"]
+    assert {r[1]: r[2] for r in IL.audit(prep, quiet=True)}["references"] == 1
+
+
+def test_a_data_version_whose_dictionary_holds_record_values_is_named(tmp_path):
+    p = tmp_path / "Project-Demo"
+    L("prototype", p / "insight" / "InsightQuestionBook-Demo", "--serves", "insight/Insight-Demo")
+    board = p / "insight" / "Insight-Demo"
+    L("board", board, "--dataset", "DemoA", "--prototype", "insight/InsightQuestionBook-Demo")
+    for ver, header in (("v1", "name,dtype,sample_value"), ("v2", "name,dtype,n_unique")):
+        folder = tmp_path / "_WorkSpace" / "store" / ver
+        folder.mkdir(parents=True)
+        (folder / "data_dictionary.csv").write_text(header + "\n", encoding="utf-8")
+        L("data", board, f"data-{ver}", "--data-folder", f"_WorkSpace/store/{ver}/")
+    assert IL.version_records(board) == ["data-v1"]                            # frozen, so named, never edited
+    assert {r[1]: r[2] for r in IL.audit(board, quiet=True)}["records"] == 1

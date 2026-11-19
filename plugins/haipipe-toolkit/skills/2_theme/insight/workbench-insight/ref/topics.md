@@ -23,6 +23,7 @@ T15  a step reads more than its raw export      fixed
 T16  a step writes outside a folder of its own   fixed
 T17  no prep step checks the stated experiment   open
 T18  a page could show a record value            fixed
+T19  the Board's Data view shows records        fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -301,3 +302,26 @@ T18  a page could show a record value            fixed
   dictionary, which the Dataset view shows).
 - **Guard**: the same test (an aggregate passes; a first value and a dictionary key are named); reviewer rule 5.
 
+## T19 · The Board's Data view shows records · fixed
+
+- **From**: Report, drfirst-space-b7, 261118: the frozen data-v1 folder's `data_dictionary.csv` (made by b01) has a
+  `sample_value` column of first record values, as does every older store folder; "Board Description › Dataset shows
+  it". b7 leaves the frozen folder alone and asks whether the view stops showing it or a data version is flagged.
+- **What the code shows**: the Data view draws five random rows from a data version's file and hides only columns
+  whose names look like identifiers (`insight_plan_c.py` `HIDDEN`, `insight_focus_board.py` `_version_panel`,
+  `insight_view_board.py` `_version`); the dictionary's link opens the whole file, sample column included (its
+  parsed table leaves that column out). Pages are also what a session reads when it checks one, so a row on a page
+  is a row in a session's context.
+- **Questions**: does a page show any row of a data version at all? How does a dictionary reach a page without its
+  sample column? Is a data version whose files beside the rows hold record values flagged, given the folder is frozen?
+- **Decided** (the user, 261118): shapes only.
+- **Answer**: no row of a data version reaches a page. The row sampler is gone (`insight_plan_c.py`: no
+  `sample_rows`, no `HIDDEN`), and the dictionary drops its sample columns as it is read (`SAMPLE_KEYS`). Both Data
+  views (`insight_focus_board.py` `_version_panel`, `insight_view_board.py` `_version`) show the columns table
+  (`columns_table`: name, type, null %, distinct, notes) and no link to the raw dictionary; an older board.md's
+  `preview:` is not read. `insight_ladder.py audit <Board>` has a `records` row naming a data version whose
+  dictionary holds a sample column: the frozen folder is named, never edited.
+- **Case**: a data version whose dictionary carries a sample value renders on neither view, nor does its sample
+  column or a link to the file; Insight-SMSR2v1's data-v1 is the version the `records` row names.
+- **Guard**: `servers/workbench-insight/tests/test_data_view_shapes.py`; `haipipe-insight/tests/test_dataprep.py`
+  `test_a_data_version_whose_dictionary_holds_record_values_is_named`.

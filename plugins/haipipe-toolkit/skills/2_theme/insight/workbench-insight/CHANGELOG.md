@@ -1,3 +1,10 @@
+## 1.6.0 · 2026-11-19 · The Board's Data view shows shapes, never a record value (T19)
+
+- The user, 261118: shapes only. `insight_plan_c.py` draws no rows (`sample_rows` and `HIDDEN` removed) and drops a
+  dictionary's sample columns as it reads (`SAMPLE_KEYS`). Both Data views show the columns table
+  (`insight_view_board.columns_table`) and no link to the raw dictionary. Topics T10-T19 are in `ref/topics.md`.
+- Tests: `servers/workbench-insight/tests/test_data_view_shapes.py` (2).
+
 ## 1.5.0 · 2026-11-02 · Every insight level on the focus page, as its b11 cell (s51, s52, s54, s57, s58)
 
 - JL 261102: "update it to the versions you expected in s51, s52, s54, s55, s57 and s58". `insight_focus.py` adds the

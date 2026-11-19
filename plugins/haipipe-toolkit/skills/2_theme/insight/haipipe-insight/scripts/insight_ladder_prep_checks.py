@@ -22,7 +22,8 @@ SHARED_SOURCE = {"raw_data_path": "copies the raw export into a shared raw store
 ROWS = re.compile(r"\.(head|tail|sample)\(")
 AGGREGATE = re.compile(r"value_counts\(|describe\(|\.agg\(|\.size\(\)|\.count\(\)|nunique\(")
 RECORD = re.compile(r"""['"]sample_value['"]\s*:|print\(\s*(df|rows|data)\s*\)""")
-DICT_SAMPLE = {"sample_value", "sample", "example", "example_value", "first_value"}
+# a dictionary column that holds record values (the workbench drops the same names as it reads: insight_plan_c SAMPLE_KEYS)
+DICT_SAMPLE = {"sample_value", "sample", "samples", "example", "example_value", "examples", "first_value", "top_values"}
 
 
 def _configs(ver: Path, runs_only: bool = True) -> list[tuple[Path, Path, dict]]:
@@ -111,6 +112,14 @@ def raw_gone(block: Path) -> list[str]:
             if d.get("raw") and not any((x / str(d["raw"])).exists() for x in [home, *home.parents])]
 
 
+def references_off(block: Path) -> list[str]:
+    """Each reference table that names no version, or whose path is not there (SPACE-relative, as `raw:`)."""
+    home = block.parent.parent
+    return [str(r.get("name")) for r in front(block / "board.md")[0].get("references") or []
+            if not r.get("version") or not r.get("path")
+            or not any((x / str(r["path"])).exists() for x in [home, *home.parents])]
+
+
 def audit(block: Path, quiet: bool = False) -> list[tuple]:
     """What a DataPrep Block lacks against ref/dataprep.md, one row per check: (Block, check, count, the step that
     fixes it). `outputs`, `inputs`, `records` and `agreed` read the open prep version; `hash` every signed one."""
@@ -122,6 +131,8 @@ def audit(block: Path, quiet: bool = False) -> list[tuple]:
     rows.append((block, "serves", len(lost), "serves: names each Board it feeds, Project- or SPACE-relative"))
     rows.append((block, "raw", len(raw_gone(block)), "each dataset's raw: folder is there; a dataset whose export is "
                                                       "gone is rebuilt from a new export, never from a cache"))
+    rows.append((block, "references", len(references_off(block)), "each reference names its version, and its path is "
+                                                                  "there (insight_ladder.py reference; rule 3)"))
     vers = preps(block)
     open_ = [v for v in vers if str(face(v).get("state")) != "closed"]
     newest = vers[-1:] if vers else []
@@ -152,4 +163,6 @@ def audit(block: Path, quiet: bool = False) -> list[tuple]:
                 print(f"     {name:<8} {where} -> {what}")
         for d in raw_gone(block):
             print(f"     raw      {d}")
+        for r in references_off(block):
+            print(f"     reference {r}")
     return rows

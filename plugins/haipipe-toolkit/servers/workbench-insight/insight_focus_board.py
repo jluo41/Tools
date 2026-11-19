@@ -238,9 +238,8 @@ def _jobs_view(b: dict, root: Path) -> str:
 
 
 def _version_panel(b: dict, v: dict, root: Path) -> str:
-    """One data version: its numbers as a card, what is new,
-    its files each one click away, a few rows."""
-    import zlib
+    """One data version: its numbers as a card, what is new, its files each one click away, its columns.
+    No row of the data and no sample column (T19)."""
     name = str(v.get("version", ""))
     folder = P.version_folder(v, root, b["path"])
     on = [j for j in b["jobs"] if j["data"] == v.get("version")]
@@ -256,25 +255,17 @@ def _version_panel(b: dict, v: dict, root: Path) -> str:
             (str(m.get("n_cols") or "—"), "columns"), (span or "—", "dates"), (str(v.get("frozen") or "—"), "locked"),
             (", ".join(j["name"][:3] for j in on) or "—", "Jobs on it")]
     card = new + '<div class=in-card>' + "".join(f'<div><b>{esc(a)}</b><span>{esc(k)}</span></div>' for a, k in nums) + '</div>'
-    files = [V._open(folder / f, root, f) for f in ("cohort_summary.txt", "data_dictionary.csv", "manifest.json")
-             if (folder / f).is_file()]
+    files = [V._open(folder / f, root, f) for f in ("cohort_summary.txt", "manifest.json") if (folder / f).is_file()]
     files += [V._open(f, root, f.name) for f in d["figures"] + d["docs"] + d["tables"]]
     if d["data"]:
         files.append(f'<span class=mut>{esc(d["data"].name)}</span>')
-    s = P.sample_rows(d["data"], V.SAMPLE_N, zlib.crc32(name.encode()), tuple((m.get("groups") or {}).get("identity") or ())) \
-        if d["data"] else {}
-    sample = ""
-    if s and s["rows"]:
-        vals = dict(zip(s["columns"], zip(*s["rows"])))
-        cols = [c for c in (v.get("preview") or []) if c in vals] or s["columns"][:V.SAMPLE_COLS]
-        sample = (f'<p class=pb-lv><b>A few rows</b> <span title="drawn at random; identifying columns left out">'
-                  f'{len(s["rows"])} of {s["total"]:,}</span></p><div class=wk-scroll>'
-                  + table(tuple(cols), [tuple(esc(r[s["columns"].index(c)]) for c in cols) for r in s["rows"]]) + '</div>')
+    columns = (V._fold("columns", "data_dictionary.csv", V.columns_table(d["dictionary"])) if d["dictionary"]
+               else "")                                       # names and shapes: no row, no sample column (T19)
     fig = next((f for f in d["figures"] if f.suffix.lower() in (".png", ".svg", ".jpg")), None)   # shown, not only
     pic = (f'<figure class=in-fig><a href="/{esc(rel(fig, root))}" target=_blank rel=noopener data-pop="{esc(fig.name)}">'  # linked
            f'<img src="/{esc(rel(fig, root))}" alt="{esc(fig.stem)}" loading=lazy></a>'                             # (round 2)
            f'<figcaption>{esc(fig.stem.replace("_", " ").replace("-", " "))}</figcaption></figure>') if fig else ""
-    return card + pic + f'<div class=in-files>{" ".join(files)}</div>' + sample
+    return card + pic + f'<div class=in-files>{" ".join(files)}</div>' + columns
 
 
 def _data_view(b: dict, root: Path) -> str:

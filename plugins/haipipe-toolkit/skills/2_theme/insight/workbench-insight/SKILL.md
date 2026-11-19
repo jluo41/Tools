@@ -14,8 +14,8 @@ description: >-
   insight tab, insight Board tab, insight Job tab, insight Task tab, insight
   spaces on screen, /workbench-insight.
 metadata:
-  version: "1.4.0"
-  last_updated: "2026-11-01"
+  version: "1.6.0"
+  last_updated: "2026-11-19"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

@@ -3,8 +3,8 @@ name: haipipe-insight
 description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release), a DataPrep Block (insight/InsightDataPrep-<Set>/, the tools that make the data versions, one Job per prep version) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, DataPrep, data prep, prep version, data version, DIKW, segment, pooling, signed Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.10.2"
-  last_updated: "2026-11-18"
+  version: "3.10.3"
+  last_updated: "2026-11-19"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
 

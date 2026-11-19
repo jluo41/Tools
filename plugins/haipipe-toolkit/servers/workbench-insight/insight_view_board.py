@@ -186,7 +186,6 @@ def _dataset(b: dict, root: Path, href) -> str:
             + "".join(_version(v, root, opened=k == len(b["versions"]) - 1) for k, v in enumerate(b["versions"])))
 
 
-SAMPLE_N, SAMPLE_COLS = 5, 20          # rows drawn; columns shown first when a version names no preview:
 
 
 def _raw(path: Path, root: Path) -> str:
@@ -198,8 +197,9 @@ def _raw(path: Path, root: Path) -> str:
 def _version(v: dict, root: Path, opened: bool = True) -> str:
     """One data version, read from its folder (the folder is what a person hands over, so all of it is
     shown): its facts (manifest.json over board.md), then what the folder holds, each in a fold:
-    the summary, the columns by group (data_dictionary.csv), a few rows, the figures, the documents, and the
-    rest beside it. Read-only; a folder or file whose name starts with `_` is listed, never read."""
+    the summary, the columns by group (data_dictionary.csv), the figures, the documents, and the rest beside it.
+    Shapes, counts and names only: no row of the data and no sample column (T19). Read-only; a folder or file whose
+    name starts with `_` is listed, never read."""
     name = str(v.get("version", ""))
     folder = P.version_folder(v, root)
     if not folder or not folder.is_dir():
@@ -221,16 +221,7 @@ def _version(v: dict, root: Path, opened: bool = True) -> str:
     if d["summary"]:
         parts.append(_fold("summary", "cohort_summary.txt", f'<pre style="margin:0">{esc(d["summary"].strip())}</pre>', True))
     if d["dictionary"]:
-        groups = {}
-        for c in d["dictionary"]:
-            groups.setdefault(c.get("group") or "—", []).append(c)
-        rows = [(f'<b>{esc(g)}</b>' if i == 0 else "", f'<code>{esc(c.get("name", ""))}</code>', esc(c.get("dtype", "")),
-                 esc(c.get("null_pct", "")), esc(c.get("n_unique", "")), esc(c.get("notes", "")))
-                for g, cs in groups.items() for i, c in enumerate(cs)]
-        parts.append(_fold("columns", f'{len(d["dictionary"])} in {len(groups)} groups · data_dictionary.csv',
-                           table(("group", "column", "type", "null %", "distinct", "notes"), rows)))
-    hide = tuple((m.get("groups") or {}).get("identity") or ())
-    parts.append(_sample(v, d["data"], hide))
+        parts.append(_fold("columns", "data_dictionary.csv", columns_table(d["dictionary"])))
     if d["figures"]:
         thumbs = "".join(f'<a data-pop="{esc(f.name)}" href="{esc(_raw(f, root))}" target=_blank rel=noopener '
                          f'style="display:inline-block;width:220px;margin:0 10px 12px 0;vertical-align:top;text-decoration:none">'
@@ -257,30 +248,16 @@ def _version(v: dict, root: Path, opened: bool = True) -> str:
     return _fold(f"{name} · what its folder holds", f'{rel(folder, root)}/', "".join(parts), opened)
 
 
-def _sample(v: dict, data, hide: tuple = ()) -> str:
-    """A few rows of a version's data, to show what it looks like: drawn at random with a seed fixed
-    per version, so the same rows on every load. One column a row, one sample row a column; the version's
-    `preview:` columns (else up to SAMPLE_COLS that differ across the sample) first, the rest folded.
-    Identifying columns (the dictionary's identity group, ids, zips, NPI) and free text are never shown."""
-    import zlib
-    name = str(v.get("version", ""))
-    s = P.sample_rows(data, SAMPLE_N, zlib.crc32(name.encode()), hide) if data else {}
-    if not s:
-        return _fold("a few rows", "not readable here", "<p class=mut>No parquet data file in the folder.</p>")
-    vals = dict(zip(s["columns"], zip(*s["rows"]))) if s["rows"] else {}
-    picked = [c for c in (v.get("preview") or []) if c in vals]
-    first = picked or [c for c in s["columns"] if len(set(vals[c])) > 1][:SAMPLE_COLS]
-    rest = [c for c in s["columns"] if c not in first]
-    heads = ("column",) + tuple(f"row {i + 1}" for i in range(len(s["rows"])))
-
-    def grid(cols):
-        return table(heads, [(f"<code>{esc(c)}</code>",) + tuple(esc(x) for x in vals[c]) for c in cols])
-    why = ("the version's preview: columns" if picked else f"up to {SAMPLE_COLS} columns that differ across these rows")
-    body = (f'<p class=mut>{len(s["rows"])} of {s["total"]:,} rows, drawn at random (the same {len(s["rows"])} on every load). '
-            f'First {esc(why)}; dates to the day. Left out, as identifying or free text: '
-            f'{esc(", ".join(s["hidden"])) or "none"}.</p>' + grid(first)
-            + (_fold(f"the other {len(rest)} columns", "" if picked else "the same in these rows, or empty", grid(rest)) if rest else ""))
-    return _fold("a few rows", f'{len(s["columns"])} columns shown', body)
+def columns_table(dictionary: list) -> str:
+    """A data version's columns by group, from its data_dictionary.csv: name, type, null %, distinct and notes. The
+    dictionary's sample column never reaches it (P.data_folder drops it as it reads)."""
+    groups = {}
+    for c in dictionary:
+        groups.setdefault(c.get("group") or "—", []).append(c)
+    rows = [(f'<b>{esc(g)}</b>' if i == 0 else "", f'<code>{esc(c.get("name", ""))}</code>', esc(c.get("dtype", "")),
+             esc(c.get("null_pct", "")), esc(c.get("n_unique", "")), esc(c.get("notes", "")))
+            for g, cs in groups.items() for i, c in enumerate(cs)]
+    return table(("group", "column", "type", "null %", "distinct", "notes"), rows)
 
 
 def _partitions(b: dict, root: Path, href) -> str:

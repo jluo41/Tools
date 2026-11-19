@@ -19,7 +19,8 @@ The tree
 ├── board.md                                     board-kind: insight-dataprep · workbench: insight · set: <Set> ·
 │                                                store: <SPACE-relative folder the Runs write the rows to> ·
 │                                                serves: [insight/Insight-<D>, <SPACE-relative Board in another Project>] ·
-│                                                datasets: [{name, raw, why}] · ## Background
+│                                                datasets: [{name, raw, why}] · references: [{name, path, version, why}] ·
+│                                                ## Background
 ├── background/                                  the source's documents, message content, the data owner's answers;
 │                                                never a row of data
 ├── runs/                                        soft: run-open-version-prep-v<K>
@@ -51,13 +52,14 @@ The rules
    and stops without them. A worker never defaults to a dataset, since a default builds the wrong data without a
    word. A carried worker that reads environment variables keeps its maker's env export in its tickets until the next
    prep version reads its config.
-   **A step reads only its dataset's `raw:` folder** in the raw store, and the earlier steps of the same prep version.
-   No cache, and no other pipeline's store, is an input. A shared source stage is not a way in either: given
+   **A step reads only its dataset's `raw:` folder** in the raw store, the earlier steps of the same prep version, and
+   the Block's `references:` (tables every dataset may join, such as an area or a prescriber table, each read at the
+   version named there: `insight_ladder.py reference`). No cache, and no other pipeline's store, is an input. A shared source stage is not a way in either: given
    `raw_data_path`, it copies the raw export into the shared raw store and overwrites the shared source cache,
    whatever `use_cache` says. So a step loads the raw export itself and writes anything it builds in between under its
    own `@prep-vK` place. `audit` names any config with `raw_data_path`, `source_config`, `save_cache` or `use_cache`
-   (`inputs`), and any dataset whose `raw:` folder is gone (`raw`), which is rebuilt from a new export, never from a
-   cache.
+   (`inputs`), any dataset whose `raw:` folder is gone (`raw`), which is rebuilt from a new export, never from a
+   cache, and any reference that names no version or is not there (`references`).
 4. **The rows stay in the store, in a new folder.** A Run writes the analysis-ready rows to a folder named for its
    prep version, `<store>/<name>@prep-vK` (`output.prepare_dir`, and `env.OUT_NAME` when a carried worker names its
    folder from it). It never writes a folder made before, which other work may read, and never one a Board's data
@@ -116,6 +118,22 @@ output becomes `…@prep-v1`, the carried tools run into it, and the new folder 
 then name prep-v1 by hand. A difference is written down, never hidden. From the signature on, only the DataPrep Block
 makes a new data version.
 
+A carried version reproduces, so it may read what its maker read (an existing source cache, say), and it writes no
+experiment card. Its face names those inputs, and it still runs no shared source stage and writes only `@prep-v1`.
+Rules 3 and 7 hold from the next version on: it reads only `raw:` and the references, its first step writes the
+card, and a dataset whose export is gone comes back as a new dataset from its new export. The person who signs the
+carried version approves both exceptions with that signature; the step review does not return a carried step for
+them.
+
+A second Run of a dataset
+-------------------------
+
+A Run that ran is not run again, and its Result is never deleted by hand. `run <step> dataset <name> --again` makes
+the next Run of that dataset: it names the newest in `supersedes:` and starts from its ticket and config. Once it has
+run, haipipe-run `prune_runs.py <step> --apply --only <step>/<old Run>` removes the old Run (a Run that failed
+replaces nothing). Its output folder is the same `@prep-vK` one, rebuilt; a folder a Board's data version names is
+still refused (rule 4).
+
 Scripts
 -------
 
@@ -124,9 +142,11 @@ insight_ladder.py dataprep <Project>/insight/InsightDataPrep-<Set> --set <Set> -
 insight_ladder.py dataset  <dataprep> <Name> --raw <SPACE-relative raw folder> [--why …]
 insight_ladder.py prep     <dataprep> --slug <what-it-is> [--from <carried-from folder>]
 insight_ladder.py step     <prep version> <slug> [--ask "what it does"]
-insight_ladder.py run      <step> dataset <name>          (and run <prep version> review-steps · sign)
+insight_ladder.py reference <dataprep> <name> --path <SPACE-relative> --version <v> [--why …]
+insight_ladder.py run      <step> dataset <name> [--again]   (and run <prep version> review-steps · sign)
 insight_ladder.py sign     <prep version> --date YYMMDD
-insight_ladder.py audit    <dataprep>      serves · raw · workers · configs · outputs · inputs · records · agreed · hash
+insight_ladder.py audit    <dataprep>      serves · raw · references · workers · configs · outputs · inputs · records ·
+                                           agreed · hash
 insight_ladder.py data     <Board> data-v<M> --data-folder … --prep <prep version or its Run>
 ```
 

@@ -23,7 +23,7 @@ from live.insight_view_overall import (  # noqa: F401 · this module keeps answe
     STEP, _SPEC, _spec, _leads, _cap, _q_logic, _needs, _goes, _q_work, _takeaway, _q_report, OVERALL, CITE,
     _executive, _sections, _cites, _fig_png, _figure, _overall, _overall_tabs, OV_CSS, _board_overall)
 from live.insight_view_board import (  # noqa: F401 · this module keeps answering these names
-    board_spaces, _map, _prototype_tabs, _prototype, _dataset, SAMPLE_N, SAMPLE_COLS, _raw, _version, _sample,
+    board_spaces, _map, _prototype_tabs, _prototype, _dataset, _raw, _version, columns_table,
     _partitions, _questions, newest_task, _cell, _newest_word, _coverage, _tracks, _consistency, _findings,
     _answered, _jobs, _board_runs, _handoff)
 from live.insight_view_work import (  # noqa: F401 · this module keeps answering these names

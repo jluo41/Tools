@@ -90,14 +90,14 @@ def hard_run(task: Path, which: str, plan: Plan) -> list[Path]:
     return out
 
 
-def run(folder: Path, rtype: str, target: str, plan: Plan) -> list[Path]:
+def run(folder: Path, rtype: str, target: str, plan: Plan, again: bool = False) -> list[Path]:
     level = level_of(folder)
     if (level, rtype) not in TYPES:
         sys.exit(f"run-{rtype} does not run at the {level} level; its run types: {RUN_TYPES[level]}")
     skill, agent, signs, hard = TYPES[(level, rtype)]
     if hard and level == "step":
         from insight_ladder_prep import dataset_run
-        return [dataset_run(folder, target, plan)]
+        return [dataset_run(folder, target, plan, again)]
     if hard:
         return hard_run(folder, target or "all", plan)
     if level == "task" and rtype == "write":

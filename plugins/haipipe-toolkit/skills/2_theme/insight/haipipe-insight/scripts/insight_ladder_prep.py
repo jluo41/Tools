@@ -65,6 +65,23 @@ def add_dataset(block: Path, name: str, raw: str, why: str, plan: Plan) -> None:
     plan.write(block / "board.md", with_front(fields, body), replace=True)
 
 
+def add_reference(block: Path, name: str, path: str, version: str, why: str, plan: Plan) -> None:
+    """A reference table every dataset of the Set may join (an area or a prescriber table): not a dataset, read at the
+    version named here (ref/dataprep.md rule 3)."""
+    if face_kind(block) != "dataprep":
+        sys.exit(f"{block.name} is not a DataPrep Block (board.md board-kind: insight-dataprep)")
+    if not SLUG.match((name or "").lower()) or not path or not version:
+        sys.exit("a reference is: reference <DataPrep> <name> --path <SPACE-relative file or folder> --version <its version>")
+    if path.startswith("/"):
+        sys.exit("--path is SPACE-relative (or through a variable), never absolute")
+    fields, body = front(block / "board.md")
+    if name in [str(r.get("name")) for r in fields.get("references") or []]:
+        sys.exit(f"{name} is already a reference of {block.name}")
+    fields.setdefault("references", []).append({"name": name, "path": path, "version": version,
+                                                "why": why or "<what joins it, and why it is not a dataset>"})
+    plan.write(block / "board.md", with_front(fields, body), replace=True)
+
+
 # ── a prep version ──────────────────────────────────────────────────────────────────────────────────
 def preps(block: Path) -> list[Path]:
     return sorted((p for p in block.iterdir() if p.is_dir() and PREP.match(p.name)),
@@ -190,27 +207,44 @@ def sign_prep(ver: Path, date: str, plan: Plan) -> None:
 
 
 # ── a step's hard Runs, one per dataset ─────────────────────────────────────────────────────────────
-def dataset_run(step_dir: Path, name: str, plan: Plan) -> Path:
+def dataset_run(step_dir: Path, name: str, plan: Plan, again: bool = False) -> Path:
     """runs/rNN_<name>/: the Task ticket (haipipe-task's run-sh-template), its card, and its config in scripts/config/.
-    rNN is the next number in the step; the config says which dataset and where the output goes."""
+    rNN is the next number in the step; the config says which dataset and where the output goes. A dataset that has a
+    Run gets that Run back; with `again` it gets the next one, which names the newest in `supersedes:` and starts from
+    its ticket and config, so a carried ticket keeps its own lines. Once the new Run has run, haipipe-run
+    `prune_runs.py <step> --apply --only <step>/<old Run>` removes the old one (ref/dataprep.md § A second Run)."""
     if not SLUG.match(name or ""):
         sys.exit("a dataset Run is: run <step> dataset <name> (lower-case, e.g. smsr2v1)")
     ver, block = step_dir.parent, step_dir.parent.parent
     have = sorted(p for p in (step_dir / "runs").glob("r[0-9][0-9]_*") if p.is_dir())
     same = [p for p in have if p.name.split("_", 1)[1] == name]
-    if same:
-        return same[0]
+    if same and not again:
+        return same[-1]
     n = max((int(p.name[1:3]) for p in have), default=0) + 1
     run = f"r{n:02d}_{name}"
     path = step_dir / "runs" / run
+    k = PREP.match(ver.name).group(2)
+    cfgdir = step_dir / "scripts" / "config"
+    if same:                                               # a second Run: the newest one's ticket and config, carried
+        old = same[-1]
+        old_ticket = old / f"{old.name}.sh"
+        plan.write(path / f"{run}.sh", old_ticket.read_text(encoding="utf-8") if old_ticket.is_file()
+                   else TICKET.read_text(encoding="utf-8"))
+        if not plan.dry:
+            (path / f"{run}.sh").chmod(0o755)
+        if (cfgdir / f"{old.name}.yaml").is_file():
+            plan.write(cfgdir / f"{run}.yaml", (cfgdir / f"{old.name}.yaml").read_text(encoding="utf-8"))
+        plan.write(path / "run.yaml", "".join(f"{key}: {v}\n" for key, v in (
+            ("run", run), ("kind", "hard"), ("type", "dataset"), ("target", step_dir.name), ("prep", k),
+            ("ticket", f"{run}.sh"), ("supersedes", old.name), ("status", "planned"), ("passes", "[]"))))
+        return path
     worker = str(face(step_dir).get("worker") or STEP.match(step_dir.name).group(2).replace("-", "_"))
     ticket = TICKET.read_text(encoding="utf-8").replace('TASK_NAME="worker"', f'TASK_NAME="{worker}"', 1)
     plan.write(path / f"{run}.sh", ticket)
     if not plan.dry:
         (path / f"{run}.sh").chmod(0o755)
     store = str(front(block / "board.md")[0].get("store") or "<store>").rstrip("/")
-    k = PREP.match(ver.name).group(2)
-    plan.write(step_dir / "scripts" / "config" / f"{run}.yaml",
+    plan.write(cfgdir / f"{run}.yaml",
                f"# Run contract for {run}. The worker reads this file through $HAIPIPE_CONFIG (the ticket exports no\n"
                f"# env:); it names no default dataset and stops without one. Its output is a new folder named for {k}:\n"
                f"# a folder an older version made, or a Board's data version names, is never written (ref/dataprep.md).\n\n"
@@ -256,4 +290,4 @@ def serving(board: Path) -> list[Path]:
 
 
 # the checks a DataPrep Block is held to: outputs, inputs, record values and the audit (ref/dataprep.md)
-from insight_ladder_prep_checks import outputs, inputs, records, raw_gone, audit  # noqa: E402,F401
+from insight_ladder_prep_checks import outputs, inputs, records, raw_gone, references_off, audit  # noqa: E402,F401

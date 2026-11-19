@@ -104,25 +104,10 @@ def runs(folder: Path) -> list:
         if rdir.is_dir() else []
 
 
-# ── a data version's sample rows ────────────────────────────────────────────────────────────────
-# a column that names a person, a place or a record, or holds free text, is never shown (the sample
-# shows what the data looks like without exposing a person); a version's `preview:` list picks the readable ones first
-HIDDEN = re.compile(r"(^|_)(id|ids|encoded|npi|zip\w*|phone|email|address|ssn|mrn|dob)($|_)|_id$|_encoded$|zip|npi",
-                    re.I)
-_SAMPLES: dict = {}                                            # {(path, mtime, n, seed): sample}
-
-
-def _cell(v) -> str:
-    """One value as the page shows it: a date to the day, a whole float without .0, a missing one as —."""
-    import datetime as dt
-    import math
-    if v is None or (isinstance(v, float) and math.isnan(v)):
-        return "—"
-    if isinstance(v, dt.datetime):
-        return v.strftime("%Y-%m-%d")
-    if isinstance(v, float):
-        return f"{v:g}"
-    return str(v)
+# ── a data version on a page: shapes, counts and names, never a record value (workbench-insight T19) ──────
+# No row of a data version is drawn onto a page, and a dictionary's sample column is dropped as it is read: a page is
+# also what a session reads when it checks one, so a row on a page is a row in that session's context.
+SAMPLE_KEYS = {"sample_value", "sample", "samples", "example", "example_value", "examples", "first_value", "top_values"}
 
 
 DOC_EXT = (".md", ".txt")
@@ -168,7 +153,8 @@ def data_folder(folder: Path, extract: str = "") -> dict:
         pass
     if (folder / "data_dictionary.csv").is_file():
         with (folder / "data_dictionary.csv").open(encoding="utf-8", errors="replace", newline="") as fh:
-            out["dictionary"] = list(csv.DictReader(fh))
+            out["dictionary"] = [{k: v for k, v in row.items() if (k or "").strip().lower() not in SAMPLE_KEYS}
+                                 for row in csv.DictReader(fh)]
     if (folder / "cohort_summary.txt").is_file():
         out["summary"] = (folder / "cohort_summary.txt").read_text(encoding="utf-8", errors="replace")
     named = Path(extract).name if extract else str(out["manifest"].get("output_file") or "")
@@ -199,38 +185,6 @@ def data_folder(folder: Path, extract: str = "") -> dict:
     out["docs"] = [d for d in out["docs"] if not ((d.name, d.stat().st_size) in seen or seen.add((d.name, d.stat().st_size)))]
     return out
 
-
-def sample_rows(extract: Path, n: int = 5, seed: int = 0, hide: tuple = ()) -> dict:
-    """`n` rows of a version's extract, drawn at random with a fixed seed (the same rows on every load):
-    {columns, rows, hidden, total} or {} when the file cannot be read. Columns that identify (ids, NPI, zip,
-    contact), that `hide` names (the data dictionary's identity group) or that hold free text are left out
-    and counted in `hidden`. Read once per file change."""
-    path = Path(extract)
-    try:
-        st = path.stat()
-    except OSError:
-        return {}
-    key = (str(path), st.st_mtime_ns, n, seed, tuple(hide))
-    if key in _SAMPLES:
-        return _SAMPLES[key]
-    try:
-        import numpy as np
-        import pyarrow.parquet as pq
-        f = pq.ParquetFile(path)
-        total = f.metadata.num_rows
-        names = f.schema_arrow.names
-        keep = [c for c in names if not HIDDEN.search(c) and c not in hide]
-        idx = np.sort(np.random.RandomState(seed).choice(total, min(n, total), replace=False))
-        tab = f.read(columns=keep).take(idx).to_pylist()
-    except Exception:                                          # not parquet, unreadable, no pyarrow: no sample
-        _SAMPLES[key] = {}
-        return {}
-    free = {c for c in keep if any(isinstance(r[c], str) and len(r[c]) > 100 for r in tab)}  # free text
-    cols = [c for c in keep if c not in free]
-    out = {"columns": cols, "rows": [[_cell(r[c]) for c in cols] for r in tab],
-           "hidden": [c for c in names if c not in cols], "total": total}
-    _SAMPLES[key] = out
-    return out
 
 
 # ── the Question Book Block ─────────────────────────────────────────────────────────────────────────

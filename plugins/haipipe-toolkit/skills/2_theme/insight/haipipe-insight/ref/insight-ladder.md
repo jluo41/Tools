@@ -155,8 +155,8 @@ The rules
    board.md `versions:` (261008: a version is its data folder, not one file): the folder holds the data file
    (named by its manifest.json `output_file`, else the one .parquet on top), and may hold manifest.json,
    data_dictionary.csv, cohort_summary.txt, figures/ and documents, all shown on Description › Dataset; a name
-   starting with `_` is work beside it, listed, never read. `preview:` names the columns its few sample rows show
-   first. `prep:` names the signed prep version (or its Run) that made the folder (`data … --prep`; [dataprep.md](dataprep.md)).
+   starting with `_` is work beside it, listed, never read. No row of a data version reaches a page; the Data view shows its columns, counts and files (an older
+   board.md's `preview:` is no longer read). `prep:` names the signed prep version (or its Run) that made the folder (`data … --prep`; [dataprep.md](dataprep.md)).
    `label:` gives the data version its few words (`first 5 days`; `insight_ladder.py data --label`). An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
    through a variable), never absolute.
    `accumulates:` says whether a later version holds the earlier rows. `meta/meta.md` says what the extract holds.

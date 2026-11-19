@@ -55,7 +55,9 @@ Check alignment           haipipe-insight-check                      the checker
    steps, with no shared source stage; nothing it writes beside the rows, and nothing in its
    Result or notebook, shows a record value; `insight_ladder.py audit <Block>` shows
    `outputs 0` and `inputs 0`, and each `records` line is read; no step reads an outcome.
-   The first step's experiment card compares stated with observed and stops on a mismatch.
+   The first step's experiment card compares stated with observed and stops on a mismatch. A
+   carried version is held to neither the raw-only reading nor the card (dataprep.md § Carrying):
+   its signature approves both.
    Only then `agreed: ✅ <YYMMDD>` on that step's face.
 6. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.

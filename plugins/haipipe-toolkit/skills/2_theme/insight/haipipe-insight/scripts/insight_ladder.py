@@ -22,7 +22,9 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py prep      <dataprep> --slug <what-it-is> [--from <carried-from folder>]   the next jNN_prep-vK_<slug>/
     python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   a step Task tNN_<slug>/
     python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed; pins the tools' hash; freezes it
-    python insight_ladder.py run       <step> dataset <name>             a hard Run runs/rNN_<name>/: ticket, card, config
+    python insight_ladder.py run       <step> dataset <name> [--again]   a hard Run runs/rNN_<name>/: ticket, card, config
+                                       (--again: the next Run of that dataset, superseding the newest)
+    python insight_ladder.py reference <dataprep> <name> --path <SPACE-relative> --version <v> [--why "…"]   a reference table
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> segment <name|all>   a hard Run runs/rNN_<segment>/ (planned)
     python insight_ladder.py goals     <Board, Question Book, Job or Task>     write each face's missing `goal:` line
@@ -316,6 +318,23 @@ def stale_receipts(board: Path) -> list[Path]:
     return out
 
 
+def version_records(board: Path) -> list[str]:
+    """Each data version whose dictionary beside the rows holds record values (a sample column; workbench-insight T19).
+    The page shows none of it and the folder stays frozen; the next data version's dictionary carries none."""
+    import csv
+    from insight_ladder_prep_checks import DICT_SAMPLE
+    project, out = project_of(board), []
+    for v in front(board / "board.md")[0].get("versions") or []:
+        ref = str(v.get("folder") or "")
+        folder = next((b / ref for b in [project, *project.parents] if ref and (b / ref).is_dir()), None)
+        d = folder / "data_dictionary.csv" if folder else None
+        if d and d.is_file():
+            with d.open(encoding="utf-8", errors="replace", newline="") as fh:
+                if {h.strip().lower() for h in next(csv.reader(fh), [])} & DICT_SAMPLE:
+                    out.append(str(v.get("version")))
+    return out
+
+
 def audit(folder: Path, quiet: bool = False) -> list[tuple]:
     """What each Board (and its Question Book) still lacks against ref/insight-ladder.md, one row per check:
     (Board, check, count, the step that fixes it). Read-only."""
@@ -343,6 +362,8 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
         rows.append((b, "hash", len(pins), "update --apply (each Job's hash: re-pinned to its release)"))
         st = stale_receipts(b) if not (edits or renames or move) else []
         rows.append((b, "receipts", len(st), "update --apply --rerun (each ticket's run.sh; needs env.sh at the SPACE root)"))
+        rows.append((b, "records", len(version_records(b)), "a data version's dictionary holds a sample column: the page "
+                     "shows none of it, the folder stays frozen, and the next data version's carries none (T19)"))
         unmade = [v for v in front(b / "board.md")[0].get("versions") or [] if not v.get("prep")] if PR.serving(b) else []
         rows.append((b, "prep", len(unmade), "data … --prep: each data version names the signed prep version that made it "
                      "(ref/dataprep.md); an older one is named by hand"))
@@ -439,7 +460,7 @@ def main(argv=None) -> list[Path]:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=("prototype", "version", "question", "change", "retire", "sign", "propose",
                                         "board", "data", "job", "run", "goals", "audit", "review", "update",
-                                        "dataprep", "dataset", "prep", "step"))
+                                        "dataprep", "dataset", "prep", "step", "reference"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
@@ -466,6 +487,9 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--set", dest="set_name", default="", help="dataprep: the family of datasets it prepares")
     ap.add_argument("--store", default="", help="dataprep: the SPACE-relative folder its Runs write the data to")
     ap.add_argument("--raw", default="", help="dataset: the SPACE-relative folder its raw rows sit in")
+    ap.add_argument("--path", default="", help="reference: the SPACE-relative file or folder it is read from")
+    ap.add_argument("--version", default="", help="reference: the version it is read at")
+    ap.add_argument("--again", action="store_true", help="run <step> dataset: the next Run, superseding the newest")
     ap.add_argument("--prep", default="", help="data: the signed prep version (or its Run) that made the data folder")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply", action="store_true", help="update: write (a dry run without it)")
@@ -489,6 +513,8 @@ def main(argv=None) -> list[Path]:
         sign(a.folder, a.date, plan)
     elif c == "dataprep":
         PR.dataprep(a.folder, a.set_name, a.serves, a.store, a.title, plan)
+    elif c == "reference":
+        PR.add_reference(a.folder, a.what, a.path, a.version, a.why, plan)
     elif c == "dataset":
         PR.add_dataset(a.folder, a.what, a.raw, a.why, plan)
     elif c == "prep":
@@ -518,7 +544,7 @@ def main(argv=None) -> list[Path]:
     else:
         if not a.what:
             ap.error("run needs a type, e.g. add, compare, segment")
-        run(a.folder, RUN_WORDS.get(a.what, WORDS.get(a.what, a.what)), a.extra, plan)
+        run(a.folder, RUN_WORDS.get(a.what, WORDS.get(a.what, a.what)), a.extra, plan, a.again)
     for p in plan.made:
         print(("would make " if a.dry_run else "made ") + str(p))
     return plan.made
