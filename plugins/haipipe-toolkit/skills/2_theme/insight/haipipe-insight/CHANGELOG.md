@@ -1,5 +1,16 @@
 # haipipe-insight · version history
 
+## 3.10.2 · 2026-11-18 · a step reads only its raw export, and no page shows a record value
+
+- From drfirst-space-b7's Reports on the DrFirstExp Block (workbench-insight T15-T18).
+- `ref/dataprep.md` rule 3: a step reads only its dataset's `raw:` folder and earlier steps; a shared source stage
+  (`raw_data_path`, `source_config`, `save_cache`, `use_cache`) is not a way in, since it writes shared stores. Rule 4:
+  a config that names no output folder is refused; a Result, notebook, dictionary, manifest or summary shows no
+  record value. Rule 7: each prep version's first step writes the experiment card and stops on a stated-versus-
+  observed mismatch.
+- `audit <DataPrep>` adds `raw`, `inputs` and `records`; the checks moved to `scripts/insight_ladder_prep_checks.py`.
+- The step review (card and reviewer rule 5) checks the same.
+
 ## 3.10.1 · 2026-11-16 · a prep Run writes only a new folder; audit reads a DataPrep Block
 
 - From drfirst-space-b7's Report on the carried DrFirstExp Block (workbench-insight T11-T14).

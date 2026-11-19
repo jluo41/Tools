@@ -222,30 +222,6 @@ def dataset_run(step_dir: Path, name: str, plan: Plan) -> Path:
     return path
 
 
-def outputs(ver: Path) -> list[tuple[str, str]]:
-    """Each Run config of an open prep version that would write a folder it may not (rule 4): an output name
-    (`output.prepare_dir`, and `env.OUT_NAME` when a carried worker names its folder from it) not ending in
-    `@prep-vK`, or a folder a served Board's data version names. [(rNN config, the folder)]."""
-    k = PREP.match(ver.name).group(2)
-    block = ver.parent
-    home = block.parent.parent
-    frozen = set()
-    for ref in front(block / "board.md")[0].get("serves") or []:
-        b = next((x / str(ref) for x in [home, *home.parents] if (x / str(ref) / "board.md").is_file()), None)
-        for v in (front(b / "board.md")[0].get("versions") or []) if b else []:
-            frozen.add(str(v.get("folder") or v.get("extract") or "").rstrip("/"))
-    out = []
-    for s_ in steps(ver):
-        for cfg in sorted((s_ / "scripts" / "config").glob("r[0-9][0-9]_*.yaml")):
-            c = yaml.safe_load(cfg.read_text(encoding="utf-8")) or {}
-            names = [str((c.get("output") or {}).get("prepare_dir") or "")]
-            names += [str((c.get("env") or {}).get("OUT_NAME"))] if (c.get("env") or {}).get("OUT_NAME") else []
-            for n in names:
-                if n and (not n.rstrip("/").endswith(f"@{k}") or n.rstrip("/") in frozen):
-                    out.append((f"{s_.name}/{cfg.stem}", n))
-    return out
-
-
 # ── a Board's data version names the prep that made it ──────────────────────────────────────────────
 def prep_of(project: Path, ref: str) -> Path:
     """The prep version a Board's `--prep` names: the version itself or one of its Runs, Project-relative (or, for a
@@ -279,35 +255,5 @@ def serving(board: Path) -> list[Path]:
     return out
 
 
-def audit(block: Path, quiet: bool = False) -> list[tuple]:
-    """What a DataPrep Block lacks against ref/dataprep.md, one row per check: (Block, check, count, the step that
-    fixes it). Read-only. `outputs` and `agreed` read the open prep version; `hash` every signed one."""
-    block = block.resolve()
-    home = block.parent.parent
-    rows = []
-    serves = front(block / "board.md")[0].get("serves") or []
-    lost = [r for r in serves if not any(face_kind(x / str(r)) == "board" for x in [home, *home.parents])]
-    rows.append((block, "serves", len(lost), "serves: names each Board it feeds, Project- or SPACE-relative"))
-    vers = preps(block)
-    open_ = [v for v in vers if str(face(v).get("state")) != "closed"]
-    newest = vers[-1:] if vers else []
-    workers = [s for v in newest for s in steps(v)
-               if not (s / "scripts" / f"{face(s).get('worker') or STEP.match(s.name).group(2)}.py").is_file()]
-    rows.append((block, "workers", len(workers), "each step's scripts/<worker>.py, the name on its face (worker:)"))
-    configs = [r for v in newest for s in steps(v) for r in sorted((s / "runs").glob("r[0-9][0-9]_*"))
-               if r.is_dir() and not (s / "scripts" / "config" / f"{r.name}.yaml").is_file()]
-    rows.append((block, "configs", len(configs), "each Run's scripts/config/rNN_<dataset>.yaml (run <step> dataset)"))
-    out = [x for v in open_ for x in outputs(v)]
-    rows.append((block, "outputs", len(out), "each open version's Run writes a new folder ending @prep-vK, never one "
-                                             "made before or a Board's data version (rule 4)"))
-    unagreed = [s for v in open_ for s in steps(v) if not str(face(s).get("agreed", "")).startswith("✅")]
-    rows.append((block, "agreed", len(unagreed), "run-review-steps: another agent agrees each step; sign waits on it"))
-    drift = [v for v in vers if str(face(v).get("state")) == "closed" and str(face(v).get("hash")) != prep_hash(v)]
-    rows.append((block, "hash", len(drift), "a signed version's tools changed after the signature: restore them, or "
-                                            "open the next prep version"))
-    if not quiet:
-        for b, check, n, step_ in rows:
-            print(f"{'✅' if n == 0 else '❗'} {b.name:<28} {check:<9} {n:>4}" + ("" if n == 0 else f"   ▶ {step_}"))
-        for r, n in out:
-            print(f"     outputs  {r} -> {n}")
-    return rows
+# the checks a DataPrep Block is held to: outputs, inputs, record values and the audit (ref/dataprep.md)
+from insight_ladder_prep_checks import outputs, inputs, records, raw_gone, audit  # noqa: E402,F401

@@ -19,6 +19,10 @@ T11  a step's worker reads a config nothing exports   fixed
 T12  a prep Run can overwrite a folder made before    open
 T13  audit could not read a DataPrep Block       fixed
 T14  the step review's agent could not write agreed   fixed
+T15  a step reads more than its raw export      fixed
+T16  a step writes outside a folder of its own   fixed
+T17  no prep step checks the stated experiment   open
+T18  a page could show a record value            fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -236,4 +240,64 @@ T14  the step review's agent could not write agreed   fixed
 - **Answer**: the review is haipipe-insight-reviewer-agent's (it already writes `agreed:` on a plan it agrees): the
   scaffold's run type, the card, and the agent's run types and rule 5. Its one write is `agreed:` on a step it passes.
 - **Guard**: `test_dataprep.py` (the review card's agent); `run_cards.py --check`.
+
+## T15 · A step reads more than its raw export · fixed
+
+- **From**: Report, drfirst-space-b7, 261116, topic E, quoting JL: "I want the raw input should just be the raw data
+  from _WorkSpace/0-RawStore". The carried `1_prep.py` read a shared SourceStore cache, seven stage-1 configs set
+  `use_cache: true`, two Runs skipped stage 1, and OptTimeR1's raw folder no longer exists. Then, 261118, from the
+  prep-v1 review: haipipe's `source_pipeline.py:539-547` copies the raw export into the shared raw store whenever a
+  config sets `raw_data_path`, so `use_cache` never applies and `save_cache` overwrites the shared source cache; a name
+  that differs from the raw folder's makes a second full copy in the raw store.
+- **Questions**: what may a step read? Where does an intermediate go? Is a shared source stage ever a way in? Are the
+  external reference joins (area and prescriber tables) a dataset's input?
+- **Answer**: a step reads only its dataset's `raw:` folder and earlier steps of its prep version, and loads the raw
+  export itself; anything in between goes under its own `@prep-vK` place (`ref/dataprep.md` rule 3). `audit` names any
+  config with `raw_data_path`, `source_config`, `save_cache` or `use_cache` (`inputs`) and a dataset whose `raw:`
+  folder is gone (`raw`). The checks moved to `scripts/insight_ladder_prep_checks.py`.
+- **Case**: b7 took stage 1 out of prep-v1, and on its Block `audit` reads `inputs 0`, `raw 2` (OptTimeR1 and its old
+  cut, whose export is gone).
+- **Guard**: `test_dataprep.py` `test_a_step_reads_only_its_raw_export_and_shows_no_record_value`; reviewer rule 5.
+- **Passed on**: whether the reference joins are inputs is JL's call (asked by b7). An output root for haipipe's
+  source stage is the haipipe code owner's; prep does not need it, since a step loads the raw export itself.
+
+## T16 · A step writes outside a folder of its own · fixed
+
+- **From**: Report, drfirst-space-b7, 261116, topic F: `summarize_cohorts.py` wrote `<store>/cohort_summary.*`
+  whatever its config said and scanned every folder in the store.
+- **Answer**: a Run config that names no output folder is refused like one that writes a folder made before
+  (`outputs`, and `sign`); a compare step reads only its prep version's folders (rule 4). That a worker writes where
+  its config says is the step review's check (reviewer rule 5).
+- **Case**: t02's config now names `cohort-summary@prep-v1` and reads `*@prep-v1`, and its worker writes there; a
+  config naming no folder is listed (the test).
+- **Guard**: the same test; reviewer rule 5.
+
+## T17 · No prep step checks the stated experiment · open
+
+- **From**: Report, drfirst-space-b7, 261116, topic G, quoting JL: "I also want it to check what is the Experiment
+  settings, time, etc information". Raw exports carry their own settings and timing documents; no step compares
+  them with the rows.
+- **Direction**: each prep version's first step reads only the `raw:` folder and writes an experiment card in its
+  Result, aggregates only: settings (experiment ids, arms and their counts, batches, message content) and time (the
+  invitation range in UTC and local time, active days, gaps, daily volume, send hours). Its checks compare stated with
+  observed and block on a mismatch; a dataset with no documents gets a card from the rows marked "nothing stated",
+  never a guess. Questions cite the card; D01 and D02 stay the reader's description.
+- **Still owed**: the rule is `ref/dataprep.md` rule 7 and the step review checks it (reviewer rule 5); prep-v2
+  builds the step. Nothing yet checks that a signed version's first step wrote a card: an audit row once the
+  card's file name is set by that first build.
+
+## T18 · A page could show a record value · fixed
+
+- **From**: Report, drfirst-space-b7, 261118, from the prep-v1 review: the Result's `data_dictionary.csv` carried a
+  `sample_value` column (each column's first value) and the notebook showed a table's first three rows.
+- **Questions**: which artifacts can a page show? Can a script name a line that takes a record's value without
+  drowning the reader in aggregates?
+- **Answer**: a Result, a notebook, and every dictionary, manifest or summary beside the rows (the Board's
+  Description › Dataset shows them) carry shapes, counts and names, never a record value (`ref/dataprep.md` rule 4).
+  `audit` names each worker line that takes rows by head, tail or sample (not an aggregate's: top-N counts are
+  counts), each dictionary key `sample_value`, and each Result dictionary with a sample column (`records`).
+- **Case**: on b7's Block the first pattern flagged ten lines, eight of them top-N counts and arithmetic; the
+  narrowed one flags the two that are real (`1_prep.py:584,593` still write `sample_value` into the store's
+  dictionary, which the Dataset view shows).
+- **Guard**: the same test (an aggregate passes; a first value and a dictionary key are named); reviewer rule 5.
 

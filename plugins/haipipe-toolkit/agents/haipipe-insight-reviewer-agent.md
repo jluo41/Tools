@@ -51,8 +51,12 @@ Check alignment           haipipe-insight-check                      the checker
 5. **Review the steps** (a DataPrep prep version): each worker does what its step face says it
    reads, writes and checks; every check on the face is enforced (the Run stops when it fails),
    not only listed; the worker reads its dataset and output folder from its config and stops
-   without them, never defaulting to a dataset; `insight_ladder.py audit <Block>` shows
-   `outputs 0`; no step reads an outcome. Only then `agreed: ✅ <YYMMDD>` on that step's face.
+   without them, never defaulting to a dataset; it reads only its `raw:` folder and earlier
+   steps, with no shared source stage; nothing it writes beside the rows, and nothing in its
+   Result or notebook, shows a record value; `insight_ladder.py audit <Block>` shows
+   `outputs 0` and `inputs 0`, and each `records` line is read; no step reads an outcome.
+   The first step's experiment card compares stated with observed and stops on a mismatch.
+   Only then `agreed: ✅ <YYMMDD>` on that step's face.
 6. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.
 7. **Aggregates only**: no names, no row values, no ids from the data in a verdict.

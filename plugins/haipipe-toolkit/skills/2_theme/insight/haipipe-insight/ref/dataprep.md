@@ -51,18 +51,41 @@ The rules
    and stops without them. A worker never defaults to a dataset, since a default builds the wrong data without a
    word. A carried worker that reads environment variables keeps its maker's env export in its tickets until the next
    prep version reads its config.
+   **A step reads only its dataset's `raw:` folder** in the raw store, and the earlier steps of the same prep version.
+   No cache, and no other pipeline's store, is an input. A shared source stage is not a way in either: given
+   `raw_data_path`, it copies the raw export into the shared raw store and overwrites the shared source cache,
+   whatever `use_cache` says. So a step loads the raw export itself and writes anything it builds in between under its
+   own `@prep-vK` place. `audit` names any config with `raw_data_path`, `source_config`, `save_cache` or `use_cache`
+   (`inputs`), and any dataset whose `raw:` folder is gone (`raw`), which is rebuilt from a new export, never from a
+   cache.
 4. **The rows stay in the store, in a new folder.** A Run writes the analysis-ready rows to a folder named for its
    prep version, `<store>/<name>@prep-vK` (`output.prepare_dir`, and `env.OUT_NAME` when a carried worker names its
    folder from it). It never writes a folder made before, which other work may read, and never one a Board's data
-   version names, which is frozen. `audit <Block>` lists each such config (`outputs`), `sign` refuses while one is
-   left, and the next prep version re-aims every copied config at its own `@prep-vK` folders. The Block holds code,
-   receipts, checks, dictionaries and background, never a row. Patient-level data stays on approved storage; the Board
-   and the Question Book see only aggregates.
+   version names, which is frozen. A config that names no output folder is refused too, since its worker writes
+   wherever it likes (a summary at the store's root). `audit <Block>` lists each such config (`outputs`), `sign`
+   refuses while one is left, and the next prep version re-aims every copied config at its own `@prep-vK` folders. A
+   step that compares datasets reads only its own prep version's folders. The Block holds code, receipts, checks,
+   dictionaries and background, never a row. Patient-level data stays on approved storage; the Board and the
+   Question Book see only aggregates.
+   **What a page can show holds no record value.** A Result, a notebook, and every dictionary, manifest or summary
+   written beside the rows (the Board's Description › Dataset shows them) carry shapes, counts and names: no sample
+   column, no first value, no `head()` of a table. Top-N counts of a column are counts, not records. `audit` names each
+   worker line that takes a record's value and each dictionary with a sample column (`records`); the step review reads
+   each one.
 5. **A data version names its prep.** `data <Board> data-vM --data-folder <the Run's output> --prep <prep version or
    its Run>` refuses an unsigned prep version and writes `prep:` on the versions row. `audit` gives each Board that a
    DataPrep Block `serves:` a `prep` row: the data versions that name no prep. A Board no DataPrep serves owes none.
 6. **One clock per Board Job, still.** A new prep version reaches a Board only through a new data version
    (`moved: data`), so a change in an answer keeps one cause.
+7. **The experiment card comes first.** Each prep version's first step reads only the dataset's `raw:` folder: its
+   rows and the documents that describe the experiment (settings, data descriptions, timelines). It writes an
+   experiment card in its Result, aggregates only:
+   - **settings:** experiment ids and names, arms and their counts, batches, message content;
+   - **time:** the invitation range in UTC and in local time, active and calendar days, gaps, daily volume, send hours.
+   Its checks compare what is stated with what is observed: the stated range, ids and daily volumes against the rows,
+   send times inside a stated blackout, more arms than stated. A mismatch stops the Run. A dataset with no documents
+   gets a card from the rows marked "nothing stated", never a guess. Questions cite the card; the Data questions stay
+   the reader's description of the data.
 
 What prep does, and what a question does
 ----------------------------------------
@@ -103,9 +126,10 @@ insight_ladder.py prep     <dataprep> --slug <what-it-is> [--from <carried-from 
 insight_ladder.py step     <prep version> <slug> [--ask "what it does"]
 insight_ladder.py run      <step> dataset <name>          (and run <prep version> review-steps · sign)
 insight_ladder.py sign     <prep version> --date YYMMDD
-insight_ladder.py audit    <dataprep>      serves · workers · configs · outputs · agreed · hash
+insight_ladder.py audit    <dataprep>      serves · raw · workers · configs · outputs · inputs · records · agreed · hash
 insight_ladder.py data     <Board> data-v<M> --data-folder … --prep <prep version or its Run>
 ```
 
-The commands live in `scripts/insight_ladder_prep.py`; `tests/test_dataprep.py` keeps them. The cards are
+The commands live in `scripts/insight_ladder_prep.py`, the checks and the audit in
+`scripts/insight_ladder_prep_checks.py`; `tests/test_dataprep.py` keeps them. The cards are
 `haipipe-insight-workflow/ref/run-cards.md` § Data Prep, Prep and Step.

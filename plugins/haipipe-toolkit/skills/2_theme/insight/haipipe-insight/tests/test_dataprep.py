@@ -192,7 +192,8 @@ def test_a_run_never_writes_a_folder_made_before_and_audit_reads_the_block(space
     cfg.write_text("env:\n  OUT_NAME: demo_a_v1\noutput:\n  prepare_dir: _WorkSpace/<store>/demo_a_v1\n")   # as carried
     _agree(v1 / "t01_prepare")
     rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
-    assert rows == {"serves": 0, "workers": 0, "configs": 0, "outputs": 2, "agreed": 0, "hash": 0}
+    assert rows == {"serves": 0, "raw": 0, "workers": 0, "configs": 0, "outputs": 2, "inputs": 0, "records": 0,
+                    "agreed": 0, "hash": 0}
     assert ("t01_prepare/r01_demoa", "_WorkSpace/<store>/demo_a_v1") in IL.PR.outputs(v1)
     with pytest.raises(SystemExit, match="a folder made before, or one a Board's data version names"):
         L("sign", v1, "--date", "261116")
@@ -204,3 +205,34 @@ def test_a_run_never_writes_a_folder_made_before_and_audit_reads_the_block(space
     md = prep / "board.md"
     md.write_text(md.read_text(encoding="utf-8").replace("- insight/Insight-Demo", "- insight/Insight-Gone"), encoding="utf-8")
     assert {r[1]: r[2] for r in IL.audit(prep, quiet=True)}["serves"] == 1
+
+
+def test_a_step_reads_only_its_raw_export_and_shows_no_record_value(space, tmp_path):
+    root, p, prep = space
+    (root / "_WorkSpace" / "raw" / "demo_a").mkdir(parents=True)
+    L("dataset", prep, "DemoA", "--raw", "_WorkSpace/raw/demo_a")
+    L("dataset", prep, "DemoGone", "--raw", "_WorkSpace/raw/gone")
+    assert IL.PR.raw_gone(prep) == ["DemoGone"]                                 # an export that is not there
+    L("prep", prep, "--slug", "raw-only")
+    v1 = prep / "j01_prep-v1_raw-only"
+    L("step", v1, "prepare")
+    L("run", v1 / "t01_prepare", "dataset", "demoa")
+    cfgdir = v1 / "t01_prepare" / "scripts" / "config"
+    (cfgdir / "r02_other.yaml").write_text("dataset: DemoA\n")                 # names no folder of its own
+    assert ("t01_prepare/r02_other", "names no output folder of its own") in IL.PR.outputs(v1)
+    (cfgdir / "1_source_demo.yaml").write_text(                                # a shared source stage, as carried
+        "SourceArgs:\n  raw_data_path: _WorkSpace/raw/demo_a\n  use_cache: true\n  save_cache: true\n")
+    found = {why.split(":")[0] for _, why in IL.PR.inputs(v1)}
+    assert found == {"SourceArgs.raw_data_path", "SourceArgs.use_cache", "SourceArgs.save_cache"}
+    (v1 / "t01_prepare" / "scripts" / "prepare.py").write_text(
+        "top = df['state'].value_counts().head(10)\n"                         # an aggregate: fine
+        "first = df['x'].dropna().head(1).tolist()\n"                         # a record's value
+        "row = {'name': c, 'sample_value': first}\n")
+    result = v1 / "t01_prepare" / "runs" / "r01_demoa" / "result"
+    result.mkdir(parents=True)
+    (result / "data_dictionary.csv").write_text("column,dtype,sample_value\nx,int,3\n")
+    where = sorted(w for w, _ in IL.PR.records(v1))
+    assert where == ["t01_prepare/runs/r01_demoa/result/data_dictionary.csv", "t01_prepare/scripts/prepare.py:2",
+                     "t01_prepare/scripts/prepare.py:3"]
+    rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
+    assert (rows["raw"], rows["outputs"], rows["inputs"], rows["records"]) == (1, 1, 3, 3)
