@@ -35,6 +35,13 @@ def _agree(step: Path) -> None:
     md.write_text("---\n" + yaml.safe_dump(f, sort_keys=False, allow_unicode=True) + "---\n" + m.group(2), encoding="utf-8")
 
 
+def _card(run: Path) -> None:
+    """What a first step's Run writes in its Result (rule 7): the experiment card, aggregates only."""
+    (run / "result").mkdir(parents=True, exist_ok=True)
+    (run / "result" / "experiment_card.json").write_text('{"settings": {}, "time": {}}')
+    (run / "result" / "experiment_card.md").write_text("# experiment card\n")
+
+
 @pytest.fixture()
 def space(tmp_path):
     p = tmp_path / "examples" / "Project-Demo"
@@ -120,6 +127,8 @@ def test_a_board_data_version_names_the_signed_prep_that_made_it(space):
     L("prep", prep, "--slug", "first")
     v1 = prep / "j01_prep-v1_first"
     L("step", v1, "join")
+    L("run", v1 / "t01_join", "dataset", "demoa")
+    _card(v1 / "t01_join" / "runs" / "r01_demoa")
     with pytest.raises(SystemExit, match="not signed"):
         L("data", board, "data-v1", "--data-folder", "_WorkSpace/<store>/demo_a_v1/", "--prep",
           "insight/InsightDataPrep-DemoSet/j01_prep-v1_first")
@@ -193,7 +202,7 @@ def test_a_run_never_writes_a_folder_made_before_and_audit_reads_the_block(space
     _agree(v1 / "t01_prepare")
     rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
     assert rows == {"serves": 0, "raw": 0, "references": 0, "workers": 0, "configs": 0, "outputs": 2, "inputs": 0,
-                    "records": 0, "agreed": 0, "hash": 0}
+                    "records": 0, "card": 0, "notebooks": 0, "agreed": 0, "hash": 0}
     assert ("t01_prepare/r01_demoa", "_WorkSpace/<store>/demo_a_v1") in IL.PR.outputs(v1)
     with pytest.raises(SystemExit, match="a folder made before, or one a Board's data version names"):
         L("sign", v1, "--date", "261116")
@@ -292,7 +301,7 @@ def test_a_data_version_whose_dictionary_holds_record_values_is_named(tmp_path):
 
 def test_a_new_prep_version_names_its_step_order(space):
     _, p, prep = space
-    L("prep", prep, "--slug", "carried")
+    L("prep", prep, "--slug", "carried", "--from", "work/b01_demo/j01_prep")
     v1 = prep / "j01_prep-v1_carried"
     L("step", v1, "prepare-cohort")
     L("step", v1, "compare-cohorts")
@@ -320,3 +329,32 @@ def test_a_new_prep_version_names_its_step_order(space):
     cfg = moved / "scripts" / "config"
     assert sorted(c.name for c in cfg.glob("r*.yaml")) == ["r01_demoa.yaml"]
     assert yaml.safe_load((cfg / "r01_demoa.yaml").read_text())["output"]["prepare_dir"] == "s/demo_a@prep-v2"
+
+
+def test_a_new_version_signs_on_its_experiment_cards_and_leaves_notebooks_behind(space):
+    _, p, prep = space
+    L("prep", prep, "--slug", "carried", "--from", "work/b01_demo/j01_prep")
+    v1 = prep / "j01_prep-v1_carried"
+    L("step", v1, "prepare")
+    L("run", v1 / "t01_prepare", "dataset", "demoa")
+    nb = v1 / "t01_prepare" / "notebooks"
+    nb.mkdir()
+    for name in ("_source.ipynb", "r01_demoa.ipynb", "r07_pruned.ipynb"):            # r07's Run is gone
+        (nb / name).write_text("{}")
+    assert IL.PR.notebooks_orphan(v1) == ["t01_prepare/notebooks/r07_pruned.ipynb"]
+    assert IL.PR.cards_missing(v1) == []                                             # carried: no card owed
+    _agree(v1 / "t01_prepare")
+    L("sign", v1, "--date", "261119")
+    L("prep", prep, "--slug", "raw-only", "--steps", "experiment,prepare")
+    v2 = prep / "j02_prep-v2_raw-only"
+    assert not (v2 / "t02_prepare" / "notebooks").exists()                           # the Runs' notebooks stay behind
+    assert IL.PR.cards_missing(v2) == ["t01_experiment: no Run yet"]
+    L("run", v2 / "t01_experiment", "dataset", "demoa")
+    for s_ in IL.PR.steps(v2):
+        _agree(s_)
+    with pytest.raises(SystemExit, match="experiment card"):
+        L("sign", v2, "--date", "261120")
+    _card(v2 / "t01_experiment" / "runs" / "r01_demoa")
+    assert {r[1]: r[2] for r in IL.audit(prep, quiet=True)}["card"] == 0
+    L("sign", v2, "--date", "261120")
+    assert _front(v2 / f"{v2.name}.md")["state"] == "closed"

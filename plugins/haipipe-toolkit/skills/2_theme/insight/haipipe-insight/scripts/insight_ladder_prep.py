@@ -128,7 +128,8 @@ def prep(block: Path, slug: str, carried_from: str, plan: Plan, order: str = "")
         if src is None:
             _new_step(dst, name, "", plan)
             continue
-        plan.copy(src, dst)                                   # face, scripts, config; never runs/ or results/
+        plan.copy(src, dst, also=("notebooks",))            # face, scripts, config: never runs/, results/ or
+                                                              # notebooks/, which the Runs made (T20, J)
         if not plan.dry:
             if src.name != dst.name:                          # its new place: the face carries the folder's name
                 old_face = dst / f"{src.name}.md"
@@ -228,6 +229,10 @@ def sign_prep(ver: Path, date: str, plan: Plan) -> None:
     unagreed = [s.name for s in steps(ver) if not str(face(s).get("agreed", "")).startswith("✅")]
     if unagreed:
         sys.exit(f"not agreed yet (another agent reviews each step's script and checks): {', '.join(unagreed)}")
+    missing = cards_missing(ver)
+    if missing:
+        sys.exit(f"{ver.name}: its first step's Runs write the experiment card (rule 7), and these have none: "
+                 + ", ".join(missing))
     bad = outputs(ver)
     if bad:
         sys.exit(f"{ver.name}: a Run writes a folder made before, or one a Board's data version names (each output "
@@ -327,4 +332,5 @@ def serving(board: Path) -> list[Path]:
 
 
 # the checks a DataPrep Block is held to: outputs, inputs, record values and the audit (ref/dataprep.md)
-from insight_ladder_prep_checks import outputs, inputs, records, raw_gone, references_off, audit  # noqa: E402,F401
+from insight_ladder_prep_checks import (  # noqa: E402,F401
+    outputs, inputs, records, raw_gone, references_off, cards_missing, notebooks_orphan, audit)

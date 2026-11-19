@@ -1,5 +1,14 @@
 # haipipe-insight · version history
 
+## 3.10.5 · 2026-11-19 · the experiment card gates a signature; a new version leaves the Runs' notebooks behind
+
+- workbench-insight T17, T22, T23. `sign` refuses a version whose first step has a Run without
+  `result/experiment_card.json` and `.md`, or no Run; a carried version owes none (`audit` row `card`).
+- A kept step copies no `notebooks/` (nor `runs/`, `results/`); `audit` row `notebooks` names a step notebook whose Run
+  is not there.
+- Rule 7: a description is checked only against the export with its stamp; one from another pull is listed, not
+  checked; a setting the rows cannot test is "not checkable".
+
 ## 3.10.4 · 2026-11-19 · a new prep version names its step order
 
 - `insight_ladder.py prep … --steps a,b,c` (workbench-insight T20): kept steps move to their new numbers, new ones

@@ -104,12 +104,12 @@ class Plan:
             path.parent.mkdir(parents=True, exist_ok=True)
             path.write_text(text, encoding="utf-8")
 
-    def copy(self, src: Path, dst: Path) -> None:
+    def copy(self, src: Path, dst: Path, also: tuple = ()) -> None:
         if dst.exists():
             return
         self.made.append(dst)
         if not self.dry:
-            shutil.copytree(src, dst, ignore=shutil.ignore_patterns("runs", "results", "reports", "__pycache__"))
+            shutil.copytree(src, dst, ignore=shutil.ignore_patterns("runs", "results", "reports", "__pycache__", *also))
 
 
 def front(md: Path) -> tuple[dict, str]:

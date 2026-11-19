@@ -21,11 +21,13 @@ T13  audit could not read a DataPrep Block       fixed
 T14  the step review's agent could not write agreed   fixed
 T15  a step reads more than its raw export      fixed
 T16  a step writes outside a folder of its own   fixed
-T17  no prep step checks the stated experiment   open
+T17  no prep step checks the stated experiment   fixed
 T18  a page could show a record value            fixed
 T19  the Board's Data view shows records        fixed
 T20  a new prep version cannot order its steps  fixed
 T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
+T22  a new prep version copies the Runs' notebooks  fixed
+T23  a description from another pull stops a dataset  fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -275,7 +277,7 @@ T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
   config naming no folder is listed (the test).
 - **Guard**: the same test; reviewer rule 5.
 
-## T17 · No prep step checks the stated experiment · open
+## T17 · No prep step checks the stated experiment · fixed
 
 - **From**: Report, drfirst-space-b7, 261116, topic G, quoting JL: "I also want it to check what is the Experiment
   settings, time, etc information". Raw exports carry their own settings and timing documents; no step compares
@@ -285,9 +287,13 @@ T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
   invitation range in UTC and local time, active days, gaps, daily volume, send hours). Its checks compare stated with
   observed and block on a mismatch; a dataset with no documents gets a card from the rows marked "nothing stated",
   never a guess. Questions cite the card; D01 and D02 stay the reader's description.
-- **Still owed**: the rule is `ref/dataprep.md` rule 7 and the step review checks it (reviewer rule 5); prep-v2
-  builds the step. Nothing yet checks that a signed version's first step wrote a card: an audit row once the
-  card's file name is set by that first build.
+- **Answer**: `ref/dataprep.md` rule 7, the step review (reviewer rule 5), and a gate: `sign` refuses a version whose
+  first step has a Run without `result/experiment_card.json` and `.md`, or no Run; `audit` row `card`. A carried
+  version owes none (§ Carrying).
+- **Case**: the card worker (prep-v2 `t01_experiment`, built by Insight-Use-Case) passes every check on SMSR4,
+  SMSR3Extended and OptTimeR1v3, says "nothing stated" on the four exports with no description, and "not checkable"
+  for a blackout the rows carry no time zone for; on the DrFirstExp Block `audit` reads `card 1` until it runs.
+- **Guard**: `test_dataprep.py` `test_a_new_version_signs_on_its_experiment_cards_and_leaves_notebooks_behind`.
 
 ## T18 · A page could show a record value · fixed
 
@@ -375,3 +381,27 @@ T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
   views, since `Theme.spaces` here covers only the older layout's Spaces.
 - **Still owed**: the theme's hook, once the shared Session view exists; a guard that every soft Run's `writes:`
   names real paths (the join depends on it).
+
+## T22 · A new prep version copies the Runs' notebooks · fixed
+
+- **From**: Report, Insight-Use-Case, 261119, topic J: `prep --steps` made prep-v2 in the right order but copied
+  prep-v1's generated notebooks (`_source.ipynb` and one per Run, a pruned Run's among them) into the kept steps, so
+  prep-v2 showed a history it never had.
+- **Answer**: a kept step copies its face, scripts and configs, never `runs/`, `results/` or `notebooks/`
+  (`Plan.copy(also=...)`; `ref/dataprep.md` rule 2). `audit` row `notebooks` names a step notebook whose Run is not
+  in that step.
+- **Case**: on the DrFirstExp Block the prep-v2 opened before the fix reads `notebooks 9`; a version opened now
+  carries none.
+- **Guard**: the same test.
+
+## T23 · A description from another pull stops a dataset · fixed
+
+- **From**: Report, Insight-Use-Case, 261119, topic K: SMSR3Full's data description states an earlier pull's range
+  and patients, so the experiment card fails four of five checks against a later export. JL chose (261119) to match
+  by stamp.
+- **Answer**: `ref/dataprep.md` rule 7: a document stamped with a pull's time is compared only with the export
+  carrying the same stamp; one from another pull is listed on the card, its stated values shown and not checked;
+  with no stamp on either file, they are compared. A setting the rows cannot test is "not checkable", never passed.
+- **Case**: SMSR3Full builds, its card saying "nothing stated for this export (1 description from another pull)".
+- **Guard**: the rule, read by the step review (reviewer rule 5); the card worker is prep-v2's.
+

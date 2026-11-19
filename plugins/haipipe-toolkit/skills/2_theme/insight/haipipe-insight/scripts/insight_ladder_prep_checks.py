@@ -120,6 +120,28 @@ def references_off(block: Path) -> list[str]:
             or not any((x / str(r["path"])).exists() for x in [home, *home.parents])]
 
 
+CARD = ("experiment_card.json", "experiment_card.md")    # rule 7: in each first-step Run's result/
+
+
+def cards_missing(ver: Path) -> list[str]:
+    """The first step's Runs with no experiment card in their Result (rule 7); "no Run yet" when it has none. A
+    carried version writes no card (§ Carrying), so it owes none."""
+    if face(ver).get("carried-from") or not steps(ver):
+        return []
+    first = steps(ver)[0]
+    runs = sorted(r for r in (first / "runs").glob("r[0-9][0-9]_*") if r.is_dir())
+    if not runs:
+        return [f"{first.name}: no Run yet"]
+    return [f"{first.name}/{r.name}" for r in runs if not all((r / "result" / f).is_file() for f in CARD)]
+
+
+def notebooks_orphan(ver: Path) -> list[str]:
+    """Each step notebook whose Run is not in that step (a copy from another version, or a pruned Run's)."""
+    return [f"{s.name}/notebooks/{nb.name}" for s in steps(ver)
+            for nb in sorted((s / "notebooks").glob("*.ipynb")) if nb.stem != "_source"
+            and not (s / "runs" / nb.stem).is_dir()]
+
+
 def audit(block: Path, quiet: bool = False) -> list[tuple]:
     """What a DataPrep Block lacks against ref/dataprep.md, one row per check: (Block, check, count, the step that
     fixes it). `outputs`, `inputs`, `records` and `agreed` read the open prep version; `hash` every signed one."""
@@ -150,6 +172,12 @@ def audit(block: Path, quiet: bool = False) -> list[tuple]:
                                                         "the raw export itself, with no shared source stage (rule 3)"))
     rows.append((block, "records", len(found["records"]), "a Result and a notebook show shapes, counts and names, "
                                                           "never a record value (rule 4); the review reads each line"))
+    cards = [x for v in vers for x in cards_missing(v)]
+    rows.append((block, "card", len(cards), "each first-step Run writes result/experiment_card.json and .md (rule 7); "
+                                            "sign waits on it; a carried version owes none"))
+    orphans = [x for v in newest for x in notebooks_orphan(v)]
+    rows.append((block, "notebooks", len(orphans), "a step's notebooks are its own Runs': one whose Run is not there "
+                                                   "came from elsewhere and is removed with the Run that made it"))
     unagreed = [s for v in open_ for s in steps(v) if not str(face(s).get("agreed", "")).startswith("✅")]
     rows.append((block, "agreed", len(unagreed), "run-review-steps: another agent agrees each step; sign waits on it"))
     drift = [v for v in vers if str(face(v).get("state")) == "closed" and str(face(v).get("hash")) != prep_hash(v)]
@@ -163,6 +191,8 @@ def audit(block: Path, quiet: bool = False) -> list[tuple]:
                 print(f"     {name:<8} {where} -> {what}")
         for d in raw_gone(block):
             print(f"     raw      {d}")
+        for x in cards + orphans:
+            print(f"     {'card' if x in cards else 'notebook'}  {x}")
         for r in references_off(block):
             print(f"     reference {r}")
     return rows

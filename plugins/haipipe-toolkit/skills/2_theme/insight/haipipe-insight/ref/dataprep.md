@@ -42,7 +42,8 @@ The rules
 1. **A Set, not a dataset.** `<Set>` names a family of datasets made by the same tools; it carries no version. A
    dataset of the Set is a `datasets:` row (`insight_ladder.py dataset … --raw`); a Board still holds one dataset.
 2. **A prep version is signed, then frozen.** `prep` opens the next one from the newest. It copies every step's face,
-   script and config, never its Runs, and clears each step's `agreed:`. `--steps experiment,source,prepare-cohort`
+   script and config, never its Runs or what they made (`runs/`, `results/`, `notebooks/`), and clears each step's
+   `agreed:`. `--steps experiment,source,prepare-cohort`
    names the new version's steps in their order: a kept step moves to its new number (`t03_prepare-cohort`), a new
    one is made empty, and one left out is not carried. A copied step keeps one Run config per dataset, the newest,
    and the first `run <step> dataset <name>` in the new version takes it. `sign` needs every step agreed by an agent
@@ -91,6 +92,15 @@ The rules
    send times inside a stated blackout, more arms than stated. A mismatch stops the Run. A dataset with no documents
    gets a card from the rows marked "nothing stated", never a guess. Questions cite the card; the Data questions stay
    the reader's description of the data.
+   - **A description is checked against its own pull** (JL 261119). A document stamped with a pull's time
+     (`YYYY-MM-DD-HH-MM` in its file name) is compared only with the export carrying the same stamp. One stamped for
+     another pull goes on the card as "describes the <stamp> pull, not this export", its stated values shown and not
+     checked; when either file has no stamp, they are compared.
+   - **A setting the rows cannot test is said so.** A local-time blackout with no time zone in the rows is "not
+     checkable" on the card, never passed.
+   - The card is `result/experiment_card.json` and `.md` in each first-step Run, and the same two files in the
+     dataset's `@prep-vK` folder once every check passes. `sign` refuses a version whose first step has a Run without
+     its card, or no Run (`audit` row `card`); a carried version owes none.
 
 What prep does, and what a question does
 ----------------------------------------
@@ -149,7 +159,7 @@ insight_ladder.py reference <dataprep> <name> --path <SPACE-relative> --version 
 insight_ladder.py run      <step> dataset <name> [--again]   (and run <prep version> review-steps · sign)
 insight_ladder.py sign     <prep version> --date YYMMDD
 insight_ladder.py audit    <dataprep>      serves · raw · references · workers · configs · outputs · inputs · records ·
-                                           agreed · hash
+                                           card · notebooks · agreed · hash
 insight_ladder.py data     <Board> data-v<M> --data-folder … --prep <prep version or its Run>
 ```
 
