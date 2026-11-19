@@ -1,15 +1,6 @@
 ---
 name: haipipe-ui
-description: >-
-  The rules every workbench page must pass so a reader understands it fast and can act on it: the five-second
-  test, five rules, one verb per section (Report check, Work do, Studio think, Delivery hand over, Related
-  take in), the page shape at every level, how a page design is drawn (lettered A, B, C), and the design loop
-  (a fresh reviewer scores the drawing, then the live page, on twelve rubrics until all pass). The live page
-  is walked in Chrome as a person uses it. Use to design or change a page, check a page before calling a UI
-  change done, walk a page in Chrome, or compare a before and after. Owns how a page looks and acts;
-  /workbench owns what data it reads. Trigger: review the UI, ui rules, is this page clear, five-second test,
-  page design, redesign this page, design loop, ui rubrics, walk the page in chrome, click through the ui,
-  /haipipe-ui.
+description: "The rules every workbench page must pass so a reader understands it fast: the five-second test, the page shape at every level, and the design loop. Use to design, change or check a page, or walk it in Chrome. Trigger: review the UI, five-second test, page design, design loop, /haipipe-ui."
 metadata:
   version: "0.6.1"
   last_updated: "2026-11-04"
@@ -17,6 +8,8 @@ metadata:
 ---
 
 # /haipipe-ui · a page anyone gets in five seconds
+
+Read [CONSTITUTION.md](CONSTITUTION.md) first; it wins over this file.
 
 JL 261028: "what is the rule of you to design the UI to make sure for every page, people can quickly understand
 what they have and quickly operate it ... and tell the differences of the Overview, Work, and Studio, and Delivery,
@@ -52,7 +45,7 @@ goal-line          Mission · Purpose · Goal · Aim, one line, by level       .
 view-caption       one line: what the open view shows                      .view-caption
 content            the open view itself                                    .focus-card
 left-rail          change PAGE: siblings, the open page's children         .focus-rail.left
-right-rail         change SECTION: Report, Work, Studio, Delivery, ...     .focus-rail.right
+right-rail         change SECTION: Report, Studio, Delivery, ...           .focus-rail.right
 ```
 
 1. **view-button-list ≠ right-rail.** The right-rail switches the section; the view-button-list switches views inside it.
@@ -150,7 +143,7 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
 4. **Left tabs, right content.** A list of items is side tabs: the names on the left, each with its state mark, the
    open one's content on the right, each side with its own scroll.
 5. **One standard part, everywhere.** The same part looks the same at Block, Job and Task, on every theme; 🙋
-   Interaction is the last section of every Report and Work view, and it shows **that view's own items** (261106): on a
+   Interaction is the last section of every Report view, and it shows **that view's own items** (261106): on a
    paper Board the forms whose `for:` topic is one of the view's parts (a form about no part by where it was asked: an
    evidence Job's under Evidence or Displays, the rest under Writing); on a work page the forms at a Question's work
    under Findings, the forms below the page under Status, the page's own under MindMap; on a version, Section or
@@ -160,8 +153,8 @@ and a reviewer scores Plain, Modern and Complete against it. A page that breaks 
    Process already has a section: waiting is Interactions, skills are Skills, what happened is Timeline, what left is
    Delivery. So a page has no Work section: what Process held (a view's to-do rows, its steps, how it is made) is the
    first numbered sections of that Report view, with no ⚙️ Process or 📊 Results heading, and an old `section=work`
-   or `work-<key>` link opens the same Report view. Done in the paper theme (Block, Job, Task); the other themes move
-   when their owners do.
+   or `work-<key>` link opens the same Report view. This holds in every theme (Block, Job, Task); a page whose rail
+   still lists Work is an older page, to be moved.
 7. **Embed the real thing.** A drawing, a site, a paper or a map is shown in place, never described; every address is a
    link.
 8. **An emoji and a plain name for each section; one question per view.** Two views that answer different questions
@@ -264,10 +257,10 @@ Files      browse      the folder itself, its tree                  Folder (one 
    words. A paper Board's evidence and submission Jobs have views of their own, never the old Progress view (261106):
    display Job Plan · Displays · Examples; value Job Values · Check (its t99 check Task); citation Job Citations · Check;
    submission Job Cover letter · Portal (`servers/workbench-paper/paper_jobs.py`).
-8. **Report shows, Work asks** (JL 261102: "the questions should be in the Work, for the report, we just show the
-   report"), until Work is retired: then a view's asks and to-dos sit in that Report view, its to-do rows first and
+8. **Report shows and asks** (older screen: Report showed, Work asked, JL 261102: "the questions should be in the Work, for the report, we just show the
+   report"). Work is retired in every theme, so a view's asks and to-dos sit in that Report view, its to-do rows first and
    its forms in its last 🙋 Interaction (JL 261111). A Report view may be explored (hover, pin, compare, folds, a share link) but holds no Ask box, Copy
-   prompt, propose or sign control; those live in the same letter's Work view, over the same picture.
+   prompt, propose or sign control outside its to-do rows and its 🙋 Interaction (older screen: the same letter's Work view).
 
 
 ## The page at each level
@@ -421,8 +414,8 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
    own sections, PROCESS is how the layer is being made, step by step (the view's to-dos, each a to-do row; Data +
    Paper Plan's is the plan center, in plan rows; 📌 Open points first when a part's face marks some). The open forms
    are never a PROCESS step: they show once, in the view's last section 🙋 Interaction (261105, "keep only the
-   bottom"). Report reads RESULTS first, Work PROCESS first;
-   RESULTS is drawn by the same code on both, so the two never disagree (b16 s32-D22, s33-D03).
+   bottom"). Older screen: Report read RESULTS first and Work PROCESS first, RESULTS drawn by the same code on
+   both (b16 s32-D22, s33-D03); now Report is the one place, PROCESS first (the checklist above, rule 6).
 2. **Numbered heading bars, in reading order.** Every section is a boxed bar `▾ 1 · 🧭 <name>`, `▾ 2 · …`, folding
    by its heading; the numbers, from 1 in each band, make the view read in order. Each section name has one emoji,
    the same in every view (🧭 Direction, 💡 Pitch, ❓ Questions, 🏛️ Venues, 🖼️ The drawing, 🧠 The mind map …),
@@ -440,7 +433,7 @@ however clean. The shape that passes, kept the same in every view (JL 261031: "I
    the thing to read, never the steps that make it ("we just report the report").
 6. **Helpers at the bottom**, unnumbered, after a dashed rule: the drawing and the mind map only. 🖼️ The drawing
    (its picture, Slides · Draw), 🧠 The mind map (a button that opens it in the pop-out; drawn inline it repeated the
-   face). 🙋 Interaction is not a helper: it is the last numbered section of every Report and Work view (261104), the
+   face). 🙋 Interaction is not a helper: it is the last numbered section of every Report view (261104), the
    one place a form shows (261105; it was PROCESS 1 from b16 s32-D22 to 261105).
 
 `paper_ui_cells.py` draws this (`band`, `sec_block` with `big`, `cardtabs`, `cardtabchain`, `chain_only`,

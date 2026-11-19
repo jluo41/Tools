@@ -7,7 +7,7 @@ s21 Runs and skills; special boards JL 261008.) Insight sits on the shared ladde
 **insight Board** holds one dataset and its dated versions; each of its Jobs runs one release on one data version.
 A third Block, the **DataPrep** Block (`insight/InsightDataPrep-<Set>/`, 261116), makes the data versions: its Jobs are
 prep versions of the tools, and a Board's data version names the one that made it ([dataprep.md](dataprep.md)).
-Each level has the six Spaces of the base workbench (Description · Idea Studio · Audience Report | Work Details |
+On the older tabbed screen each level has the six Spaces of the base workbench (Description · Idea Studio · Audience Report | Work Details |
 Runs · Delivery); the insight workbench fills them (servers/workbench-insight: insight_plan_c.py reads this tree,
 insight_views.py draws it). `scripts/insight_ladder.py` makes each folder and keeps the gates.
 

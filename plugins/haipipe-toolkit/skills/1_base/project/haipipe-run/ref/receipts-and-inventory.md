@@ -25,6 +25,7 @@ status: planned                 # planned | running | waiting | done | failed | 
 passes: [p01-<MMDD>]            # its history, oldest first
 writes: [result/]               # soft: the items it touched, e.g. [draft/<section>.md]
 feeds: [sNN-<topic>]            # who reads its output
+reads: [<task>/rNN_<run>]       # the Runs whose output it read (else an rNN_ name in its goal)
 moved_from: []                  # only after haipipe-project update moved an older layout
 ```
 

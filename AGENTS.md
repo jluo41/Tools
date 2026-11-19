@@ -29,6 +29,8 @@
 - A page never shows who asked for a design or when: no "JL 261113", "(JL 261020: …)", dated rule tags or quoted requests in a label, tooltip, button, banner or note. That provenance belongs in code comments, commit messages and docs only. Content the reader wrote (a timeline entry, a note, a commit message shown as data) stays as written.
 - A Studio topic's drawing is a drawing: the idea drawn as a pattern (cycle, timeline, tree, fan-in), never the face's lines listed as text. The method is `references/workflow-diagrams/excalidraw-diagram-skill`; the kit is `haipipe-studio/scripts/quick_draw.py`.
 
+- Each rule JL's feedback made is an article in the owning skill's `CONSTITUTION.md` (page rules: `plugins/haipipe-toolkit/skills/1_base/workbench/haipipe-ui/CONSTITUTION.md`; a theme's pages: its `workbench-<theme>/CONSTITUTION.md`). Read the owner's file before changing a page or a skill; it wins over the skill and the code. `haipipe-ui/scripts/page_words.py --running` scans what every running workbench shows, and `/haistack sweep` reruns every article's check.
+
 ## Keep files short
 
 - A file a person reads (code, tests, skills, docs) stays under 700 lines, so one sitting reads it whole. Aim for 600 or less.

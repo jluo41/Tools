@@ -1,13 +1,6 @@
 ---
 name: table-papers
-description: >-
-  Write, check and show a workbench's Related Paper table: one row per paper or article
-  the workbench builds on, in eight columns (group · role · key · paper · venue · doi ·
-  why here · pdf), kept beside the workbench's skill and shown by the shared Related Paper
-  cards in Guide › Related Paper. Use to start a workbench's papers, to add or trim
-  papers, to check every DOI against OpenAlex, Crossref and DataCite, or to keep a full
-  text only under an open license. Trigger: related paper, related papers, papers table,
-  table papers, add a paper to the workbench, check the papers, /table-papers.
+description: "Writes, checks and shows a workbench's Related Paper table: one row per paper the workbench builds on, kept beside its skill. Use to start, add or trim papers, check every DOI, or keep a full text only under an open license. Trigger: related paper, papers table, check the papers, /table-papers."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.1.1"

@@ -1,6 +1,6 @@
 ---
 name: haipipe-related
-description: "Owns a Block's related/ folder: what came in from outside, kept once as it came (meetings, papers, files, emails), its table related/related.md, its groups, and the Related view in the Studio. Use to add notes, a paper, a file or an email and write its row, or say what it feeds. Trigger: related, related/, related.md, meeting notes, transcript, email, add a paper, /haipipe-related."
+description: "Owns a Block's related/ folder: what came in from outside, kept once as it came (meetings, papers, files, emails), and its table related/related.md. Use to add notes, a paper, a file or an email and write its row. Trigger: related, related.md, meeting notes, add a paper, /haipipe-related."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.2"

@@ -288,7 +288,7 @@ def check_board(d, rep):
     task_block = kind == "task-block"
     discovery_block = kind == "discovery-block"
     block_board = task_block or discovery_block
-    if kind and kind not in {"task-block", "discovery-block", "design-board", "insight-board"}:
+    if kind and kind not in {"task-block", "discovery-block", "design-board", "insight-board", "cowork-block"}:
         rep.add(ERROR, "unknown-board-kind", "board.md",
                 f"board-kind {kind!r} has no Board container contract")
 
@@ -308,7 +308,7 @@ def check_board(d, rep):
     if not re.search(r"^#\s+\S", text, re.M):
         rep.add(ERROR, "board-missing-title", "board.md", "no `# title` line")
     check_board_names(text, rep)
-    for canon in ("Topic", "Pipeline", "Pages"):
+    for canon in ("Topic", "Pipeline") + (() if kind == "cowork-block" else ("Pages",)):   # cowork: its Jobs are the tree
         if not has_section(text, canon):
             shown = " / ".join(alias_names(canon))
             rep.add(ERROR, "board-missing-section", "board.md", f"no `## {shown}` section")
@@ -412,14 +412,14 @@ def check_board(d, rep):
         if name not in pages and len(matches) == 1:
             listed[i] = matches[0]
     for name in listed:
-        if name not in pages:
+        if name not in pages and not (d / name).is_file():     # a Job face a cowork Block lists is on disk
             rep.add(ERROR, "pages-ghost", f"board.md -> {name}",
                     "## Pages names a file that is not on disk")
     for name in sorted(pages):
         # A Task Block's tree is the membership authority.  Its ## Pages may
         # contain group prose only; once it lists any Task explicitly, the
         # ordinary complete-registry warning applies.
-        if name not in listed and (not block_board or any("/t" in x for x in listed)):
+        if name not in listed and kind != "cowork-block" and (not block_board or any("/t" in x for x in listed)):
             rep.add(WARN, "not-in-pages", name,
                     "on disk but not in ## Pages, so it renders under the ⚠️ group")
     if not block_board:

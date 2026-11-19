@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-fit
-description: "model-fitting Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders that fit/train a model (full hyperparam config, real GPU sweep, checkpoint to _WorkSpace/5-ModelInstanceStore/). NOT algorithm dev -- see /haipipe-task algo. Called by /haipipe-task when task-type=fit. Cross-references /haipipe-nn tuner and /haipipe-nn instance. Its parts _parts/gpu and _parts/gpu-training own GPU queues (exclusive cards, preflight, OOM backoff, sequential handoff) and checkpoint resume. Trigger: fit task, train model, GPU sweep, GPU queue, checkpoint resume."
+description: "model-fitting Task specialist: scaffolds Task folders that fit or train a model (full config, real GPU sweep, checkpoint); not algorithm dev. Called by /haipipe-task when task-type=fit; its parts own GPU queues and checkpoint resume. Trigger: fit task, train model, GPU queue, checkpoint resume."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true

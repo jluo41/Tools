@@ -153,7 +153,7 @@ _WorkSpace/ExternalStore/
 Full model: `ref/asset-model.md`. Builders live in the auxiliary `b51` Block:
 one topic Job per group of assets, one Task per asset, each version a Run
 (`j0N_ext_<topic>/tNN_<asset>/runs/rNN_build_<Version>.sh`). Legacy workspaces keep
-`code-dev/0-EXTERNAL/e{N}_build_external_*.py` (WellDoc-SPACE) writing into
+`code-dev/0-EXTERNAL/e{N}_build_external_*.py` (`<Partner-SPACE>`) writing into
 `@{tag}/`; do not add new assets there.
 
 ---

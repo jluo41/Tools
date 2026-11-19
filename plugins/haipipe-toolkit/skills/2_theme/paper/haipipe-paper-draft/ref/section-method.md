@@ -35,9 +35,9 @@ beside both      E  each CITE verified by a person · each VALUE bound to its pi
    sentences and the paragraph again, and one blind reader compares old and new paragraph as an unlabeled pair (easier,
    same meaning). Keep the new paragraph only when it wins; otherwise go back toward the old wording. Repeat until the
    paragraph and its sentences hold at 7 to 8 or more ("the sentence and paragraph score should be around 7 and 8"),
-   then hand the person only the few cards they must decide. A paragraph the person ticked is never rewritten.
-3. **D3 · Highlight for the person.** What the loop could not settle is marked on the page: a claim, a story choice, a
-   missing fact. These are the only items the person must read first; the loop never decides them.
+   then the AI decides every card itself; the person gets only AI comments on what the AI is not sure of (CONSTITUTION A01, JL 261118). A paragraph the person ticked is never rewritten.
+3. **D3 · Highlight for the person.** What the AI is not sure of is marked on the page as an AI comment: a claim, a
+   story choice, a missing fact. What it is sure of it settles itself (`AI decided:` on the Pass line; ref/workflow.md W4). These are the only items the person must read first; the loop never decides them.
 
    **Fix or comment, then the person, then the next loop (JL 261116: "if you find the issue, then fix them, if you
    cannot fix it, then you create a comment and state what is the problem, and then I will work on that sentences,

@@ -1,15 +1,6 @@
 ---
 name: haipipe-draft-workflow
-description: >-
-  The Page workflow controller: context/PREPARE, structure/SHAPE+SURVEY,
-  evidence/LAND+EMBED, writing/WRITE, and check are dispatch labels
-  over a Run Spec × Workspace graph. It owns persistent fixed-scope
-  human-interaction Writing Runs, including Scratch capture, across planning and prose iteration. It selects the
-  exact Run Workflow/Run Spec owner skill, Page Face owner, policy, Outline workspace, Level-4 Run
-  Specs, legal routes, and auditable receipts for one persistent Page. Use to
-  design, run, resume, or audit the complete Page lifecycle. Trigger: Page
-  workflow, workflow table, run a page, Run Spec graph, SHAPE SURVEY LAND EMBED,
-  PREPARE context, page content, /haipipe-draft-workflow.
+description: "The Page workflow controller: dispatches context (PREPARE), structure (SHAPE, SURVEY), evidence (LAND, EMBED), writing (WRITE) and check over a Run Spec graph. Use to design, run, resume or audit a Page lifecycle. Trigger: Page workflow, run a page, Run Spec graph, /haipipe-draft-workflow."
 metadata:
   version: "0.67.1"
   last_updated: "2026-10-26"

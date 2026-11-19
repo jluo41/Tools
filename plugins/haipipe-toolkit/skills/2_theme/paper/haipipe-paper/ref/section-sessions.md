@@ -5,7 +5,7 @@ session and its own named Codex thread, paired, so each Section is written,
 checked and messaged in its own context on either provider. Run it once the
 Section Narrative (the `## Narrative` of the newest writing Job's face,
 `jNN_writing_v<MMDD>_<desk>.md`) has fixed the Section structure; before that
-there is nothing stable to own. (Before the ladder this was the Story's §8.)
+there is nothing stable to own. (Before the ladder this was the Story's Section Narrative.)
 
 ## When
 

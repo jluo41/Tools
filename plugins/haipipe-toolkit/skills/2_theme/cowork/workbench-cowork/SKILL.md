@@ -1,11 +1,6 @@
 ---
 name: workbench-cowork
-description: >-
-  Open and interpret a CoWork Block on the shared workbench frame (the work
-  shape every Block, Job and Task page takes). Use to see who we wait on, which
-  drafts are not sent, a Job's state, or a Block's Questions. The older
-  cowork-board page (Scope, Work, Check, Delivery) is retired and described
-  only for reading old links. The Block contract belongs to haipipe-cowork.
+description: "Open and interpret a CoWork Block on the shared workbench frame. Use to see who we wait on, which drafts are not sent, a Job's state, or a Block's Questions; the Block contract belongs to haipipe-cowork. Trigger: cowork workbench, who we wait on, unsent drafts, cowork Block view, /workbench-cowork."
 metadata:
   version: "0.5.2"
   last_updated: "2026-10-11"
@@ -69,7 +64,7 @@ A draft is an `emails/*.md` whose name contains `draft` or whose header has
 
 A Block opens in the frame every theme shares (`servers/workbench/page/frame.py`):
 `/_board/workbench?path=<Block or Job folder>`. The levels are Guide · Block · Job ▾ · Task ▾, and
-each level has the six Spaces Description | Idea Studio · Audience Report | Work Details | Runs ·
+on that older tabbed screen each level has the six Spaces Description | Idea Studio · Audience Report | Work Details | Runs ·
 Delivery. The table below is the cowork fill `cowork_theme.py` gave them; that module is in
 `servers/_old/workbench-cowork/`, so until it returns a cowork page shows the base's default.
 

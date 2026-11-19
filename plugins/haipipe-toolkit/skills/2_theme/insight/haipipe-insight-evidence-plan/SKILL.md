@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-evidence-plan
-description: "Plans one InsightBoard question's evidence before any run: turns \"what would answer it\" into needs (compute, cite or judge, each with a pass condition) and a work spec per compute need, for a reviewer agent to agree; never answers. The workbench's Plan the evidence run. Trigger: plan the evidence, evidence needs, backfill needs, /haipipe-insight-evidence-plan."
+description: "Plans one InsightBoard question's evidence before any run: turns what would answer it into needs (compute, cite or judge) for a reviewer to agree; never answers. Use for the workbench's Plan the evidence run. Trigger: plan the evidence, evidence needs, backfill needs, /haipipe-insight-evidence-plan."
 allowed-tools: Read, Edit, Grep, Glob
 metadata:
   version: "0.4.1"

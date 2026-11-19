@@ -1,8 +1,8 @@
 ---
 name: haipipe-work
-description: "Create, route, or update work-theme Blocks. /haipipe-work propose <Block> reads loose material and proposes the Block's own Overview and Findings sections and its Jobs; /haipipe-work update <Block> aligns an existing Block and its Job/Task pages with the current focus UI, preserving source records and checking the live views. Distinguishes Work Block from Blueprint Block; routes execution to its owning skills. Trigger: update work block, align work format, propose block structure, work theme, /haipipe-work."
+description: "Create or update work-theme Blocks: 'propose <Block>' reads loose material and proposes its Overview, Findings and Jobs; 'update <Block>' aligns an existing Block and its pages with the current focus UI. Use to set up or align a Work Block. Trigger: update work block, work theme, /haipipe-work."
 metadata:
-  version: "0.3.0"
+  version: "0.3.1"
   last_updated: "2026-11-14"
 ---
 

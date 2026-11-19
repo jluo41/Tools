@@ -1,15 +1,6 @@
 ---
 name: haipipe-mindmap
-description: >-
-  The structure map, one renderer shared by a draft Task's §1 Structure map and every Studio topic's mind map
-  (scripts/mapview.py): the root card on the left, a card per paragraph or branch with the question it hands to the
-  next, a plain line per point (its number, its role pill, its words), thin grey curves, edited where it is read. A
-  topic's mind map, `sNN-<topic>.mindmap.md` beside its free drawing (same name, its kind in the ending), is one Markdown file drawn with it:
-  built from the topic's face (`from-topic`) when the topic is made, refreshed from it after, a person's nodes and
-  words kept; a Block's or a world's work too (`from-work`: Block → Job → Task → Run, each by its goal or its result). On top of §1
-  a mind map adds ▸ details, lines under a point, and a chip per file a point names. Use to make, show, edit or
-  refresh a mind map, or to change how §1 and the mind maps draw. Trigger: mind map, mindmap, structured side,
-  Free | Structured, structure map, §1 map, map the work, /haipipe-mindmap.
+description: "The structure map: one renderer shared by a draft Task's §1 Structure map and every Studio topic's mind map, built from the topic's face or from a Block's work, a person's edits kept. Use to make, show, edit or refresh a mind map. Trigger: mind map, structure map, map the work, /haipipe-mindmap."
 metadata:
   version: "0.9.7"
   last_updated: "2026-11-04"

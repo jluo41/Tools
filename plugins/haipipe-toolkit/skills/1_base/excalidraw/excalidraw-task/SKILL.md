@@ -1,14 +1,6 @@
 ---
 name: excalidraw-task
-description: >-
-  A Task drawn as one Studio topic, a staircase (the same idea as excalidraw-job's): its question on top, each Run or
-  video a step lower and further right in reading order (the current Run marked, reruns quiet), and each step's
-  results outside the frame, small: charts, its numbers as a table, its curves, its figures, a video's screenshots,
-  what to check in red. A small frame explains it: words to know, formulas, what to be ready to answer, what is open.
-  Read from the Task page, the face and each Run's result on every build. Use to draw a Discovery or work Task, to
-  read what its videos said or its Runs measured at a glance, or to give each Task of a Job its own topic. Trigger:
-  draw the task, task drawing, each task a topic, task staircase, what did the video say, task results as charts,
-  /excalidraw-task.
+description: "Draws a Task as one Studio topic, a staircase: its question on top, each Run or video a step lower, and each step's results as charts, tables and figures. Use to draw a Task or read its Runs at a glance. Trigger: draw the task, task staircase, what did the video say, /excalidraw-task."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:

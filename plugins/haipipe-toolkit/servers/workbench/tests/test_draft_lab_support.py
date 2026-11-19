@@ -190,8 +190,8 @@ class ValueChipTest(unittest.TestCase):
             self.assertIn('class="ev-chip miss" tabindex=0 title="E03 VALUE"', s2)   # bound, its file is gone
             self.assertNotIn('title="E02 DISPLAY"', s2)                # a resolved item draws no chip (JL 261115)
             self.assertIn("not found: j02_value/t09_gone/runs/r01_values/result/values.md", s2)
-            self.assertIn('class="ev-chip none"', s3)              # 8.2% and 5, no VALUE item
-            self.assertIn("8.2%, 5", s3)
+            self.assertNotIn('class="ev-chip none"', s3)           # 8.2% and 5, no VALUE item: no ⚠ on the page
+            self.assertNotIn("ev-sup", s3)
             self.assertNotIn("ev-sup", _row(html, "C1.P2.s4"))     # no number, no item: nothing
 
 

@@ -199,7 +199,7 @@ Workbench never creates a second admission decision.
 ### Story Space · "What is this Paper saying and doing?"
 
 ```text
-Spine       the Story's §1 Identity, §2 Pitch and §4 Stakes as label/value rows;
+Spine       the Story's Identity, Pitch and Stakes as label/value rows;
             each division opens on the Story page (Open ↗)
 RoadMap Draw  (`#story/roadmap-draw`)
             the paper's drawings in studio/, editable; a script-written drawing
@@ -328,7 +328,7 @@ read the original pdf"): the papers this study stands beside, one card each. The
 paper's target venue comes first, under "At <venue>", and other venues follow under
 "Other venues" (JL 260930: "this is not limited to NMI"); inside each, the cards sit in
 bands: Closest to this paper, For one research question, Background, Cautions and
-framing. The rows are the Story's §5.3 P-board (haipipe-paper-story 0.14.0); each names
+framing. The rows are the Story's Evidence Basis and Boundaries.3 P-board (haipipe-paper-story 0.14.0); each names
 the Discovery Paper Run that holds the paper, and the card reads that Run's Result
 folder: `runtime.yaml` (title, authors, venue), `abstract.md`, `source-access.json`
 (the publisher link) and `paper.pdf`. The venue is the H1 of board.md's `venue-page`, before its colon; a card

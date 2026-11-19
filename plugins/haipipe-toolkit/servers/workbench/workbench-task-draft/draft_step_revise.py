@@ -120,11 +120,16 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     # the newest report scores today's text: a record that keeps its rounds in order has the latest at the bottom
     rep = next((c for h, c in reversed(passes[0][1] if passes else []) if _is_report(h)), None)
     said = _sentence_lines(rep.get("body", "")) if rep else []
+    from live.draft_step_titles import TITLE_JS, title_cards   # each title's own ★ (CONSTITUTION A02)
+    titles = title_cards(rep.get("body", "")) if rep else ""
     for x, k in zip(said, keys.resolve_seq([x["raw"] for x in said], [x["flow"] for x in said])):
         x["s"] = k or x["s"]
     # a sentence written after the newest report was made: its ★ is out of date (a card synced before it is not)
     head = rep.get("reviewer", "") or rep.get("body", "")[:600] if rep else ""
-    seen = {"": _when(head)}                          # the review's date, then each sentence rescored later ("S3 and S8
+    # the review's date is its Pass title's (`## Pass 7 · 2026-11-18 · …`), never the first date in its body: a
+    # `Standard: … (261115)` rule date made a card written into the rated version read as later, so its ★ showed –
+    # (CONSTITUTION A01, ScalingGlucose t00 s6 261118: "why this is not fully alligned")
+    seen = {"": _when(title) or _when(head)}          # the review's date, then each sentence rescored later ("S3 and S8
     for ids, day in re.findall(r"((?:" + ADDR + r"(?:,\s*|\s+and\s+)?)+) (?:were|was) rescored (\S+)", head):   # were rescored …")
         seen.update({keys.resolve(sid): _when(day) for sid in re.findall(ADDR, ids)})
     later = lambda w, t: w and t and (w[:3] > t[:3] if t[3] < 0 else w > t)   # a date alone compares by day
@@ -205,13 +210,13 @@ def _text_and_cards(d: dict, ev: dict, root: Path, path: Path, task: Path) -> st
     tail = _map_assets() if any("lg-maptpl" in h for h in right) else ""
     # no file-link row over the text: the Draft, revise and comments files are in Files (JL 261115)
     body = (''
-            f'<div class=rv-board data-task="{esc(t)}">{head}{top}'
+            f'<div class=rv-board data-task="{esc(t)}">{head}{top}{titles}'
             f'{_sx_board(_sx_fill(text, right, _sx_paras(d), "Cards on no sentence in this text") + tail)}</div>')
     proposed = sum((c.get("state") or "proposed").split()[0].lower() == "proposed" for _, c in cs)
     word = (f'{proposed} card{"s" if proposed != 1 else ""} wait for you' if proposed else
             f'{waiting} comment{"s" if waiting != 1 else ""} open' if waiting else "every card decided" if cs else "no cards yet")
     return (CARDS_CSS + NOTES_CSS + _fold(f"✍️ The text and its Revise cards · {d['version']}", body, open_=True, word=word)
-            + CARDS_JS + NOTES_JS)
+            + CARDS_JS + NOTES_JS + (TITLE_JS if titles else ""))
 
 
 # the base rubric's four axes, then sentence-to-sentence flow and the anti-AI audit (JL 261021: "你这个 rubric 怎么没有

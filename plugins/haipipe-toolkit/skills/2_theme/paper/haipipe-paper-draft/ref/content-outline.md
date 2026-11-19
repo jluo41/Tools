@@ -10,7 +10,7 @@ flat section is `C1` with one paragraph group per move · one bullet per
 sentence slot.
 
 Resolve paragraph or move divisions from the QBv Venue Page named by the
-version face (its venue; an older Board: the Story §8 row's `target` column). **Address the division by grep, never by a
+version face (its venue; an older Board: the Story Section Narrative row's `target` column). **Address the division by grep, never by a
 remembered name or number** (0.5.0):
 
 ```bash

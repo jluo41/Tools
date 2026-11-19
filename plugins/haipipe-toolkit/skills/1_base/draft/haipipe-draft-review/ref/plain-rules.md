@@ -76,7 +76,7 @@ a verb before reading the number.
 A semicolon asks the reader to hold two clauses at once. Split it into plain sentences.
 Semicolons stay only where someone else fixes the form: citations inside parentheses, a journal's affiliation list. `cli/anti_slop.py` flags the rest (rule `semicolon`). Statistics inside one parenthesis keep theirs, `(SE = 1.07; 95 percent CI, 0.69 to 4.90; p = 0.009)` (JL 261104: "could we use ';' here? as long as it is not the sentence").
 
-**No transition set off by commas** (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth"). `, however,`, `, therefore,` and their kin stop the sentence in the middle. Rewrite so the sentence carries the turn, and open with a plain `But` or `Yet` when it needs one. `cli/anti_slop.py` flags them (rule `parenthetical-transition`).
+**No transition set off by commas** (JL 261104: "don't use things like ' , however ,', Try to make a sentence to be smooth"). `, however,`, `, therefore,` and their kin stop the sentence in the middle. Rewrite so the sentence carries the turn, and open with a plain `But` or `Yet` when it needs one. `cli/anti_slop.py` flags them (rule `parenthetical-transition`). This rule and "no ", xxx, " phrase mid-sentence" never remove the comma that grammar needs after an opening phrase: "For stride, we used" keeps its comma (JL 261118, Word showed 16 such commas missing in ScalingGlucose; `cli/grammar.py` rule `opening-comma`).
 
 ❌ `A request, however, names a concrete action.`
 ✅ `But a request names a concrete action.`

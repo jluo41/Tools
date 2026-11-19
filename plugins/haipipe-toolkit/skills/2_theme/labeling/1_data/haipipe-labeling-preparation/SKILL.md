@@ -1,15 +1,6 @@
 ---
 name: haipipe-labeling-preparation
-description: >-
-  The one main skill of a labeling Job's items Task: read the Job's raw data
-  once and fill the Data cards (describe), make the items under a recipe a
-  person signs and run the item check (items), revise them from the person's
-  notes into a new version (revise), and embed them under a build a person
-  agrees (embed). Also prepares raw transcript conversations into versioned,
-  checked labeling items, reserves whole source groups for sealed test, and
-  links an accepted package to a Labeling Page before Contract. Use for an
-  items Task's prompts, Data → Preparation, or a source that is not yet a
-  pre-unitized, safely fenced corpus.
+description: "Main skill of a labeling Job's items Task: describe the raw data, make items under a recipe a person signs, revise them from notes, embed them; also turns raw transcripts into checked items. Use for Data → Preparation. Trigger: items Task, revise items, embed, /haipipe-labeling-preparation."
 disable-model-invocation: true
 metadata:
   version: "0.2.1"

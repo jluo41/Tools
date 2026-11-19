@@ -286,3 +286,22 @@ class StandsTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ReviewDateFromPassTitleTest(unittest.TestCase):
+    """A card the loop wrote into the rated version keeps its ★ current: the review's date is its Pass title's, never
+    a rule date in the body (ScalingGlucose t00 s6 261118: "why this is not fully alligned")."""
+
+    def test_a_rule_date_in_the_body_does_not_make_a_written_card_stale(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            draft = ("# Note · draft v5.0\n\n## 3 · Draft\n\n### C1.P1 · Why · s1 to s2\n"
+                     "- B1 · s1 · Care relies on reports.\n- B2 · s2 · Reports now decline each year.\n")
+            card = ("### Edit · s2 · name the trend\n- Why: (1) clearer.\n- Original: Reports decline.\n"
+                    "- Expected: Reports now decline each year.\n- State: written · 2026-11-18 · AI decided\n\n")
+            rev = (f"# t01_note · revise\n\n## Pass 7 · 2026-11-18 · on draft v5.0\n\n{card}### Revise review report\n"
+                   "Reviewer: fresh blind agents.\nStandard: sentence-logic.md (261115).\nVerdict: ok.\nSentences:\n"
+                   + _line("s1", 8) + _line("s2", 8))
+            task = _task(root, draft, rev)
+            stars = dict((s, flag) for s, _, flag in _stars(_html(root, task)))
+            self.assertEqual(stars.get("s2"), "", stars)

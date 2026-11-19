@@ -1,6 +1,6 @@
 ---
 name: haipipe-design-unit
-description: "One step of a design method on one target, as one Run: reason (t00), generate a design, revise it, verify it or rank the designs (both by another agent). Reads only the Job's inputs/ fence and writes only its Run's result/. Not for opening Jobs, releasing or sending. Trigger: reason design ideas, generate a design, revise a design, verify a design, rank the designs, run-generate-d<NN>, /haipipe-design-unit."
+description: "One step of a design method on one target, as one Run: reason (t00), generate a design, revise it, verify it or rank the designs (both by another agent). Use for a method step; reads only the Job's inputs/ fence. Trigger: generate a design, verify a design, rank the designs, /haipipe-design-unit."
 metadata:
   version: "0.4.2"
   last_updated: "2026-10-26"

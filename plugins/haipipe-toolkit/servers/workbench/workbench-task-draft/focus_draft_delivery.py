@@ -124,6 +124,9 @@ def section_delivery_views(folder: Path, root: Path) -> dict:
             g = content_gap(folder)
         except Exception:
             return ""
+        if g and g.get("newer") == "content":   # the print is newer than the Draft: never offer adopt
+            return (f'<div class=fd-ask role=status><span>⚠️ This prints text newer than {esc(g["current"])}; '
+                    'bring the Draft up to it before the next adopt.</span></div>')
         return (f'<div class=fd-ask role=status><span>⚠️ This prints {esc(g["printed"])}; the current draft is '
                 f'{esc(g["current"])}. It is behind: {esc(g["why"])}, then export, before reading it as final.'
                 '</span></div>') if g else ""

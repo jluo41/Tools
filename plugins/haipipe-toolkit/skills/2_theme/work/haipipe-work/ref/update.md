@@ -73,6 +73,11 @@ Do not add every heading to every file simply to fill a screen.
   closes a Task. Skip faces another session has not committed.
 - A Job face without `emoji:` may get one that names what the Job does (the Plan + Results
   row shows it); keep any emoji already chosen.
+- Give each paragraph and one-line item of the page's own sections (`## Review Content`, `## Plan + Results`,
+  `## Findings`, `## Design` and the `.md` files they embed) its invisible id, so it can carry marks and cards:
+  `python servers/workbench-work/paragraph_ids.py <page> [...]` shows what it would add, `--apply` adds it. An id is
+  written once and never renumbered. A file a build writes (b41's `src/review/*.md` from `src/build.py`) is left
+  alone: its builder writes the ids, or they vanish on the next build.
 - Blueprint example entries must point to existing pages of the correct level.
   Public Tools blueprints use repository-local demonstration pages. Cross-SPACE
   use-case examples belong in the ignored deployment mapping

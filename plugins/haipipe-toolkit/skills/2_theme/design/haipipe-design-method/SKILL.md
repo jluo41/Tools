@@ -1,18 +1,6 @@
 ---
 name: haipipe-design-method
-description: >-
-  The design method registry: what a design method is (a recipe, frozen per
-  version, that turns a goal and its inputs into N designs in five steps: ① See
-  input · ② Reason ideas · ③ Conduct process · ④ Review item · ⑤ Review whole),
-  the registered methods MNN and their versions m<k> (methods/), each typed by one
-  of the Guide's 13 cards, and how a method evolves: proposals, the next
-  version, and the scorecard summed from what each Exp returned. Owns
-  run-setup-method-j<NN> (pin a version into a Job), run-propose-method-<slug>,
-  run-add-observed-e<NN> and run-score-e<NN>. Use to list or pin a method, cut
-  or propose a version, add an Exp's per-arm totals, score the predictions, or
-  read the method scorecard. Trigger: design method, method version, registered
-  method, pin a method, propose a method, method scorecard, add observed, score
-  the Exp, /haipipe-design-method.
+description: "The design method registry: registered methods and their frozen versions (a five-step recipe from a goal to N designs), proposals and the scorecard. Use to list, pin or propose a method version, or score an Exp. Trigger: design method, pin a method, method scorecard, /haipipe-design-method."
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 metadata:
   version: "0.4.1"

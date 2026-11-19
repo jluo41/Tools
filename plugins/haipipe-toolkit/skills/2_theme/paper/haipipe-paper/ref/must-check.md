@@ -176,7 +176,7 @@ M-B07 · Cite only real `.bib` keys; use `\cite{TOADD}` when missing; one work, 
   said: 3× · 260710 MISQ "I think you should use \cite{xxx} from the .bib file"
 
 M-B08 · Plan displays with the authors from meetings and venue rules before Sections write numbers.
-  check: read (display plan in the display Job face; venue figure rules and similar journal figures named)
+  check: read (display plan in the `s06-paper-displays` Studio topic; venue figure rules and similar journal figures named)
   when: before JL sees a Section
   said: 2× · 261023 LLMRec "this should be a plan, and should be proposed to the author"
 
@@ -288,8 +288,8 @@ M-C17 · Read 3 to 4 same-type papers from the target journal, as screenshots, b
   when: before JL sees a Section
   said: 2× · 261104 "This is a must to do when you call the task for the /haipipe-paper-draft"
 
-M-C18 · Move a draft's version number only on JL's OK; edit the current version in place.
-  check: auto (no new `-draft-v<N+1>.md` without a recorded ok)
+M-C18 · The auto revise loop may move a draft's version number itself; a person's OK is needed only at the signed gates (plan sign, send).
+  check: read (a new `-draft-v<N+1>.md` comes from the loop or a structure change, M-E03; no plan sign or send without a person's signature)
   when: before JL sees a Section
   said: 2× · 261020 LLMRec "until I feel it is ok, and we can upgrade it to v0.5"
 
@@ -469,6 +469,11 @@ M-D23 · The sentence review names every unnatural phrase and its plain wording;
   check: agent (haipipe-draft-eval-sentence-agent reads each sentence aloud by sentence-logic.md § Natural phrasing; the worked examples there are the calibration: a review that passes any of them at ai 8 or more is redone)
   when: every sentence review (D1)
   said: 1× · 261115 ScalingGlucose t01 s12, "A lower loss need not mean": "this is the weird expression, for the sentence level evaluation, and one rule is to identify the weird non-human expression, like this."
+
+M-D24 · A page part is named by its name, never by its number alone ("the Story's Research Questions", not "s02 § 3").
+  check: read (chat replies, face fields such as claim-ids:, story-row: and source lines, review results and agent prompts say the part's name; a number may follow the name, "Section Narrative, part 8 of s02", never stand alone; the draft's own headings "## 1 · Structure" stay, code reads them)
+  when: always
+  said: 1× · 261116 Paper-CMS-AI-Usage, on "s02 §8": "don't use §8, just tell the name of it, who will remember what is 8 about."
 
 M-E10 · A paragraph with three or more sentences under 8, or patched by cards into a list, is rewritten whole, rated again and compared blind.
   check: agent (the Section session follows section-method.md D2 § Paragraph rewrite; a pass that cards more than two sentences of one paragraph instead is redone)

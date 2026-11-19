@@ -1,5 +1,7 @@
-"""s${nn}'s Design sketches, drawn at local size (five_parts grows them): A, the pieces step by step (a data topic:
-each step a small table with its real column names and made-up rows, five_parts.data_table and data_step); B, how the
+"""s${nn}'s Design sketches, drawn at local size (five_parts grows them), as PICTURES (CONSTITUTION A04, A05: read
+haipipe-studio/CONSTITUTION.md before drawing; five_parts.build warns under 20 picture shapes): A, the real things as
+icons (icons.py: phone, laptop, server, cylinder, cloud, shield, gate, lock, cross, big_number), lit by their state,
+joined by arrows; tables only for real data rows (data_table); B, how the
 design grew and why, as stickies; C, the face's Open list as choices, the leaning starred. Each returns (els, bottom).
 Imported by ${script}.
 """
@@ -9,19 +11,23 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str((HERE / "${to_studio}").resolve()))
 from five_parts import *  # noqa: E402,F401,F403
+from icons import phone, laptop, monitor, server, cylinder, cloud, shield, gate, lock, cross, big_number  # noqa: E402,F401
 
 
 def sketch_a(x, y):
-    """A: the pieces step by step, each leading to the next."""
-    els = text("pa", x, y, "A · <the pieces, step by step>", 18, TITLE)
-    els += shapes("pa_s", x, y + 26, "<the delivery piece it shapes>")
-    t, b0 = data_table("a0", x, y + 70, "<step 1>", ["<col>", "<col>", "<col>"], [80, 80, 80],
-                       [("<a>", "<b>", "<c>"), ("<a>", "<b>", "<c>")], NAVY, SEM["plain"][0], "<what one row is>")
-    els += t
-    y1 = b0 + 90
-    els += data_step("a1", [(x + 120, b0 + 4), (x + 120, y1 - 6)], "<what this step does>", OR)
-    t, b1 = data_table("a2", x, y1, "<step 2>", ["<col>", "<col>"], [100, 100], [("<a>", "<b>")], OR, SEM["start"][0])
-    return els + t, b1 + 40
+    """A: the real things as pictures, left to right, each lit by its state (ok, wait, bad, off), one big number."""
+    els = text("pa", x, y, "A · <the path, as pictures>", 26, TITLE)
+    els += text("pa_s", x, y + 38, "<one line: what moves from the first thing to the last>", 15, BODY)
+    top = y + 110
+    els += laptop("a_from", x, top, "ok")
+    els += server("a_mid", x + 300, top - 10, "wait")
+    els += cylinder("a_to", x + 600, top - 10, "off")
+    els += arrow("a_1", [(x + 194, top + 60), (x + 296, top + 60)], GR, width=4)
+    els += arrow("a_2", [(x + 434, top + 60), (x + 596, top + 60)], OR, width=4)
+    for k, (cx, name) in enumerate(((x + 95, "<thing 1>"), (x + 365, "<thing 2>"), (x + 675, "<thing 3>"))):
+        els += text(f"a_n{k}", cx, top + 172, name, 18, INK, "center")
+    els += big_number("a_big", x + 365, top + 220, "<N>", "<what the number counts>", OR, 48)
+    return els, top + 320
 
 
 def sketch_b(x, y):

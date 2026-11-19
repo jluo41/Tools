@@ -1,6 +1,6 @@
 ---
 name: haipipe-norm
-description: "The contract every describe-* normalizer obeys: free text in a cohort's own dialect, resolved against a reference bank, into numbers that carry their own provenance. Owns the five rules, the door signature and the event JSON checklist (raw, input, output); ships no code. Load before building or changing a normalizer. Trigger: normalizer contract, new normalizer, event JSON, raw input output, event checklist, describe-food, describe-exercise, normalize door, provenance columns, basis column, haipipe-utils."
+description: "The contract every describe-* normalizer obeys: free text resolved against a reference bank into numbers with provenance. Owns its five rules and the event JSON checklist. Use before building or changing a normalizer. Trigger: normalizer contract, new normalizer, event JSON, /haipipe-norm."
 metadata:
   version: "0.5.0"
   last_updated: "2026-11-02"

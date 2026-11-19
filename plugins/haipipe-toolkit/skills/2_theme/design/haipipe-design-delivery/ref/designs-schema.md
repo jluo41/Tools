@@ -37,7 +37,7 @@ The one file another system reads (b12 s12, JL 261007). A Job writes `<Block>/de
 | `why` | `prediction.yaml` `why:`, from t99's `ranking.csv` | the basis shown beside the number |
 | `released` | the day a person signed | `YYMMDD` |
 | `pins` | the Job face's `goal:` · `method:` · `inputs:` | what made this design |
-| `screen` | relative to the file's own `delivery/`: `screens/<dNN>.<ext>` in a Job's, `screens/<jNN>-<dNN>.<ext>` in the Block's | a UI design only |
+| `screen` | relative to the file's folder in the Block's `delivery/`: `screens/<dNN>.<ext>` under the Job's address (`delivery/jNN_<job>/`), `screens/<jNN>-<dNN>.<ext>` at its root | a UI design only |
 
 A system that sends has its own shape; an adapter reads this file, never the Tasks. `designs.md` holds the same
 designs for a reader: one `## <job_name> · <design> · <name>` heading each, the words, then the prediction and its

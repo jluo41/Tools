@@ -1,14 +1,6 @@
 ---
 name: haipipe-insight-bind
-description: >-
-  Bind the work for one answering page of an InsightBoard: for each evidence
-  need of the questions the page answers, find the task output that computes
-  exactly that need (or commission one through haipipe-task), write the page's
-  runs/ ticket, run it, and record the binding in the page's answers.yaml.
-  The Insight workbench's "Bind the work" run. Never writes the page's prose
-  and never settles a cell. Trigger: bind the work, bind needs, answers.yaml,
-  which run answers this need, wire the page to its runs,
-  /haipipe-insight bind.
+description: "Binds the work for one answering page of an InsightBoard: for each evidence need, finds or commissions the task output, runs the page's ticket and records the binding in answers.yaml. Use for the workbench's Bind the work run. Trigger: bind the work, bind needs, answers.yaml, /haipipe-insight bind."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true
 metadata:

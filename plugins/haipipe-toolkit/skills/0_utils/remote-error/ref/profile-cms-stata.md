@@ -5,7 +5,7 @@ Medicare claims that never leave that machine.
 
 Load this profile only when the user or verified project configuration names
 the CMS secure-server environment. Stata `r(nnn)`, `.do`, `.ps1`, or log-path
-shapes alone do not establish CMS. Home repo: `Physician-SPACE`, project
+shapes alone do not establish CMS. Home repo: `<Project-SPACE>`, project
 `examples-2-cms/Project-Personality-OpioidRx`; unrelated projects use their own
 profile or the generic method.
 
@@ -33,7 +33,7 @@ upload package     python work/_tools/pack_upload.py <tag> --per-block  one shor
                    for every server Block of both Projects (it ignores --project); the default for an upload
                    (or --project CmsPipeline|OpioidRx, then --check: 0 differences from the repo)
 results back       work/_tools/collect_results.ps1 (server), file_server_return.py (laptop)
-server home        F:\Physician-SPACE\work\<Block>\...                never the repo's own depth
+server home        F:\<Project-SPACE>\work\<Block>\...                never the repo's own depth
 ```
 
 `<UNIT>` is any part of a Job's folder name, not a path: `j21_C1D_reg_VisitLBP` picks one Job (plain `j21` matches
@@ -101,7 +101,7 @@ missing a year built       OpioidRx-2019 when 2020 was built later). Rerun that 
         before the step    built steps skip), then the C table. Ask for the year folder's listing, not the log.
 not     an uploaded .ps1   "<ticket>.ps1 cannot be loaded. The file ... is not digitally signed", at run_long.ps1's
 digit-  with the internet  `& ".\$x"`: the policy (RemoteSigned) refuses a script unpacked from a downloaded zip
-ally    mark               (Mark of the Web); run_long.ps1, typed on the server, runs. Fix, from F:\Physician-SPACE,
+ally    mark               (Mark of the Web); run_long.ps1, typed on the server, runs. Fix, from F:\<Project-SPACE>,
 signed                     after every upload: `gci examples-2-cms -r | unblock-file`, then `gci w -r | unblock-file`
                            (the first gives FileNotFound on OpioidRx paths past 260; w reaches them). A Group Policy
                            pins RemoteSigned: `set-executionpolicy bypass -scope process` and -ExecutionPolicy
@@ -213,7 +213,7 @@ Run all of it; each step catches what the others cannot.
 6 package    pack_upload.py <tag> --per-block (b02B.zip, b11CD.zip, ...); no result\, results\, passes\;
              every zip entry at most 240 characters (the packer refuses more), entries start at work\
 7 unzip      test every zip: unzip -t, every file equal to the repo, and pwsh Expand-Archive into a short
-             folder; the longest path at F:\u and at F:\Physician-SPACE must stay under 260
+             folder; the longest path at F:\u and at F:\<Project-SPACE> must stay under 260
 ```
 
 What the dry run proves: paths, launchers, `.done` markers, hand-offs between stages, path length. What it
@@ -227,13 +227,13 @@ was skipped; with that command added, all seven tables passed. Fix the stand-in,
 
 ## Running on the server
 
-Since 261023 the server keeps the repo's own layout (`F:\Physician-SPACE\examples-2-cms\<Project>\work\`), and
-every Run starts from `F:\Physician-SPACE` through a short root script, each named for the kind of Run it starts
+Since 261023 the server keeps the repo's own layout (`F:\<Project-SPACE>\examples-2-cms\<Project>\work\`), and
+every Run starts from `F:\<Project-SPACE>` through a short root script, each named for the kind of Run it starts
 (JL 261025). They live in the SPACE root of the repo and are typed onto the server by hand:
 
 ```
 run_long.ps1 <path>, <path> [-Parallel]   the engine: runs tickets in order, stops at the first failure; an
-                                          OpioidRx path goes through F:\Physician-SPACE\w, a junction to its
+                                          OpioidRx path goes through F:\<Project-SPACE>\w, a junction to its
                                           work\ (same folder, longest path 253, the C/D 23-character check met)
 run_case_year.ps1 -v <visit> -y <years>   stage B: every case Task of a visit, per year, in tNN order; any CMS
                                           Project (LBP ... T2D, AMI, AiProc); -Parallel: a window per visit-year
@@ -248,7 +248,7 @@ run_fix.ps1, run_fix_data_table.ps1       one-off server patches (the guard's no
 - Wait for every window of one stage (`Finished!`, or `complete`) before the next stage; each reads the last.
 - Never press Ctrl+C in a running window to copy: it stops that run. Select text first, or right-click.
 - Unpack an upload with PowerShell, not by double-clicking: all zips into one short folder, then copy its `work\`
-  over `F:\Physician-SPACE\work` (add and replace, never delete):
+  over `F:\<Project-SPACE>\work` (add and replace, never delete):
   `Get-ChildItem F:\<tag>-PerBlock\*.zip | ForEach-Object { Expand-Archive $_.FullName -DestinationPath F:\u -Force }`
 - After a new upload, run two short tickets first (the package's `README-UPLOAD.md` names them): one that reads
   headers only (`b01_A_cms_description\j01_A0_cms_description\sbatch\run_slice.ps1`), and one that MUST fail in

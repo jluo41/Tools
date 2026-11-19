@@ -1,11 +1,6 @@
 ---
 name: haipipe-insight-meta
-description: >-
-  InsightBoard Folder contract for Meta: inventory,
-  grain, population, window, freshness, limits, and optional segment rules
-  as the scope prerequisite for answering work. Owns both Page and Task faces. Use when opening
-  or refreshing an InsightBoard. Trigger: insight meta, data inventory,
-  folder-kind meta, legacy page-type meta, /haipipe-insight-meta.
+description: "InsightBoard Folder contract for Meta: inventory, grain, population, window, freshness, limits and optional segment rules, the scope prerequisite for answering work. Use when opening or refreshing an InsightBoard. Trigger: insight meta, data inventory, folder-kind meta, /haipipe-insight-meta."
 metadata:
   version: "1.5.1"
   last_updated: "2026-10-09"

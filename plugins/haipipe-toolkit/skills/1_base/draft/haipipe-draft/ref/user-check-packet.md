@@ -231,7 +231,7 @@ Result payload and its provenance; do not paste raw numbers or create a second
 citation register in the Page Folder.
 
 The only eligible Page-level artifact is
-`<page>/delivery/latex/<stem>.pdf`, the LaTeX Delivery lane's compiled Page.
+`<Block>/delivery/<page address>/latex/<stem>.pdf`, the LaTeX Delivery lane's compiled Page (above, `<page>/delivery/` is short for it).
 There is no fallback to a page-local `latex/` directory. The returned label
 must say **Page-level PDF** and must identify the one Page it represents.
 Never substitute a paper master, a desk-room build, a Word export, or an

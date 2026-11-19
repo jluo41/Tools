@@ -131,8 +131,9 @@ def project_matches(card: dict[str, object], wanted: str) -> bool:
         path, path.rsplit("/", 1)[-1], str(card.get("project") or "").lower()}
 
 def frame_url(rel: str) -> str:
-    """The base frame's long address for a Block folder, SPACE-relative (what `/w/<block>` opens)."""
-    return "/_board/workbench?path=" + quote(rel, safe="/")
+    """The focus page's long address for a Block folder, SPACE-relative (what `/w/<block>` and `/b/<block>` open).
+    The old tabbed frame opens only on an explicit `layout=frame` (Proj-JHU-REACH report, JL 261118)."""
+    return "/_board/workbench?path=" + quote(rel, safe="/") + "&layout=focus"
 
 
 def _skip(path: Path, root: Path) -> bool:

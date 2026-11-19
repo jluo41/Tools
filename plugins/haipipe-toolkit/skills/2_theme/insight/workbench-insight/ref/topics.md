@@ -25,6 +25,7 @@ T17  no prep step checks the stated experiment   open
 T18  a page could show a record value            fixed
 T19  the Board's Data view shows records        fixed
 T20  a new prep version cannot order its steps  fixed
+T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -343,3 +344,34 @@ T20  a new prep version cannot order its steps  fixed
   t04_compare-cohorts, and writes nothing.
 - **Guard**: `test_dataprep.py` `test_a_new_prep_version_names_its_step_order`.
 
+## T21 · Three linked views of the theme: Folder, Element, Session · open
+
+- **From**: the user, relayed by the session tools-space-bc, 261117: "For the theme design, we should have three
+  views. Folder Structure: how things are stored in the file system. Element Structure: how the UI presents the
+  Folder Structure on the website. Session Structure: a view that records the important session history; the
+  session keeps recording chat progress to the history, and shows how each session episode relates to each Folder
+  and Element." The sender asked for this theme's map only, no code change, and no edit of the shared `frame_*`
+  files.
+- **Questions**: which folder kinds exist at each level? Which view and section shows each? Where does a session
+  already leave a trace? Is "path relative to the Block" enough as the key that joins the three?
+- **Answer so far** (the map sent to the sender, read from the example pair under `blueprints/Project-Ladder/insight/`
+  and the `*_views` functions in `servers/workbench-insight/insight_focus_*.py`):
+  - **Folder**: two Blocks. A Question Book (`board.md`, `proposals/`, `runs/`, a Job per question version with
+    `release.yaml`, `partitions.md`, `thresholds.yaml`, `src/`, a Task per question holding `question.md` and
+    `scripts/`). A Board (`board.md` naming its `prototype:`, `data/data-vN/`, `meta/`, `delivery/`, `runs/`,
+    `sNN-<topic>/`, a Job per question version × data version, a Task per question, a Run per segment
+    `runs/rNN_<segment>/` with `run.sh`, `run.yaml`, `result/`).
+  - **Element**: Board views Findings, Questions, Data, Advice, Jobs; Job views Findings, Changes, Progress; Task
+    views Answer, Changes, Method; Question Book views Questions, Ideas, Versions. Not one to one: a segment Run
+    is drawn on the Task (By segment), the Job (Progress) and the Board (Findings).
+  - **Session**: the `session:` line on a Board or Job face; a soft Run `runs/run-<verb>-<target>/` with `run.yaml`
+    (`agent:`, `skill:`, `writes:`) and `passes/pNN-<MMDD>/pass.md` (Ask, Summary, Changed); a Task face's
+    `results-read:` and `check:` lines; a Studio topic's own passes. A segment Run is a script and has no chat.
+- **What does not fit the proposed shape**: one episode often writes both Blocks (a question edited in the Question
+  Book, rerun on the Board), so the join key must be relative to the Project, not the Block; one episode is one
+  pass of a soft Run and may start many segment Runs, so "one episode = one Run" holds only for soft Runs; the
+  Element map is many to many; a transcript kept on a Board must obey the theme's law (counts and aggregates only,
+  no row of the extract), so the digest is shown and a raw transcript is not; the map must be read from the focus
+  views, since `Theme.spaces` here covers only the older layout's Spaces.
+- **Still owed**: the theme's hook, once the shared Session view exists; a guard that every soft Run's `writes:`
+  names real paths (the join depends on it).

@@ -1,13 +1,6 @@
 ---
 name: workbench-task-labeling
-description: >-
-  The labeling Task's screen, paired with servers/workbench-labeling/workbench-task-labeling: what a
-  labeling Task shows on the shared frame by its type (items, ground truth, building, scanning, score; a
-  labeling Page is building and scanning at once), and the engine's Labeling workbench it opens: four
-  Spaces (Data, Labeling, Quality, Delivery) over one page-local labeling/ job, a Runs panel beside each,
-  and one write door, POST /_board/labeling/act, for eleven engine-checked actions. Use when opening,
-  diagnosing or changing a labeling Task's screen, a Space or View, the write door or the Runs panel, or
-  /workbench-task-labeling.
+description: "The labeling Task's screen: what a Task shows by its type (items, ground truth, building, scanning, score) and the four Spaces (Data, Labeling, Quality, Delivery) with a Runs panel and one write door. Use to open, diagnose or change it. Trigger: labeling Task screen, /workbench-task-labeling."
 metadata:
   version: "0.5.0"
   last_updated: "2026-11-06"

@@ -1,15 +1,6 @@
 ---
 name: excalidraw-story
-description: >-
-  A paper's story drawn as one Studio topic: its research questions, read in order, are its narrative. A main
-  frame shows the paper's question, then each research question as a step down and to the right, with three
-  panels: its card, what we expect and why (hypotheses, their theory, the evidence rows that test them), and
-  what the paper can say (its claims), marked ✅ answered, 🔶 partly or ⬜ nothing yet. Small frames add the
-  theory, what we will not claim, the venues and the Runs still to make. Read from haipipe-paper-story's face
-  on every build; that skill calls it for studio/sNN-story-<desk>-<idea>/. Use to draw or redraw a story, see
-  which research questions are answered, or give a new paper's story the same shape. Trigger: draw the story,
-  story drawing, s02 story, research questions as steps, which questions are answered, what supports each
-  question, /excalidraw-story.
+description: "Draws a paper's story as one Studio topic: each research question a step down with its card, hypotheses and claims, marked answered, partly or not yet. Use to draw a story or see which questions are answered. Trigger: draw the story, story drawing, research questions as steps, /excalidraw-story."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 disable-model-invocation: true
 metadata:

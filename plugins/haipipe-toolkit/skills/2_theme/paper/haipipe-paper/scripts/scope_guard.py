@@ -110,12 +110,12 @@ def forbidden(texts: list) -> list:
             low = sent.lower()
             if "never" in low:
                 for q in QUOTED.findall(sent[low.index("never"):]):
-                    out.append((q.strip(), "§ 8.6: never \"" + q.strip() + "\""))
+                    out.append((q.strip(), "What every Section receives unchanged: never \"" + q.strip() + "\""))
         for line in re.findall(r"(?mi)^\s*[-*]?\s*forbidden(?: words)?:\s*(.+)$", body):
             for w in re.split(r"[,;·]", line):
                 w = w.strip().strip("\"“”`")
                 if w:
-                    out.append((w, f"§ 8.6 forbidden: {w}"))
+                    out.append((w, f"What every Section receives unchanged, forbidden: {w}"))
     return list(dict.fromkeys(out))
 
 

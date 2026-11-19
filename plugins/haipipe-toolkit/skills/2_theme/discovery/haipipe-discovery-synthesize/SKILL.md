@@ -1,11 +1,6 @@
 ---
 name: haipipe-discovery-synthesize
-description: >-
-  Synthesis-route specialist for Discovery Task Pages. Integrate completed
-  per-source Review Results into one coherent topic article, preserving
-  agreements, disagreements, gaps, limits, and exact Result/Bib lineage.
-  Trigger: synthesize papers, combine literature, write a topic summary,
-  build a landscape, connect findings, /haipipe-discovery-synthesize.
+description: "Synthesis-route specialist for Discovery Task Pages: integrates completed per-source Review Results into one topic article, keeping agreements, disagreements, gaps and Result/Bib lineage. Use to combine literature. Trigger: synthesize papers, build a landscape, /haipipe-discovery-synthesize."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.3"

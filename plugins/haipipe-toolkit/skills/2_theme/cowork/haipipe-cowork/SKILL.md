@@ -1,6 +1,6 @@
 ---
 name: haipipe-cowork
-description: "Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs (one line of work each), its people Job j00_people/, its Questions and Studio topics. Use to create, update or audit a cowork Block or Job, record who has the next move, or place an email, meeting or note. Trigger: cowork, cowork block, who are we waiting on, open a job, update a job, who to ask, /haipipe-cowork."
+description: "Owns the CoWork Block (cowork/bNN_<topic>/): its board.md, its Jobs, its people Job j00_people/, its Questions and Studio topics. Use to create, update or audit a cowork Block or Job, or record who has the next move. Trigger: cowork, who are we waiting on, open a job, who to ask, /haipipe-cowork."
 metadata:
   version: "0.2.3"
   last_updated: "2026-10-26"

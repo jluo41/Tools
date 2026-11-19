@@ -11,7 +11,7 @@ Step 1: Parse args
 -------------------
 
 Required: `<store>/<name>` (e.g.
-`1-SourceStore/WellDoc2025CVS`).
+`1-SourceStore/<SourceSet>`).
 
 Resolve via `ref/store-map.md`:
 

@@ -135,7 +135,7 @@ deliverables:
    (once), a `kind` of rule 6, `means`, and `files` or `opens`, and every Task and Run it names is
    there. A file not made yet is a to-do, not an error. Then open the Goal view and read the ticks.
 
-## The six Spaces at Job level
+## The six Spaces at Job level (the older tabbed screen)
 
 | Space | shows (vanilla) | its buttons → skill |
 |---|---|---|

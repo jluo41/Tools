@@ -1,11 +1,6 @@
 ---
 name: workbench-labeling
-description: >-
-  The 🏷 labeling theme of the shared workbench: its host (its own, or one tab on a Board), the Board level
-  (every labeling job on the Board, zoom out), the Block and Job levels on the frame, and the family's Guide.
-  A labeling Task's own screen (the four Spaces Data, Labeling, Quality, Delivery, the write door, the five
-  Task types) is workbench-task-labeling. Use when opening or diagnosing the labeling workbench, its host, its
-  Board view or its Guide, or /workbench-labeling.
+description: "The labeling theme of the shared workbench: its host, the Board level (every labeling job), the Block and Job levels, and the family's Guide. Use to open or diagnose the labeling workbench; a Task's own screen is workbench-task-labeling. Trigger: labeling workbench, /workbench-labeling."
 metadata:
   version: "0.36.0"
   last_updated: "2026-11-06"

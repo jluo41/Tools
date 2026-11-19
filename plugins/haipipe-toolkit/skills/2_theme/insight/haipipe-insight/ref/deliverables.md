@@ -63,5 +63,5 @@ is still current; new figures and new `pass:` lines change what the checker test
 
 `review` lists the answers that owe a reread (`run-write-t<NN>`) and those with no ✅ on `check:`
 (`run-check-t<NN>`). A check is one agent per Task in a fresh context, so checking a whole Job is many agents at
-once: a session starts it only when the person asks (the Job's Work › Check a report button gives the prompt, or
+once: a session starts it only when the person asks (the Job's Check a report button gives the prompt, under Work on the older screen, or
 "check every answer of this Job"). Until then the list is the report, and no answer is marked checked.

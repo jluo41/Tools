@@ -1,6 +1,6 @@
 ---
 name: haipipe-nn
-description: "Stage 5 NN door: reads the layer's part (algo, tuner, instance, modelset) for algorithm classes, tuner search spaces and sweeps, ModelInstance builds and ModelSet pipelines: dashboards, reviews, generation, tests. Trigger: nn pipeline, model, algorithm, tuner, hyperparameter, checkpoint, modelset, /haipipe-nn."
+description: "Stage 5 NN door: reads the layer's part (algo, tuner, instance, modelset) for algorithm classes, tuner sweeps, ModelInstance builds and ModelSet pipelines. Use for dashboards, reviews, generation, tests. Trigger: nn pipeline, model, algorithm, tuner, checkpoint, modelset, /haipipe-nn."
 argument-hint: "[layer] [function] [args...]"
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:

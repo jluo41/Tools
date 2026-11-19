@@ -3,7 +3,7 @@
 A Workflow is a planned graph of Runs, so it is haipipe-run's (it was the `haipipe-workflow` skill
 until 2026-10-21). Its definition is `workflow/plan.yaml` ([`plan-schema.md`](plan-schema.md)); the
 workbench's Plan view reads that file. Most Tasks need none: a Task's Runs, their cards and receipts
-are enough, and only 28 of the 387 Tasks in Physician-SPACE wrote one by 2026-10-21. Write a
+are enough, and only 28 of the 387 Tasks in one SPACE wrote one by 2026-10-21. Write a
 plan when several Runs share routes, gates, a human HOLD or a resume point.
 
 A Workflow is a list of independently closable Runs. Its definition lists

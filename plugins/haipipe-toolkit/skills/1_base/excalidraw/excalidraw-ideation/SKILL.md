@@ -1,14 +1,6 @@
 ---
 name: excalidraw-ideation
-description: >-
-  An ideation drawn as one Studio topic: one large main frame with every idea as a step down from the paper's
-  question, in groups (the lead group first, then neighbours, add-ons, on hold), and small frames that explain it,
-  placed as stairs down and to the right: the setting in its real numbers, one card per lead idea (why it matters,
-  if we find → it would mean, where it stands now), and the path from here to G0. Words in the topic's
-  <topic>-drawing.yaml; the topic's builder forwards to scripts/ideation_drawing.py. haipipe-paper-ideation calls it
-  for s01-ideation/ whenever it is installed. Use to draw or redraw an ideation, to see a paper's ideas at a
-  glance, or to give a new paper's s01 the same shape. Trigger: draw the ideation, ideation drawing, s01-ideation
-  drawing, ideas as steps, idea cards, path to G0, /excalidraw-ideation.
+description: "Draws an ideation as one Studio topic: every idea a step down from the paper's question, with small frames for the setting, a card per lead idea and the path to G0. Use to draw or redraw an ideation. Trigger: draw the ideation, ideation drawing, idea cards, path to G0, /excalidraw-ideation."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -19,7 +11,7 @@ metadata:
 
 # /excalidraw-ideation · an ideation as one drawing, its ideas as steps
 
-Asked 261013 on Physician-SPACE's Paper-LLMRecPhy-Jama s01-ideation, whose first drawing (19 equal frames in left-aligned
+Asked 261013 on `<Project-SPACE>`'s Paper-LLMRecPhy-Jama s01-ideation, whose first drawing (19 equal frames in left-aligned
 rows) was the counterexample:
 
 1. **主次分明**: "一个很大的 frame，然后有一些小的 frame 是解释这些大的 frame 的".
@@ -155,9 +147,9 @@ the picture alone:
 Worked examples
 ---------------
 
-- Physician-SPACE `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/s01-ideation/`: the origin,
+- `<Project-SPACE>` `examples-3-nlp/Project-LLMRec-Physician/paper/Paper-LLMRecPhy-Jama/s01-ideation/`: the origin,
   sixteen ideas in four groups, its state read from the face's table (`state: columns`).
-- DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-LoopExpLearning/s01-ideation/`:
+- `<Client-SPACE>` `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-LoopExpLearning/s01-ideation/`:
   thirteen ideas, the loop's four parts as the lead group, the state in each idea's yaml.
 
 

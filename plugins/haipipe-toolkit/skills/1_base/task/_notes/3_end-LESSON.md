@@ -159,7 +159,7 @@ The subsequent `_extract_features(df_case, record_set)` still uses the RecordSet
 
 ### L3: PostFn output ≠ template display assumptions
 
-**Problem:** `c_endpoint_nb.py` step 5 validation assumed predictions have `{name, score}` per action (the WellDoc format).
+**Problem:** `c_endpoint_nb.py` step 5 validation assumed predictions have `{name, score}` per action (the first endpoint's format).
 MIMIC PostFn returns `{mortality_risk, risk_level, threshold_alerts}`.
 The format string `pred.get('score', 'N/A'):6.2f` crashed with "Unknown format code 'f' for object of type 'str'" because `score` key was missing.
 
@@ -198,7 +198,7 @@ papermill ... -p SKIP_TRAINING "true"
 
 ### L6: Copying shared packages overwrites local fixes
 
-**Problem:** After copying `haipipe/` from WellDoc-SPACE to sync changes, local fixes to `case_pipeline.py` and `modelinstance_pipeline.py` were overwritten.
+**Problem:** After copying `haipipe/` from `<Partner-SPACE>` to sync changes, local fixes to `case_pipeline.py` and `modelinstance_pipeline.py` were overwritten.
 
 **Rule:** Before copying shared packages (`haipipe`, `hainn`), check `git diff` for local modifications.
 Apply fixes to the source repo first, then copy.
@@ -336,7 +336,7 @@ The builder's quick test (synthetic payload) is necessary but not sufficient.
 
 ### L13: Three-layer builder pattern — templates → project → production
 
-**Problem:** Builder scripts lived in `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/` as a flat directory mixing WellDoc, CGM, and MIMIC builders.
+**Problem:** Builder scripts lived in `code-dev/1-PIPELINE/6-Endpoint-WorkSpace/` as a flat directory mixing partner-app, CGM, and MIMIC builders.
 No clear separation between generic templates and project-specific implementations.
 New projects had to guess which file to copy.
 
@@ -344,7 +344,7 @@ New projects had to guess which file to copy.
 
 ```
 Layer 1: TEMPLATES     code/scripts/haibuilder/6-endpoint/
-                       └── canonical WellDoc references (copy-and-customize)
+                       └── canonical reference builders (copy-and-customize)
 
 Layer 2: PROJECT       examples/<project>/work/C01_*/00_endpoint_set_fn_develop/
                        └── project-specific builders, each as own run
@@ -364,7 +364,7 @@ Layer 3: PRODUCTION    code/haifn/fn_endpoint/fn_*/*.py
 **Folder convention:** `00_endpoint_set_fn_develop/` is not ONE job — each builder (a1_build_metafn … f1_roundtrip_test) is its own job-shaped unit with its own config/run/results; the folder is the block-like container holding them.
 Can run one at a time or all sequentially.
 
-**Rule:** Templates (Layer 1) are WellDoc references — don't modify them.
+**Rule:** Templates (Layer 1) are canonical references — don't modify them.
 Project builders (Layer 2) are where customization happens.
 Production files (Layer 3) are generated — never hand-edit.
 

@@ -1,6 +1,6 @@
 ---
 name: excalidraw
-description: "The one door for Excalidraw drawing: pick the kind, then read that kind's SKILL.md by path and follow it. Kinds: studio (how every Studio topic's drawing looks, draw.py, check.py; read first), job, task, story, ideation, workflow, slide, draft, report (or a scratch), read (a paper's PDF onto a canvas). Trigger: excalidraw, draw, drawing, redraw a topic, studio drawing, draw the job, draw the task, story drawing, slide draft, read a paper onto a canvas, /excalidraw."
+description: "The one door for Excalidraw drawing: pick the kind, then read that kind's SKILL.md and follow it. Kinds: studio (read first), job, task, story, ideation, workflow, slide, draft, report or scratch, read. Use for any drawing. Trigger: excalidraw, draw, drawing, studio drawing, /excalidraw."
 argument-hint: "[kind] [args...]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Agent, Skill
 metadata:
@@ -10,6 +10,11 @@ metadata:
 ---
 
 # /excalidraw · one door, ten drawing kinds
+
+**Studio drawing: read `../../project/haipipe-studio/CONSTITUTION.md` first** (JL 261119: "have you check the
+constintution that we want to make the vivid diagram???"). It wins over every kind's SKILL.md; A04: a Design is
+pictures (`haipipe-studio/scripts/icons.py`), never small tables and stickies. Read it before the first edit, also
+when you only add one node to an existing drawing.
 
 The ten `excalidraw-<kind>` skills beside this folder are hidden from the skill listing
 (`disable-model-invocation: true`, JL 261026: "一个入口，其余隐藏，不搬家"). They stay where they are,

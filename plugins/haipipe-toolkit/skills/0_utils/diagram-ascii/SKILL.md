@@ -1,10 +1,6 @@
 ---
 name: diagram-ascii
-description: >-
-  Fast ASCII diagrams with optional emoji for brainstorming, folder/code overviews, and
-  progress tracking. Use to sketch an idea, map a codebase, visualize a flow
-  inline, or make a complex relationship easier to scan. Ordinary replies stay
-  natural and concise; reply blocks are optional, never the default.
+description: "Fast ASCII diagrams with optional emoji for brainstorming, folder or code overviews and progress tracking. Use to sketch an idea, map a codebase or show a flow inline; ordinary replies stay plain. Trigger: ascii diagram, sketch an idea, map a codebase, /diagram-ascii."
 metadata:
   version: "0.5.2"
   last_updated: "2026-10-25"

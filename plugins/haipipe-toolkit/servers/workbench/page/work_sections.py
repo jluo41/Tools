@@ -292,5 +292,7 @@ def folded(body):
 
 def view_html(folder, root, data, view, section, start=1):
     """The view's numbered sections from `start`, or '' when the face names none (the caller keeps its fixed frame)."""
+    from live.paragraph_cards import mark_paragraphs    # a paragraph with an id carries marks and cards (JL 261116)
     parts = declared(folder, root, data, view)
-    return ''.join(section(n, title, folded(body)) for n, (title, body) in enumerate(parts, start))
+    return ''.join(section(n, title, mark_paragraphs(folded(body), folder, root, view))
+                   for n, (title, body) in enumerate(parts, start))

@@ -1,6 +1,6 @@
 ---
 name: haipipe-delivery
-description: "Owns the Block's delivery/ folder (a Job's or Task's output sits under its address there; a page shows its own plus its children's): where built output goes, the Delivery view, moving old outputs in, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs (build the PDF, Word file or web page, ref/page-delivery.md). Trigger: delivery, delivery/, where does the pdf go, build the docx, rebuild delivery, sent, pull from OneDrive, /haipipe-delivery, /haipipe-draft-delivery."
+description: "Owns the Block's delivery/ folder: where built output goes, the Delivery view, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs. Use to build a PDF, Word file or web page. Trigger: delivery, build the docx, sent, /haipipe-delivery, /haipipe-draft-delivery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.8.1"
@@ -116,7 +116,8 @@ On screen
 
 ```text
 Guide · Studio | Block · Job · Task | Delivery        top row: think → do → hand over
-Description · Report · Work Details · Runs            second row: what each level owns
+Description · Report · Work Details · Runs            second row: what each level owns (the older tabbed screen;
+                                                      a focus page: Report · Studio · Delivery · Interaction · Related)
 ```
 
 1. **Right end of the top row**: Delivery opens like Studio, only it selected, the second row

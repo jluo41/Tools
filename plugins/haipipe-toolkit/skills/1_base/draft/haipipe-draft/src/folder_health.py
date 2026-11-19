@@ -496,6 +496,23 @@ def check_row(folder: Path, plan_text: str, approved: bool, out: list):
 PERSON_STEPS = ("plan not signed", "sign the plan", "page.py sign-narrative", "Narrative was not rebuilt")
 
 
+def in_pieces(d: str, printed: str, gaps: int = 2) -> bool:
+    """The sentence's words in order, in at most `gaps` + 1 runs of two or more words: a page break with its page number
+    and a figure caption between the halves ("For" | 4 | Figure 4 … | "gender, the change was"; t02_results 261118)."""
+    words, i, at = d.split(), 0, 0
+    while i < len(words):
+        j = i
+        while j < len(words) and " ".join(words[i:j + 1]) in printed[at:]:
+            j += 1
+        if j == i or (j - i < 2 and j < len(words) and i > 0):
+            return False
+        at = printed.find(" ".join(words[i:j]), at) + 1
+        i, gaps = j, gaps - (j < len(words))
+        if gaps < 0:
+            return False
+    return True
+
+
 def check_printed(folder: Path, page: Path, blocks: list, out: list):
     """The final gate's last look (JL 261102: "the final draft is not consistent with the sturcutre"): every sentence
     of the current Draft is in the built LaTeX PDF, read back with pdftotext, so a reader gets what the plan says."""
@@ -512,14 +529,16 @@ def check_printed(folder: Path, page: Path, blocks: list, out: list):
     norm = lambda t: re.sub(r"\s+", " ", re.sub(r"<!--.*?-->|\\[a-zA-Z]+\*?|[{}$~\\]", " ", t)).translate(
         str.maketrans({"’": "'", "‘": "'", "“": '"', "”": '"', "-": None, "–": None, "—": None})).strip()
     # A sentence that crosses a page must still match: drop the page number and the running head between its halves.
-    printed = norm(re.sub(r"(?m)^\s*(\d{1,4}|DRAFT)\s*$", " ", text.replace("\f", "\n")))
+    # A lone character on its own line is a math glyph pdftotext lifted out of a formula (the radical of \sqrt reads
+    # back as "p" in the middle of the line above; ScalingGlucose t04 s163, 261118), so it goes too.
+    printed = norm(re.sub(r"(?m)^\s*(\d{1,4}|DRAFT|\S)\s*$", " ", text.replace("\f", "\n")))
     # LaTeX that prints as something else (a \\ref as its number, a \\cite as author and year, $math$ as symbols) cannot be
     # matched as written, so a sentence that holds any is matched on its longest plain run (JL 261112: the Methods
     # equations and the Results figure references read as missing although the PDF printed them).
     printed_as_other = re.compile(r"\\(?:auto|C|c)?ref\{[^}]*\}|\\cite\w*\{[^}]*\}|\$[^$]*\$")
     plain = lambda d: norm(max(printed_as_other.split(d), key=lambda seg: len(norm(seg))))
     drafts = [(b["address"], plain(b["draft"])) for b in blocks if b.get("draft")]
-    gone = [a for a, d in drafts if d and len(d) > 12 and d[:40] not in printed]
+    gone = [a for a, d in drafts if d and len(d) > 12 and d[:40] not in printed and not in_pieces(d, printed)]
     if gone:
         out.append(Finding(FAIL, "printed", f"{len(gone)} of {len(drafts)} Draft sentences are not in the printed "
                            f"{pdf.name}: {', '.join(gone[:6])}; adopt, then export"))
@@ -566,11 +585,18 @@ def folder_health(target: Path, final: bool = False) -> dict:
     from .page_adopt import content_gap
     gap = content_gap(page)
     if gap:
-        out.append(Finding(WARN, "content", f"Content prints {gap['printed']}; the current draft is {gap['current']}: "
-                           f"{gap['why']}, then page.py export"))
+        if gap.get("newer") == "content":     # never "adopt" an older Draft over a newer Content
+            out.append(Finding(WARN, "content", f"Content (changed {gap['face_at']}) is newer than {gap['current']} "
+                               f"(changed {gap['draft_at']}) and they differ: diff both, bring the Draft up to Content, "
+                               "never adopt"))
+        else:
+            out.append(Finding(WARN, "content", f"Content prints {gap['printed']}; the current draft is {gap['current']}: "
+                               f"{gap['why']}, then page.py export"))
     if final and plan is not None:
         check_printed(folder, page, blocks, out)
     check_threads(folder, stem, out)
+    from .comment_health import check_comments   # a person's comment with no reply (CONSTITUTION A01, JL 261118)
+    check_comments(plan_dir(folder) / RECORDS / f"{stem}-comments.md", out, Finding, WARN, OK)
     verdict = FAIL if any(f.level == FAIL for f in out) else (
         WARN if any(f.level == WARN for f in out) else OK)
     report = {"page": stem, "plan": plan.name if plan else None, "verdict": verdict,

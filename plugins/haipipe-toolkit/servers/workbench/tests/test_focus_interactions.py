@@ -19,7 +19,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         empty = focus_page.render(frame.Theme(name='work'), self.root, self.block)   # always on the rail (JL 261031)
         self.assertNotIn('No Interactions linked to this view.', empty)   # an empty section is hidden (JL 261113)
         self.assertIn('>Delivery<', empty)                                     # Delivery too (JL 261031)
-        self.assertIn('Nothing handed over yet', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'delivery'))
+        self.assertNotIn('Nothing handed over yet', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'delivery'))
         topic = self.block / 's01-first'
         topic.mkdir()
         (topic / 's01-first.md').write_text('s01 · First idea\n=====\n')
@@ -80,9 +80,9 @@ class FocusPageTest(fixtures.FocusPageCase):
             self.assertIn('>🙋 Interaction</a>', page)       # a waiting question flags it (JL 261031: "flag them as well")
             self.assertNotIn('Questions for you', page)
             self.assertNotIn('Answered</a>', page.replace('>Answered</a>', ''))
-        # a Status row whose Job or Task waits on the person carries the same 🙋 Interaction button (JL 261109: "could we
-        # change this to the interaction?"), which replaced the row's 🙋 Answer; a row with nothing waiting carries none
-        self.assertIn(button(job), focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'))
+        # a Plan + Results row whose Job or Task waits on the person carries 🙋 N, and its card is the question form
+        # itself (JL 261116: "for the interactions, it can be ... the question card"); a row with nothing waiting, none
+        self.assertIn('data-im-open="j01~ask">🙋 1<', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'))
         self.assertNotIn('🙋 Answer', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work'))
         self.assertIn(button(topic), focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio'))
         listed = focus_page.part_document(topic, self.root, 'interactions')      # the pop-out: the topic's items
@@ -121,7 +121,8 @@ class FocusPageTest(fixtures.FocusPageCase):
                 self.assertIn('data-ixq="Q1"', html, (page.name, section))
                 if section == 'work':                  # shown once: Process no longer repeats it (JL 261105)
                     self.assertNotIn('Waiting on you', html, page.name)
-                    self.assertEqual(html.count('data-ixq="Q1"'), 1, page.name)
+                    # once in the view's 🙋 Interaction, and once in each row card that waits on it (JL 261116)
+                    self.assertEqual(html.count('data-ixq="Q1"'), 1 + html.count('lc-ask" data-im-slot'), page.name)
         other = focus_page.render(theme, self.root, self.block, 'report', 'mindmap')
         self.assertNotIn('data-ixq="Q1"', other)  # Child inbox belongs to Status; rail aggregates it.
         self.assertIn('data-ixq="Q1"', focus_page.part_document(job, self.root, 'interactions'))

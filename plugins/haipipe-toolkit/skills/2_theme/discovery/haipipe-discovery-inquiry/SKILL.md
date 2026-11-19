@@ -1,11 +1,6 @@
 ---
 name: haipipe-discovery-inquiry
-description: >-
-  Discovery Folder contract for one inquiry. It owns folder-kind discovery,
-  the four-role article Page Face, the Paper/Source Run Task Face, selected
-  workbenches, Discovery controller routing, shared Page-workflow handoff, cross-face closure,
-  and evidence handoff. Use when resolving,
-  scaffolding, checking, or closing one BJTR Discovery Task Page Folder.
+description: "Discovery Folder contract for one inquiry: the four-role article Page Face, the Paper/Source Run Task Face, controller routing, closure and evidence handoff. Use to scaffold, check or close one Discovery Task Page Folder. Trigger: discovery inquiry, discovery folder, /haipipe-discovery-inquiry."
 metadata:
   version: "0.7.3"
   last_updated: "2026-10-11"

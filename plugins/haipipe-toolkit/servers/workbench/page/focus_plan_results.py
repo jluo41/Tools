@@ -14,10 +14,10 @@ from live.focus_styles_bands import BAND_CSS, DC_CSS, FINDINGS_CSS, band_sec, nu
 from live.focus_runs import (STAGE_WORD, data_card, data_card_html, mark_word, output_run, run_headline, run_rows,
     run_url)
 from live.focus_ui import ui_todo
-from live.focus_interactions import answer_link
 from live.focus_tree import fold_tree, output_of
 from live.focus_findings import FOUND_STAGE, answer_state, output_sections
 from live.focus_identity import plain_type
+from live.ladder_cards import ASSETS as LC_ASSETS, row_cards
 
 
 def runs_section(task: Path, root: Path, outputs: bool = False) -> tuple | None:
@@ -25,12 +25,14 @@ def runs_section(task: Path, root: Path, outputs: bool = False) -> tuple | None:
     rows = run_rows(task)
     if not rows:
         return None
+    cards = {r: row_cards(r, root, head or r.name) for r, _, head in rows}   # its marks and cards (JL 261116)
     items = "".join(
-        f'<li>{state_mark(mark)}<a href="{frame.esc(run_url(r, root))}" '
+        f'<li>{"" if "~ask" in cards[r][0] and "wait" in (mark or "").lower() else state_mark(mark)}'
+        f'<a href="{frame.esc(run_url(r, root))}" '
         f'data-pop="{frame.esc(task.name + " · " + r.name)}">{frame.esc(r.name)}</a>'
-        + (f'<span class=hl>{frame.esc(head)}</span>' if head else '')
+        + (f'<span class=hl>{frame.esc(head)}</span>' if head else '') + cards[r][0]
         + ((f'<details class="dc-fold"><summary>Data out</summary>{data_card_html(dc, compact=True)}</details>')
-           if (dc := data_card(r)) else '') + '</li>' for r, mark, head in rows)
+           if (dc := data_card(r)) else '') + cards[r][1] + '</li>' for r, mark, head in rows)
     words = [mark_word(m) for _, m, _ in rows]
     waiting = sum(w.startswith("waiting") for w in words)   # a waiting form is counted here and asked in 🙋 Interaction
     # a state word, never a tally (AGENTS.md § Page words): each Run's own state is on its row
@@ -71,12 +73,13 @@ def tasks_section(job: Path, root: Path, outputs: bool = False) -> tuple | None:
         run = output_run(t)
         head = run_headline(run) if run else ""
         runs = runs_section(t, root, outputs)
+        strip, slot = row_cards(t, root, page_title(t))     # its marks and cards, as a sentence's (JL 261116)
         rows += (f'<details class=job-row><summary>'            # its title in words, its folder name on hover (round 3)
                  f'<a href="{frame.esc(page_url(t, root))}" data-pop="{frame.esc(t.name)}" title="{frame.esc(t.name)}">'
                  f'<b>{frame.esc(page_title(t))}</b></a>'
-                 + f'<span class=hl>{frame.esc(head)}</span>{answer_link(t, root)}'
-                 + state_mark(state_words(label) if label else "") + '</summary>'   # a mark, the word in its hover (JL 261113)
-                 f'<div class=job-tree>{output_of(t, root)}{runs[2] if runs else ""}</div></details>')   # its figure first (261102)
+                 + f'<span class=hl>{frame.esc(head)}</span>'
+                 + state_mark(state_words(label) if label else "") + strip + '</summary>'   # a mark, the word in its hover (JL 261113)
+                 f'<div class=job-tree>{output_of(t, root)}{runs[2] if runs else ""}</div></details>{slot}')   # its figure first (261102)
     said, word, n, share, fill = job_progress(job, root)
     return "🧱 Tasks", word, rows, share         # its state word, never "N of M done": each Task row shows its own
 
@@ -255,12 +258,13 @@ def job_row(j: Path, js: list, root: Path, outputs: bool = False) -> tuple:
     emoji = (re.search(r"(?m)^emoji:\s*(\S+)", jt) or [None, ""])[1]
     said, word, n, share, fill = job_progress(j, root)
     goal = one_line(read_face(j, root)["goal"], 300)
+    strip, slot = row_cards(j, root, job_short(j, js, root))   # its marks and cards, as a sentence's (JL 261116)
     row = (f'<details class=job-row><summary><span class=jn>{emoji + " " if emoji else ""}{j.name[:3]}</span>'
            + f'<a href="{frame.esc(page_url(j, root))}" data-pop="{frame.esc(j.name)}" title="{frame.esc(j.name + ": " + goal)}"><b>{frame.esc(job_short(j, js, root))}</b></a>'
-           + answer_link(j, root) + f'<small title="{frame.esc(word)}">{JOB_MARK.get(word, "⬜")}</small>'   # a mark, no
+           + f'<small title="{frame.esc(word)}">{JOB_MARK.get(word, "⬜")}</small>' + strip +   # a mark, no
            # state word or Task count (AGENTS.md § Page words, JL 261113); the bar beside it shows how far
            f'<span class=bar><i class="{"part" if word == "partly" else ""}" style="width:{share}%"></i></span></summary>'
-           f'<div class=job-tree>{fold_tree(j, root, "Job", outputs=outputs)}</div></details>')
+           f'<div class=job-tree>{fold_tree(j, root, "Job", outputs=outputs)}</div></details>{slot}')
     return row, word, n, fill
 
 
@@ -329,7 +333,8 @@ def status_now_html(folder: Path, root: Path, level: str, topics: list, outputs:
         secs.append(studio + ("",))
     if not head and not secs:
         return ""
-    return side_css() + state_lead(folder, root, level) + head + numbered(secs, head.count("<details class=band-sec>") + 1) + PB_JS
+    return (side_css() + LC_ASSETS + state_lead(folder, root, level) + head
+            + numbered(secs, head.count("<details class=band-sec>") + 1) + PB_JS)
 
 
 def state_lead(folder: Path, root: Path, level: str) -> str:

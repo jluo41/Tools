@@ -94,7 +94,7 @@ Hand-off contract (Stage 4 -> 5):
   and target column conventions must match what the hainn algorithm
   classes expect (layout is workspace-dependent; see /haipipe-nn).
 
-Labels live here (REACH PD2D, JL 260923):
+Labels live here (an EHR project, JL 260923):
   - b03 stores outcome events as lists; a label Fn in b10
     (`j01_tfmfn_label/tNN_tfmfn_Output<Name>`) turns them into Y; it exposes
     `label_of(case)` and `tfm_fn`. Kinds:

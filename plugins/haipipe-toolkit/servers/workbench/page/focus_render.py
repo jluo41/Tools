@@ -20,7 +20,7 @@ from live.focus_reports import (OLD_KEYS, OLD_VIEWS, THEME_ORDER, VIEW_WORDS, bl
     overview_report_html, overview_summary, question_cards, reports_html, status_view, theme_title, themes_view)
 from live.focus_tree import status_html
 from live.project_branches import branches_html
-from live.focus_studio import folder_html, related_html, studio_html, studio_none, timeline_events, timeline_html, topic_rows
+from live.focus_studio import files_html, folder_html, related_html, studio_html, studio_none, timeline_events, timeline_html, topic_rows
 from live.focus_delivery import delivery_html
 from live.focus_themes import (_draft_css, design_views, draft_parts, insight_board_report, insight_job_work,
     insight_views_for, page_skills, paper_board_report, paper_board_work, paper_delivery, paper_delivery_views,
@@ -461,8 +461,8 @@ def section_body(ctx: PageContext) -> None:
         bar = groups_nav or (f'<nav class="section-views" aria-label="Views"><a href="{frame.esc(page_url(folder, root, section))}"'
                              f' aria-current="page">{one}</a></nav>')
         body = {"studio": lambda: (draft["studio_top"]() if draft else "") + (studio_html(topics, root, selected[2], card_interactions(folder, root))
-                                                                            if topics else studio_none(folder, root)), "delivery": lambda: (delivery() if callable(delivery) else delivery) or '<p class="mut">Nothing handed over yet: a delivery lands in this folder\'s <code>delivery/</code> once it is agreed.</p>',
-                "related": lambda: related, "files": lambda: folder_html(folder, root),
+                                                                            if topics else studio_none(folder, root)), "delivery": lambda: (delivery() if callable(delivery) else delivery) or "",   # empty: nothing drawn
+                "related": lambda: related, "files": lambda: files_html(folder, root),
                 "skills": lambda: page_skills(folder, root, theme.name, level, bool(draft), bool(topics), bool(inbox), paper),
                 "timeline": lambda: (branches_html(folder, root) if level == "Project"   # a Project: one line per Block
                                      else timeline_html(events, folder, root))}[section]()

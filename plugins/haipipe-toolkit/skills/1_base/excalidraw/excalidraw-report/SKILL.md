@@ -1,14 +1,6 @@
 ---
 name: excalidraw-report
-description: >-
-  Draw in Excalidraw, in one of two modes. A scratch: a sketchy whiteboard packed with the
-  real material of a question (or, for design work, its concepts with placeholders), laid
-  out as loose clusters, sticky notes, arrows and red marks, with the questions in a frame,
-  seeded by a script in studio/_build/ that never overwrites what the person drew, and a
-  comment loop on the canvas. A report drawing: a report's answer and its evidence (values,
-  plots from a native plot kit, tables, embedded source figures, the logic), one drawing per
-  report with named frames, linked from its Evidence. Use for a scratch, a working drawing,
-  "draw it so we can think", "too structured", a report's picture, plots, /excalidraw-report.
+description: "Draws in Excalidraw in two modes: a scratch (a sketchy whiteboard of a question's material, with a comment loop) and a report drawing (a report's answer and evidence in named frames). Use to think on a canvas or picture a report. Trigger: scratch, working drawing, /excalidraw-report."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:

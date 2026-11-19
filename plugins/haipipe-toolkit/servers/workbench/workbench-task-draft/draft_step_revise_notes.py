@@ -48,9 +48,19 @@ def _who(w: str, t: str) -> tuple:
     its time, `- Note · 2026-11-10 11:20 · Ritu Agarwal: …` (JL 261113: "we should collect the co-author's comments as
     well"); a line with no name is the person's (You) or a pass's reply (AI)."""
     name = t.split(" · ", 1)[1].strip() if " · " in t else ""
-    if not name:
-        return ("AI", False, "AI") if w == "Reply" else ("You", False, "You")
+    if not name or name == "AI":                    # "- Note · <time> · AI: …" is the AI's own comment (A03)
+        return ("AI", False, "AI") if w == "Reply" or name == "AI" else ("You", False, "You")
     return name, True, "".join(p[0] for p in name.split()[:2]).upper()
+
+
+def _note_text(x: str) -> str:
+    """A message's first line, then its indented "1. …" or "- …" lines as a list (JL 261118: "I want to make this to be
+    more readable, with the bullet points")."""
+    head, *rest = x.split("\n")
+    items = [re.sub(r"^(?:\d+[.)]|[-*])\s+", "", y) for y in rest]
+    tag = "ol" if rest and re.match(r"\d+[.)]\s", rest[0]) else "ul"
+    return _inline(head, {}) + (f'<{tag} class=nt-list>' + "".join(f"<li>{_inline(y, {})}</li>" for y in items)
+                                + f"</{tag}>" if items else "")
 
 
 def _note_card(c: dict, by: list) -> str:
@@ -61,10 +71,11 @@ def _note_card(c: dict, by: list) -> str:
     st, replied = c["state"], any(w == "Reply" for w, _, _ in c["thread"])
     when = lambda t: t[5:] if re.match(r"\d{4}-", t) else t            # 2026-10-21 14:32 → 10-21 14:32
     msgs = "".join(
-        f'<div class="nt-msg{" nt-ai" if w == "Reply" else " nt-co" if _who(w, t)[1] else ""}"><span class=nt-av>{esc(_who(w, t)[2])}</span>'
+        f'<div class="nt-msg{" nt-ai" if _who(w, t)[0] == "AI" else " nt-co" if _who(w, t)[1] else ""}"><span class=nt-av>{esc(_who(w, t)[2])}</span>'
         f'<div><div class=nt-who><b>{esc(_who(w, t)[0])}</b> <span>{esc(when(t.split(" · ")[0]))}</span></div>'
-        f'<div class=nt-text>{_inline(x, {})}</div></div></div>' for w, t, x in c["thread"])
-    cards = (f'<div class=nt-cards>↳ {" · ".join(esc(h) for h in by)}</div>' if by else "")
+        f'<div class=nt-text>{_note_text(x)}</div></div></div>' for w, t, x in c["thread"])
+    cards = (f'<div class=nt-cards>↳ {" · ".join(f"<a class=nt-go role=button tabindex=0 data-card=\"{esc(h)}\">{esc(h)}</a>" for h in by)}</div>'
+             if by else "")                     # a click opens that card beside its sentence (A03)
     acts = (["reply", "delete"] if st == "open" and not replied else ["reply"] if st == "open"
             else ["done", "reply"] if st == "answered" else ["reopen"])
     label = {"reply": "Reply", "done": "✓ Resolve", "reopen": "Reopen", "delete": "Delete"}
@@ -83,7 +94,7 @@ def _note_card(c: dict, by: list) -> str:
             f'<div class=nt-head><span class="nt-s rv-handle">{esc(c["target"])}</span> <span class="nt-state nt-{esc(st)} rv-handle">'
             f'{NOTE_LABEL.get(st, esc(st))}</span>'
             + (f'<span class=rv-peek style="flex:1;min-width:0">{esc(_who(*c["thread"][-1][:2])[0])}: '
-               f'{esc(c["thread"][-1][2])}</span>' if c["thread"] else "") + '</div>'
+               f'{esc(c["thread"][-1][2].split(chr(10))[0])}</span>' if c["thread"] else "") + '</div>'
             + (f'<div class=nt-quote>“{esc(c["quote"])}”</div>' if c["quote"] else "")
             + msgs + cards
             + '<textarea class=nt-box rows=2 placeholder="Reply…"></textarea>' + buttons + '</div>')

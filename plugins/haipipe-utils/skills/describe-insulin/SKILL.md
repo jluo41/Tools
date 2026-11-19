@@ -1,6 +1,6 @@
 ---
 name: describe-insulin
-description: "Turn an insulin product name into pharmacokinetic parameters: class, onset, peak, duration. Consumes describe-medication's DrugKey, and also serves cohorts that name only an insulin CLASS (OhioT1DM) or a product the FDA Directory does not list (Shanghai). Use when insulin-on-board or insulin action timing is needed, or when insulin rows must be classified rapid/short/intermediate/long/ultra-long/premix. Trigger: describe insulin, insulin PK, onset peak duration, IOB, insulin on board, DIA, basal bolus, insnorm, 胰岛素药代."
+description: "Turns an insulin product name or class into pharmacokinetic parameters: class, onset, peak, duration; consumes describe-medication's DrugKey. Use for insulin on board, action timing or classifying insulin rows. Trigger: describe insulin, insulin PK, IOB, insnorm, 胰岛素药代, /describe-insulin."
 metadata:
   version: "0.1.2"
   last_updated: "2026-11-02"

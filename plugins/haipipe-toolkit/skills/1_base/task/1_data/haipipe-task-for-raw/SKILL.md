@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-raw
-description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd> (Spark on the server for PHI), and a raw-understanding Block profiles each table and hands it to Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /haipipe-task raw."
+description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd>, and a raw-understanding Block profiles each table for Source. Called by /haipipe-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /haipipe-task raw."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true
 metadata:

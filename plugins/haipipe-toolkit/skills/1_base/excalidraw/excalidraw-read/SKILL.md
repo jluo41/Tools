@@ -1,13 +1,6 @@
 ---
 name: excalidraw-read
-description: >-
-  Read one paper's PDF onto an Excalidraw canvas: the paper's logic as a chain (question, gap,
-  method, result, claim, limit), its key passages shot from the PDF with the quoted words
-  highlighted, a comment on each, and how each passage links to our paper (supports,
-  contrasts, borrows, cites, gap) against our paper's own claims. Reads the parts that carry
-  the argument, not every corner. A file we change, shown section by section with its
-  changes, is excalidraw-draft. Use for "read this paper", "draw this paper", "screenshot
-  the key parts", "how does this paper link to ours", a paper reading canvas, /excalidraw-read.
+description: "Reads one paper's PDF onto an Excalidraw canvas: its logic as a chain, key passages shot from the PDF with quoted words highlighted, a comment on each, and how each links to our paper. Use for a paper reading canvas. Trigger: read this paper, screenshot the key parts, /excalidraw-read."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -157,7 +150,7 @@ Needs poppler (`pdftotext`, `pdftoppm`), Pillow and PyYAML. The writer and the p
 `haipipe-studio`'s `scripts/canvas.py` and `scripts/render_png.py`. For the real Excalidraw
 render of one frame, use `excalidraw-report`'s `ref/render_excalidraw.py --frame "Paper logic"`.
 
-Worked example: `Knowledge-SPACE/examples-1-theory/Project-Psych-Theory/notes/reads/salvi-2024-gpt4-persuasion/`.
+Worked example: `<Notes-SPACE>/examples-1-theory/Project-Psych-Theory/notes/reads/salvi-2024-gpt4-persuasion/`.
 It reads Salvi et al.'s GPT-4 persuasion trial against a megastudy paper's claims C1, C2 and C5.
 
 
@@ -181,7 +174,7 @@ passages highlighted and a numbered note level with each, then its logic and its
 2. **One reading per paper**, `reads/<id>-<paper>/reading.yaml`, its `paper.pdf` the Block's `related/paper/` file.
 3. **Unread is red.** A paper with no reading yet shows as one red card: "PDF kept, not read yet" or "no PDF yet".
 4. The page frame is excalidraw-task's `transcript_frame` with `noun="paper"`, `us="Our paper"`. Worked example:
-   Physician-SPACE `Paper-LLMRecPhy-Jama/s07-related-work-audits-of-who-llms-name/`.
+   `<Project-SPACE>` `Paper-LLMRecPhy-Jama/s07-related-work-audits-of-who-llms-name/`.
 
 
 Revise mode moved

@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-evaluation
-description: >-
-  The Quality › Evaluation view skill of the labeling theme: it
-  qualifies executors on the locked test: one prediction and one scorecard per candidate, then the preregistered selection. Every Run in this view names this skill, and no other view uses it.
-  Use for executor evaluation, executor-predict, executor-score, executor-select, scorecards, baseline, choosing the model, or /haipipe-labeling evaluation.
+description: "Quality › Evaluation view of the labeling theme: qualifies executors on the locked test with one prediction and one scorecard per candidate, then the preregistered selection. Use to choose the model. Trigger: executor-predict, executor-score, executor-select, /haipipe-labeling evaluation."
 disable-model-invocation: true
 metadata:
   version: "0.1.1"

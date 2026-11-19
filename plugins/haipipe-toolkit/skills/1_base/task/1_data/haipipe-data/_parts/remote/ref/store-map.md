@@ -26,7 +26,7 @@ ExternalStore/@inference ⚙opt LOCAL_REFERENCE_STORE   REMOTE_REFERENCE_STORE  
 
 ⚙opt = OPTIONAL store: listed for addressing, but not exported by every workspace's env.sh and often absent on disk.
 `status` probes only the stores whose env vars are actually exported — do not report an un-exported optional store as "missing".
-Also on disk but DELIBERATELY NOT SYNCED (no store-map row, no env pair): `_WorkSpace/LearnStore/`, `_WorkSpace/0-REACH-RAW-Store/`.
+Also on disk but DELIBERATELY NOT SYNCED (no store-map row, no env pair): `_WorkSpace/LearnStore/`, `_WorkSpace/0-<Project>-RAW-Store/`.
 
 `LOCAL_RAW_STORE` resolves to `_WorkSpace/0-RawDataStore`, but hai-remote-sync's `--rawdata` flag uses `REMOTE_RAWDATA_STORE` -- note the name asymmetry (RAW vs RAWDATA).
 
@@ -38,10 +38,10 @@ Resolving a User Path
 ```
 User typed                            Resolves to
 ------------------------------------- -----------------------------------------
-1-SourceStore/WellDoc2025CVS          --path 1-SourceStore/WellDoc2025CVS
-SourceStore/WellDoc2025CVS            same (case/prefix forgiving)
-source/WellDoc2025CVS                 same
-WellDoc2025CVS (no store)             ASK which store -- do not guess
+1-SourceStore/<SourceSet>             --path 1-SourceStore/<SourceSet>
+SourceStore/<SourceSet>               same (case/prefix forgiving)
+source/<SourceSet>                    same
+<SourceSet> (no store)                ASK which store -- do not guess
 ```
 
 When the user gives a bare cohort name without a store, ask rather than guess.

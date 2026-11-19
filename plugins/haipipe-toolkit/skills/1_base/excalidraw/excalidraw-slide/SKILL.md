@@ -1,13 +1,6 @@
 ---
 name: excalidraw-slide
-description: >-
-  Draw a slide draft: a deck proposed on one Excalidraw canvas before it is built, as a studio topic s61-s69.
-  It starts from the ask (who the deck is for, how long, when it is shown, each pain with the slide that
-  answers it); one `slides.py` is the one source the drawing and the deck both read. The canvas reads left to
-  right: the logic flow, the slides at half size, then what is on disk and the open questions. The deck is
-  generated into the topic's own delivery/. Use to take the ask, propose, draw, check or revise a deck before
-  building it. Trigger: slide draft, propose a deck, what they want, the ask, slides.py, deck outline, logic
-  flow of a talk, s61, presentation draft, /excalidraw-slide.
+description: "Draws a slide draft: a deck proposed on one Excalidraw canvas before it is built, as a studio topic s61-s69, from the ask and one slides.py that the drawing and the deck both read. Use to propose, draw, check or revise a deck. Trigger: slide draft, propose a deck, slides.py, /excalidraw-slide."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -112,7 +105,7 @@ Boundary
 | `excalidraw-slide` | how a slide job goes: the ask before the draft, `slides.py`'s fields, the frames, the skeleton, the accent, screens and figures, the deck writer's contract |
 | `excalidraw-studio` | how an ordinary topic reads, the ask topic among them; it leaves a slide draft's sizes to this skill |
 | `excalidraw-report` | a report's drawing; a scratch |
-| `html-ppt` | a standalone HTML deck, when one is asked for |
+| `display/html-ppt/PART.md` (read by path; not a listed skill) | a standalone HTML deck, when one is asked for |
 
 
 Files

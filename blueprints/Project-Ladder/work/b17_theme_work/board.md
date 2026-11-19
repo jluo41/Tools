@@ -16,6 +16,7 @@ ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_so
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
 ui-task: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
 ui-task: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work
+ui-task: blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t03_results
 ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main
 ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables/runs/r02_build_tables
 ui-run: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work/runs/r01_example2024_policy

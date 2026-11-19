@@ -1,15 +1,6 @@
 ---
 name: haipipe-design
-description: >-
-  The one door for the design theme on the ladder: a design Block (one application, one channel), a Job (one
-  goal × one method version × one inputs version → N designs), a Task per method step, and their Runs. Owns
-  the ladder contract and scaffold (design_ladder.py); routes the rest to the goal, method, unit, workflow and
-  delivery owners. `/haipipe-design update <Block>` brings an older design Block onto the current names and
-  makes its Design Method Book. Use to set up a design Block, launch a Job, open its design Tasks, audit or
-  update a design folder, find who owns a design Run, or read an older Design Folder board; where a Job stands
-  is haipipe-design-workflow's. Trigger: design Block, set up a design Block, launch a design Job, open the
-  design Tasks, design ladder, update design block, update the old design Block, Design Method Book,
-  /haipipe-design, /haipipe-design update.
+description: "The one door for the design theme: a design Block, its Jobs, Tasks and Runs; owns the ladder contract and scaffold. Use to set up a Block, launch a Job or update an older Block. Trigger: design Block, launch a design Job, design ladder, update design block, /haipipe-design, /haipipe-design update."
 metadata:
   version: "0.4.2"
   last_updated: "2026-10-26"

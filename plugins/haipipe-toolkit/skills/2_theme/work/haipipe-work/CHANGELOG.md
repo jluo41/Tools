@@ -1,3 +1,7 @@
+## [0.3.1] — 2026-11-16
+
+- `update` gives each paragraph and one-line item of a face's own sections its invisible id (`servers/workbench-work/paragraph_ids.py`), so it can carry marks and cards (JL 261116); a built file is left to its builder.
+
 ## [0.3.0] — 2026-11-14
 
 - 🗺️ Work map on every work Block's Overview: a line per Job, a station per Run, a click opens the Run in the pop-out (`work_map.py`); b41 draws its decisions with the same code (JL 261114).

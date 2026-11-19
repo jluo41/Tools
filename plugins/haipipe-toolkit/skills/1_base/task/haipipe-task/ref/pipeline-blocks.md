@@ -102,7 +102,7 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   `src/`, and rules they share in the Block's `src/config-defaults.yaml`,
   under each Job's own (task_entry reads both).
 - A Task folder names its Fn or ProcName exactly, CamelCase kept
-  (`t02_recordfn_REACHPatientUniverse`, `t05_procdf_Social`), and its Runs
+  (`t02_recordfn_<Family>PatientUniverse`, `t05_procdf_Social`), and its Runs
   name only the action (`r01_build`, `r01_card`, `r02_materialize`): the
   Task already says what they act on.
 - In a dataset Job, `t01`-`t09` cover the whole dataset (build, materialize,

@@ -36,10 +36,10 @@ The concrete value is EXTERNAL CONFIGURATION: it lives in the workspace's gitign
 Each `REMOTE_*_STORE = ${REMOTE_ROOT}/<store-folder>/`.
 
 The asset path under each store is `{name}/...` -- the same shape on both sides.
-So pulling `1-SourceStore/WellDoc2025CVS` means transferring:
+So pulling `1-SourceStore/<SourceSet>` means transferring:
 
 ```
-s3://.../1-SourceStore/WellDoc2025CVS/   <-->   _WorkSpace/1-SourceStore/WellDoc2025CVS/
+s3://.../1-SourceStore/<SourceSet>/   <-->   _WorkSpace/1-SourceStore/<SourceSet>/
 ```
 
 ---
@@ -113,7 +113,7 @@ The CLI accepts two modes; the skill uses both.
 **Path mode** (any subpath of any store):
 
 ```bash
-hai-remote-sync --push --path 1-SourceStore/WellDoc2025CVS
+hai-remote-sync --push --path 1-SourceStore/<SourceSet>
 hai-remote-sync --pull --path 2-RecStore
 hai-remote-sync --pull --path 1-SourceStore --dry-run
 ```
@@ -121,7 +121,7 @@ hai-remote-sync --pull --path 1-SourceStore --dry-run
 **Named-store mode** (typed convenience):
 
 ```bash
-hai-remote-sync --pull --source --name WellDoc2025CVS
+hai-remote-sync --pull --source --name <SourceSet>
 hai-remote-sync --push --record --name MyRecordSet
 ```
 

@@ -185,7 +185,7 @@ These same constraints apply to the sibling `haipipe-end deploy sagemaker` skill
 
 **1.
 SSO role needs SageMaker action permissions explicitly.** The
-   non-prod permission set an account is given (and most baseline
+   `<org>-nonprod-<user-group>` permission set (and most baseline `<org>`
    SSO sets) does NOT grant `sagemaker:*` by default. Without it the first
    `DescribeEndpoint` / `CreatePipeline` call returns:
 
@@ -219,7 +219,7 @@ SSO role needs SageMaker action permissions explicitly.** The
 
    Cleanest fix: attach AWS-managed `AmazonSageMakerFullAccess` to the
    SSO permission set. Curated alternative in
-   `<project>/work/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired WellDoc project)`.
+   `<project>/work/<endpoint-group>/01_endpoint_*/IAM_REQUEST.md (illustrative — from a retired project)`.
 
 **2.
 Multi-arch OCI manifests break SageMaker.** If a training image is

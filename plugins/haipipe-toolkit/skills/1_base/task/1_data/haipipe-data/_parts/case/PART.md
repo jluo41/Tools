@@ -99,14 +99,14 @@ Feature boundary:
   until their SourceFn moves to the lookup model, proven by an identical
   AIDataSet.
 
-Facts, not labels (REACH PD2D, JL 260923):
+Facts, not labels (an EHR project, JL 260923):
   - The CaseSet holds FACTS. An outcome is an event CaseFn over ONE signal
     record: every row from the case date on as `{n_events, days, values}` in
     `<CaseFn>--val` (days 0 to 7300; `values` only when the record has a value
     column). The window starts one day early (`DistStartToPredDT: -1440`) so
     day 0 is never lost. It is named `<Feature><Window>` like every CaseFn:
-    project prefix + the record without its `REACH` prefix + the window
-    (`REACHSignalDiabPresentA1c`, `Af20Y` -> `REACHPD2DSignalDiabPresentA1cAf20Y`).
+    project prefix + the record without its `<Family>` prefix + the window
+    (`<Family>SignalDiabPresentA1c`, `Af20Y` -> `<Family><Proj>SignalDiabPresentA1cAf20Y`).
     An event CaseFn decides nothing. The label (within 1 year, 2 years, time to event) is a
     rule over those lists and lives in b10 (`/haipipe-data aidata`), so a new
     outcome is a new label Fn, never a new CaseSet.
@@ -116,7 +116,7 @@ Facts, not labels (REACH PD2D, JL 260923):
   - Trigger kinds: one case per patient (first qualifying signal, prior
     outcome flagged not dropped, e.g. `ExcludedPriorDiab = 1`), or the long
     `all_visit` kind (the long df_case), one case per patient per visit day
-    (`REACHEncounterDay`) with `NEncounters` and `Phase` = `before_prediab`,
+    (`<Family>EncounterDay`) with `NEncounters` and `Phase` = `before_prediab`,
     `prediab` or `after_diab` against `IndexDate` and `FirstDiabDate`.
     Nothing is dropped in either. Each is its own TriggerFn.
   - A CaseSet VERSION is a Run: `j5N_<cohort>_v<yymmdd>_case/
@@ -124,15 +124,15 @@ Facts, not labels (REACH PD2D, JL 260923):
     (`r01_prediabvisit`, `r02_allvisit`), never a new Task or Job. It is
     stored as `@v<case_set_version>CaseSet-<TriggerFolderName>`.
   - Record names bind the HumanFn: a CaseFn reads `h<HumanFn>.r<RecordFn>`
-    (`hHmREACHPD2DPtt.rREACHDxDay.cBf90d`). A project with its own HumanFn
+    (`hHm<Family><Proj>Ptt.r<Family>DxDay.cBf90d`). A project with its own HumanFn
     cannot reuse another project's feature CaseFns as they are; it rebinds
-    them under its own name (`REACHDxStatsBf90d` -> `REACHPD2DDxStatsBf90d`),
+    them under its own name (`<Family>DxStatsBf90d` -> `<Family><Proj>DxStatsBf90d`),
     with the HumanFn set once in `b03_casestore/src/config-defaults.yaml`
     (`human_fn`).
   - Generated, never hand-edited: `b03_casestore/src/casefn_build.py` writes
     each Fn from its Run config, and the build Run fails unless the committed
     `code/haifn/fn_case/<Fn>.py` matches byte for byte.
-  - Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/b03_casestore/`.
+  - Reference: `<EHR-SPACE>` `examples/Project-<Family>-<Proj>/work/b03_casestore/`.
 
 
 Partition Support

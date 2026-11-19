@@ -1,6 +1,6 @@
 ---
 name: haipipe-display-method
-description: "Method displays: figures that show HOW a study works, not what it found, so a reader such as an advisor understands the design at a glance. Main kind 🕒 timeline: the study on one clock (each unit's timeline as bars with the event as one grey band, the periods and what each window is for, the comparison as boxes, treated minus control). Also 🗺 workflow (one row per step from raw data to the analysis file, with the file's real columns and made-up example rows) and 🧮 design (the difference in differences, the models as equations, what each piece removes). Drawn from a YAML spec by scripts/method_display.py; shown in a paper's Method group (group: method). Trigger: method figure, study design figure, how the dataset is built, workflow map, explain the methods, design of the regression, /haipipe-display-method."
+description: "Method displays: figures that show how a study works, not what it found: a timeline, a workflow from raw data to the analysis file, and a design figure with equations. Use to draw one from a YAML spec. Trigger: method figure, study design figure, explain the methods, /haipipe-display-method."
 metadata:
   version: "0.2.0"
   last_updated: "2026-11-06"

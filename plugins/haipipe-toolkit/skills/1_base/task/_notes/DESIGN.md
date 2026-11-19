@@ -8,7 +8,7 @@ task — Task-Type Specialist Series (DESIGN)
 ==============================================
 
 Status: v5.1.0 (2026-06-21). 4-phase code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
-Owner:  jluo41
+Owner:  <maintainer>
 Scope:  job lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
         mirroring the /haipipe-data and /haipipe-nn pattern.
 

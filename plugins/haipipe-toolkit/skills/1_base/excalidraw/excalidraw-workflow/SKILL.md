@@ -1,15 +1,6 @@
 ---
 name: excalidraw-workflow
-description: >-
-  A study's workflow drawn as one building map, left to right: the finished data, its sources, the tests, each
-  sub-question's analysis, its guess and claim, and where the answer lands in the paper. With a version's
-  comments report it adds the review overlay: red ❗ on what the reviewers asked to change, green 🛠 on the work
-  that fixes it. scripts/workflow_drawing.py builds it from the topic's <topic>-drawing.yaml;
-  scripts/paperflow_drawing.py draws the s04-paper-workflow (Sections, displays, dated steps to the send). Use
-  to draw or redraw a paper's workflow, see what the reviewers hit and what answers each point, or give a new
-  paper the same map. Trigger: draw the paper workflow, building map, workflow drawing, paper structure map,
-  what did the reviewers hit, review overlay, paper flow, s04 drawing, sections and displays, timeline to the
-  send, /excalidraw-workflow.
+description: "Draws a study's workflow as one building map, left to right, from the data and tests to where each answer lands in the paper, with a review overlay for reviewer comments; also the s04 paper flow. Trigger: draw the paper workflow, building map, review overlay, s04 drawing, /excalidraw-workflow."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -20,7 +11,7 @@ metadata:
 
 # /excalidraw-workflow · a paper's building map, with what the reviewers hit
 
-Asked 261014 on DrFirst-SPACE's Paper-TestToLearn-MS2026, after Management Science's decision: "for the s04, could you
+Asked 261014 on `<Client-SPACE>`'s Paper-TestToLearn-MS2026, after Management Science's decision: "for the s04, could you
 highlight that which part the reviewers wanted us to change, and how will our new field experiment and analsysis will
 fix it?"; "we should keep the current structure, it will serverd as the building map"; "How do you think we can add it
 to the themes/paper skills set"; "or call it /excalidraw-workflow, saying how do we want to make the paper workflow".
@@ -137,13 +128,13 @@ picture as a reader, with these questions, answered from the picture alone:
 Worked example
 --------------
 
-DrFirst-SPACE `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/s04-paper-workflow/`:
+`<Client-SPACE>` `examples-4-learning/Project-ExpLearn-SMSDesign/paper/Paper-TestToLearn-MS2026/s04-paper-workflow/`:
 the Management Science redesign, 2 questions and 4 sub-questions, the input ladder's Stage 2.5 designs counted from the
 Design Board, and the 20 Review Items of `j02_v1007_mansci/reports/q01_editor-decision-0916/` (19 on cards; scope is
 fixed in the writing).
 
-Older copies of the same map, not yet moved to this skill (each still reads `A1-Story/`): DrFirst-SPACE
-Paper-MessageTradeOffEgm, Paper-RxSavingsNudge and Paper-LLMSocialOutcome-PNAS2026; WellDoc-SPACE
+Older copies of the same map, not yet moved to this skill (each still reads `A1-Story/`): `<Client-SPACE>`
+Paper-MessageTradeOffEgm, Paper-RxSavingsNudge and Paper-LLMSocialOutcome-PNAS2026; `<Partner-SPACE>`
 Paper-TimeEventDM-ISR2026.
 
 

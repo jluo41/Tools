@@ -1,3 +1,14 @@
+## 0.12.0 · 2026-11-18 · 🧩 Elements first in each UI view
+
+b17's Block, Job, Task and Run UI views open with 🧩 Elements, from `ui/<level>-elements.md`; each part is a tab with
+marks and the b90 page live with the part outlined. focus_ui_elements.py; test_ui_elements.py.
+
+## 0.11.0 · 2026-11-16 · rows, tabs and paragraphs take cards
+
+- A Job, Task or Run row in Plan + Results carries 🙋 N (its question form, answered under the row), ℹ️ N, 💬 N, 📝 N and ✓; the row's Interaction button and "waiting for you" words are gone.
+- A Findings tab (values, maps, questions, design) carries marks after its name; its cards open above its content.
+- A paragraph or one-line item of a face's own sections carries marks once `/haipipe-work update` gave it an id (`paragraph_ids.py`).
+
 ## 0.10.3 · 2026-11-15 · a Question Book opens as a work page
 
 - Wrote down that the work theme claims every `board-kind: prototype` Block (an insight Question Book) for its page only; `/lab` and the insight skills treat it as insight (`lab.py` `lab_theme()`). Reported by Insight-QB-SMS.

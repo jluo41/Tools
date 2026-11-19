@@ -29,7 +29,7 @@ pattern, JL's words, our sentence, the fix, and the check that holds it where on
 7. **The title paragraph holds the title.** JL: "could you put the title here?" Ours: C1.P0's Bullet read "The
    paper's title." Fix: write the paper's title in the `[Title]` Bullet. Check: `page.py health` row `title`.
 8. **The whole paper's structure before a Section's plan.** The version's `## Narrative` is signed (`page.py
-   sign-narrative`) and shown in Report › Structure beside the Board Story § 8 (the shared title, story and
+   sign-narrative`) and shown in Report › Structure beside the Board Story Section Narrative (the shared title, story and
    claims); a Section's plan follows its row. Check: `page.py health` rows `narrative` and `row`.
 9. **Examples as one drawing per Section.** Each example paper is one area of the examples drawing (its screenshot,
    then its logic as a mind map), drawn by `excalidraw-read ref/section_screens.py draw <topic>` and read beside

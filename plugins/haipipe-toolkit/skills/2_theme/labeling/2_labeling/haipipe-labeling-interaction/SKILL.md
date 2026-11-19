@@ -1,14 +1,6 @@
 ---
 name: haipipe-labeling-interaction
-description: >-
-  The 🧭 meaning Task of a labeling Job, step by step: Frame, then loops of Prepare (the interaction report) → Preferences → Update. The only
-  Task that asks the person: each loop writes one interaction report (cards drawn from the corpus, nothing
-  preselected) as a /haipipe-interaction form, saves the person's answers, and Update turns them into reference
-  labels lNN and guideline mNN, a mind map whose rules cite their cards; the person signs mNN before expression runs.
-  It runs the prompts the workbench's meaning page copies. For use case 2 the cards come from an existing labeled
-  corpus's raters' votes, any expert key fenced out. Trigger: meaning loop, frame the task, interaction report,
-  report-NN, save my answers, Update, approve mNN, audit the existing labels, use case 2,
-  /haipipe-labeling-interaction.
+description: "The meaning Task of a labeling Job, the only Task that asks the person: Frame, then loops of Prepare, Preferences and Update into reference labels lNN and guideline mNN. Use to run a meaning loop. Trigger: meaning loop, interaction report, approve mNN, /haipipe-labeling-interaction."
 metadata:
   version: "0.2.3"
   last_updated: "2026-11-04"

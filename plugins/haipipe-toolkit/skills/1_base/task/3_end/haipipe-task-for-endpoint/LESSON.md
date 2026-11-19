@@ -33,7 +33,7 @@ The correct admission is identified by `df_case_raw` (HadmID, ObsDT).
 
 ### L4: PostFn output format varies — template must be format-agnostic
 
-`c_endpoint_nb.py` step 5 validation assumed `{name, score}` per prediction (WellDoc format).
+`c_endpoint_nb.py` step 5 validation assumed `{name, score}` per prediction (the first endpoint's format).
 MIMIC PostFn returns `{mortality_risk, risk_level, threshold_alerts}`.
 Format string `:6.2f` crashed on string values.
 

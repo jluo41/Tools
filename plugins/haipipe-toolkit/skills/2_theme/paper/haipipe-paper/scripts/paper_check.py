@@ -500,10 +500,10 @@ def layout(board: Path, story) -> list:
                             ("Story's Discovery Roadmap (D table)", re.search(r"(?m)^\|\s*D\s*\|", stext)),
                             # Story by Section, read by Report › Story and › Displays; a 261102 update moved it into the
                             # version's ## Narrative, where neither view finds it (JL 261109: "where is the story?")
-                            ("Story's §8 Section Narrative", re.search(r"(?m)^#{2,4}\s*(?:\d+\s*·\s*)?Section Narrative\s*$", stext)),
+                            ("Story's Section Narrative", re.search(r"(?m)^#{2,4}\s*(?:\d+\s*·\s*)?Section Narrative\s*$", stext)),
                             # the first tab of Story by Section, and each Section's part of the arc (JL 261109: "what
                             # is the story arc of it"; "not just the claims ... the narratives, the arc")
-                            ("§8's Story arc (#### Story arc)", re.search(r"(?mi)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?story arc\b", stext)),
+                            ("Section Narrative's Story arc (#### Story arc)", re.search(r"(?mi)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?story arc\b", stext)),
                             ("per-Section narrative rows (| Section | reader question | … |)", section_rows(board, stext)),
                             ("data flow's -drawing.yaml", flow and list(flow.glob("*-drawing.yaml")))) if not ok]
     add("L5", "Faces the views read", "🙋" if need else "✅",

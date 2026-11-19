@@ -1,12 +1,6 @@
 ---
 name: workbench-paper
-description: >-
-  Read the Paper theme workbench: a Board's current focus Report, its shared
-  supporting sections, and specialized version, evidence, submission and draft
-  pages. Maps views to their source records and semantic skill owners; distinguishes
-  the proposed Grant type from implemented Paper behavior. Also documents the
-  classic frame. Trigger: Paper Workbench, paper workbench, paper theme, paper tab,
-  version tab, Section tab, paper spaces, Grant Board design, /workbench-paper.
+description: "Reads the Paper theme workbench: a Board's focus Report, its shared supporting sections, and the version, evidence, submission and draft pages. Use to find which source record and skill owner a view maps to. Trigger: paper workbench, paper tab, version tab, Section tab, /workbench-paper."
 metadata:
   version: "0.63.0"
   last_updated: "2026-11-12"
@@ -53,11 +47,11 @@ heading and no grey caption under the view buttons; each view's asks stay in its
 nothing copied (`servers/workbench-paper/paper_structure.py`). The whole-paper structure is this view, never a Task.
 Two numbered sections, no wide table, no sideways scroll at 390 px:
 
-1. **🧭 The story**: the Board Story's § 8 (shared by every version) by its parts, never its prose: from its ```text
+1. **🧭 The story**: the Board Story's Section Narrative (shared by every version) by its parts, never its prose: from its ```text
    block the TITLE large, the STORY in one line, the other keys (explanation, boundaries) small; the § 8 claims table
    as small cards, each claim with its numbers; on the right the version's sign (`narrative-approved:`, written from
-   the person's words by haipipe-draft `page.py sign-narrative`): signed, not signed, or stale when the Story's § 8
-   changed since (compared as text with `<version>/records/narrative-sign.md`). Links open the Story's § 8 and the
+   the person's words by haipipe-draft `page.py sign-narrative`): signed, not signed, or stale when the Story's Section Narrative
+   changed since (compared as text with `<version>/records/narrative-sign.md`). Links open the Story's Section Narrative and the
    face's `## Narrative` as written.
 2. **🗺️ The Sections**: one closed row per Section in compile order (the face's compile-order block), from the face's
    per-Section table (`section | reader question | entry | ordered moves | must refuse | displays | exit`): the name

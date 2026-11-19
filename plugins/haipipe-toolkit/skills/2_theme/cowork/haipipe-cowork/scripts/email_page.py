@@ -93,17 +93,43 @@ def body_html(blocks):
     return "".join(out)
 
 
-def page(draft, made_by="this folder's build.py"):
-    """The email as a page: each part in a box with a Copy button."""
+def section(draft, key="", made_by="this folder's build.py", heading="h1"):
+    """One email as boxes with Copy buttons; `key` prefixes the box ids so several emails share a page."""
     title, head, blocks = parts(draft)
     e = html.escape
-    def field(label, key, value):
-        return (f'<div class="row"><div class="label">{label}</div><div class="box" id="{key}">{e(value)}</div>'
-                f'<button onclick="copyBox(\'{key}\', this)">Copy</button></div>')
+    def field(label, k, value):
+        return (f'<div class="row"><div class="label">{label}</div><div class="box" id="{key}{k}">{e(value)}</div>'
+                f'<button onclick="copyBox(\'{key}{k}\', this)">Copy</button></div>')
     files = [f.strip() for f in head.get("Attach", "").split(";") if f.strip()]
+    return f"""<section>
+<{heading}>{e(title)}</{heading}>
+<p class="note">How: {e(head.get("How", ""))} Made by {e(made_by)} from {e(Path(draft).name)}: to change a word, edit
+that file and rerun it. Paste each part with its Copy button, then attach the files below from this folder.</p>
+{field("To", "to", head.get("To", ""))}
+{field("Cc", "cc", head.get("Cc", ""))}
+{field("Subject", "subject", head.get("Subject", ""))}
+<div class="row"><div class="label">Body</div>
+<div class="box body" id="{key}body">{body_html(blocks)}</div>
+<button onclick="copyBox('{key}body', this)">Copy</button></div>
+<div class="row"><div class="label">Attach</div><div class="box"><ul class="files">
+{"".join(f"<li>{e(f)}</li>" for f in files) or "<li>nothing</li>"}
+</ul></div><div></div></div>
+</section>"""
+
+
+def page(draft, made_by="this folder's build.py", title=None):
+    """The page: one email (a draft path), or several in reading order (a list of draft paths), each in its own
+    section with its own Copy buttons (JL 261119: "COULD YOU PUT BOTH EMAIL DRAFTS HERE?")."""
+    drafts = draft if isinstance(draft, (list, tuple)) else [draft]
+    e = html.escape
+    if len(drafts) == 1:
+        top, body = parts(drafts[0])[0], section(drafts[0], "", made_by)
+    else:
+        top = title or Path(drafts[0]).parent.name
+        body = f"<h1>{e(top)}</h1>" + "".join(section(d, f"m{n}-", made_by, "h2") for n, d in enumerate(drafts, 1))
     return f"""<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{e(title)}</title>
+<title>{e(top)}</title>
 <style>
   :root {{ --ink:#1e1e1e; --muted:#666; --line:#d0d0d0; --bg:#ffffff; --panel:#f6f6f6; }}
   body {{ margin:0; background:var(--bg); color:var(--ink); font:15px/1.5 -apple-system, "Segoe UI", Arial, sans-serif; }}
@@ -116,22 +142,12 @@ def page(draft, made_by="this folder's build.py"):
   button {{ font:inherit; font-size:13px; padding:6px 14px; border:1px solid var(--ink); border-radius:6px;
            background:#fff; color:var(--ink); cursor:pointer; min-width:84px; }}
   button.done {{ background:var(--ink); color:#fff; }}
-  #body {{ background:#fff; padding:14px 16px; font-family:Aptos, Calibri, Arial, sans-serif; font-size:11pt; color:#000; }}
+  .body {{ background:#fff; padding:14px 16px; font-family:Aptos, Calibri, Arial, sans-serif; font-size:11pt; color:#000; }}
+  h2 {{ font-size:18px; margin:28px 0 4px; padding-top:18px; border-top:2px solid var(--line); }}
   ul.files {{ margin:6px 0 0; padding-left:20px; }}
   @media (max-width:560px) {{ .row {{ grid-template-columns:1fr; }} .label {{ padding-top:0; }} }}
 </style></head><body><main>
-<h1>{e(title)}</h1>
-<p class="note">How: {e(head.get("How", ""))} Made by {e(made_by)} from {e(Path(draft).name)}: to change a word, edit
-that file and rerun it. Paste each part with its Copy button, then attach the files below from this folder.</p>
-{field("To", "to", head.get("To", ""))}
-{field("Cc", "cc", head.get("Cc", ""))}
-{field("Subject", "subject", head.get("Subject", ""))}
-<div class="row"><div class="label">Body</div>
-<div class="box" id="body">{body_html(blocks)}</div>
-<button onclick="copyBox('body', this)">Copy</button></div>
-<div class="row"><div class="label">Attach</div><div class="box"><ul class="files">
-{"".join(f"<li>{e(f)}</li>" for f in files) or "<li>nothing</li>"}
-</ul></div><div></div></div>
+{body}
 </main>
 <script>
 function copyBox(id, btn) {{
@@ -181,6 +197,18 @@ def write(draft, made_by="this folder's build.py") -> Path:
             shutil.copy2(source, target)
     out = destination / (draft.stem + ".html")
     out.write_text(page(draft, made_by), encoding="utf-8")
+    return out
+
+
+def write_many(drafts, out, made_by="this folder's build.py", title=None) -> Path:
+    """Several drafts of one send folder on one page, `out` (each draft checked as write() checks it)."""
+    for d in drafts:
+        _, head, _ = parts(d)
+        absent = [f.strip() for f in head.get("Attach", "").split(";") if f.strip() and not (Path(d).parent / f.strip()).exists()]
+        if absent:
+            sys.exit(f"not written: {Path(d).name}'s Attach: line names files not in its folder: " + ", ".join(absent))
+    out = Path(out)
+    out.write_text(page(list(drafts), made_by, title), encoding="utf-8")
     return out
 
 

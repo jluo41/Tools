@@ -13,6 +13,8 @@ from live.ui_parts import COPY_JS, copy_verb
 from live.focus_base import in_group, inside, is_topic, markdown, origin, page_level, page_url, read_face, rollup
 from live.focus_interactions import interaction_button
 from live.focus_tree import work_root
+from live.frame_base import chain
+from live.frame_sessions import sessions_part, touched_set
 
 
 def topic_rows(folder: Path, root: Path, inventory: list | None = None) -> list:
@@ -212,19 +214,31 @@ def timeline_html(events: list, folder: Path, root: Path) -> str:
             '<div class="tl-days">' + "".join(blocks) + '</div>')
 
 
-def folder_html(folder, root, seen=(), depth=0):
-    """Show two levels directly; deeper folders link to their own folder page."""
+def folder_html(folder, root, seen=(), depth=0, marked=None):
+    """Show two levels directly; deeper folders link to their own folder page. A folder an episode touched carries
+    🧵, which opens Sessions below showing only those episodes (ref/three-views.md)."""
     if not inside(folder, root) or folder.resolve() in seen:
         return ""
+    if marked is None:
+        block = chain(folder, root).get("Block")
+        marked = touched_set(block) if block else set()
     children = sorted(p for p in folder.iterdir() if p.is_dir() and not p.name.startswith(".") and inside(p, root))
     rows = []
     for child in children:
+        thread = (f'<button type=button class=fd-th data-th="{frame.esc(frame._rel(child, root))}" title="Sessions">🧵</button>'
+                  if child.resolve() in marked else "")
         if depth < 1:
-            rows.append(f'<li><span>{frame.esc(child.name)}/</span>'
-                        f'{folder_html(child, root, (*seen, folder.resolve()), depth + 1)}</li>')
+            rows.append(f'<li><span>{frame.esc(child.name)}/</span>{thread}'
+                        f'{folder_html(child, root, (*seen, folder.resolve()), depth + 1, marked)}</li>')
         else:
-            rows.append(f'<li><a href="{frame.esc(page_url(child, root, "folders"))}">{frame.esc(child.name)}/</a></li>')
-    return '<ul class="focus-folders">' + "".join(rows) + '</ul>' if rows else '<p class="mut">No subfolders.</p>'
+            rows.append(f'<li><a href="{frame.esc(page_url(child, root, "folders"))}">{frame.esc(child.name)}/</a>{thread}</li>')
+    return '<ul class="focus-folders">' + "".join(rows) + '</ul>' if rows else ""
+
+
+def files_html(folder: Path, root: Path) -> str:
+    """The Files section: the folder, then the Sessions that changed it and what is below it (none on a Project)."""
+    block = chain(folder, root).get("Block")
+    return folder_html(folder, root) + (sessions_part(block, root, under=folder) if block else "")
 
 
 def related_html(folder: Path, root: Path) -> str:

@@ -1,11 +1,6 @@
 ---
 name: call-peer
-description: >-
-  Work with paired native Claude Code and Codex sessions through two explicit
-  modes: inspect an already registered peer read-only, or explicitly create,
-  resume, and message the other provider. Use when the person asks to check on,
-  start or talk to the paired Codex (or Claude) session. Trigger: call peer,
-  ask Codex, paired session, /call-peer.
+description: "Works with a paired Claude Code or Codex session in two modes: inspect a registered peer read-only, or create, resume and message the other provider. Use to check on, start or talk to the paired session. Trigger: call peer, ask Codex, paired session, /call-peer."
 metadata:
   version: "1.6.0"
   last_updated: "2026-09-20"

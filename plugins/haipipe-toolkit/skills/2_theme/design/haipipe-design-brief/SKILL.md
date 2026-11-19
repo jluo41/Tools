@@ -1,13 +1,6 @@
 ---
 name: haipipe-design-brief
-description: >-
-  LEGACY, older boards only: owner of an older DesignBoard's one Brief Folder
-  (0-BR-brief/): why the Application exists, for whom, the behavior/outcome and
-  venue boundary, the insight needs it raises, and the list of designs it
-  authorizes. On the design ladder the Block's goal list (haipipe-design-goal,
-  board.md ## Goals) replaced it; never write a Brief on a ladder Block.
-  Trigger: design brief, application brief, folder-kind brief,
-  /haipipe-design brief.
+description: "Legacy, older boards only: owns an older DesignBoard's one Brief Folder (0-BR-brief/): why the application exists, for whom, and the designs it authorizes. On the design ladder the Block's goal list replaced it. Trigger: design brief, application brief, folder-kind brief, /haipipe-design brief."
 disable-model-invocation: true
 metadata:
   version: "0.4.1"

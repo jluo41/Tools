@@ -1,18 +1,6 @@
 ---
 name: haipipe-design-goal
-description: >-
-  Everything a design reads, on the design ladder: a Block's goal list
-  (board.md ## Goals, each goal signed by a person), its shared rules
-  (design-goal.md), its frozen inputs versions (inputs/inputs-vN/ + manifest.yaml), and
-  a Job's inputs/ fence (goal.md, links into one inputs version, manifest.yaml
-  with each file's sha256), which is all the design work may see. Owns
-  run-add-goal-<goal>, run-setup-rules, run-add-inputs-v<N>,
-  run-setup-goal-j<NN> and run-setup-inputs-j<NN>. Use to add or sign a goal, set
-  the shared rules, freeze an inputs version, or build a Job's fence. An older
-  board's design-goal.md (Aim · Venue · Rules · Resources · Leave out) keeps its
-  contract in ref/legacy/. Trigger: design goal, goal list, add a design goal,
-  shared rules, inputs version, freeze inputs, inputs fence, inputs manifest,
-  /haipipe-design goal.
+description: "Everything a design reads on the design ladder: a Block's signed goal list, shared rules, frozen inputs versions and a Job's inputs/ fence. Use to add or sign a goal, set the rules, freeze inputs or build a fence. Trigger: design goal, goal list, shared rules, inputs version, /haipipe-design goal."
 allowed-tools: Read, Write, Edit, Grep, Glob, Bash
 disable-model-invocation: true
 metadata:

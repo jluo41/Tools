@@ -14,7 +14,8 @@ import re
 
 RANGE = (4, 7)
 EXEMPT = ("abstract", "summary", "appendix", "supplement", "supplementary", "extended data", "extended-data",
-          "letter", "cover letter", "cover-letter", "response")
+          "letter", "cover letter", "cover-letter", "response",
+          "back-matter", "back matter", "front-matter", "front matter")   # one field per line (JAMA Article Information)
 
 HEAD = re.compile(r"(?m)^###\s+(C\d+\.P\d+)\s*·\s*(.*?)\s*$")
 SPAN = re.compile(r"·\s*[Ss](\d+)[a-z]*(?:\s+to\s+[Ss](\d+)[a-z]*)?\s*$")

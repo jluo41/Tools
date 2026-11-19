@@ -335,10 +335,17 @@ def now(topic, spec):
     plain = lambda x: re.sub(r"[`*]", "", re.sub(r"\s*\(JL [^)]*\)\.?", "", x))
     short = lambda x, n: textwrap.shorten(re.split(r":|;| \(|\. ", plain(x), maxsplit=1)[0], n, placeholder="\u2026")
     y = 360
-    els += text("now_parts_h", 680, y, f"the {spec['what']['type']}, part by part", 16, TEAL)
-    for k, (_, pname, _, done) in enumerate(spec["what"]["parts"]):
-        els += text(f"now_part{k}", 686, y + 28 + 24 * k, ("\u2705 " if done else "\u2b1c ") + pname, 14, INK)
-    y += 28 + 24 * len(spec["what"]["parts"]) + 22
+    progress = spec.get("progress")        # [(mark, words)]: a topic that tracks real work shows it on the card
+    if progress:                           # (haistack, CONSTITUTION.md A01, JL 261118)
+        els += text("now_parts_h", 680, y, spec.get("progress_title", "progress, live"), 16, TEAL)
+        for k, (mark, words) in enumerate(progress):
+            els += text(f"now_part{k}", 686, y + 28 + 24 * k, f"{mark} {words}", 14, OR if mark == "\U0001f536" else INK)
+        y += 28 + 24 * len(progress) + 22
+    else:
+        els += text("now_parts_h", 680, y, f"the {spec['what']['type']}, part by part", 16, TEAL)
+        for k, (_, pname, _, done) in enumerate(spec["what"]["parts"]):
+            els += text(f"now_part{k}", 686, y + 28 + 24 * k, ("\u2705 " if done else "\u2b1c ") + pname, 14, INK)
+        y += 28 + 24 * len(spec["what"]["parts"]) + 22
     els += text("now_dec_h", 680, y, "decided", 16, GR)
     for k, (_, words) in enumerate(decided):
         gone = "Replaced by" in words                   # a replaced decision stays, greyed, so the history reads
@@ -493,7 +500,12 @@ def build(topic: Path, spec: dict, design, shift: int = 1050, writer=None) -> Pa
     topic = Path(topic)
     out = topic / f"{topic.name}.excalidraw"
     els = heading(spec["title"], spec.get("sub", "from idea to delivery, in five parts"))
-    els += idea(topic, spec) + now(topic, spec) + design_part(design()) + process(topic, spec) + delivery(topic, spec)
+    drawn = design()
+    pics = sum(e["type"] in ("ellipse", "line", "freedraw") for e in drawn)
+    if pics < 20:                                            # CONSTITUTION A04, A05: Design is pictures (icons.py)
+        print(f"❗ A04 {topic.name}: Design has {pics} picture shapes (< 20); draw it with icons.py, "
+              "see haipipe-studio/CONSTITUTION.md A04", file=sys.stderr)
+    els += idea(topic, spec) + now(topic, spec) + design_part(drawn) + process(topic, spec) + delivery(topic, spec)
     p0 = [i for i, e in enumerate(els) if e["id"] == "go23"][0]
     for e in els[p0:]:                                       # Process and Delivery move right, past the bigger Design
         e["x"] += shift

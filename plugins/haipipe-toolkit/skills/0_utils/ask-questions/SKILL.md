@@ -1,6 +1,6 @@
 ---
 name: ask-questions
-description: "Finds and sharpens the questions in a long conversation: matches response sections to existing Block questions, proposes distinct new ones, and asks a focused clarification only when the answer would change. Trigger: ask questions, session questions, question association, propose a session question, 提问, 追问, 问题归属."
+description: "Finds and sharpens the questions in a long conversation: matches reply sections to existing Block questions and proposes distinct new ones. Use to link a session to its questions or ask one focused clarification. Trigger: ask questions, session questions, question association, 提问, /ask-questions."
 metadata:
   version: "0.2.1"
   last_updated: "2026-10-26"

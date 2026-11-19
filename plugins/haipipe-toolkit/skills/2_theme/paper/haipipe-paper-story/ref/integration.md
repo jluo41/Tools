@@ -77,7 +77,7 @@ appendix:
 
 These ids illustrate the format only; emit only the paper's actual Section ids.
 On the ladder the block lives in the writing version's `## Narrative` and is
-derived from its Section rows, aligned with the selected Story's §8 claims.
+derived from its Section rows, aligned with the selected Story's Section Narrative claims.
 Before Section files exist, keep their intended reader order in
 `s04-paper-workflow/` (haipipe-paper-plan) without inventing compilable paths.
 Before assembly, require an unambiguous selected target and real Section ids

@@ -1,17 +1,6 @@
 ---
 name: remote-keyboard-typist
-description: >-
-  Type an exact text into an editor on a remote machine that allows no paste, by
-  pressing the Chrome Remote Desktop on-screen keyboard one key at a time (a page
-  script presses its buttons, 70 ms per key). The AI is only a typist: it cleans
-  the text, guides the person to ready the editor, confirms with a probe, types
-  the whole file in one pass, then reviews every line and fixes wrong ones. It
-  never clicks the remote screen (one focus click in the editor excepted) and by
-  default never saves or runs; on the person's word (OPERATE mode) it saves, runs
-  a named Run's short command, watches for its end line, and reads aggregate
-  results off the screen into a local note. Trigger: type this into <file> on
-  the server, you cannot paste, type it, on-screen keyboard, no paste, operate
-  the keyboard, run it on the server, read the results, /remote-keyboard-typist.
+description: "Types an exact text into an editor on a remote machine that allows no paste, pressing the remote desktop on-screen keyboard key by key, then reviews and fixes every line. Use to type a file there. Trigger: type it, no paste, on-screen keyboard, operate the keyboard, /remote-keyboard-typist."
 argument-hint: "<file path or pasted text>  [--target <file name open in the remote editor>]"
 allowed-tools: Bash, Read, Write, mcp__claude-in-chrome__tabs_context_mcp, mcp__claude-in-chrome__read_page, mcp__claude-in-chrome__javascript_tool, mcp__claude-in-chrome__computer, mcp__claude-in-chrome__browser_batch
 metadata:

@@ -7,7 +7,7 @@ b11 s11 · s12 · s13 · s21, JL 261007 plan C): the Question Book (its Block, a
 no card's skill: each card names the skill that does the work.
 
 A `🔘 BUTTON` line is `label · <Level> › <Space> · ticket pattern · views <names>`. Level is the insight Board's
-`Block`, `Job` or `Task`, the Question Book's `Question Book`, `Release` or `Question`, or the `Guide` (on every tab); Space is one of the six
+`Block`, `Job` or `Task`, the Question Book's `Question Book`, `Release` or `Question`, or the `Guide` (on every tab); Space is one of the older tabbed screen's six, still the keys here
 (Description · Idea Studio · Audience Report · Work Details · Runs · Delivery). The pattern is a regular expression on
 the Run's folder name: `run-<type>-<target>/` for a soft Run, `rNN_<segment>/` for a hard one. `views` names the
 views the button shows in, lowercase-kebab, from either row (`map`, `findings`, `vs-previous`, `cross`); none = every

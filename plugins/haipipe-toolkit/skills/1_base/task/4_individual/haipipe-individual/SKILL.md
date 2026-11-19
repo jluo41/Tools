@@ -1,12 +1,6 @@
 ---
 name: haipipe-individual
-description: >-
-  Per-individual data contract skill: builds and manages a single-individual
-  slice of stages 0-2 under
-  _WorkSpace/A-User-Store/UserGroup-{dataset}/Subject-{id}. Use to create,
-  inspect, or clean per-individual folders, or prepare data for endpoint
-  inference. Trigger: individual, per-individual, UserGroup, Subject-ID,
-  A-User-Store, sample patient.
+description: "Per-individual data contract: builds and manages a single-individual slice of stages 0-2 under A-User-Store/UserGroup-{dataset}/Subject-{id}. Use to create, inspect or clean per-individual folders, or prepare inference data. Trigger: individual, per-individual, A-User-Store, /haipipe-individual."
 argument-hint: "[command] [args...]"
 metadata:
   version: "0.1.2"

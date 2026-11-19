@@ -174,7 +174,7 @@ def fill_draft(plan_text: str, fragment: str) -> tuple[str | None, str]:
         return None, "the Draft has no `## 3 · Draft` section"
     body3 = re.split(r"(?m)^## ", plan_text[s3.end():], maxsplit=1)[0]
     if re.search(r"(?m)^- (?:\[[ xX]\]\s*)?B\d+[a-z]*\s*·", body3):
-        return None, "its § 3 already holds sentences"
+        return None, "its Draft text already holds sentences"
     s1 = re.search(r"(?m)^## 1 · Structure\b.*$", plan_text)
     body1 = re.split(r"(?m)^## ", plan_text[s1.end():], maxsplit=1)[0] if s1 else ""
     heads = re.findall(r"(?m)^(### C\d+\.P\d+\b.*)$", body1)
@@ -248,7 +248,7 @@ def plan(board: Path) -> list:
                 item["skip"] = f"{drafts[-1].name}: {why}"
                 out.append(item)
                 continue
-            item.update(draft=drafts[-1].name, how="filled § 3", text=text)
+            item.update(draft=drafts[-1].name, how="filled text", text=text)
         else:
             item.update(draft=f"{stem}-draft-v0.1.md", how="new", text=new_draft(stem, face, fragment, rel))
         item["face"] = new_face(face, stem, item["draft"])
@@ -262,7 +262,7 @@ def dry_run(board: Path) -> None:
             print(f"  ·  {item['stem']:58} skip: {item['skip']}")
             continue
         bullets = len(re.findall(r"(?m)^- B\d+[a-z]* · [Ss]\d+ · ", item["text"].split("## 3 · Draft", 1)[1]))
-        print(f"  ✎  {item['stem']:58} {item['how']:12} draft/{item['draft']}  ({bullets} Bullets in § 3)")
+        print(f"  ✎  {item['stem']:58} {item['how']:12} draft/{item['draft']}  ({bullets} Bullets in the Draft text)")
     print("\nnothing changed (dry run)")
 
 

@@ -1,17 +1,6 @@
 ---
 name: haipipe-task-for-evidence
-description: >-
-  Task-type specialist for a PAGE-SERVING execution job: one job per Board
-  Page that produces reusable Supporting Run Results for typed Evidence Items.
-  It reads upstream task folders, computes or extracts owed values into
-  values.yaml + Result receipts, and proposes the upstream task when a value has no
-  source yet. Called by /haipipe-task when task-type=evidence; its Results are
-  selected by SURVEY and consumed by LAND. Trigger: page
-  collection job, collect the values, serve the page's cards, values.yaml,
-  propose the missing task, task-type evidence, /haipipe-task evidence. Also
-  owns the one-subagent-per-Page reorganization job that moves a Discovery
-  Page into one Content division per Run. Trigger: one division per run,
-  reorganize the pages by run, each run one division.
+description: "Evidence Task specialist: one page-serving job per Board Page that computes or extracts owed values into values.yaml and proposes the missing upstream task. Called by /haipipe-task when task-type=evidence. Trigger: collect the values, values.yaml, one division per run, /haipipe-task evidence."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true
 metadata:

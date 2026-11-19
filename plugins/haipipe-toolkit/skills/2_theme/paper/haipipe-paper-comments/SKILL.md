@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-comments
-description: "Takes in what people say about a paper (reviews, an editor's letter, coauthor notes, a meeting): splits it into points, groups them into Review Items, routes each to its owner, records replies, and proposes Board questions worth answering. Use to triage comments or answer a review. Was haipipe-paper-round. Trigger: comments, review report, respond to reviewers, /haipipe-paper-comments."
+description: "Takes in comments on a paper (reviews, an editor's letter, coauthor notes): splits them into points, groups them into Review Items, routes each to its owner, records replies. Use to triage comments or answer a review. Trigger: comments, review report, respond to reviewers, /haipipe-paper-comments."
 metadata:
   version: "1.3.2"
   last_updated: "2026-11-01"
@@ -55,7 +55,7 @@ work is its Tasks; the response letter (`t32_response`, a letter Task) stays in 
 
 This skill owns the comments batch Page and its `page-type: comments` contract. A review batch opens on a
 feedback batch any time after a build exists, and closes through gate G5: every concern in the table belongs to
-one Review Item and is routed exactly once (the Story's §5 support and §6/§7 needs for new evidence, a Story §8 claim or the
+one Review Item and is routed exactly once (the Story's Evidence Basis and Boundaries support and Discovery and Task Roadmap needs for new evidence, a Story Section Narrative claim or the
 version's `## Narrative` row for retelling, a Section for rework), and a person approves the response receipt. A
 meeting, advisor or internal batch closes when every point has a terminal state and its proposed questions are
 decided. `haipipe-paper-workflow` holds the full gate assertions; this block only binds the Page owner. The page
@@ -72,7 +72,7 @@ a subject (a build, or the Story) + received comments
                   ↓
         one batch Page: its concern table and Review Items
                   ↓ routes work to
-      Story §5–§8 content · Sections · their evidence/workbenches · proposed Board questions
+      Story Evidence Basis, Roadmaps and Section Narrative content · Sections · their evidence/workbenches · proposed Board questions
                   ↓ returns checked versions to
        replies (+ for a review: response package, revised build, close receipt)
 ```
@@ -93,10 +93,10 @@ Record the batch identity before triage:
 batch-id          stable id, unique across this paper (`CM<NN>`; a legacy batch keeps `RD<NN>`)
 page-id           full Page stem (`CM<NN>-<desk|story>-<kind>-<YYYYMMDD>`)
 kind              review · editor · coauthor · meeting · advisor · internal ·
-                  foreign-desk (a review of this work's telling at a desk with no §8 rows on this board)
+                  foreign-desk (a review of this work's telling at a desk with no Section Narrative rows on this board)
 about             the base build (exact manuscript/PDF/version) for a send, or the Story and its version
 venue-page        selected Venue Page and version, or explicit none
-story             governing Story page, its §8 target, and version
+story             governing Story page, its Section Narrative target, and version
 received-from     editor, reviewer labels, coauthor, meeting attendees, advisor, or internal authority
 received-at       date and source location
 answered-by       the version that answers it (a review), or explicit none
@@ -211,7 +211,7 @@ internal batch records `none` in the roles that need a build or an external read
 4  Decisions and Response Strategy
    accept · narrow · answer · decline · defer, with human authority and reason
 5  Change Routing
-   affected claim · Story §8 row · Section · evidence/workbench need · owner
+   affected claim · Story Section Narrative row · Section · evidence/workbench need · owner
 6  Applied and Checked Changes
    what changed · owning Page · before/after version · CHECK result
 7  Response Package
@@ -294,7 +294,7 @@ table in the batch Page, beside the concern table:
 - **state**: the states above; an item is `answered` only when every point it cites is.
 - **hits** (optional): the part of the sent study the item attacks, by the paper's building-map keys (a foundation
   card's `key` such as `stage2`, a Task id such as `T1`), or `—`.
-- **fixed by** (optional): the work that answers it: a building-map key, a Story §6/§7 row (`T9`, `D2`), a claim id
+- **fixed by** (optional): the work that answers it: a building-map key, a Story Discovery or Task Roadmap row (`T9`, `D2`), a claim id
   (`C2`), a Question's landing (`Q1`), or a Section stem (`t03_research-design`). Both are joined by " · ";
   `excalidraw-workflow` reads them and draws the review overlay on the paper's building map: red on what was hit,
   green on what fixes it, and under the map the items fixed only in the writing or by nothing yet (JL 261014).
@@ -308,10 +308,10 @@ Keep authority with the artifact being changed:
 
 | Item is about | Owning destination |
 |---|---|
-| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's §5 evidence proposition plus the corresponding §6 Discovery or §7 Task need |
-| contribution, claim role, or paper order | the Story's §8 claims; the version face's `## Narrative` row and its compile-order block for the order |
+| evidence the paper does not yet hold (new analysis class, ablation, downstream outcome) | the Story's Evidence Basis and Boundaries evidence proposition plus the corresponding Discovery Roadmap or Task Roadmap need |
+| contribution, claim role, or paper order | the Story's Section Narrative claims; the version face's `## Narrative` row and its compile-order block for the order |
 | section argument, wording, placement, or limitation | owning Section Page |
-| missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story §7 |
+| missing analysis or factual support | consuming Page's typed Evidence Item; a new study need also changes Story Task Roadmap |
 | citation request | the Board's citation Job (`j03_evidence_cite`) and the Section's CITE card; an older Section: its CITE Evidence Item |
 | number correction | the Board's value Job (`j02_evidence_value`) and the Section's VALUE binding; an older Section: its VALUE Evidence Item |
 | table or figure change | the Board's display Task (`j01_evidence_display`); an older Section: its DISPLAY Evidence Item and `results/<re-run>/payload/<unit>/` |
@@ -319,7 +319,7 @@ Keep authority with the artifact being changed:
 | response wording and coverage | this batch Page |
 
 For a `foreign-desk` batch, the received desk is named in the identity and the route still lands first on the
-governing Story. A request about the telling becomes a human-approved §8 candidate row; it does not create a
+governing Story. A request about the telling becomes a human-approved Section Narrative candidate row; it does not create a
 foreign Section or let the batch write a second manuscript.
 
 **Where a routed item LANDS on its owner**: the owning page's `draft/records/<stem>-feedback.md` (a section per
@@ -334,7 +334,7 @@ next Writing Step; it does not rerun OUTLINE. A changed plan uses OUTLINE/SHAPE 
 a review batch may close.
 
 **Routed exactly once** means one concern row and one route decision, not that a concern can name only one
-affected artifact. A single route may name a primary owning Page plus a required Story §5/§6/§7 or §8 update;
+affected artifact. A single route may name a primary owning Page plus a required Story Evidence Basis, Roadmap or Section Narrative update;
 those linked destinations remain one coordinated route under the same item. Do not clone a concern into a second
 row or create duplicate work items. The batch records routes and checked returns; it never becomes a second home
 for revised section prose, research values, citations, or paper displays. A concern may say `applied` only after
@@ -359,8 +359,8 @@ rather than Section changes.
 The batch does not own an Evidence/Execution lane. Its Context and concern table may point to an accepted Result,
 a source path, or a checked Page version, but it does not create new evidence/execution Runs or typed evidence
 items during triage. A separately commissioned response session follows `response.<batch>`; ordinary Page
-writing keeps its native Page Run contract. If an item needs substantive new evidence, route it to the Story's §5
-support and §6/§7 need, then let the external Discovery/Task/Run owner return the result. If a Section needs a
+writing keeps its native Page Run contract. If an item needs substantive new evidence, route it to the Story's Evidence Basis and Boundaries
+support and Discovery or Task Roadmap need, then let the external Discovery/Task/Run owner return the result. If a Section needs a
 local CITE/VALUE/DISPLAY item, the consuming Section owns that item and its Page workflow. Comments are stored in
 `feedback/`, not converted into a new evidence authority.
 

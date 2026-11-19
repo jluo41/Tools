@@ -1,6 +1,6 @@
 ---
 name: haipipe-discovery
-description: "External-evidence executor: one Discovery Page Folder per question, every paper or source analyzed by a numbered Run whose Result holds a card, facts, a receipt and one BibTeX entry. Use to add a paper, link or PDF, find and read literature, review a field, synthesize prior work, or build an evidence Bib. Trigger: discover, find paper, add paper, lit review, synthesize, 查文献, landscape, /haipipe-discovery."
+description: "External-evidence executor: one Discovery Page Folder per question, each paper or source analyzed by a numbered Run whose Result holds a card, facts and one BibTeX entry. Use to add a paper, find literature or review a field. Trigger: discover, find paper, lit review, 查文献, /haipipe-discovery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), WebSearch, WebFetch, Agent, mcp__zotero__*, mcp__obsidian-vault__*, mcp__gemini-cli__*
 metadata:
   version: "0.23.3"

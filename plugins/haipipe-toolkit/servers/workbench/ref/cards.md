@@ -23,14 +23,26 @@ A content item is a **Brick** (JL 261117): its types, its three places (file, ca
 
 | Content: marks and cards | Structure: no marks of its own |
 | --- | --- |
-| a Draft sentence, the paper's question, a Research Question row | a Job, Task or Run row that links to its own page |
-| a design, a rule or goal, an idea | the list of Sections, a fold, a tab, a view bar |
-| an insight question and its answer cell | a file list, Skills, a breadcrumb, a rail |
-| a labeling rule and a labeled item | a table of contents, a mind map of the ladder |
-| a decision, a finding, a term, a written note | a section bar (it shows only the roll-up below) |
+| a Draft sentence, the paper's question, a Research Question row | the list of Sections, a fold, a tab, a view bar |
+| a design, a rule or goal, an idea | a file list, Skills, a breadcrumb, a rail |
+| an insight question and its answer cell | a table of contents, a mind map of the ladder |
+| a labeling rule and a labeled item | a section bar (it shows only the roll-up below) |
+| a decision, a finding, a term, a written note | |
+| a Job, Task or Run row in Plan + Results | |
 
-- A structure row that links to another page shows at most the orange roll-up of that page (🙋 N, 📝 N), never cards:
-  its cards live on the page it opens.
+- A Job, Task or Run row is content (JL 261116: "for the plan + results, we can make each BJTR as the sentence card"):
+  after its state mark it carries 🙋 N (the questions waiting at it or below; its card is the question form itself,
+  answered in place), ℹ️ N (things to know there) and its own 💬 📝 ✓. Its address is its place from the Block
+  (`j02.t01.r05`) and its cards live in the Block's `records/`, so the Block, Job and Task pages show one thread.
+  `servers/workbench/page/ladder_cards.py` draws them.
+- A left tab that holds content (a value table, a map, a question, a design) is content too: its marks sit after its
+  name and its cards open at the top of its content on the right (`ui_parts._side_tabs(..., cards=(page, root,
+  prefix))`, `tab_cards.py`). Its address is `<prefix>.<its name>` (`findings.values.Main-estimates`). Tabs that
+  only switch views, files or skills pass no `cards`.
+- A paragraph or a one-line list item of a page's own sections is content once it has an id: marks at its end, its
+  cards under it (`paragraph_cards.py`). Its address is `<view>.<id>` (`findings.p32`); the id is written once by
+  `/haipipe-work update` (`servers/workbench-work/paragraph_ids.py`), never by a click.
+- Any other structure row that links to another page shows at most the orange roll-up of that page (🙋 N, 📝 N).
 - When unsure, ask: would a person comment on these words, or change them? If yes, it is content.
 
 ## 3. Addresses

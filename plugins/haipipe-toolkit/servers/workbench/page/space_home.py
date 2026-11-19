@@ -3,7 +3,8 @@
 It answers "which Project do I open, and what waits on me?" in three parts, each hidden when empty:
 A. Waiting on you, the questions every Project below asks the person (its waiting collection Runs);
 B. Projects, one row per Project under its folder, with its one line and its buttons;
-C. This week, the Blocks whose pages changed in the last seven days, newest first.
+C. This week, the Blocks whose pages changed in the last seven days, newest first;
+D. Constitution, the rules feedback made (space_constitution, haistack).
 What one Project found, decided or planned is its own page's (project_page); this page never lists Blocks' work.
 """
 from __future__ import annotations
@@ -19,6 +20,7 @@ from live.focus_interactions import page_interactions
 from live.focus_reports import blocks_under
 from live.focus_tree import status_html
 from live.focus_styles_bands import BAND_CSS, band_sec
+from live.space_constitution import constitution_html
 
 RECENT_DAYS = 7
 RECENT_MAX = 8
@@ -148,6 +150,6 @@ def space_home(folder: Path, root: Path) -> str:
     level = page_level(folder)
     wait, n = waiting(folder, root)
     secs = [("🙋 Waiting on you", f"{n} waiting for you", wait), ("📁 Projects", "", status_html(folder, root, level, [])),
-            ("🕒 This week", "", recent(folder, root))]
+            ("🕒 This week", "", recent(folder, root)), ("📜 Constitution", "", constitution_html(root))]
     return CSS + BAND_CSS + "".join(band_sec(i, title, word, body, opened=True, src="ix" if word else "")
                                     for i, (title, word, body) in enumerate([s for s in secs if s[2]], 1))

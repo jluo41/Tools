@@ -17,9 +17,9 @@ Project Project-<name>/ project.md         studio/ delivery/ note/ and its Theme
 Theme   <theme>/        <theme>.md         (optional; its Blocks)                        bNN_<topic>/
 Block   bNN_<topic>/    board.md           studio/ delivery/ related/                  jNN_<job>/
                                            resources/ src/
-Job     jNN_<job>/      jNN_<job>.md       studio/ delivery/ src/ sbatch/              tNN_<task>/
+Job     jNN_<job>/      jNN_<job>.md       studio/ src/ sbatch/                        tNN_<task>/
                                            runs/ (soft Runs only)
-Task    tNN_<task>/     tNN_<task>.md      studio/ delivery/ scripts/ draft/           runs/<run>/
+Task    tNN_<task>/     tNN_<task>.md      studio/ scripts/ draft/                     runs/<run>/
                                            displays/ notebooks/ tests/ workflow/ sbatch/
 Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ · passes/  pNN-<MMDD>/
 ```
@@ -104,8 +104,8 @@ today:                                   # b10's rules since 261012: `audit --to
   topic: '^s\d{2}[-_][A-Za-z0-9]'        # sNN-<topic>/ sits beside the Jobs or Tasks (JL 261030); studio/ keeps _groups.txt, _build/, dot names
   register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (haipipe-report)
   report: '^q\d{2}_'                     # legacy reports/qNN_<topic>/, read until moved: an answer is a Studio topic, a review a Job (JL 261110)
-  block_only: [related]                  # a Job's or a Task's moves to the Block (haipipe-related); studio/ and delivery/
-                                         # live at every level and roll up to the page above (JL 261028)
+  block_only: [related]                  # a Job's or a Task's moves to the Block (haipipe-related); only a Block has a delivery/
+                                         # (a Job's or Task's output sits under its address in it; older layout: its own delivery/)
   drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
   keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
   keep_glob: ['mind-map.*']              # and its mind map, from-work: .mindmap.md and .mindmap.html (haipipe-studio, 261024)

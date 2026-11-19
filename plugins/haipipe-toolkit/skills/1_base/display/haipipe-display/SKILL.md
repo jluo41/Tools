@@ -1,6 +1,6 @@
 ---
 name: haipipe-display
-description: "The one door for display work: routes by kind to its part (_parts/<kind>/PART.md): 📊 table, 📈 figure, 📐 diagram (editable SVG), 🎨 illustration (AI image), 🖼 slide (slide pictures in a named style), ✒️ tex (TikZ, algorithms, equations); every display then passes the blind-review revise loop (at least 8/10, at most 4 rounds). Trigger: 做表, 画图, 架构图, regression table, generate figures, paper plots, concept figure, display unit, revise the figures, figure to svg, icon to svg, html to svg, /haipipe-display."
+description: "The one door for display work: routes by kind to its part (table, figure, diagram, illustration, slide, tex), then every display passes the blind-review revise loop. Use to make or revise a table or figure. Trigger: 画图, regression table, generate figures, figure to svg, /haipipe-display."
 metadata:
   version: "0.8.0"
   last_updated: "2026-11-01"

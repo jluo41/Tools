@@ -89,7 +89,7 @@ Runs and required Evidence Results are ready and bound; Page CHECK then judges
 that released version.
 
 - G3 releases one Section row of the signed version `## Narrative` (`page.py
-  sign-narrative` first; the Story's §8 holds claims, not Section rows) for a
+  sign-narrative` first; the Story's Section Narrative holds claims, not Section rows) for a
   Section to work on. It does not substitute for the Section's plan sign
   (`page.py sign`), Page release, or Page CHECK.
 - G4 admits only current Section outputs whose outline, cited display previews,

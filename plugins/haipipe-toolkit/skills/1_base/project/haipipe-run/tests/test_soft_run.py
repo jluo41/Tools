@@ -55,6 +55,21 @@ class SoftRunTest(unittest.TestCase):
         self.assertEqual(card["status"], "done")
         self.assertEqual(card["writes"], ["s02-x/s02-x.md"])
 
+    def test_a_pass_with_a_session_is_an_episode_record(self):
+        run = soft_run.new(self.block, "draw", "s02")
+        (self.block / "s02-x").mkdir()
+        target = self.block / "s02-x" / "s02-x.md"
+        target.write_text("# x")
+        p = soft_run.add_pass(run, "Redraw the map", changed=[str(target)], date="1117",
+                              session="Paper-X-t02", provider="claude", cards=["t02.C3.P5.s14"])
+        text = (p / "pass.md").read_text()
+        self.assertTrue(text.startswith("---\n"))
+        meta = yaml.safe_load(text.split("---")[1])
+        self.assertEqual((meta["session"], meta["goal"], meta["cards"]), ("Paper-X-t02", "Redraw the map", ["t02.C3.P5.s14"]))
+        rel = target.resolve().relative_to(soft_run.space_root(run).resolve()).as_posix()
+        self.assertEqual(meta["paths"], [rel])
+        self.assertIn("# Redraw the map", text)
+
     def test_a_hyphenated_type_and_signs(self):
         run = soft_run.new(self.block, "add-venue", "v01", signs=["agreed", "checked"])
         self.assertEqual(run.name, "run-add-venue-v01")

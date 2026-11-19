@@ -90,6 +90,7 @@ EV_CSS = """<style>
 
 
 NOTES_CSS = """<style>
+.nt-list{margin:4px 0 0;padding-left:20px}.nt-list li{margin:2px 0}.nt-go{cursor:pointer;text-decoration:underline dotted}
 .nt-gut{flex:0 0 46px;display:flex;justify-content:flex-end;align-items:center;gap:3px;align-self:flex-start;padding-top:4px}
 .nt-plus{width:20px;height:20px;padding:0;border:1px solid var(--line);border-radius:10px;background:var(--card);
  color:var(--acc);font-size:14px;font-weight:700;line-height:17px;cursor:pointer;opacity:0}
@@ -130,6 +131,11 @@ NOTES_CSS = """<style>
 .rv-note .nt-w{display:none}.rv-note.writing .nt-w,.rv-note.nt-new .nt-w{display:inline-block}.rv-note.writing .nt-st{display:none}
 </style>"""
 NOTES_JS = """<script>
+/* ↳ a card that answers the comment: open it beside its sentence and bring it into view (A03) */
+document.addEventListener('click',function(e){var g=e.target.closest&&e.target.closest('.nt-go');if(!g)return;e.preventDefault();
+ var c=[].find.call(document.querySelectorAll('.rv-card[data-card]'),function(x){return x.dataset.card===g.dataset.card;});if(!c)return;
+ var r=c.closest('.sx-row');if(r)r.classList.remove('sx-fold');c.classList.add('open');c.scrollIntoView({block:'center'});
+ c.style.outline='2px solid var(--acc)';setTimeout(function(){c.style.outline='';},1600);});
 (function(){if(window.__rvNotes)return;window.__rvNotes=1;
  function board(x){return (x&&x.closest('.rv-board'))||document.querySelector('.rv-board');}
  function again(){if(window.rvAlign)window.rvAlign();marks();}

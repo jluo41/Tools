@@ -51,7 +51,7 @@ WeightLossMultiLabel_Af1M_v260310           weight-loss (Af1M variant)
 WeightLossMultiLabel_OldFormat_v260318      weight-loss (legacy format)
 
 🚩 = target-specific variant (Databricks)
-🆕 = added in REACH-SPACE (2026-06)
+🆕 = added in <EHR-SPACE> (2026-06)
 ```
 
 If `<use_case>` is omitted, the skill should `Bash("ls code/haifn/fn_endpoint/fn_meta/")` and ask the user to pick.

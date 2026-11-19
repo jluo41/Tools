@@ -47,7 +47,9 @@ class FocusPageTest(fixtures.FocusPageCase):
             page, status = handler.workbench_frame_view()
             self.assertEqual(status, 200)
             self.assertIn('Compare the methods.', page)
-            handler.path = '/_board/workbench?path=b01_study'
+            handler.path = '/_board/workbench?path=b01_study'            # a bare address is the focus page
+            self.assertIn('Compare the methods.', handler.workbench_frame_view()[0])
+            handler.path = '/_board/workbench?path=b01_study&layout=frame'   # the old frame only when asked for
             self.assertEqual(handler.workbench_frame_view(), ('legacy', 200))
             handler.path = '/_board/workbench?path=../outside&layout=focus'
             self.assertEqual(handler.workbench_frame_view()[1], 404)
@@ -78,7 +80,8 @@ class FocusPageTest(fixtures.FocusPageCase):
             found = focus_page.render(theme, self.root, task, 'report', 'findings')
             self.assertIn('No findings here.', found)            # JL 261114: no tables.json, no display: nothing drawn
             self.assertNotIn('🔢 Values', found)
-            self.assertIn('🙋 waiting for you', page)                    # one Run state word in both
+            self.assertIn('~ask">🙋 1<', page)       # a waiting Run shows its 🙋 card mark, no words (JL 261116)
+            self.assertNotIn('🙋 waiting for you', page)
             self.assertNotIn('not run', page)
             self.assertIn('<b>Cut words</b><span class="inbox-state waiting">waiting for you', page)  # a form with no cards is kept
             self.assertIn('<link rel="icon" href="data:,">', page)
@@ -99,7 +102,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         (self.block / 'reports/q01_a/q01_a.md').write_text('# A\n\n## Opening\n\nProposed: the tables hold.\n')
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work', 'findings')
         self.assertNotIn('>Agree</button>', page)                                 # no answer rows in Findings (JL 261109)
-        self.assertIn('Nothing handed over yet.', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'delivery'))          # no "goes in delivery/model/"
+        self.assertNotIn('Nothing handed over yet', focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'delivery'))          # no "goes in delivery/model/"
         self.assertNotIn('All files', page)
         self.assertNotIn('<small>j01 · t01</small>', page)
         job = self.block / 'j01_work'

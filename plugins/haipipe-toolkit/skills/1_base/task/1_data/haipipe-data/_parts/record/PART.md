@@ -94,12 +94,12 @@ Hand-off contract (Stage 2 -> 3):
   Each Record's columns and time grid must match the keys CaseFn samples on.
   Verify against `../case/ref/concepts.md` before locking schema.
 
-Record rules (REACH PD2D, JL 260923):
+Record rules (an EHR project, JL 260923):
   - One ProcName per RecordFn. The framework keeps only patients present in
     EVERY RawName a RecordFn lists and joins them on patient, so two tables
     in one RecordFn silently drop patients and multiply rows. Combining is
     b03's job.
-  - Each project owns its HumanFn (`HmREACHPD2DPtt`): roster = one ProcName,
+  - Each project owns its HumanFn (`Hm<Family><Proj>Ptt`): roster = one ProcName,
     and its `Excluded_RawNameList` is generated from the b01 contracts, so a
     new ProcName never changes who counts as a patient.
   - An event RecordFn keeps a date window (`date_min` in

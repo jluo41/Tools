@@ -426,7 +426,7 @@ def task(run, ver, stem):
         if tasks is None:
             vt = vt.rstrip("\n") + f"\n\n## Tasks\n\n1. {line}\n"
         elif line not in tasks.group(1):
-            n = len(re.findall(r"(?m)^\d+\. ", tasks.group(1))) + 1
+            n = max([int(k) for k in re.findall(r"(?m)^(\d+)\. ", tasks.group(1))] or [0]) + 1   # last + 1: may start at 0
             body = tasks.group(1).rstrip("\n")
             vt = vt[:tasks.start(1)] + (body + "\n" if body.strip() else "\n") + f"{n}. {line}\n\n" + vt[tasks.end(1):]
         vt = narrative_row(vt, stem)                # its row in ## Narrative, for haipipe-paper-story to fill

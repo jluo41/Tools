@@ -1,6 +1,6 @@
 ---
 name: haipipe-data
-description: "Stage 1-4 data pipeline door: reads the part for the stage (raw, source, record, case, aidata, external, remote). Use for SourceFn, RecordFn, CaseFn, TfmFn and SplitFn builds, cooks, dashboards and reviews, raw cohort timelines, external assets (freeze, release, parity), and remote store sync. Trigger: data pipeline, source, record, case, aidata, external asset, remote sync, cook, /haipipe-data."
+description: "Stage 1-4 data pipeline door: reads the part for the stage (raw, source, record, case, aidata, external, remote). Use for Fn builds, cooks, dashboards, reviews, external assets and remote store sync. Trigger: data pipeline, source, record, case, aidata, cook, /haipipe-data."
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
   version: "0.4.2"

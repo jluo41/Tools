@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-contract
-description: >-
-  The Data › Contract view skill of the labeling theme: it
-  sets up one labeling job: builds the fenced source, creates the P0 contract (corpus, fields, held-back test, G_00), and reads its status. Every Run in this view names this skill, and no other view uses it.
-  Use for setting up a labeling job, fence_source, job.py create or status, the held-back test at setup, P0 integrity, or /haipipe-labeling contract.
+description: "Data › Contract view of the labeling theme: sets up one labeling job by building the fenced source, creating the P0 contract (corpus, fields, held-back test, G_00) and reading its status. Use to set up a labeling job. Trigger: fence_source, job.py create, P0 integrity, /haipipe-labeling contract."
 disable-model-invocation: true
 metadata:
   version: "0.1.2"

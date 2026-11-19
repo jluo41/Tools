@@ -39,6 +39,13 @@ each sentence with the sentence before it and the sentence after it in view, and
    wearing a sensor", then the limit.
 6. **Job.** The sentence does a step of its paragraph's job, and the argument would break without it; it does not
    repeat a sentence before.
+7. **Grammar (JL 261118: "can you check this problem? the writing grammar error.", a Word page of Methods with its
+   underlines).** The sentence is standard written English, as a careful copy editor reads it: a comma after an opening
+   phrase ("For all three traits, we report"), articles and agreement right, numbers in prose as decimals (0.001,
+   never the code form 1e-3), and no script label used as an English noun ("the selection patients" is "the 24
+   patients held out for selection"; "each share MLP" is "the MLP for each share"). A grammar error caps read at 6,
+   so W4 must fix it, and the problem names it as `grammar: <what>`. Run `cli/grammar.py <draft>` first: what it
+   names is certain; the rest is the reader's job.
 
 Logic has three levels, and this method reads all three (JL 261021: "当我们说 logic 的时候，是不是指既有它所谓的
 logic，比如 transition、逻辑衔接，或者是不是达到了总分总这种结构？"): the sentence (checks 1 to 6), the paragraph's shape,

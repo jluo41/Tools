@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight-check
-description: "Read-only check that every answered InsightBoard cell fits its question: each need planned, bound in answers.yaml to a current ok result, and cited by a page sentence; returns OK, GAP, STALE, UNBOUND or UNPLANNED per cell and flags overclaims. The workbench's Check alignment run. Trigger: check alignment, insight check, overclaim, stale page, /haipipe-insight-check."
+description: "Read-only check that every answered InsightBoard cell fits its question: each need planned, bound in answers.yaml to a current ok result, and cited by a page sentence. Use for the workbench's Check alignment run. Trigger: check alignment, insight check, overclaim, stale page, /haipipe-insight-check."
 allowed-tools: Bash, Read, Grep, Glob
 metadata:
   version: "0.7.1"

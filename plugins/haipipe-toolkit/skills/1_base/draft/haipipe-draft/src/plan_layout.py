@@ -32,7 +32,7 @@ PARAGRAPH = re.compile(r"^### (C\d+\.P\d+)\b")
 DIVISION_HEAD = re.compile(r"^## (C\d+)\b\s*(?:·\s*(.*))?$")
 DIVISION_LINE = re.compile(r"^- (C\d+) · (.+)$")
 BULLET = re.compile(
-    r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+)\s*·\s*)"
+    r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+[a-z]*)\s*·\s*)"
     r"(?P<tag>[Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?\s*·\s*)?(?P<text>.*)$"
 )
 

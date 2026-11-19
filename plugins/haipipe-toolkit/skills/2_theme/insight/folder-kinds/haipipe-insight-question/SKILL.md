@@ -1,16 +1,6 @@
 ---
 name: haipipe-insight-question
-description: >-
-  The insight questions on the ladder: how a question gets into a Question Book
-  release and how it changes. Owns the proposals (proposals/<slug>.md: new
-  question · fix · retire · segment, written by a Board's or a Job's Propose Run),
-  their triage into one release per batch, asking a question into a release
-  (its id, its tNN, its question.md), and the question review (Q1–Q7, with
-  haipipe-report). Never answers a question and never signs. Use to
-  propose, triage, ask, change, retire or review an insight question, or to
-  read the older question registers until they are carried over. Trigger:
-  insight question, propose an insight question, proposals, triage, ask a question,
-  question review, folder-kind question, /haipipe-insight-question.
+description: "How an insight question gets into a Question Book release and how it changes: proposals, triage, asking and the question review. Never answers or signs. Use to propose, triage, ask, retire or review a question. Trigger: insight question, proposals, triage, question review, /haipipe-insight-question."
 metadata:
   version: "2.0.1"
   last_updated: "2026-10-09"
