@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-draft
-description: "The paper's draft Task: one Section, the Abstract or a letter of one version (task-type: draft), the paper's rules on top of haipipe-draft; executes one row of the version's ## Narrative and keeps its Requirement (venue rules, rubric, SUB-* rows). Evidence and displays follow haipipe-paper-evidence; the whole manuscript is haipipe-paper-assemble. Use to add, outline, draft, revise, check or retarget one Section. Also opens as /haipipe-paper-section."
+description: "The paper's draft Task: one Section, the Abstract or a letter of one version, the paper's rules on top of haipipe-draft. Use to add, outline, draft, revise, check or retarget one Section. Trigger: paper Section, draft a Section, Abstract, letter, /haipipe-paper-draft, /haipipe-paper-section."
 metadata:
   version: "0.26.0"
   last_updated: "2026-11-13"
@@ -21,6 +21,8 @@ metadata:
 # /haipipe-paper-draft · one paper Section as a draft Task
 
 > **Working a Section follows JL's method** (261115): the structure loop, the draft loop and evidence beside them, [`ref/section-method.md`](ref/section-method.md); each step is a must-check row (haipipe-paper M-E01 to M-E09).
+
+> **The workflow** (261116): `/haipipe-paper-draft workflow <Section>` runs W0 Examples, W1 Plan (the person signs), W2 Write, W3 Rate, W4 Fix loop (the AI keeps what the blind reader keeps, comments the rest), W5 Ready (the person joins), [`ref/workflow.md`](ref/workflow.md); `python3 cli/section_workflow.py <Section Task>` prints where it stands and the next step.
 
 A paper Section is a draft Task (b32_draft s03, s41-D06; JL 261019: "we have the paper to combine the evidence and
 draft together to make a draft task"). The base gives every theme the same three folders, one writer each; the paper
@@ -161,6 +163,11 @@ evidence items' targets, then run `page.py adopt --relayout`, `page.py export` a
 `src/paragraph_length.py`; haipipe-paper `scripts/paper_check.py` row W7 and `cli/anti_slop.py` finding
 `paragraph-length` use the same range.
 
+A split sentence makes a new address: add it to the Target of every VALUE or CITE item the old sentence had, or the
+new half shows "⚠ no item" on the page (JL 261116: "why still no item?"). `page.py health` row `support` lists each
+sentence that prints a number with no item targeting it (haipipe-draft `src/support_health.py`, the page's own rule;
+WARN while writing, FAIL with `--final`).
+
 ## 🏷️ Titles read like the text (JL 261112)
 
 Part titles (C<n>), paragraph titles (C<n>.P<m>), plan Bullet labels, arcs and Narrative reader questions are
@@ -281,7 +288,8 @@ wrapping the body fragment `delivery/latex/<page>.tex` that the paper build
 (its one home, JL 261113; an older Board: the Section's own unit,
 `results/<re-run>/payload/Display<n>-<slug>/assets/figure.pdf` or `display/Display<n>-<slug>/`, still read; `S-Display-*`, `<PageID>-Display-*` and `Sec<N>-Display-*` are
 retired, JL 260908) and its citation keys to
-its own `selected-bibliography/<page>.bib`. The paper's `delivery/latex/` is regenerated FROM these
+its own `selected-bibliography/<page>.bib` (generated, never hand-edited: the build merges the Section's own
+`draft/evidence/bibex/<task>.bib` into it, and a correction goes into the bibex). The paper's `delivery/latex/` is regenerated FROM these
 files by `haipipe-paper-assemble`, never the other way round: a correction goes
 into this page and the paper folder is rebuilt whole. The old desk room
 (`<N>-<desk><year>/sections/*.tex`) is not a current source of record.

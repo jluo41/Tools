@@ -181,7 +181,7 @@ def sentence_support(d: dict, task: Path) -> dict:
             kinds = {it["kind"] for it, _ in row["items"]}
             # a number in a sentence a CITE item covers, with no VALUE item, is a cited fact, not our result
             # ("every 5 minutes \citep{Battelino_2019}"): no ⚠ (must-check M-D18)
-            if "VALUE" not in kinds and "CITE" not in kinds:
+            if not kinds & {"VALUE", "CITE", "DISPLAY", "TABLE"}:   # a display item backs its numbers too, as health's support row
                 row["loose"] = numbers(m.group(2))
     return {a: r for a, r in out.items() if r["items"] or r["loose"]}
 

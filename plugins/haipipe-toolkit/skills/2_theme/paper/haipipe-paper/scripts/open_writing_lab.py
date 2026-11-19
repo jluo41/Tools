@@ -49,6 +49,15 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import create_section_sessions as css  # noqa: E402
 
+def fresh_env() -> dict:
+    """This process's environment without the calling session's own variables (every CLAUDE* and CODEX_COMPANION*).
+    A VS Code window opened by `code --new-window` gives its terminals the caller's environment, so a `claude` started
+    there read CLAUDE_CODE_CHILD_SESSION and ran as a child with transcript saving off, holding the parent's messaging
+    socket too (JL 261116: "I have this issue")."""
+    keep = {"CLAUDE_BIN", "CLAUDE_CONFIG_DIR"}                       # where claude is and its home, the person's own
+    return {k: v for k, v in os.environ.items() if k in keep or not k.startswith(("CLAUDE", "CODEX_COMPANION"))}
+
+
 LABS = Path(os.environ.get("HAIPIPE_LABS_DIR", Path.home() / ".config" / "haipipe" / "labs"))
 
 
@@ -215,7 +224,7 @@ def tmux_lab(root, group, prompts, session, out_dir, show):
             cmd = ["python3", str(launcher), sid, name, str(prompts / f"{u['key']}.txt")]
             if i == 0:
                 subprocess.run(["tmux", "new-session", "-d", "-s", session, "-x", "240", "-y", "64",
-                                "-c", str(root), "-e", f"CLAUDE_BIN={claude}", *cmd], check=True)
+                                "-c", str(root), "-e", f"CLAUDE_BIN={claude}", *cmd], env=fresh_env(), check=True)
             else:
                 subprocess.run(["tmux", "split-window", "-t", session, "-c", str(root),
                                 "-e", f"CLAUDE_BIN={claude}", *cmd], check=True)
@@ -333,7 +342,7 @@ def main():
         print("The Paper Writing Lab extension is not installed, so the windows open without their terminals."
               f" Install it once: bash '{vsix}' && code --install-extension '{vsix.parent / 'paper-lab.vsix'}'")
     for f in files:
-        subprocess.run(["code", "--new-window", str(f)], check=False)
+        subprocess.run(["code", "--new-window", str(f)], env=fresh_env(), check=False)
         print(f"opened {f.name}")
         time.sleep(3)   # two quick `code --new-window` calls can drop one window (JL 261114: Lab-A never opened)
     if missing:   # after the windows, so they are not kept waiting for the Codex first turns
