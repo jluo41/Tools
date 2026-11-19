@@ -279,7 +279,7 @@ def rewrites(board, P, Q):
             change[rel] = (rel, fix_links(t, rel, rel, board, mapping))
             continue
         create[f"reports/{r}/{r}.md"] = (
-            f"# {q[2]}\nstate: ⬜ OPEN · moved from {Path(q[5]).name} §3 (b16 Q04); not answered yet\n"
+            f"# {q[2]}\nstate: ⬜ OPEN · moved from {Path(q[5]).name} Research Questions (b16 Q04); not answered yet\n"
             f"answers: {q[0]}\nanswer-status: open\n\n## Opening\n\n{q[3] or q[2]}\n\n"
             f"**Where this Page sits:** [{q[0]} · {q[2]}](../../board.md) · its telling: "
             f"[{Path(q[5]).name}](../../{q[5]}/{Path(q[5]).name}.md).\n\n## Content\n\n### 1 · The question\n\n"
@@ -319,7 +319,7 @@ def rewrites(board, P, Q):
             vt = re.sub(r"(?m)^(tells:\s*)[—-]\s*$", lambda m: m.group(1) + cur_page, vt, count=1)
             if narrative and not re.search(r"(?m)^## Narrative", vt):
                 cut = re.search(r"(?m)^## (Questions|Log)", vt)
-                add = f"## Narrative\n\nMoved from {Path(cur_topic).name} §8 (b16 Q04): how this version tells the story, in reading order.\n\n{narrative}\n\n"
+                add = f"## Narrative\n\nMoved from {Path(cur_topic).name} Section Narrative (b16 Q04): how this version tells the story, in reading order.\n\n{narrative}\n\n"
                 vt = vt[:cut.start()] + add + vt[cut.start():] if cut else vt.rstrip("\n") + "\n\n" + add
             change[face] = (face, fix_links(vt, face, face, board, mapping))
             # each Section's story-row follows its row: `<Story> §8.3 / <stem>` -> `<version> ## Narrative / <stem>`

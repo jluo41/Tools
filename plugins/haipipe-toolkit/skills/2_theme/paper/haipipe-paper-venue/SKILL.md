@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-venue
-description: "One submission target (journal, funder, patent office): binding desk rules kept apart from observed patterns, with provenance; writes the Board's venues/<venue>/ (call.md, author kit) that each version reads. Use to research, add, refresh, compare or check a venue. Trigger: venue, journal rules, call for papers, author kit, /haipipe-paper-venue."
+description: "One submission target (journal, funder, patent office): binding desk rules kept apart from observed patterns; writes the Board's venues/<venue>/. Use to research, add, refresh, compare or check a venue. Trigger: venue, journal rules, call for papers, author kit, /haipipe-paper-venue."
 metadata:
   version: "0.12.3"
   last_updated: "2026-11-01"

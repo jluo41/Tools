@@ -1,13 +1,6 @@
 ---
 name: haipipe-labeling-building
-description: >-
-  The Building-side door of the labeling theme, and its LAW: who is
-  the semantic authority, what each of Contract, Round and Freeze may and may
-  not create, which decisions are human gates, which verbs exist, and what is
-  forbidden. It ends at a signed Label Handoff and never evaluates executors or
-  scans the corpus. The order of steps (which Run comes next, Run allocation, receipts) lives in its ref/step-order.md. Use for
-  new labeling jobs, calibration rounds, human annotation sessions, boundary
-  discovery, guideline revision, stopping decisions, freeze, which Building Run comes next, or /haipipe-labeling building.
+description: "Building-side door and law of the labeling theme: what Contract, Round and Freeze may create, the human gates and what is forbidden; ends at a signed Label Handoff. Use for calibration rounds, guideline revision or freeze. Trigger: next Building Run, /haipipe-labeling building."
 disable-model-invocation: true
 metadata:
   version: "0.9.2"

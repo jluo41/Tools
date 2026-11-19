@@ -1,6 +1,6 @@
 ---
 name: haipipe-job
-description: "Owns the Job level: its face jNN_<job>.md (goal, close, answers:, its Tasks in order, ## Deliverables ticked from disk), its Spaces and buttons, a new-Job scaffold with Task slots, a check of Tasks against folders, and a theme's own Job and Task names. Trigger: job, new job, add a task, job face, jNN, tasks in order, level_patterns, /haipipe-job."
+description: "Owns the Job level: its face jNN_<job>.md (goal, close, Tasks in order, Deliverables), its Spaces and buttons, a new-Job scaffold, and a check of Tasks against folders. Use to create a Job, add a Task or check a Job face. Trigger: job, new job, add a task, job face, jNN, /haipipe-job."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.2"

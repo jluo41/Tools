@@ -377,9 +377,9 @@ def plan_addresses(plan_text: str) -> set:
         paragraph = re.match(r"^### C(\d+)\.P(\d+)\b", line)
         if paragraph:
             cn, pn = map(int, paragraph.groups()); continue
-        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·", line)
+        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)([a-z]*)\s*·", line)   # a split Bullet, B1a, too
         if bullet:
-            out.add("C%d.P%d.B%d" % (cn, (pn if pn >= 0 else 1), int(bullet.group(1))))
+            out.add("C%d.P%d.B%d%s" % (cn, (pn if pn >= 0 else 1), int(bullet.group(1)), bullet.group(2)))
     return out
 
 
@@ -903,7 +903,7 @@ def split_embedded_draft(continuation):
 
 _POINT_LINE = re.compile(r"^Point:\s*(.*)$", re.I)
 _SENTENCE_TAG = re.compile(r"^([Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?\s*·\s*)")  # S7, S26a, or a range S3-S4
-_BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+\s*·\s*)(.*)$")
+_BULLET_LINE = re.compile(r"^(- (?:\[[ xX]\]\s*)?(?:B|S)\d+[a-z]*\s*·\s*)(.*)$")
 
 
 def split_bullet_block(head_line, continuation):
@@ -1037,11 +1037,11 @@ def iter_plan_bullets(plan_text: str):
         if not line.startswith("- "):
             i += 1
             continue
-        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)\s*·\s*(.*)$", line)
+        bullet = re.match(r"^- (?:\[[ xX]\]\s*)?(?:B|S)(\d+)([a-z]*)\s*·\s*(.*)$", line)   # B1a: a split Bullet
         if not bullet:
             i += 1
             continue
-        explicit_no, head = int(bullet.group(1)), bullet.group(2).strip()
+        explicit_no, letter, head = int(bullet.group(1)), bullet.group(2), bullet.group(3).strip()
         sn += 1
         j, continuation = i + 1, []
         while (j < len(lines) and lines[j].startswith("  ")
@@ -1050,7 +1050,7 @@ def iter_plan_bullets(plan_text: str):
             j += 1
         plan_continuation, draft, reviews = split_embedded_draft(continuation)
         bullet_no = explicit_no  # B0 is a real number (S0, a title row; JL 261111), never "unnumbered"
-        address = "C%d.P%d.B%d" % (cn, (pn if pn >= 0 else 1), bullet_no)
+        address = "C%d.P%d.B%d%s" % (cn, (pn if pn >= 0 else 1), bullet_no, letter)
         blocks.append({
             "address": address,
             "division": "C%d" % cn,

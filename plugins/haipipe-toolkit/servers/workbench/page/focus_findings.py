@@ -103,7 +103,8 @@ def value_sections(folder: Path, root: Path) -> list:
         if tabs:
             opens = f'<div class=find-verbs>{frame._link(page_url(job, root), "Open " + job.name)}</div>' if level == "Block" else ""
             out.append(("🗂️ Data", opens + be.VALUES_CSS
-                        + _side_tabs(f"fV{k}x", [(h, w) for h, w, _ in tabs], [p for _, _, p in tabs]) + be.VALUES_DIALOG + be.VALUES_JS,
+                        + _side_tabs(f"fV{k}x", [(h, w) for h, w, _ in tabs], [p for _, _, p in tabs],
+                                     cards=(job, root, "findings.values")) + be.VALUES_DIALOG + be.VALUES_JS,
                         be.values_word(job, root)))
     return out
 
@@ -195,7 +196,7 @@ def design_sections(folder: Path, root: Path) -> list:
         head = jface.read_text(encoding="utf-8", errors="ignore").splitlines()[0] if jface.is_file() else ""
         shown = head.partition(" · ")[2].strip() if head.startswith("# ") else ""
         out.append((f'{emoji} {shown or job.name.split("_", 1)[-1].replace("_", " ")}',
-                    f'<div class=find-design>{_side_tabs(f"fE{k}x", tabs, panels)}</div>', word))
+                    f'<div class=find-design>{_side_tabs(f"fE{k}x", tabs, panels, cards=(job, root, "findings.design"))}</div>', word))
     if out:
         out[-1] = (out[-1][0], out[-1][1] + DESIGN_JS, out[-1][2])
     return out
@@ -234,7 +235,7 @@ def map_sections(folder: Path, root: Path) -> list:
                           + f'<iframe class=find-map loading=lazy title="{frame.esc(name(m))} mind map" src="{frame.esc(href)}&amp;fit=1" '
                           'onload="window.fitMap&&fitMap(this)"></iframe>')
         built = dt.datetime.fromtimestamp(max(m.stat().st_mtime for m in maps)).strftime("%Y-%m-%d")
-        out.append(("🧠 Maps", _side_tabs(f"fM{k}x", tabs, panels) + FIT_FRAME_JS, f"built {built}"))
+        out.append(("🧠 Maps", _side_tabs(f"fM{k}x", tabs, panels, cards=(task, root, "findings.maps")) + FIT_FRAME_JS, f"built {built}"))
     return out
 
 
@@ -265,7 +266,8 @@ def findings_board(rows: list, folder: Path, root: Path, lead: str = "", extra=(
         # the question whose answer waits for your agreement, under the closed bar (JL 261106)
         waits = next((f"🙋 {x[0]}: its answer waits for your agreement" for x in items if x[3] == "proposed"), "")
         title = band_title(name) if not name[:1].isalnum() else "❓ " + band_title(name)   # every bar its emoji (round 2)
-        secs.append((title, word, _side_tabs(f"fQ{g}x", [(x[0], x[1]) for x in items], [x[2] for x in items]), waits))
+        secs.append((title, word, _side_tabs(f"fQ{g}x", [(x[0], x[1]) for x in items], [x[2] for x in items],
+                                                cards=(folder, root, "findings.questions")), waits))
     service = service_section(folder, root)
     if service and include_delivery:
         secs.append(("🌐 Service", "live", service, ""))

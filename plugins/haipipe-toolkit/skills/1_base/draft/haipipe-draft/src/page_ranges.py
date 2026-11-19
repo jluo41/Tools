@@ -13,7 +13,8 @@ from .sentence_id import sid
 HEAD = re.compile(r"^#{2,4} (C\d+\.P\d+)\b")
 LINE = re.compile(r"^- B\d+[a-z]* · ([Ss]\d+[a-z]*) · ")
 NAMED = re.compile(r"\b(C\d+\.P\d+)\b")
-RANGE = re.compile(r"[Ss]\d+[a-z]*(?:\s+to\s+[Ss]\d+[a-z]*)?")
+# a renumber may leave "s152-cut" or a doubled "to" inside a range (t04_methods 261118): the whole run is replaced
+RANGE = re.compile(r"[Ss]\d+[a-z]*(?:-cut)?(?:\s+to\s+[Ss]\d+[a-z]*(?:-cut)?)*")
 DRAFT = re.compile(r"(?m)^## \d+ · Draft\b")
 
 

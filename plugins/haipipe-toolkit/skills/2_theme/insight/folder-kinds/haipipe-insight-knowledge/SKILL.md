@@ -1,10 +1,6 @@
 ---
 name: haipipe-insight-knowledge
-description: >-
-  InsightBoard level contract for Knowledge: one supported proposition with
-  strength, rival explanations and boundary, written on its answering page
-  from named results and Information pages, never advising. Trigger: insight
-  knowledge, insight claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge.
+description: "InsightBoard level contract for Knowledge: one supported proposition with strength, rival explanations and boundary, never advising. Use for a claim's answering page, written from named results. Trigger: insight knowledge, insight claim, rivals, folder-kind knowledge, /haipipe-insight-knowledge."
 metadata:
   version: "2.4.1"
   last_updated: "2026-10-09"

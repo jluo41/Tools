@@ -1,18 +1,6 @@
 ---
 name: workbench-insight
-description: >-
-  The insight theme of the shared workbench frame: an insight Board, each Job
-  (one release × one data version) and each Task (one question) open on the
-  frame's tabs Guide · Block · Job ▾ · Task ▾, each with the six Spaces
-  (Description · Idea Studio · Audience Report | Work Details | Runs ·
-  Delivery) as b11's s11 · s12 · s13 draw them, and a Runs panel whose buttons
-  are the insight run cards by level and Space. It shows the Board's and the
-  Question Book's files and copies prompts; the one thing it writes is a person's
-  own CHECK of a page and sign of a Job's close (POST /_board/insight-act),
-  every other write staying with the insight skills. Use to see or explain what an insight screen shows, which file
-  each view reads, and which card a button copies. Trigger: insight workbench,
-  insight tab, insight Board tab, insight Job tab, insight Task tab, insight
-  spaces on screen, /workbench-insight.
+description: "The insight theme of the shared workbench frame: an insight Board, each Job and each Task on tabs with six Spaces and a Runs panel. Read-only except a person's CHECK of a page and sign of a Job's close. Use to explain an insight screen. Trigger: insight workbench, insight tab, /workbench-insight."
 metadata:
   version: "1.4.0"
   last_updated: "2026-11-01"
@@ -127,8 +115,8 @@ Every level on the focus page (b11 j01 s51 to s58, 261102)
 -----------------------------------------------------------
 
 The rest of the 3 × 3 is live in the same file, each view as its cell in b11 j01 (`insight_ui_cells.py`). A Report view
-is its numbered sections only, no ⚙️ Process or 📊 Results band (s51-D02); a Work view is ⚙️ Process then 📊 Results,
-its Results the Report view's own sections. Each opens on its first letter; MindMap stays last in Report. Every
+is its numbered sections only, no ⚙️ Process or 📊 Results band (s51-D02); Work is retired, an old `section=work` link opening the same Report view
+(older screen: a Work view was ⚙️ Process then 📊 Results). Each opens on its first letter; MindMap stays last in Report. Every
 Report view ends with 🙋 Interaction and prints no caption line. The buttons are plain words (JL 261109) and the key in
 a link stays: a Board's Findings (`answers`) · Questions (`questions`) · Data (`data`) · Advice (`handoff`) · Jobs
 (`jobs`); a Question Book's Questions (`questions`) · Ideas (`ideas`) · Versions (`versions`); a Job's Findings
@@ -205,6 +193,6 @@ under them (Data to Wisdom, left to right); in Dots the Executive questions are 
 hovered or pinned. The phone shows one level at a time, Executive first.
 
 A list of questions a person reads is grouped Executive first, then Data to Wisdom (`READ_ORDER`); the order the
-work is done in (`ORDER`, Data first) stays on the Work views. On the Question Book's page each level is a closed
+work is done in (`ORDER`, Data first) stays where the work is listed (older screen: the Work views). On the Question Book's page each level is a closed
 fold whose bar is the level's name, with ✓ once all of it is agreed and scripted; a link to `#<question id>` opens
 the fold it lands in.

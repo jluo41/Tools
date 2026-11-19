@@ -93,9 +93,9 @@ class ResolveWorkbenchTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root, board = fixture(tmp, "# Paper\nspine: s\ndialect: paper\n")
             self.assertEqual(board_workbench_route(board), "paper-board")
-            # /w/<block> opens the base frame; the frame links the theme's older page
+            # /w/<block> opens the focus page; the old frame only on layout=frame
             url, why = resolve_workbench(root, "topic")
-            self.assertEqual(url, "/_board/workbench?path=unit/diagram/01-topic-260722")
+            self.assertEqual(url, "/_board/workbench?path=unit/diagram/01-topic-260722&layout=focus")
             self.assertEqual(old_page_url(board, root),
                              "/_board/paper-board?path=unit/diagram/01-topic-260722/board.md&file=board.md")
         with tempfile.TemporaryDirectory() as tmp:

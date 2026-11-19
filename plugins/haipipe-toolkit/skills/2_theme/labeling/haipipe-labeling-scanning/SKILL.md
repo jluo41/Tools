@@ -1,12 +1,6 @@
 ---
 name: haipipe-labeling-scanning
-description: >-
-  The Scanning-side door of the labeling theme, and its LAW: what a
-  frozen Label Handoff permits, what Test, Scan and Audit may and may not
-  create, which decisions are human gates, which verbs exist, and what is
-  forbidden. It begins from one signed handoff and ends at audited D*. The order of steps (which Run comes next, Run allocation, receipts) lives in its ref/step-order.md. Use for sealed evaluation,
-  model qualification, production labeling, risk queues, corpus scanning, spot
-  checks, repair, final audit, which Scanning Run comes next, or /haipipe-labeling scanning.
+description: "Scanning-side door and law of the labeling theme: what a frozen Label Handoff permits, what Test, Scan and Audit may create, the human gates; ends at audited D*. Use for sealed evaluation, production labeling or final audit. Trigger: next Scanning Run, /haipipe-labeling scanning."
 disable-model-invocation: true
 metadata:
   version: "0.8.1"

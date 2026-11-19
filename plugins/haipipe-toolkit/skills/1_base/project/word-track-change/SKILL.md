@@ -1,6 +1,6 @@
 ---
 name: word-track-change
-description: "A co-author Word round with tracked changes: pull the co-authors' newest .docx from OneDrive, read their comments and tracked changes, add our accepted changes as tracked changes by one author (their marks and comments kept), fix what their comments ask as tracked changes (a Word comment only when no edit can answer), render the PDF in Microsoft Word itself, check nothing of theirs was lost, then import and push it back to OneDrive on the person's word. Trigger: word track change, tracked changes, track changes in Word, send our edits back in Word, co-author Word file, render the docx in Word, /word-track-change."
+description: "A co-author Word round with tracked changes: pulls their newest .docx, adds ours as tracked changes with theirs kept, renders the PDF in Word and pushes it back on the person's word. Use to send edits back in Word. Trigger: track changes in Word, co-author Word file, /word-track-change."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.2.0"

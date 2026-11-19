@@ -219,11 +219,11 @@ def delivery(folder, root, data):
         files += service
     acceptance = data['sections'].get('acceptance', '')
     usage = data['sections'].get('usage', '')
-    # only the sections with something in them, numbered in turn; none at all is one plain line
+    # only the sections with something in them, numbered in turn; none at all draws nothing (AGENTS.md § Page words)
     secs = [(t, b) for t, b in (('📦 Deliverables', files),
                                 ('✅ Acceptance', f.markdown(acceptance, folder, root) if acceptance else ''),
                                 ('📖 Usage', f.markdown(usage, folder, root) if usage else '')) if b]
-    return ''.join(section(n, t, b) for n, (t, b) in enumerate(secs, 1)) or empty('Nothing handed over yet.')
+    return ''.join(section(n, t, b) for n, (t, b) in enumerate(secs, 1))
 
 
 def recorded_sections(folder, root, topics, names, include_page=True):

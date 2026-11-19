@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-guideline
-description: >-
-  The Labeling › Guideline view skill of the labeling theme: it
-  writes the guideline versions: a first guideline candidate and, after each round, the next guideline drafted from the human's accepted judgments. Every Run in this view names this skill, and no other view uses it.
-  Use for guideline, guideline-seed, guideline-learn, policy_draft, a guideline patch, backward impact, or /haipipe-labeling guideline.
+description: "Labeling › Guideline view of the labeling theme: writes the guideline versions, a first candidate and, after each round, the next one drafted from the human's accepted judgments. Use to seed or patch a guideline. Trigger: guideline-seed, guideline-learn, policy_draft, /haipipe-labeling guideline."
 disable-model-invocation: true
 metadata:
   version: "0.2.1"

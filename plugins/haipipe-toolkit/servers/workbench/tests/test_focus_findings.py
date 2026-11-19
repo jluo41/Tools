@@ -25,7 +25,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         delivery = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report', 'delivery')
         for lane in ('Models', 'Data', 'Website'):                 # JL 261114: an empty lane is not drawn
             self.assertNotIn(f'<b>{lane}</b>', delivery)
-        self.assertIn('Nothing handed over yet.', delivery)
+        self.assertNotIn('Nothing handed over yet', delivery)   # an empty Delivery draws nothing
         self.assertNotIn('>Questions<', page)
         self.assertNotIn('Every table is stored.', page)
         self.assertNotIn('No answer has been recorded yet.', page)

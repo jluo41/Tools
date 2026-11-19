@@ -1,8 +1,8 @@
 ---
 name: haipipe-run
-description: "Defines, allocates, resumes, counts and audits Runs: Run or Step, hard or soft, the run.yaml card, ticket and receipt identity, reuse or new work, pruning superseded Runs (prune_runs.py), which skill owns each workbench button, and Workflows (a plan.yaml graph of Run Specs with routes and gates, ref/workflow.md). Trigger: Run contract, run.yaml, pass, runtime receipt, prune runs, run types by Space, workflow, run spec, /haipipe-run, /haipipe-workflow."
+description: "Defines, allocates, resumes, counts and audits Runs: the run.yaml card, ticket and receipt identity, and Workflows (a plan.yaml graph of Run Specs). Use to open, reuse, prune or check a Run. Trigger: Run contract, run.yaml, runtime receipt, prune runs, run spec, /haipipe-run, /haipipe-workflow."
 metadata:
-  version: "0.36.5"
+  version: "0.37.0"
   last_updated: "2026-10-31"
 ---
 
@@ -351,6 +351,14 @@ A Result may be a checked artifact, judgment, or truthful failure.
 The Result gate belongs to its profile. Evidence admission and downstream
 promotion are separate facts; an unused valid Result stays valid. Feedback
 and accepted writing history are authoritative records, not regenerable caches.
+**An ok receipt covers only what the Run read.** Two rules (Proj-PD2D 261118: a model trained on 913 cases
+instead of about 90,000 said ok, because its CaseSet Run died after 1 of 100 partitions and the queue ran on):
+1. A stage that reads a partitioned store checks it holds all N partitions, and fails below N; it never
+   globs whatever is there.
+2. A Run names the Runs it read (`reads:` on its card, else their rNN_ names in its goal). A workbench
+   Deliverable stays 🔶, never ✅, while any Run up that chain has no finished receipt
+   (`servers/workbench-work/work_progress_deliverables.py` `unfinished_upstream`). A queue stops at a failed ticket.
+
 When upstream data changes, mark affected downstream bindings stale until new
 work or valid reuse resolves them; the old Result stays only while something in
 use still reads it (Keep only meaningful Runs).

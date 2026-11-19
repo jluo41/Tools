@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-individual
-description: "individual-query Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in the individual Block that query/visualize ONE individual's data (CGM trace, meal timeline, treatment events) -> $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/{plot.pdf, table.csv}. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
+description: "individual-query Task specialist: scaffolds Task folders in the individual Block that query or visualize one individual's data (CGM trace, meal timeline, treatment events) into a plot and a table. Called by /haipipe-task when task-type=individual. Cross-references /haipipe-individual."
 argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true

@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-story
-description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Discovery and Task Roadmaps, related papers and Section Narrative; on the ladder a studio topic (sNN-story-<desk>-<idea>/) with Board Questions. Use to plan a telling or check that it holds for an editor, a reviewer and the public. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
+description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Roadmaps and Section Narrative. Use to plan a telling or check that it holds. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /haipipe-paper-story."
 metadata:
   version: "0.33.0"
   last_updated: "2026-11-08"
@@ -336,7 +336,7 @@ per-Section rows**. Each version Job face's `## Narrative` lays that venue's pap
 display Runs, one row per Section, the compile order. The version face points at this § 8 and never copies a claim.
 
 ```text
-Story § 8 (every version)            version face ## Narrative (one venue)
+Story Section Narrative (every version)            version face ## Narrative (one venue)
 title · story arc · explanation  ─▶  points at § 8, copies nothing
 claims C1..Cn and their numbers  ─▶  claim → display → display Run
                                      one row per Section · compile order

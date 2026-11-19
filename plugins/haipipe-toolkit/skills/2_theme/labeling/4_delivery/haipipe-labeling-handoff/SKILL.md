@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-handoff
-description: >-
-  The Delivery › Handoff view skill of the labeling theme: it
-  freezes a stopped Building lineage into the signed Label Handoff, the only crossing to Scanning. Every Run in this view names this skill, and no other view uses it.
-  Use for handoff-freeze, Label Handoff, freeze the guideline, G*, D_cal*, or /haipipe-labeling handoff.
+description: "Delivery › Handoff view of the labeling theme: freezes a stopped Building lineage into the signed Label Handoff, the only crossing to Scanning. Use to freeze the guideline. Trigger: handoff-freeze, Label Handoff, G*, D_cal*, /haipipe-labeling handoff."
 disable-model-invocation: true
 metadata:
   version: "0.1.1"

@@ -180,7 +180,7 @@ Cross-session synthesis (which changes repeat across sessions, which contradict)
 is a separate reading step and lands beside the records as
 `feedback/README.md`. The actual skill edits go through the normal skill
 revision pass and are validated by a fresh subagent on a realistic task
-(`Physician-SPACE/CLAUDE.md`, Gotchas). Neither is part of this function.
+(`<Project-SPACE>/CLAUDE.md`, Gotchas). Neither is part of this function.
 
 ## 📂 Files
 

@@ -1,12 +1,6 @@
 ---
 name: workbench-discovery
-description: >-
-  Open and interpret a Discovery Block on the shared workbench frame (the work shape
-  every Block, Job and Task page takes). Use to see which papers a Block has read,
-  which Runs are blocked, which citations still need a person, or a Block's Questions.
-  The older discovery-board page (Scope, Work, Check, Delivery) is retired and described
-  only for reading old links. The Block contract and the Runs belong to
-  haipipe-discovery; report writing to haipipe-draft.
+description: "Open and interpret a Discovery Block on the shared workbench frame. Use to see which papers a Block has read, which Runs are blocked, which citations still need a person, or a Block's Questions. Trigger: discovery workbench, papers read, blocked Runs, discovery Block view, /workbench-discovery."
 metadata:
   version: "0.3.2"
   last_updated: "2026-10-11"

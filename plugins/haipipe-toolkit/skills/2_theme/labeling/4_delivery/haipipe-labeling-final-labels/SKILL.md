@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-final-labels
-description: >-
-  The Delivery › Final labels view skill of the labeling theme: it
-  publishes the audited final label set D* with its provenance shares, after the audit passes or its limit is accepted. Every Run in this view names this skill, and no other view uses it.
-  Use for final labels, D*, dstar-materialize, publishing the labeled corpus, or /haipipe-labeling final-labels.
+description: "Delivery › Final labels view of the labeling theme: publishes the audited final label set D* with its provenance shares, after the audit passes or its limit is accepted. Use to publish the labeled corpus. Trigger: final labels, D*, dstar-materialize, /haipipe-labeling final-labels."
 disable-model-invocation: true
 metadata:
   version: "0.1.1"

@@ -1,15 +1,6 @@
 ---
 name: haipipe-interaction
-description: >-
-  What passes between the work and the person, kept where they read it: what the work needs from them (questions,
-  choices, feedback, clarification or a review) and what they should know (a behaviour, a limit, a choice made for
-  them; collect.py know). Its question-and-answer form is a hard collection Run under the page whose work the
-  answers change (runs/rNN_collect_<slug>/). Its question_collection.md holds compact questions in
-  Markdown with my pick ticked; collect.py build renders them into a form where the person selects; the person
-  presses Copy feedback and pastes the text back; collect.py save keeps it as result/answer_collection.md and the
-  interaction ends. Applying the answers belongs to the owning Task. Trigger: ask me, questions for you, choose a
-  version, review this design, collect feedback, collection Run, question_collection.md, things you should know,
-  what to know, document it to the Interaction, /haipipe-interaction.
+description: "What passes between the work and the person: what it needs from them (questions, choices, feedback) and what they should know, kept as a collection Run. Use to ask the person or collect feedback. Trigger: ask me, choose a version, collect feedback, /haipipe-interaction, /haipipe-collect."
 metadata:
   version: "0.12.0"
   last_updated: "2026-11-05"
@@ -278,10 +269,10 @@ refuse to read `applied.md`: the flags then do not show, and nothing else breaks
 
 ```text
 Interactions (right rail)   Needs your input · Answered · All, for this Project or Block and below
-Work                        the Interaction button on the Job or Task row it holds up, on its own Run row, and
-                            on a row of its own at the top of Work on the Block or Job page that owns it
+Report                      the Interaction button on the Job or Task row it holds up, on its own Run row, and
+                            on a row of its own at the top of the Block or Job page that owns it (older screen: in Work)
 Studio                      the Interaction button on the sNN card its for: address names
-Each view                   the last section of every Report and Work view of a Block, Job or Task, 🙋 Interaction:
+Each view                   the last section of every Report view of a Block, Job or Task, 🙋 Interaction:
                             the Runs at the page or below, a folding group each, a left tab per question, the same
                             form on the right, Back and Next (JL 261104; servers/workbench/page/interaction_section.py)
 The one look                the Interactions rail and the Interaction button's pop-out draw this same section

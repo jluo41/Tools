@@ -23,7 +23,7 @@ LESSON.md deliberately left untouched (historical record).
 | ① | 🚚 搬家没改地址 | 9 | platform repos moved under `platforms/` but every doc cites bare root paths; dead `fn/project.md`; retired `/haipipe-project log`; `ProjA-*` examples ×3; unqualified `code-dev` in config-seed; orphan `<builder-dir>` token (my own 7-08 edit debt) |
 | ② | 📄 路由层失真 | 5 | `run`/`audit` verbs dispatchable but undiscoverable; phantom Fn `DatabricksV1` ×2; src2input/input2src concepts never mention the platform-specific contract their own SKILLs mandate |
 | ③ | ⚔️ 内部矛盾 | ~23 | **C1: "config naming is freestyle" vs run-sh-template hard-coding `configs/${RUN_NAME}.yaml`**; develop-databricks DEFERRED on a false premise (the repo EXISTS); README inference chain vs 0-overview; `Endpoint-*` prefix vs real store names; meta 6-key contract vs 4-key example; schema docs vs shipped template |
-| ④ | 🪝 substrate/reality | 5 | deploy/develop-databricks claims unqualified vs Lesson 15 (REACH: no CLI/jobs/serving); tar.gz-vs-folder input contract divergence across the 4 deploy skills |
+| ④ | 🪝 substrate/reality | 5 | deploy/develop-databricks claims unqualified vs Lesson 15 (the EHR workspace: no CLI/jobs/serving); tar.gz-vs-folder input contract divergence across the 4 deploy skills |
 
 Two headline items:
 - **C1 (🔴)** — three refs teach type-based/freestyle config names while the shipped `run-sh-template.sh:36` hard-codes `CONFIG="configs/${RUN_NAME}.yaml"` and every real task on disk pairs config==run. Anyone following the freestyle docs produces a run that can't find its config.
@@ -40,7 +40,7 @@ Two headline items:
 - [x] **T3** 🟡 `[M]` `fn/run.md:108` retired `/haipipe-project log task`. Fix: drop.
 - [x] **T4** 🟡 `[J]` `fn/workflow-audit.md:119` example `type: external (inferred from A00_ group)` — demonstrates the exact move its own Step-4 NOTE forbids, and `external` isn't a task type. Fix: `type: data (inferred from SourceFn import)`.
 - [x] **T5** 🟡 `[J]` SKILL.md: `run`/`audit` in Dispatch Table but absent from Commands + Step-2 cascade → unreachable. Fix: add both to Commands + cascade.
-- [x] **T6** 🟡 `[M]` SKILL.md:354-371 `ProjA`/`ProjA-Timing-01-OptTime` examples. Fix: Project-REACH-ADHD forms.
+- [x] **T6** 🟡 `[M]` SKILL.md:354-371 `ProjA`/`ProjA-Timing-01-OptTime` examples. Fix: `Project-<Family>-<Proj>` forms.
 - [x] **T7** 🟢 `[M]` SKILL.md:164 run-row reads-list wrong (hierarchy.md → invocation-modes.md). Fix: swap.
 - [x] **T8** 🟢 `[J]` `fn/workflow-audit.md:94-98` cascade drift (`training`→`fit`; missing raw/individual/endpoint). Fix: point at SKILL Step 3a + fix label.
 
@@ -84,14 +84,14 @@ Two headline items:
 - [x] **S2** 🟡 `[M]` fn-0-dashboard:47 `external/ (required)` — absent from ALL real sets → every real endpoint flagged broken. Fix: conditional.
 - [x] **S3** 🟡 `[J]` fn-1-package:171 restates the layout (with external/) against SKILL's own "do not restate" rule. Fix: pointer to 0-overview.
 - [x] **S4** 🟡 `[M]` develop-sagemaker:229 `ProjA-Timing-01-OptTime` path; endpointset fn-3-profile:21 `ProjA-Click-01-ClickPred`. Fix: real/illustrative.
-- [x] **S5** 🟡 `[J]` develop-databricks planned job-ladder unreconciled with Lesson 15 (REACH forbids jobs). Fix: scope job path to jobs-capable hosts + name the inline-exec fallback.
+- [x] **S5** 🟡 `[J]` develop-databricks planned job-ladder unreconciled with Lesson 15 (the EHR workspace forbids jobs). Fix: scope job path to jobs-capable hosts + name the inline-exec fallback.
 - [x] **S6** 🟢 `[M]` develop-sagemaker + develop-databricks concepts bare platform paths (→ E7 family); develop-local "future haipipe-end develop databricks"; endpointset "5 Fn-types" vs 6 subdirs. Fix: one-liners.
 
 ### deploy-* (4 skills)
 
 - [x] **D1** 🟡 `[M]` `platforms/` prefix missing in all four SKILLs (runnable commands!) + serve_local.py docstring. Fix: prefix everywhere.
 - [x] **D2** 🟡 `[M]` deploy-databricks:19 "consumes .tar.gz" vs its own step 1 + 3 siblings (folder). Fix: uniform contract — folder canonical, .tar.gz = Databricks wire form — stated in all four.
-- [x] **D3** 🟡 `[J]` deploy-databricks CLI/Model-Serving claims unqualified for REACH. Fix: one host-conditional line (CDHAI serving-capable per databricks.yml; REACH browser-only per Lesson 15).
+- [x] **D3** 🟡 `[J]` deploy-databricks CLI/Model-Serving claims unqualified for the EHR workspace. Fix: one host-conditional line (CDHAI serving-capable per databricks.yml; the EHR workspace browser-only per Lesson 15).
 - [x] **D4** 🟢 `[M]` note `fn_endpoint/` = logical bundle, physically `code/`+`model/` (3 skills).
 
 ### Process debt

@@ -1,16 +1,6 @@
 ---
 name: haipipe-design-delivery
-description: >-
-  The release of a design Job on the ladder, and the one file another system reads.
-  Owns run-freeze-predictions-j<NN> (each kept design's predicted effect frozen,
-  a person signs) and run-release-j<NN> (the kept, passed designs written word for
-  word into the Block's delivery/jNN_<job>/designs.json and designs.md, screens/ for a UI, and
-  gathered into the Block's delivery/; a person signs), and the designs.json
-  schema. Use to freeze predictions, release a Job, read or check designs.json, or
-  hand released designs to the system that sends them. Ends at the release:
-  sending and measuring belong downstream. Trigger: release designs, release a
-  design Job, freeze design predictions, designs.json, design delivery, hand off
-  designs, /haipipe-design delivery.
+description: "The release of a design Job on the ladder: freezes each kept design's predicted effect, then writes the kept, passed designs into the Block's delivery/ (designs.json); a person signs. Use to release a Job or check designs.json. Trigger: release designs, designs.json, /haipipe-design delivery."
 disable-model-invocation: true
 metadata:
   version: "0.4.1"

@@ -461,7 +461,7 @@ def section_body(ctx: PageContext) -> None:
         bar = groups_nav or (f'<nav class="section-views" aria-label="Views"><a href="{frame.esc(page_url(folder, root, section))}"'
                              f' aria-current="page">{one}</a></nav>')
         body = {"studio": lambda: (draft["studio_top"]() if draft else "") + (studio_html(topics, root, selected[2], card_interactions(folder, root))
-                                                                            if topics else studio_none(folder, root)), "delivery": lambda: (delivery() if callable(delivery) else delivery) or '<p class="mut">Nothing handed over yet: a delivery lands in this folder\'s <code>delivery/</code> once it is agreed.</p>',
+                                                                            if topics else studio_none(folder, root)), "delivery": lambda: (delivery() if callable(delivery) else delivery) or "",   # empty: nothing drawn
                 "related": lambda: related, "files": lambda: files_html(folder, root),
                 "skills": lambda: page_skills(folder, root, theme.name, level, bool(draft), bool(topics), bool(inbox), paper),
                 "timeline": lambda: (branches_html(folder, root) if level == "Project"   # a Project: one line per Block

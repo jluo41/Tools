@@ -89,3 +89,13 @@ def test_an_abstract_title_keeps_s0(tmp_path):
     folder = _page(tmp_path, "t00_abstract", TITLE)
     report = renumber(folder, dry_run=True)
     assert report["mapping"] == {}                                          # s0 is never moved to s1
+
+
+def test_a_cut_mark_inside_a_range_is_replaced_whole():
+    """t04_methods 261118: renumber left "s146 to s152-cut" and "s153 to s159-cut to s159-cut" in the spans."""
+    from src.page_ranges import fix
+    text = ("- C3.P2 · Fit · s146 to s152-cut\nC3.P3 · Loss → s153 to s159-cut to s159-cut\n## 3 · Draft\n"
+            "### C3.P2 · Fit · s146 to s152-cut\n- B1 · s146 · a.\n- B2 · s151 · b.\n"
+            "### C3.P3 · Loss · s153 to s159-cut to s159-cut\n- B1 · s152 · c.\n- B2 · s158 · d.\n")
+    out = fix(text)
+    assert "-cut" not in out and "· s146 to s151" in out and "→ s152 to s158" in out and "· s152 to s158" in out

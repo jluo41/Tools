@@ -1,6 +1,6 @@
 ---
 name: lab
-description: "Open a theme Block as a lab (/lab): VS Code windows whose terminals run that Block's Claude sessions, its page above each one, the way /wb opens a page. Paper, insight, design and labeling Blocks: a paper with a writing Job opens the paper writing lab (one session per Section); any other gets a Board session plus one per Job. A path or plain words find the Block. Trigger: lab, open the lab, start the lab, open sessions for this block, work on this block in VS Code, /lab."
+description: "Opens a theme Block (paper, insight, design, labeling) as a lab: VS Code windows whose terminals run that Block's sessions, its page above each one. Use to start working on a Block; a path or plain words find it. Trigger: lab, open the lab, start the lab, open sessions for this block, /lab."
 metadata:
   version: "0.1.0"
   last_updated: "2026-11-15"

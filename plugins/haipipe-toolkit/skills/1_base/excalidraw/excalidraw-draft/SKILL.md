@@ -1,17 +1,6 @@
 ---
 name: excalidraw-draft
-description: >-
-  Draw a draft in Excalidraw, in one of three modes. Map: a paper's Sections, or one Section, read
-  left to right (Sections, paragraphs, each Bullet a row, a Text column, an evidence card per
-  Evidence Item), generated from the Draft plans. Revise: a file we change (a co-author's Word
-  file, an IRB protocol for a Change in Research), each section's page beside the updated
-  sentences, a note per change, and last the tracked Word file, checked both ways. Section: one
-  Section on one canvas for editing it, the file's pages left, the text middle, evidence, comments
-  and changes right (ref/section_canvas.py; sync reads the canvas back into the draft). Use for a section canvas, edit this section,
-  sync the canvas, a
-  paper map, a Section map, "draw the sections", "what do we change in this file", "show the
-  changes to the draft", a tracked-changes file built from a plan, a CIR or amendment,
-  /excalidraw-draft, /excalidraw-section, /excalidraw-revise.
+description: "Draws a draft in Excalidraw in three modes: Map (a paper's Sections), Revise (a changed file with its tracked Word file) and Section (one Section on a canvas, synced back). Use to map or edit a draft. Trigger: section canvas, paper map, /excalidraw-draft, /excalidraw-section, /excalidraw-revise."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:

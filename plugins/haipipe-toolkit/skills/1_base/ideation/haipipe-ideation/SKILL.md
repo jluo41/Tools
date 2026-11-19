@@ -1,6 +1,6 @@
 ---
 name: haipipe-ideation
-description: "One door over ideation: generate evidence-grounded candidates, test novelty, feasibility, journal fit and Nature-level shape, then select idea-and-target pairs through a human gate and hand them to Paper P0. Use for research directions, idea generation, novelty checks, pressure tests and journal targeting; external sources are haipipe-discovery. Trigger: ideation, research idea, novelty check, journal fit, /haipipe-ideation."
+description: "One door over ideation: generates evidence-grounded candidates, tests novelty, feasibility and journal fit, then selects idea-and-target pairs through a human gate. Use for research directions and journal targeting. Trigger: ideation, research idea, novelty check, journal fit, /haipipe-ideation."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Bash(*), mcp__codex__codex, WebSearch, WebFetch, Agent, mcp__codex__codex-reply, mcp__manual_review__review, mcp__manual_review__review_reply
 metadata:
   version: "0.8.0"

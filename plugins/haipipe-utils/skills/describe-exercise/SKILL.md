@@ -1,6 +1,6 @@
 ---
 name: describe-exercise
-description: "Normalize a logged activity (any cohort's dialect, free text or vendor code) to a PA Compendium MET and, when minutes and body mass are known, an estimated kcal. Use when an Exercise ProcName's ExerciseType column needs energy or intensity, when a SourceFn must enrich exercise data, or when a cohort's activity codes must be typed before analysis. Trigger: describe exercise, exercise to MET, activity to calories, resolve ExerciseType, compendium, exnorm, 运动归一化."
+description: "Normalizes a logged activity (free text or vendor code) to a physical activity compendium MET and, when minutes and body mass are known, an estimated kcal. Use to give exercise data energy or intensity. Trigger: describe exercise, exercise to MET, exnorm, 运动归一化, /describe-exercise."
 metadata:
   version: "0.5.1"
   last_updated: "2026-11-02"

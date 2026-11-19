@@ -37,3 +37,16 @@ mismatch: a table that reaches the PDF and not the Word file is a loud failure,
 never a caption with nothing under it (found by Paper-Example-Misq, 260908: 3 of 4
 main tables and 7 of 12 appendix tables were lost). `tests/test_latex_room_to_docx.py`
 drives the real engine over a room with those exact column specs.
+
+## 🧾 Table cells read as the PDF prints them (261118)
+
+ScalingGlucose ED Table 5 in Word (JL 261118: "how do you think the display of the word? it think it should be
+better?"). The parts: `scripts/latex_table.py` reads rows and cells, `scripts/docx_table.py` writes them into Word.
+
+- **Header rows**: the rows above the first `\midrule`, only when there are 3 or fewer. More rows there means a panel
+  (its title, its column names, its data), so only row 0 is the header; before, every data row printed bold.
+- **Math in a cell**: `^{...}` and `^x` inside `$...$` are raised (`math_scripts_raised`); before, "A N-α" printed.
+- **Emphasis**: `\textbf` and `\textit` in a cell print bold and italic (`mark_emphasis`, `add_marked_runs`).
+- **Panel titles**: `\multicolumn{n}{l}{...}` stays left-aligned (the mark `CELL_LEFT`); a `{c}` span is centered.
+
+Tests: `tests/test_table_cells.py`.

@@ -12,7 +12,7 @@ Edit builders in the BUILDER HOME, run them, and the output lands in `code/haifn
   - Project-local (current convention): a canonical Task Folder,
     `examples/<Project>/work/bNN_<stage>store/jNN_<fnkind>_<topic>/tNN_<fnkind>_<FnName>/scripts/`
     (table of Fn kind to Block and Job: `ref/0-overview.md` § Current Builder Structure).
-  - Legacy central (e.g. WellDoc-SPACE): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
+  - Legacy central (e.g. `<Partner-SPACE>`): `code-dev/1-PIPELINE/<N>-<Stage>-WorkSpace/`.
   Seed library (copy sources, all workspaces): `code/scripts/haibuilder/<N>-<stage>/`
   — real builders (MIMIC, Ohio, CGM...) to copy as starting points.
   Discover with: `ls examples/*/work/b0[1-4]_*/j[0-4][0-9]_*/t*/scripts/` or `ls code/scripts/haibuilder/`.
@@ -488,7 +488,7 @@ Universal MUST DO (All Stages)
    `fn_version_from_config()` right after `setup_workspace()`, so the same builder writes the flat folder
    (no `fn_version:`) or `fn_<stage>/<fn_version>/` (a version build Run). A file the builder only READS
    (a base Fn it extends) stays a flat-folder path. Pattern: `ref/0-overview.md` § Fn Versions.
-   Copying an older builder copies its flat join too (WellDoc 261102: 94 of 126 builders had it), so check
+   Copying an older builder copies its flat join too (`<Partner-SPACE>` 261102: 94 of 126 builders had it), so check
    this line in every copy. `/haipipe-data space-check` lists the builders that still have it
 
 ---

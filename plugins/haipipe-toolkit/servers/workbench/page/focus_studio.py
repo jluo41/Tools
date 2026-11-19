@@ -232,7 +232,7 @@ def folder_html(folder, root, seen=(), depth=0, marked=None):
                         f'{folder_html(child, root, (*seen, folder.resolve()), depth + 1, marked)}</li>')
         else:
             rows.append(f'<li><a href="{frame.esc(page_url(child, root, "folders"))}">{frame.esc(child.name)}/</a>{thread}</li>')
-    return '<ul class="focus-folders">' + "".join(rows) + '</ul>' if rows else '<p class="mut">No subfolders.</p>'
+    return '<ul class="focus-folders">' + "".join(rows) + '</ul>' if rows else ""
 
 
 def files_html(folder: Path, root: Path) -> str:

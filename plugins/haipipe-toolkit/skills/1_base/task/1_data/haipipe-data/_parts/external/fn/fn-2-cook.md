@@ -1,8 +1,8 @@
 fn-2-cook: Run an external builder script
 ==========================================
 
-> NOTE: `code-dev/0-EXTERNAL/` is the WellDoc-SPACE builder home. Workspaces
-> without it (e.g. REACH-SPACE — zero external builders on disk) host any new
+> NOTE: `code-dev/0-EXTERNAL/` is the `<Partner-SPACE>` builder home. Workspaces
+> without it (e.g. `<EHR-SPACE>` — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
 Topic layout (0.3.2, `ref/asset-model.md`): a build is one Run of the asset's

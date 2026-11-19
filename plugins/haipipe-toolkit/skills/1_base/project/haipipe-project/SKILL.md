@@ -1,15 +1,6 @@
 ---
 name: haipipe-project
-description: >-
-  Create, inspect, audit, or safely update project containers under examples/ or a sibling domain world such as examples-3-nlp/.
-  Owns the Project boundary, project.md, project.yaml, project profile and Git
-  mode, and the optional top-level worlds work/, discovery/, cowork/,
-  paper/, insight/, design/, labeling/, ideation/, and external/, plus platforms/ for code repos. Use for new projects, repository
-  topology, project structure reviews, compliance previews, and root-level migrations:
-  `audit` flags what an existing Project or SPACE is missing against the current contract
-  (old plural Theme folders, flat Runs, missing faces) and the step that fixes it, `update`
-  plans the fix as a dry run, `update --apply` applies it. Child-world internals remain
-  owned by their domain skills.
+description: "Owns the Project level: its boundary, project.md, project.yaml, profile, Git mode and optional top-level worlds (work/, paper/, insight/ and others). Use to create, inspect, audit or safely update a Project. Trigger: new project, project structure, project audit, project.yaml, /haipipe-project."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.20.2"
@@ -172,9 +163,9 @@ Below the root this skill checks **shape only**, at every level: Block → Job �
 Run → pass. `ref/ladder.md` is the one table (each level's face, the folders it may hold,
 its children, hard and soft Run names, family extras), read by `scripts/ladder.py`.
 
-**Delivery at every level (JL 261028), the Studio once per Block (JL 261029, b35 s01-D05).** A
-Project, Block, Job and Task may each hold its own `delivery/`, and a page shows its own plus
-everything below it. A Studio topic is an `sNN-<topic>/` folder beside the Jobs (or a Job's Tasks), never in a
+**Delivery once per Block (haipipe-delivery), the Studio once per Block (JL 261029, b35 s01-D05).** Only a
+Block has a `delivery/`; a Job's or Task's output sits under its address inside it (`delivery/jNN_<job>/tNN_<task>/`),
+and a page shows its own plus everything below it. Older layout: a Job's or Task's own `delivery/`, read until moved. A Studio topic is an `sNN-<topic>/` folder beside the Jobs (or a Job's Tasks), never in a
 `studio/` folder (JL 261031: "put them under the block folder"); each topic's face names the rung it hangs from
 (`**At:** b17`, `j01`, `j01.t03`), and a Job or Task page shows the topics at it. A topic's
 address is `bNN.jNN-sNN` (s01-D02), written with its names, `b17.j01-s07:theme_work.tables @ one_table`. A Theme folder holds none: it only groups. One `sNN` numbering per

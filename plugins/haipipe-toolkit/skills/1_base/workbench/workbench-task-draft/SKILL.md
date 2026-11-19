@@ -1,13 +1,6 @@
 ---
 name: workbench-task-draft
-description: >-
-  Open and interpret a Draft Task's workbench: one Report containing Text,
-  Plan, Write, Evidence, conditional Display, Revise, Runs, MindMap and Status.
-  Each view has Review Content followed by the shared Around the Work sections.
-  Keeps the draft editors, human sign actions, evidence and delivery previews.
-  Also documents the legacy three-Space page and its source-file contracts.
-  Trigger: draft task UI, draft workbench, draft folder page, stale draft page,
-  workbench-page, /workbench-task-draft.
+description: "Opens and interprets a Draft Task's workbench: one Report with Text, Plan, Write, Evidence, Display, Revise, Runs, MindMap and Status views. Use to read or fix a draft page. Trigger: draft task UI, draft workbench, stale draft page, workbench-page, /workbench-task-draft."
 metadata:
   version: "0.106.0"
   last_updated: "2026-11-11"
@@ -15,6 +8,8 @@ metadata:
 ---
 
 # /workbench-task-draft · Draft Task Report
+
+Read CONSTITUTION.md first; it wins over this file.
 
 Code: `servers/workbench/workbench-task-draft/` (this skill is its manual; it was called `workbench-page` until 2026-10-16, s41-D14).
 The folder holds the whole draft Task type: `task_draft.py` lays out the frame's Spaces for a Task whose face says

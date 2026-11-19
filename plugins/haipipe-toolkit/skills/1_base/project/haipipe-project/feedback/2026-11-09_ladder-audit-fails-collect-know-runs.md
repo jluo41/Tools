@@ -9,7 +9,7 @@ occurrences: 1
 
 ## What happened
 
-`ladder.py audit examples-1-data/Proj01-CGM-RawData` (WellDoc-SPACE) marks
+`ladder.py audit examples-1-data/Proj01-CGM-RawData` (`<Partner-SPACE>`) marks
 `work/b51_externalstore/runs/r01_collect_meal_to_know` **failed**:
 
 ```text

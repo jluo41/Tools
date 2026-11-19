@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-description
-description: "Table-description Task: one Task per stored table writes its Table Card (what one row is, a column dictionary, value pictures, one synthetic person's rows, caveats, changes since the last version) for any parquet or raw table. Called by /haipipe-task when task-type=description. Trigger: describe a table, table card, data dictionary, column meanings, what is one row, synth_df."
+description: "Table-description Task: one Task per stored table writes its Table Card (what one row is, a column dictionary, value pictures, caveats) for any parquet or raw table. Called by /haipipe-task when task-type=description. Trigger: describe a table, table card, data dictionary, synth_df."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true
 metadata:
@@ -179,8 +179,8 @@ work/bNN_<block>/
   `src/dataset_notebook.py`, views `src/table_views.py`), into the same
   `<task>/notebooks/<dataset>_<table>.ipynb` and
   `t93_source_handoff/notebooks/<dataset>_overview.ipynb`. They are a view, like
-  a board build, not a Run; they are kept out of the cluster's deploy. REACH
-  PD2D `b00_rawdata/j51_reachpd2d_v260922_raw` is the reference.
+  a board build, not a Run; they are kept out of the cluster's deploy. `<EHR-SPACE>`
+  `b00_rawdata/j51_<dataset>_v260922_raw` is the reference.
 
 
 The Table Card, section by section
@@ -239,7 +239,7 @@ Task type level   this section: every description or raw-profile Task of any
   (each column's most common value or median; identifying columns show a
   placeholder), still named `synth_df`.
 
-Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/b00_rawdata/j51_reachpd2d_v260922_raw/`
+Reference: `<EHR-SPACE>` `examples/Project-<Family>-<Proj>/work/b00_rawdata/j51_<dataset>_v260922_raw/`
 (`src/synthetic_individual.yaml`, 28 tables).
 
 

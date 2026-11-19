@@ -1,13 +1,6 @@
 ---
 name: haipipe-studio
-description: >-
-  Owns Studio topics at every level (Project, Block, Job, Task; one sNN numbering per Block): their faces,
-  numbering, drawings, builders that keep human marks, and session passes, plus proposal topics and s61-s69
-  slide drafts. A topic's drawing is the five-part drawing by default (five_parts.py); excalidraw-studio's
-  draw.py stays for special shapes; load /excalidraw studio before drawing. Also the Page's Studio screen: one
-  tab with the live drawing above the chat (ref/screen.md). Use to add or redraw a Studio topic, preview a
-  drawing, or save a Studio session. Trigger: studio workbench, studio tab, page chat, keep this session,
-  autodraw, chat and draw together, /workbench-studio (the retired name of this screen).
+description: "Owns Studio topics at every level: their faces, sNN numbering, drawings and session passes; also the Page's Studio screen. Use to add or redraw a Studio topic, preview a drawing or save a session. Trigger: studio topic, studio tab, keep this session, /haipipe-studio, /workbench-studio."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.29.0"
@@ -16,6 +9,11 @@ metadata:
 ---
 
 # /haipipe-studio · the topics a Block owns
+
+Read [CONSTITUTION.md](CONSTITUTION.md) first; it wins over this file (JL's feedback, kept through /haistack).
+Draw Design with the icon gallery: `scripts/icons.py` (phone, laptop, monitor, server, cylinder, cloud, shield, gate,
+person, hospital, document, cross, big_number, lock), seen in `ref/icons/icons.png`; `ref/icons/*.excalidrawlib` loads
+them into Excalidraw's library panel by hand. A new icon goes into icons.py, then `python icons.py --gallery`.
 
 <!-- render b35-s01 first-principle: generated from Tools blueprints/Project-PageParts/work/b35_studio/s01-studio-skill/delivery/skill/first-principle.md; edit it there, then render_delivery.py -->
 **Studio: from idea to delivery** (JL 261030). One topic, one idea, one delivery: a topic starts as one open idea

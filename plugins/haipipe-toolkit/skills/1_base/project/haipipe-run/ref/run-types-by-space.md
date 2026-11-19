@@ -4,7 +4,8 @@ Read when a workbench button starts work, when a theme adds a button, or when yo
 the Run a button makes and the skill that owns it. Each Run button of the base frame
 (`servers/workbench/page/frame.py`: `vanilla()` for Block, Job and Task; `workbench-task-draft/task_draft.py`
 `draft_task_spaces()` for a Page Task) names its skill in a `skills:` field on its run type, as the Page's run
-cards (`run-cards.md`) already do (b03 s21, 261007). This table is the same list in words.
+cards (`run-cards.md`) already do (b03 s21, 261007). This table is the same list in words. Its Space names are the
+older tabbed screen's, still the keys of the run types; a focus page's sections are Report, Studio, Delivery, Interaction, Related.
 
 Rules:
 

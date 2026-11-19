@@ -32,8 +32,6 @@ j05_chat                chat and workbench Runs
 | [b10_project_workbench](../../../Project-Ladder/work/b10_project_workbench/board.md) | shared project ladder and workbench |
 | [b11_theme_insight](../../../Project-Ladder/work/b11_theme_insight/board.md) | insight |
 | [b12_theme_design](../../../Project-Ladder/work/b12_theme_design/board.md) | design |
-| [b13_theme_cowork](../../../Project-Ladder/work/b13_theme_cowork/board.md) | cowork |
-| [b14_theme_discovery](../../../Project-Ladder/work/b14_theme_discovery/board.md) | discovery |
 | [b15_theme_labeling](../../../Project-Ladder/work/b15_theme_labeling/board.md) | labeling |
 | [b16_theme_paper](../../../Project-Ladder/work/b16_theme_paper/board.md) | paper |
 | [b17_theme_work](../../../Project-Ladder/work/b17_theme_work/board.md) | work |

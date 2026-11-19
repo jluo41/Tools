@@ -1,6 +1,6 @@
 ---
 name: response-format
-description: "Spec for the assistant's chat reply format in this workspace: the answer on line 1, then sections of numbered one-line scan points, a small ASCII sketch and plain prose; each section closes with a See line linking its place in the workbench (Report, Work, Studio, Interactions, Delivery); the last section is Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply format, outline format, section headers, 回复格式."
+description: "Spec for the assistant's chat reply format here: the answer on line 1, then sections of numbered scan points, an ASCII sketch and plain prose, ending with Summary and Next. A reference spec; it does not self-activate. Trigger: response format, reply format, outline format, 回复格式, /response-format."
 argument-hint: "(reference spec — usually not invoked directly)"
 allowed-tools: Bash, Read
 metadata:

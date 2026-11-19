@@ -78,7 +78,57 @@ def item_state(item, root, data, with_hits=False):
              "done" if len(hits) >= need and (not gate or ran == "finished") else
              "partly" if hits else "failed" if ran == "failed" else "todo")      # a Run short of its gate with files on disk is partly there
     state = "partly" if state == "done" and item.get("open") else state     # something typed as still open
+    if state == "done" and row and unfinished_upstream(row, root):          # its maker read a Run that never finished
+        state = "partly"
     return (state, len(hits), need, pats, row) + ((hits,) if with_hits else ())
+
+
+UPSTREAM = re.compile(r"\br\d\d_[A-Za-z0-9_]+")
+
+
+def _project_of(folder, root):
+    """The nearest folder above with a project.md (a Run can read another Block's Run), else the SPACE root."""
+    for p in [folder, *folder.parents]:
+        if (p / "project.md").is_file():
+            return p
+        if p == root:
+            break
+    return root
+
+
+def _inputs(card):
+    """The Run names a card says it read: `reads:`, then any rNN_ name in its goal; and the bNN Blocks its goal names."""
+    reads = card.get("reads") or []
+    names = {str(x).rsplit("/", 1)[-1] for x in (reads if isinstance(reads, list) else [reads])}
+    goal = str(card.get("goal") or "")
+    return names | set(UPSTREAM.findall(goal)), set(re.findall(r"\b(b\d\d)\b", goal))
+
+
+def unfinished_upstream(row, root, _seen=None):
+    """The Runs a maker read, directly or through the Runs they read, that have no finished receipt (`reads:` on a card,
+    or an rNN_ name in its goal). Proj-PD2D 261118: b10 r08 and b11 r06 said ok on a CaseSet whose r06 died after 1 of
+    100 partitions."""
+    card, path = row.get("card") or {}, row.get("path")
+    if not path:
+        return []
+    seen = _seen if _seen is not None else {str(Path(path).resolve())}
+    names, blocks = _inputs(card)
+    names.discard(row.get("run"))
+    project, out = _project_of(Path(path), Path(root)), []
+    for name in sorted(names):
+        found = kept(("upstream", str(project), name), lambda: sorted(project.glob(f"**/runs/{name}")), seconds=30.0)
+        found = [f for f in found if str(f.resolve()) not in seen]
+        if not found:
+            continue                                   # a name in words that is no Run here: nothing to check
+        up = next((f for f in found if any(part[:3] in blocks for part in f.parts)), found[0])   # the Block it names
+        seen.add(str(up.resolve()))
+        up_card = read_yaml(up / "run.yaml")
+        status = receipt_of(up / "result/runtime.yaml").get("status") or up_card.get("status")
+        if state_of({"status": status}) != "finished":
+            out.append(name)
+        else:
+            out += unfinished_upstream({"run": name, "path": up, "card": up_card}, root, seen)
+    return out
 
 
 def group_state(states):

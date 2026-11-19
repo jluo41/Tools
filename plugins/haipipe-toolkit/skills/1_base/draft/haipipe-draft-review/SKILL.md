@@ -1,6 +1,6 @@
 ---
 name: haipipe-draft-review
-description: "The judge of prose and of a built Page, never of its own text. Mode 1 reviews any text (plain English, rubric, anti-AI, humanizer evaluators, paragraph and sentence-by-sentence logic) and returns located findings; Mode 2 is the Page check gate (CLOSE, CONTEXT, OUTLINE, EVIDENCE, CONTENT or HOLD). Trigger: review prose, too AI, humanize, plain English check, page check, quality gate, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
+description: "Judges prose and a built Page, never its own text: reviews any text (plain English, rubric, anti-AI, humanizer, sentence logic) with located findings, and runs the Page check gate. Trigger: review prose, too AI, humanize, page check, /haipipe-draft-review, /haipipe-writing, /haipipe-draft-check."
 metadata:
   version: "0.9.0"
   last_updated: "2026-11-15"

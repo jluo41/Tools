@@ -168,8 +168,8 @@ def front_matter_problems(meta, err, folder_name, kind="SKILL.md"):
         problems.append("name '%s' differs from folder '%s'" % (name, folder_name))
     if not desc:
         problems.append("no description")
-    elif len(str(desc)) > 1024:
-        problems.append("description %d chars (> 1024)" % len(str(desc)))
+    elif len(str(desc)) > 300:      # the listing budget: longer ones push other skills out of the listing
+        problems.append("description %d chars (> 300)" % len(str(desc)))
     return problems
 
 

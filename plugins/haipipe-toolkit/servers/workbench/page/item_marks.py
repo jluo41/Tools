@@ -1,8 +1,8 @@
 """Item marks (ref/cards.md §4, §6): the mark strip after an item and the card slot under it.
 
 Only content carries marks and cards (sentences, the paper's question, RQ rows, designs, rules, insight questions
-and cells, labeling rules and items, decisions, findings, terms, notes). Structure (Job, Task and Run rows that link to
-their own page, folds, tabs, view bars, file lists, rails, section bars) shows at most a page's orange roll-up.
+and cells, labeling rules and items, decisions, findings, terms, notes, and Job, Task and Run rows: ladder_cards).
+Structure (folds, tabs, view bars, file lists, rails, section bars) shows at most a page's orange roll-up.
 A workbench plugs in with these calls and nothing else:
   marks(address, page_cards, derived)   on content: 💬 N  📝 N (orange)  ✓  and any derived marks it passes
   rollup(page_cards, waiting)           on a structure row linking to a page: 🙋 N  📝 N, nothing else

@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-related
-description: "A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped beside our paper (studio s10, related_map.py) and read closely in s11 to s19, so the paper can say what each leaves open and what it adds. Not the literature (haipipe-discovery) or the related/ folder (haipipe-related). Trigger: related work, closest papers, related-work map, s10, positioning, /haipipe-paper-related."
+description: "A paper Board's closest related work: the 20 to 25 nearest papers, sorted into 3 or 4 types, mapped beside our paper and read closely. Use to say what each paper leaves open and what ours adds. Trigger: related work, closest papers, related-work map, s10, positioning, /haipipe-paper-related."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Agent, WebSearch, WebFetch
 metadata:
   version: "0.1.3"
@@ -149,7 +149,7 @@ The workflow
    without one, such as MISQ). The owners of s01 and of that Section write them in; this skill never edits an
    `agreed` topic or another owner's Section. In Open: one lead-in line, then one numbered item per claim; again
    for the Section, one item per type. Citations go through the Section's `draft/evidence/bibex/` (never
-   `bank.bib`).
+   `bank.bib`); the build merges it into the generated `delivery/latex/selected-bibliography/<page>.bib`, never hand-edited.
 
 A Board has no s00 index any more (retired 261029; the Report MindMap shows it). A `board.md` that lists the Studio topics in its own words is updated by hand.
 

@@ -1,14 +1,6 @@
 ---
 name: draw-logic-tree
-description: >-
-  Draw, revise or check the logic of one Page as a tree read left to right on its RoadMap
-  canvas: the claim at the left, each box splitting into the reasons it rests on, the
-  Page's Bullets as leaves, each its own row in one column with room to write beside it,
-  colored by their evidence. The drawing is the source of the
-  logic (the person edits it on the canvas); this skill writes its first version, revises
-  only what is asked, and checks an edited drawing against the rules. Use for a Section's
-  argument map, Draft › RoadMap Draw, "draw the logic", "make the logic clear", logic tree,
-  argument tree, claim and reasons, /draw-logic-tree.
+description: "Draws, revises or checks the logic of one Page as a left-to-right tree on its RoadMap canvas: the claim, the reasons under it, the Page's Bullets as leaves colored by evidence. Use for a Section's argument map. Trigger: draw the logic, logic tree, argument tree, RoadMap Draw, /draw-logic-tree."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.4.1"

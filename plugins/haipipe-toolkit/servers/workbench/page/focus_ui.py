@@ -256,6 +256,9 @@ def ui_view(refs, name: str, root: Path, folder: Path | None = None, walk: Path 
     if proposal and inside(proposal, root) and proposal.is_file():
         guide = matrix_help.guide_for(proposal, root)
         secs.insert(0, ('🧭 Work Structure', 'Proposed' if guide.get('proposed', True) else 'Current', ui_structure_html(proposal, root)))
+    from live.focus_ui_elements import elements_section     # the parts of a page at this level, first (JL 261118)
+    first = next((h for _, _, h, p in shown if p is not None), "")
+    secs[0:0] = elements_section(folder, root, key, first) if folder else []
     return ui_sections(secs) + "".join(f'<p class="mut"><code>{frame.esc(r)}</code> is not a page here.</p>' for r in missing)
 
 

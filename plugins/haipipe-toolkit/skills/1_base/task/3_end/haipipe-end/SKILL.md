@@ -1,6 +1,6 @@
 ---
 name: haipipe-end
-description: "Stage 6 endpoint door: reads the part for the axis: inference Fns (meta, trig, post, src2input, input2src), the Endpoint_Set (package, test, profile), and develop or deploy on local, SageMaker, Databricks or MLflow. Trigger: endpoint, deploy, serve locally, package, endpointset, inference Fn, /haipipe-end."
+description: "Stage 6 endpoint door: reads the part for the axis: inference Fns, the Endpoint_Set (package, test, profile), and develop or deploy on local, SageMaker, Databricks or MLflow. Use to build, package or deploy an endpoint. Trigger: endpoint, deploy, endpointset, inference Fn, /haipipe-end."
 allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
 metadata:
   version: "0.3.1"

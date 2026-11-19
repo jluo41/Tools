@@ -92,7 +92,7 @@ Stage 1 (SourceFn) work is owned by `haipipe-data source` — this skill stops a
 Stage Scope
 ------------
 
-VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. REACH's `reach-adhd`).
+VOLUME-RESIDENT COHORTS (PHI): some raw cohorts never exist under the local `_WorkSpace/` — PHI raw data lives ONLY on a Databricks catalog volume (`<VOLUME_BASE>/0-RawDataStore/<cohort-slug>/`, e.g. an EHR project's `reach-adhd`).
 For those cohorts, `dashboard`/`load` must look at the volume path (run on the Databricks side, or work from schema docs) — a missing local folder does NOT mean the cohort doesn't exist.
 Only aggregated/derived summaries may come local.
 See `../../../haipipe-task-for-raw/SKILL.md` "Pattern 2".

@@ -20,7 +20,7 @@ Runs Stage 5 training as a Databricks Job, logs the resulting model to Unity Cat
 > notebooks/; README: "runs data prep pipeline (Stages 1-4)"). Deferral is now
 > about WIRING, not existence: (a) this skill's verbs are not yet mapped to the
 > repo's scripts, and (b) the job-based ladder below only works on jobs-capable
-> hosts (WellDoc/CDHAI) — policy-locked USER_ISOLATION clusters (REACH) forbid
+> hosts (a serving-capable workspace) — policy-locked USER_ISOLATION clusters (an EHR workspace) forbid
 > jobs entirely and need the inline-exec pattern instead (learn-databricks
 > Lesson 15; ../../../../haipipe-task/ref/databricks-execution.md). The `/haipipe-end`
 > umbrella's no-args dashboard skips this skill while deferred.

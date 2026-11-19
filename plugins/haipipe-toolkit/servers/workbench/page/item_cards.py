@@ -68,7 +68,9 @@ def parse_comments(path: Path) -> list:
         field = lambda k: (re.search(r"(?m)^" + k + r":[^\S\n]*(.*)$", body) or [None, ""])[1].strip()
         out.append({"n": m.group(1), "target": m.group(2).strip(), "quote": field("Quote"),
                     "state": (field("State").split() or ["open"])[0].lower(),
-                    "thread": re.findall(r"(?m)^- (Note|Reply) · (.+?): (.*)$", body)})
+                    # a message may go on in indented lines ("  1. Problem: …", "  - …"): kept with it, one per line
+                    "thread": [(w, t, x + "".join("\n" + y.strip() for y in more.splitlines() if y.strip()))
+                               for w, t, x, more in re.findall(r"(?m)^- (Note|Reply) · (.+?): (.*)$((?:\n[ \t]+\S.*)*)", body)]})
     return out
 
 

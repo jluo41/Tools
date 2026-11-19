@@ -1,7 +1,7 @@
 haipipe-data — Migration notes for other SPACEs
 ================================================
 
-What a SPACE that shares these skills (REACH-SPACE, WellDoc SPACE, a fresh
+What a SPACE that shares these skills (`<EHR-SPACE>`, `<Partner-SPACE>`, a fresh
 clone) does to follow a change made in another SPACE. Newest first. Each
 note says what changed, whether anything breaks, and the steps to adopt it.
 
@@ -11,10 +11,10 @@ note and the next step for every item that is not up to date.
 
 ---
 
-2026-11-02 · WellDoc moves a dataset onto a version: builders, workers, known differences
+2026-11-02 · A SPACE moves a dataset onto a version: builders, workers, known differences
 =========================================================================================
 
-From: WellDoc SPACE (Proj01, dataset Job j54 WellDoc2025ALS onto `vWearable261101`).
+From: `<Partner-SPACE>` (Proj01, dataset Job j54 `<dataset>` onto `vWearable261101`).
 Skills: haipipe-data 0.4.2. Code: `code/haiutils/haistep/run_fn_builders.py`,
 `cook_version.py`, `compare_stores.py` (new, on `origin/main` since 2026-11-04, `9a6aca9`).
 Check: space-check items `builders: fn_dir` (new), `build -> version` (new),
@@ -24,7 +24,7 @@ What changed
 ------------
 
 1. **Builders must write through `fn_dir()`.** Most builders joined
-   `SPACE['CODE_FN']` themselves (WellDoc: 94 of 126), so a `fn_version:` in
+   `SPACE['CODE_FN']` themselves (`<Partner-SPACE>`: 94 of 126), so a `fn_version:` in
    their Run config changed nothing and they kept writing the flat folder.
    design-chef MUST DO 9 now says so, and space-check lists them.
 2. **Three shared workers** for the version Runs: `run_fn_builders.py` (build
@@ -35,8 +35,8 @@ What changed
    names the files and columns the version's new shape changes, each with its
    `why`; any other difference fails the Run. Compare with a flat store made by
    the SAME code: a store cooked months ago by older Fns mixes code changes
-   into the comparison (WellDoc: the Dec 2025 CaseSets predate the DEMEvent
-   trigfix), so cook a flat control today first (WellDoc b03j54t01 r17).
+   into the comparison (`<Partner-SPACE>`: the Dec 2025 CaseSets predate the DEMEvent
+   trigfix), so cook a flat control today first (`<Partner-SPACE>` b03j54t01 r17).
 
 Does anything break?
 --------------------
@@ -60,11 +60,11 @@ Steps
 3. Per stage, add a build Run (`BuildArgs.builders`, `BuildArgs.expect`) and a
    cook Run (`CookArgs.steps`, `compare`, `known_differences`) whose configs say
    `fn_version: <version>`; the worker in the Task's `scripts/` is three lines
-   that call the shared one (WellDoc b02j54t01 `scripts/build_fn_version.py`,
+   that call the shared one (`<Partner-SPACE>` b02j54t01 `scripts/build_fn_version.py`,
    `scripts/cook_version.py`). Save the version's store beside the flat one
    (a new `record_set_version`), never over it. A known difference may also say
    `rows: <exact extra rows>` (or `rows: true`) and `columns: all`, and a `compare` pair
-   may carry its own `known_differences` (WellDoc b02j55t01 r03, b03j55t01 r17: a flat
+   may carry its own `known_differences` (`<Partner-SPACE>` b02j55t01 r03, b03j55t01 r17: a flat
    store cooked before a RecordFn changed).
 4. Run space-check again: `haifn: <version>` and `dataset <project> j5N` are OK.
 
@@ -73,7 +73,7 @@ Steps
 2026-09-25 · AIData Block is b10, not b04
 =========================================
 
-From: DrFirst-SPACE. Skills: haipipe-task 1.4.2, haipipe-data 0.3.4,
+From: `<Client-SPACE>`. Skills: haipipe-task 1.4.2, haipipe-data 0.3.4,
 haipipe-data aidata 0.2.1, haipipe-data case 0.3.3, haipipe-task-for-data 0.8.5. No code change.
 Check: space-check item `aidata Block`.
 
@@ -117,7 +117,7 @@ Steps
 2026-09-24 · Fn versions and the external serving bundle
 =========================================================
 
-From: DrFirst-SPACE (OptTimeR1 Extended). Skills: haipipe-data 0.3.2,
+From: `<Client-SPACE>` (OptTimeR1 Extended). Skills: haipipe-data 0.3.2,
 haipipe-data source 0.3.2, haipipe-data record 0.3.1, haipipe-data case 0.3.2, haipipe-data external 0.3.1,
 haipipe-task-for-data 0.8.4. Code: haipipe-code `27b1525` on `code-drfirst`;
 its shared code is on `origin/main` since 2026-09-26.
@@ -163,7 +163,7 @@ Steps: every SPACE
 2. Bring `code/` up to the shared framework by merging `origin/main`. Since
    2026-09-26 it carries `27b1525`'s shared code (`haipipe/base.py`, the five
    Fn loaders, the haistep bootstrap, the four manifests, `endpoint_base`,
-   `external_base/`, `tuner_xgboost.py`, `case_utils.py`), without DrFirst's
+   `external_base/`, `tuner_xgboost.py`, `case_utils.py`), without that SPACE's
    own generated Fns, plus three shared fixes: `1469831` (`select_example_case`
    matches every shared key), `07f7091` (`local_external_store` keeps object
    dtype under pandas 3), `ba4ea0d` (InferenceArgs in the Endpoint_Set manifest).
@@ -188,7 +188,7 @@ Steps: moving a dataset onto a version (optional)
 Do this when a dataset's SourceFn output (its `ProcName_to_ProcDf` shape)
 changes, or to freeze a dataset's Fns apart from other datasets'.
 
-1. Name the version `v<Label><yymmdd>` (DrFirst: `vDfExt260923`).
+1. Name the version `v<Label><yymmdd>` (the first one: `vDfExt260923`).
 2. For each builder the dataset uses (SourceFn, HumanFn, RecordFns,
    TriggerFn, CaseFns), check that it reads `fn_version_from_config()` and
    writes through `fn_dir()` (pattern: `ref/0-overview.md` § Fn Versions).
@@ -211,7 +211,7 @@ Steps: an endpoint that ships external data (optional)
 
 1. Stage `external/` from the training SourceSet's `external-dependency.json`
    (trim + pre-key), not by copying the ExternalStore. Reference script:
-   DrFirst-SPACE `examples-3-model/Project-ExpModel-OptTime/tasks/b31_C_model_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`.
+   `<Client-SPACE>` `examples-3-model/Project-ExpModel-OptTime/tasks/b31_C_model_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`.
 2. Give the Input2SrcFn a per-process asset cache and a `Warmup(SPACE)` that
    runs one lookup per shipped asset.
 3. Set `MODEL_SERVER_WORKERS` so that workers × peak memory per worker fits
@@ -221,8 +221,8 @@ Steps: an endpoint that ships external data (optional)
    inputs: retrain or re-save with `27b1525`'s `portable_base_score` (XGBoost
    3.x vs 2.0.x `base_score`), then compare exactly again.
 
-Also still pending in DrFirst-SPACE (no action for other SPACEs yet)
---------------------------------------------------------------------
+Also still pending in `<Client-SPACE>` (no action for other SPACEs yet)
+-----------------------------------------------------------------------
 
 - Task folders still named `t01_*_materialize`; the rename to "cook" is not
   decided. The skills say "cook" in prose and keep the folder names.

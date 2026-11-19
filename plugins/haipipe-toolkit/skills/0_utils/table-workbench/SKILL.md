@@ -1,15 +1,6 @@
 ---
 name: table-workbench
-description: >-
-  Write, check and render a Workbench Table: one row per run type a served
-  workbench offers, in seven columns (Level · Space · View · Run type · Agent ·
-  Skill · Person signs). It answers, for every Space and view of a workbench,
-  which run starts there, which agent does it, which skill tells the agent how,
-  and what the person must sign. Use to plan a workbench, to split one large
-  skill into one small skill per Space and view, or to audit that every run
-  names an agent and a skill that exist. Trigger: workbench table, table
-  workbench, space view run type, which agent, which skill, person signs,
-  /table-workbench.
+description: "Writes, checks and renders a Workbench Table: one row per run type a workbench offers, with its Space, view, agent, skill and what the person signs. Use to plan a workbench or audit that every run names a real agent and skill. Trigger: workbench table, which agent, person signs, /table-workbench."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob
 metadata:
   version: "0.2.1"

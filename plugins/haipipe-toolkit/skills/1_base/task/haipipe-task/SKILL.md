@@ -1,6 +1,6 @@
 ---
 name: haipipe-task
-description: "Owns the Task level and is the door to every kind of Task: the tNN_<task>/ folder (face, scripts/, runs/ with ticket, config, run.yaml and a result/ receipt; a Task may hold a draft), its life plan ▶ build ▶ run ▶ read ▶ close, and task-type routing to the type skills (data, raw, description, algo, fit, eval, display, individual, endpoint, agent, evidence, stata, draft, labeling). Trigger: task, tNN, task-type, task face, ticket, runtime.yaml, check_task_tree, GPU queue, /haipipe-task."
+description: "Owns the Task level and is the door to every kind of Task: the tNN_<task>/ folder (face, scripts/, runs/; a Task may hold a draft), its life plan, build, run, read, close, and task-type routing to the type skills. Use to create or run a Task. Trigger: task, tNN, task-type, task face, /haipipe-task."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill, Workflow
 metadata:
   version: "2.0.3"

@@ -1,3 +1,10 @@
+## 0.37.0 · 2026-11-18 · an ok receipt covers only what the Run read
+
+Report from Proj-PD2D: b03 r06 (CaseSet v2) died after 1 of 100 partitions; b10 r08 r09 and b11 r06 r07 ran next and
+said ok on 913 cases. SKILL.md (Result, evidence, and closure): a partitioned read checks all N partitions; a Run names
+what it read (new card field `reads:`, ref/receipts-and-inventory.md); a Deliverable stays 🔶 while any Run up the
+chain has no finished receipt. Guard: servers/workbench-work/tests/test_deliverable_upstream.py.
+
 ## 0.36.5 · 2026-10-31 · prune_runs.py never deletes what git cannot give back
 
 From a code review of haipipe-toolkit (an independent agent reproduced each case on temp copies).

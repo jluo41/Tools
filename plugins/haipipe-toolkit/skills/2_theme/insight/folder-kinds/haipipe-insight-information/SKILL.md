@@ -1,12 +1,6 @@
 ---
 name: haipipe-insight-information
-description: >-
-  InsightBoard level contract for Information: rates, contrasts, segments,
-  distributions and nulls derived reproducibly by a task run from the board's
-  one extract, without making a claim. The answering page's tickets call the
-  task run; the results in the page's results/ are the evidence and the page
-  says what they show. Trigger: insight information, derive pattern,
-  folder-kind information, /haipipe-insight-information.
+description: "InsightBoard level contract for Information: rates, contrasts, segments, distributions and nulls derived by a task run from the board's one extract, without a claim. Use for its answering page. Trigger: insight information, derive pattern, folder-kind information, /haipipe-insight-information."
 metadata:
   version: "2.4.1"
   last_updated: "2026-10-09"

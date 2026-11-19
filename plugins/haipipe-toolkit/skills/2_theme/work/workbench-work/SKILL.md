@@ -1,8 +1,8 @@
 ---
 name: workbench-work
-description: "Open and interpret current work focus pages at Block, Job and Task level: Overview, Plan + Results, Findings, Delivery and view-scoped Around the Work. Distinguish Work Block and Blueprint Block with configured UI views. Read-only; /haipipe-work update aligns existing records. Classic layouts remain supported. Trigger: work workbench, work Block view, /workbench-work."
+description: "Open and interpret work focus pages at Block, Job and Task level: Overview, Plan + Results, Findings, Delivery and Around the Work. Read-only; /haipipe-work update aligns records. Use to read a Work or Blueprint Block's views. Trigger: work workbench, work Block view, /workbench-work."
 metadata:
-  version: "0.10.3"
+  version: "0.12.0"
   last_updated: "2026-11-11"
 ---
 
@@ -27,6 +27,16 @@ b17 `s04-workbench-page-structure` Decided:
 
 One thing shows once, in one look, under one name: a topic has the same name in Studio and
 Decisions, and Jobs are never listed twice.
+
+A theme-design Block (b17, `theme:` in its face) opens each of Block UI · Job UI · Task UI · Run UI with **🧩 Elements**
+(JL 261118): one left tab per part of a page at that level (path, view buttons, section bar, Job row, question card,
+tab, paragraph, Files ...), read from its `ui/<level>-elements.md` (`show:` selector, `view:`, `folder:`, `code:`, rules);
+the right side says what the part reads and which code draws it, then the example page live with that part outlined.
+One 🧩 Elements section per type of page at the level (Work, Blueprint, Collaboration, Inquiry Block; Draft Task ...),
+each its views as groups; a tab shows only that part, live and usable. Each tab carries marks
+(`elements.<level>.<type>.<view>.<part>`). The file is harvested from the real example pages, never typed by hand:
+`uv run --with beautifulsoup4 python servers/workbench/page/ui_elements_harvest.py <theme Block>` (notes kept);
+`servers/workbench/page/focus_ui_elements.py` draws it.
 
 ## Work Block and Blueprint Block
 
@@ -72,6 +82,12 @@ Requirements · MindMap, `## Plan + Results` adds sections after the Jobs, and `
 Displays. Each `### <title>` is one
 numbered section; `embed: <path>` brings in a `.md` or an `.svg` drawing (an `.html` is never framed); `each: <glob>` makes one section per `.md`, titled by
 its `# ` line; a list item with sub-items shows as a card that opens (`Session:`/`Area:` chips, `Decided:`/`JL asked:`/`Built:` blocks), and a list of bold-time items is a timeline. Fixed Findings sections with nothing in them (Data, Values, Displays) are not drawn. `servers/workbench/page/work_sections.py` reads them; `/haipipe-work propose` writes them.
+
+Every row and every piece of content can take your notes (JL 261116; `servers/workbench/ref/cards.md` §2): a Job, Task
+or Run row in Plan + Results shows its state mark, then 🙋 N (its waiting questions; the card is the form itself,
+answered under the row), ℹ️ N, 💬 N, 📝 N and ✓; a Findings tab shows its marks after its name, its cards above its
+content; a paragraph or item of the face's own sections shows them at its end once `/haipipe-work update` gave it
+an id. Rows keep their cards in the Block's `records/`, tabs and paragraphs in their page's.
 
 Checklist reads authored checks in scoped faces/topics and, for UI views, recorded
 walkthrough presence. A skill-based acceptance checklist must be authored and

@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-plan
-description: "A paper Board's plan, the studio topics after its story: s03 data flow (how the data becomes each answer: Runs, evidence rows, claims), s04 paper flow (Sections in reader order with their questions, evidence, words, and the dated steps to the send) and s06 paper displays (each display: name, type, what it shows, main or supplement, the Run that makes it, checked against the venue's display rules). Checks that every question lands in a Section and every display has a Run and follows the venue. Trigger: paper plan, data flow, paper flow, display plan, plan the displays, venue display rules, s03, s04, s06, word budget, timeline to the send, /haipipe-paper-plan."
+description: "A paper Board's plan, the studio topics after its story: s03 data flow, s04 paper flow (Sections, words, steps to the send) and s06 paper displays checked against the venue's rules. Use to plan Sections and displays. Trigger: paper plan, data flow, paper flow, display plan, /haipipe-paper-plan."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.0"
@@ -11,7 +11,7 @@ metadata:
 
 # /haipipe-paper-plan · how the data becomes each answer, and how the answers become the paper
 
-Asked 261019 on Physician-SPACE's Project-Example-B: "你觉得我们需要一个 plan 吗？haipipe-paper-plan / plan for
+Asked 261019 on `<Project-SPACE>`'s Project-Example-B: "你觉得我们需要一个 plan 吗？haipipe-paper-plan / plan for
 the data flow and plan for the paper flow"; "should make the s03-paper-dataflow-plan and s04-paper-workflow-plan";
 "please think about to make the s03 to be the paper-dataflow, and s04 to be the s04-paper-workflow".
 
@@ -242,6 +242,6 @@ Once a version exists, its Sections and `## Narrative` are the version's (`haipi
 Worked example
 --------------
 
-Physician-SPACE `examples-<world>/Project-Example-B/paper/Paper-Example-B/`, the JAMA Network Open Original
+`<Project-SPACE>` `examples-<world>/Project-Example-B/paper/Paper-Example-B/`, the JAMA Network Open Original
 Investigation: s02 asks three questions, s03 reads its data flow from `work/b03_jama_agent_vs_search_engine/` (its
 pipeline Run `runs/run-pipeline-fold00/`), s04 plans a 3,000-word article with five displays.

@@ -1,6 +1,6 @@
 ---
 name: haipipe-task-for-stata
-description: "Unified Stata-engine job specialist: handles all 4 stages internally (cms/case/data/reg), owns the Stata engine contract, the {LNN} stage-letter alphabet, and stage disambiguation. Also a SERVER CHECK mode for the CMS secure server. Called by /haipipe-task when engine=Stata. Engine = Stata + PowerShell + logs (not Python/papermill)."
+description: "Unified Stata-engine job specialist: handles all 4 stages (cms, case, data, reg), owns the Stata engine contract and the stage-letter alphabet, plus a server check mode for the secure server. Called by /haipipe-task when engine=Stata. Engine is Stata, PowerShell and logs, not Python."
 argument-hint: "[stage] [project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]  OR  [server-check] [jNN_<job>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 disable-model-invocation: true

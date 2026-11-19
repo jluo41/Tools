@@ -6,7 +6,7 @@ copies. The cards follow the paper ladder (`haipipe-paper/ref/paper-ladder.md`; 
 authority.
 
 A `🔘 BUTTON` line is `label · <Level> › <Space> · ticket pattern · views <names>`. Level is `Block` or `Job`;
-Space is one of the seven (Description · Related · Idea Studio · Audience Report · Work Details · Runs · Delivery;
+Space is one of the older tabbed screen's seven, still the keys here (Description · Related · Idea Studio · Audience Report · Work Details · Runs · Delivery;
 Idea Studio and Delivery are the Block's shared views in the top row, and Related folds inside the Studio under its
 topic cards, its buttons in the Studio's Runs panel, b10 s04-D05). The pattern
 is a regular expression on the Run's name, `run-<type>-<target>` (no date; a folder in `runs/` as `haipipe-run` has it); `-` means the button only

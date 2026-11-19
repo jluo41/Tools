@@ -1,6 +1,6 @@
 ---
 name: workbench
-description: "Open a workbench (/wb): no input opens the SPACE Home, a Project, Theme, Block, Job or Task path its focus page; plain words find the place first (cli/wb.py checks the link on the running server). Also the WORKBENCH contract (STORAGE, SURFACE, WRITER, BOUNDARY; ref/roster.md). Trigger: wb, open the workbench, open a project, open a block, workbench link, workbench roster, /wb, /workbench."
+description: "Opens a workbench: no input opens the SPACE Home, a Project, Theme, Block, Job or Task path its focus page; plain words find the place first. Also holds the WORKBENCH contract and roster. Use to open or link a page. Trigger: wb, open the workbench, open a block, workbench link, /wb, /workbench."
 metadata:
   version: "1.34.0"
   last_updated: "2026-10-30"
@@ -64,8 +64,8 @@ existed still says Not found.
    A running host keeps the code it started with, so after a Tools change run `wb.py restart` in each SPACE.
    It starts serve.py with the SPACE's `.venv/bin/python` when that has PyYAML (Python 3.10+), else
    `~/.cache/haipipe/host-venv/bin/python`, made once with uv (`launcher` in cli/wb.py).
-   A Project, Theme folder, Block, Job or Task opens on its focus page (`layout=focus`: Report · Work ·
-   Studio, the page picks its opening section; JL 261030: "Why not using the UI that we discussed
+   A Project, Theme folder, Block, Job or Task opens on its focus page (`layout=focus`: Report · Studio ·
+   Delivery · Interaction · Related, the page picks its opening section; Work is retired in every theme; JL 261030: "Why not using the UI that we discussed
    previously?"); `--classic` opens the old screens (Project Home view, the frame on its Studio).
 3. **Words**: it ranks every Project, Theme folder, Block, Job and Task by folder name, title and
    `spine:`/`goal:`/`status:` lines, using the server's own lists (`home.discover_boards`,

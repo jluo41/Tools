@@ -1,6 +1,6 @@
 ---
 name: describe-medication
-description: "Normalize a logged medication (any cohort's dialect: a partner app's MedicationID, an OhioT1DM drug class, a Shanghai free-text string) to an FDA-identified drug with a dose that states its own unit. Use when a Medication ProcName needs a drug name, an NDC, a pharmacologic class, or a dose scale, or when a SourceFn must enrich medication data. Trigger: describe medication, medication to drug name, resolve MedicationID, NDC, RxNorm, dose unit, mednorm, 药物归一化."
+description: "Normalizes a logged medication (an ID, a drug class or free text) to an FDA-identified drug with a dose that states its own unit. Use when medication data needs a drug name, an NDC, a drug class or a dose scale. Trigger: describe medication, NDC, RxNorm, mednorm, 药物归一化, /describe-medication."
 metadata:
   version: "0.1.2"
   last_updated: "2026-11-02"

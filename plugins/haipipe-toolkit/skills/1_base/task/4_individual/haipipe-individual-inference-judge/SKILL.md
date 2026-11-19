@@ -1,11 +1,6 @@
 ---
 name: haipipe-individual-inference-judge
-description: >-
-  LLM-as-judge evaluator for prediction-interpretation Reports: scores
-  report.json against a pluggable rubric persona via claude_agent_sdk. Use for
-  CI batches, doctor pre-review, persona ablation, or red-team safety checks.
-  Trigger: judge a report, score interpretation, evaluate report,
-  /haipipe-individual-inference-judge.
+description: "LLM-as-judge evaluator for prediction-interpretation Reports: scores report.json against a pluggable rubric persona. Use for CI batches, pre-review, persona ablation or red-team safety checks. Trigger: judge a report, score interpretation, evaluate report, /haipipe-individual-inference-judge."
 argument-hint: "--report-dir <path> --persona <name_or_path> [--model X]"
 allowed-tools: Bash, Read
 metadata:
@@ -168,7 +163,7 @@ Reuses
 
 - `haipipe-individual-inference-report` produces the input (`report.json`)
 - `claude_agent_sdk` for the LLM call (subprocess of `claude` CLI)
-- Pattern reference: `Physician-SPACE/.../A3_cross_family_judge/run_sdk_judge.py`
+- Pattern reference: `<Project-SPACE>/.../A3_cross_family_judge/run_sdk_judge.py`
   (where the original XML-block + ResultMessage + idempotent-skip pattern
   was first proven; this skill adapts it to the haipipe per-individual layer)
 

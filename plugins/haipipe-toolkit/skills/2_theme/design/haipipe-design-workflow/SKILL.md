@@ -1,17 +1,6 @@
 ---
 name: haipipe-design-workflow
-description: >-
-  The design ladder's Runs layer: which run-<type>-<target> Run comes next at the
-  Block, the Job and each Task, who does it, who checks it and who signs, a
-  design's state walk (draft → verify → revise → passed → kept | dropped →
-  released), the run cards each Space's Runs panel shows, and the projections
-  that carry a hard Run's Result into its level's files (a draft and a verdict
-  into the design Task, t99's ranking into each prediction). Use to ask where a
-  design Job stands or which Run may run next, check a gate, project a draft,
-  verdict or ranking, close a Job, or read the run cards; setting up a Block or
-  launching a Job is haipipe-design's. Trigger: where does the Job stand, next
-  design Run, design gate, design state, project a draft, project predictions,
-  close a design Job, run cards, /haipipe-design-workflow.
+description: "The design ladder's Runs layer: which Run comes next at the Block, Job and Task, who does, checks and signs it, a design's state walk, and the run cards. Use to ask where a design Job stands or to close it. Trigger: next design Run, design gate, design state, run cards, /haipipe-design-workflow."
 metadata:
   version: "0.4.1"
   last_updated: "2026-10-26"

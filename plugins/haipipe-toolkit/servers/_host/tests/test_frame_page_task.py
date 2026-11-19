@@ -422,7 +422,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertIn('data-n="1" data-s="s2"', html)
             self.assertIn("<b>AI</b>", html)                                      # the pass's reply, marked AI
             self.assertIn("💬 answers Comment 1", html)                        # the card names the comment
-            self.assertIn("↳ Edit · S2 · the cost", html)                       # and the comment its card
+            self.assertIn('data-card="Edit · S2 · the cost">Edit · S2 · the cost</a>', html)                       # and the comment its card
             self.assertIn("how much?", html)                                     # its thread, the person's note
             self.assertIn("S2 now gives the cost (card S2).", html)               # and the pass's reply
             self.assertLess(html.index('data-n="1" data-s="s2"'), html.index('data-card="Edit · S2 · the cost'))

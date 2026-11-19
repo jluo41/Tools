@@ -82,7 +82,7 @@ Required arg per function:
           test/monitor/teardown/review: <serving_endpoint_id>
 
 HOST NOTE: CLI + Model Serving require a serving-capable workspace — the CDHAI host (`databricks.yml` profile `cdhai-new`), where the live `reach-adhd-prediction-dev` endpoint runs.
-The REACH workspace itself is browser-only, policy-locked USER_ISOLATION, no jobs/serving (learn-databricks Lesson 15) — it cannot host what this skill deploys.
+The EHR project's own workspace is browser-only, policy-locked USER_ISOLATION, no jobs/serving (learn-databricks Lesson 15) — it cannot host what this skill deploys.
 
 Step 2: Verify Databricks context:
           - DATABRICKS_HOST + DATABRICKS_TOKEN available

@@ -1,19 +1,6 @@
 ---
 name: workbench-design
-description: >-
-  The design theme of the shared workbench frame: a design Block, each Job and
-  each Task open on the frame's tabs Guide · Block · Job ▾ · Task ▾, each with the
-  six Spaces (Description · Idea Studio · Audience Report | Work Details | Runs ·
-  Delivery) as b12's s11 · s12 · s13 draw them, and a Runs panel whose buttons are
-  the design run cards by level and Space. It shows the ladder's files and
-  copies prompts; it never sets up a Block or launches a Job (haipipe-design and
-  the owning design skills do), and the one thing it writes is a person's own
-  Review and approve of a Job's release (POST /_board/design-ladder-act). The
-  shared Guide explains the family (Guide › Method: the design methods; Guide ›
-  Related Paper). An older Design Folder board keeps its own page. Use to see or
-  explain what a design screen shows and which file each view reads. Trigger:
-  design workbench, design tab, design Block tab, design Job tab, design Task tab,
-  design spaces on screen, theory of design, /workbench-design.
+description: "The design theme of the shared workbench frame: a design Block, each Job and each Task on tabs with six Spaces and a Runs panel. Read-only except a person's approval of a Job's release. Use to explain a design screen. Trigger: design workbench, design tab, design spaces, /workbench-design."
 metadata:
   version: "0.18.0"
   last_updated: "2026-11-08"
@@ -115,7 +102,7 @@ Review and approve (the panel on Release, POST /_board/design-ladder-act), then 
 Process is In → who works → Out, the step's state and its prompt. The Results are the six-Space page's own views
 (`design_views`), so the two pages agree. Tests: `tests/test_design_focus.py`.
 
-## The six Spaces, level by level
+## The six Spaces, level by level (the older tabbed screen)
 
 Each view reads the files named beside it; nothing is stored twice and nothing is computed that a Run did not write.
 

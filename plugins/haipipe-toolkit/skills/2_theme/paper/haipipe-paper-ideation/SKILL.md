@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-ideation
-description: "The Paper Page Type for one research direction and its research questions (each Idea named by its question): projects haipipe-ideation's sync packets and final selection into Direction, Landscape, Opportunity Map and Story routes, as the Board's s01-ideation/ topic. Generation, novelty and selection stay with haipipe-ideation. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
+description: "The Paper Page Type for one research direction: projects haipipe-ideation's selection into Direction, Landscape, Opportunity Map and Story routes. Use for the Board's s01-ideation/ topic. Trigger: paper ideation, s01, research direction, opportunity map, /haipipe-paper-ideation."
 metadata:
   version: "1.5.1"
   last_updated: "2026-11-08"
@@ -216,7 +216,7 @@ the question   Does <object> <relation> <outcome>, for <whom / where>, beyond <w
 the handle     2–5 words derived FROM the question, for slugs and the went-to Story name
                (the Idea Card's `title`); it never stands in for the question
 the chain      Direction question → Idea questions (this Page) → the selected
-               Story's Primary Research Question (Story §3) → its claims (Story §3)
+               Story's Primary Research Question (Story Research Questions) → its claims (Story Research Questions)
 ```
 
 A research question is admissible when it names one object, one relation or
@@ -400,7 +400,7 @@ sole I3 receipt establish all four:
 It is a two-way act: `went to` copies the exact Story path already allocated in
 the receipt, normally a `sNN-story-<desk>-<idea>/` topic beside the Jobs
 (an older Board: `StoryA-<desk>-<idea-slug>`, `StoryB-…` beside this Page), or the new repo when an
-Idea leaves for a different paper. That Story's §5 Source Pages and provenance
+Idea leaves for a different paper. That Story's Evidence Basis and Boundaries Source Pages and provenance
 bind this Page, the final handoff, and the I3 receipt back. A row naming a Story
 that does not bind back, or a Story claiming an origin this Page does not show,
 is a defect on whichever side is missing.
@@ -457,7 +457,7 @@ automatically revokes, replaces, or rewrites the old selection.
   filled or honestly `⬜`; an `unframed` card has a row and a disposition entry
   only.
 - A selected Idea's question is the Story's Primary Research Question
-  verbatim, and the Story's §3 binds back to this row.
+  verbatim, and the Story's Research Questions binds back to this row.
 - Every disposition row states whether it is an admitted `iNN` card or a
   rejected pre-admission framing; only admitted cards owe retained divisions.
 - Every row in Ideas (ranked) has no blank cell; every verdict is from the

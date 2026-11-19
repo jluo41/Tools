@@ -1,11 +1,6 @@
 ---
 name: haipipe-individual-inference-report
-description: >-
-  Per-individual prediction-interpretation report: loads one individual's data
-  and recent CGM, hits the deployed endpoint, then asks Claude to compose a
-  dual-layer report — structured JSON plus natural language — for an audience
-  persona. Trigger: individual report, prediction interpretation, generate
-  patient message, /haipipe-individual-inference-report.
+description: "Per-individual prediction-interpretation report: loads one individual's data, hits the deployed endpoint, then composes a dual-layer report (structured JSON plus natural language) for a persona. Trigger: individual report, prediction interpretation, /haipipe-individual-inference-report."
 argument-hint: "--individual <id> --persona <name_or_path> [--endpoint-url URL] [--model X]"
 allowed-tools: Bash, Read
 metadata:
@@ -179,7 +174,7 @@ Reuses
 - `haipipe-individual-inference` for `load_patient_ctx`, `build_payload`, `client.call_predict`
 - `haipipe-end deploy local` for the prediction endpoint
 - `claude_agent_sdk` for the LLM call (subprocess of `claude` CLI)
-- Pattern reference: `Physician-SPACE/.../work/A3_cross_family_judge/run_sdk_judge.py`
+- Pattern reference: `<Project-SPACE>/.../work/A3_cross_family_judge/run_sdk_judge.py`
 
 `make_report_cli.py` accepts `--workspace-root` and `--platform`; select the deployed
 wire pair even for a local wrapper. `meta.json` binds forecast.json and report.json

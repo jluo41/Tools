@@ -1,12 +1,6 @@
 ---
 name: haipipe-page-insight
-description: >-
-  Create or update a task-side Insight Page Folder for one research topic and
-  data context. Each riNN Insight Run points to one reusable normal rNN Run,
-  freezes a new dataset binding, and produces an independent versioned DIKW
-  Result. Use for dataset or patient insight instances, RI binding, resumable
-  checkpoints, shared Task analysis calls, and exact RI/result citations. Application
-  InsightBoard level pages remain owned by haipipe-insight-workflow.
+description: "Create or update a task-side Insight Page Folder for one topic and data context: each riNN Insight Run reuses one rNN Run, freezes a dataset binding and produces a versioned DIKW Result. Use for dataset or patient insight instances. Trigger: Insight Page Folder, RI binding, /haipipe-page-insight."
 metadata:
   version: "1.3.1"
   last_updated: "2026-09-29"

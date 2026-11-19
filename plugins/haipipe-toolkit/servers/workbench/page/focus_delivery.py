@@ -148,9 +148,8 @@ def delivery_tabs(folder: Path, root: Path) -> list:
                      f' <small>live page</small></li>' for block in live_page_blocks(folder) for i in frame._live_pages(block)
                      if i["folder"] in below and frame.live_url(i, root) not in shown]
         panel = f'<ul class=find-r>{"".join(rows)}</ul>' if rows else ""
-        # an empty lane says only that (round 3: its "goes in delivery/model/" read as an instruction); where a
-        # delivery goes is haipipe-delivery's to say
-        tabs.append((name, "ready" if panel else "nothing yet", panel or '<p class=mut>Nothing handed over yet.</p>'))
+        # an empty lane draws nothing (AGENTS.md § Page words); where a delivery goes is haipipe-delivery's to say
+        tabs.append((name, "ready" if panel else "nothing yet", panel))
     # no "All files" tab: it drew the whole Delivery section again inside Findings (round 3); the rail's Delivery has it
     return tabs
 

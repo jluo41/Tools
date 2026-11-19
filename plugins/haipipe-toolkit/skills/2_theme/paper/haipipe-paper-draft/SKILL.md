@@ -20,6 +20,8 @@ metadata:
 
 # /haipipe-paper-draft · one paper Section as a draft Task
 
+Read CONSTITUTION.md first; it wins over this file.
+
 > **Working a Section follows JL's method** (261115): the structure loop, the draft loop and evidence beside them, [`ref/section-method.md`](ref/section-method.md); each step is a must-check row (haipipe-paper M-E01 to M-E09).
 
 > **The workflow** (261116): `/haipipe-paper-draft workflow <Section>` runs W0 Examples, W1 Plan (the person signs), W2 Write, W3 Rate, W4 Fix loop (the AI keeps what the blind reader keeps, comments the rest), W5 Ready (the person joins), [`ref/workflow.md`](ref/workflow.md); `python3 cli/section_workflow.py <Section Task>` prints where it stands and the next step.
@@ -55,7 +57,7 @@ do not invent Page paths, accepted Results, or a release to complete a proposal.
 ## Paper ownership and entry
 
 This skill owns the Paper Section Page and its `page-type: section` contract below. Enter through gate G3: one draft
-Task per Section row of its version face's `## Narrative` (that venue's layout; the Story's § 8 holds the shared
+Task per Section row of its version face's `## Narrative` (that venue's layout; the Story's Section Narrative holds the shared
 claims and no Section rows, and only an older Board still keeps Section rows there). The person signs the version's
 Narrative first (`page.py sign-narrative`), then releases each row independently (the Release a Section card). A new Section is made by `haipipe-paper/scripts/paper_ladder.py task <version>
 t0N_<title>` (the Add a Section card), with its reader-contract header; its `reports/` come with their first item.
@@ -76,7 +78,7 @@ Authority order:
 
 ```text
 Story Seed divisions (§1–§5: identity and evidence boundaries)
-  → Story § 8, the shared narrative (title, story, claims C1..Cn and their numbers)
+  → Story Section Narrative, the shared narrative (title, story, claims C1..Cn and their numbers)
   → selected Venue rules
   → the version face's ## Narrative, signed (the layout: claims to displays, this Section's row)
   → venue × section-kind structure/template
@@ -154,7 +156,9 @@ good reason, we might make sure they are between 4~7 sentences"). The count is r
 `### C<n>.P<m> · <name> · s<a> to s<b>` (b - a + 1), else from the Bullets (`- B<n> · ...`) under it. Exempt: the
 Abstract (section_kind `abstract` or `summary`), appendix, supplement and Extended Data legends, letters and
 responses, and a P0 title paragraph. A good reason is written as a `reason: <why>` line under the paragraph heading;
-the paragraph is then accepted and shown muted, not as an error.
+the paragraph is then accepted and shown muted, not as an error. A venue whose own examples print shorter paragraphs is a good reason: write `reason: venue norm, as the
+examples topic sNN shows` (for example JAMA Research Results, one finding per short paragraph), and keep the Story's move
+order rather than merging moves to reach four (AgreeableJama t03 261116).
 
 To fix one out of range: split a long paragraph at its natural turn. Join parallel sentences with "and" or "while",
 never a semicolon. Add a framing sentence only when a split leaves 3. Change § 1 and § 3 in one edit, remap the
@@ -199,6 +203,12 @@ means (JL 261111 on "We conclude that scaling laws are not universal …": "This
 `delivery/<job>/paper-build.toml` and the version face's **Title:** line carry the same words; the version face is the
 Story owner's to change. P0 and B0 are real numbers to `src/plan_shape.py` since 261111 (they were read as "no number"
 and became P1 and B1).
+
+## 🏷 Name a page part, never its number (JL 261116)
+
+Say "the Story's Research Questions", "the Story's Section Narrative (story arc)", "the draft's Structure", never
+"s02 § 3", "§8" or "§ 1" alone (JL 261116: "who will remember what is 8 about"). A number may follow the name. This holds
+in replies, face fields (`claim-ids:`, `story-row:`, source lines), review results and agent prompts (must-check M-D24).
 
 ## 🗣 Showing prose changes in a reply (JL 261113)
 
@@ -251,10 +261,10 @@ versions are proposed against the examples and the Section's `## Narrative` row,
 sign keeps the Section's Narrative row as text in `draft/records/<stem>-sign.md`; when that row changes after the
 sign while Sections draft, the Section keeps its own plan: no FAIL, no re-sign (must-check M-D09; `ref/section-method.md`).
 The version's `## Narrative` is signed before that (`page.py sign-narrative <version> --quote "…"` writes
-`narrative-approved:` and `story-at-sign:` on the version face and keeps the Story's § 8 as text in
+`narrative-approved:` and `story-at-sign:` on the version face and keeps the Story's Section Narrative as text in
 `<version>/records/narrative-sign.md`). An unsigned Narrative names the sign; a Narrative or Story row that moved since is one quiet note on the version
 Job page, a WARN at the final gate, never a Section FAIL (M-D09; `page.py sync-narrative` then one sign, M-D19). Whole-paper structure choices
-are the version's, seen in the version Job's Report › Structure view beside the Story's § 8 (workbench-paper); the
+are the version's, seen in the version Job's Report › Structure view beside the Story's Section Narrative (workbench-paper); the
 structure is a view, never a Task.
 
 **Examples: one source, shown at two levels (JL 261111: "the examples to be shared across the job level and each
@@ -420,7 +430,7 @@ you make them to be complete?"):
 | Evidence for every number | each number, citation and display a sentence uses has an item, and each `Evidence:` line in § 1 names it | `draft/<stem>-evidence-items.md` |
 | Its own delivery | web, LaTeX and Word built under `delivery/<job>/<task>/` (`page.py export`); a letter's face says `delivery-builder: <the paper's build.py>`, so its LaTeX and Word lanes are the letter as uploaded (date, addressee, signature), never a Section print | the Delivery tab |
 | Into the paper | a Section: its LaTeX fragment in the version's paper build; a letter: the cover letter lane (`[coverletter] task`) builds it and the portal packet carries it | `delivery/<writing Job>/` |
-| Content is the latest draft | `content:` names the current draft (adopt, or `adopt --relayout` when paragraphs changed; never typed by hand); no Delivery tab shows the ⚠️ "This prints …" warning | the face, the Delivery tab |
+| Content is the latest draft | `content:` names the current draft (adopt, or `adopt --relayout` when paragraphs changed; never typed by hand); no Delivery tab shows the ⚠️ "This prints …" warning. When Draft § 3 and Content differ, diff both first: health says which changed last, and when Content is newer, bring the Draft up to Content and never adopt. A number refill writes the Draft, then adopts; it never writes Content alone (AgreeableJama 261116) | the face, the Delivery tab |
 | The final gate | `page.py health --final` shows no FAIL (the printed PDF holds every § 3 sentence); its only WARN rows are the person's steps | the reply, before the word "finished" |
 
 ## ✅ Closing checks

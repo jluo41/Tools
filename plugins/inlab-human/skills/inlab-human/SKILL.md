@@ -1,6 +1,6 @@
 ---
 name: inlab-human
-description: "In-lab human interaction with deployed prediction endpoints — the Claude Code chat is the UI. Tier-1 orchestrator with two modes: CONSOLE (default; patient-first on-demand inference: pick patient → see chart → list models → predict via the endpoint-predict tool → analyze) and STUDY (formal reader protocol: bundle → blind/assisted review → decision-influence report). Endpoint-agnostic: local Flask, Databricks, SageMaker — same wire contract. Trigger: inlab, console, get patient, run prediction, clinician eval, reader study, /inlab-human."
+description: "In-lab human interaction with deployed prediction endpoints, with the chat as the UI: CONSOLE (pick a patient, see the chart, predict, analyze) and STUDY (a formal reader protocol). Use for a prediction or a reader study. Trigger: inlab, get patient, run prediction, reader study, /inlab-human."
 argument-hint: "[console|patient|models|predict | bundle|review|report | status] [args...]"
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill, Agent
 metadata:

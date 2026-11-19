@@ -1,6 +1,6 @@
 ---
 name: haipipe-insight
-description: "The door for insight: a Question Book (insight/InsightQuestionBook-<Topic>/, the questions and scripts, one Job per release) and an insight Board (insight/Insight-<name>/, one dataset, a Job per release × data version, a Task per question, a Run per segment). Scaffolds the ladder (insight_ladder.py), routes each Run to its owner, and ends at a signed Design handoff. `/haipipe-insight update <Board>` brings an older insight Board and its Question Book onto the current names and words (question-vN × data-vM, InsightQuestionBook-<Topic>, \"segment\") and reruns the receipts that went stale. Trigger: insight, Question Book, insight Board, data version, DIKW, segment, pooling, signed Design handoff, update insight board, update the old insight Block, /haipipe-insight, /haipipe-insight update."
+description: "The door for insight: a Question Book (the questions, a Job per release) and an insight Board (one dataset, a Task per question, a Run per segment); scaffolds the ladder. Use to set up or update a Board. Trigger: insight, Question Book, insight Board, DIKW, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
   version: "3.9.0"

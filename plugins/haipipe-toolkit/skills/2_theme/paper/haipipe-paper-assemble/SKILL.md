@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper-assemble
-description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement, source manifest); never reads a generated Word file back. Use to assemble, build Word, export the paper, regenerate submission files, or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
+description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement). Use to assemble, export the paper or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
   version: "0.20.0"
   last_updated: "2026-11-13"
@@ -69,7 +69,7 @@ the relevant Section is CHECK-closed. Each Section Page owns its wording and
 projects it into `delivery/latex/<page>.tex`, the body fragment used by the
 paper builder. `<page>-master.tex` is only the standalone Page wrapper;
 it is not a manuscript input. The version face's compile-order block owns
-the order (an older Board: the Story §8 block). The paper's `delivery/latex/` is regenerated from the body fragments
+the order (an older Board: the Story Section Narrative block). The paper's `delivery/latex/` is regenerated from the body fragments
 and is never edited by hand (JL 260907; this replaces the 260824
 desk-room law, under which `<N>-<desk><year>/sections/*.tex` was the source of
 record). A builder may refuse or watermark a build when a page's deliverable is
@@ -162,7 +162,8 @@ The Page's `delivery/latex/selected-bibliography/<page>.bib` is the citation
 projection paired with its fragment: the Page export freezes it from the selected,
 verified CITE Results (a Result's `payload.bibliography`; for an older paper-local
 CITE Result, each cited key taken exactly from the `.bib` of a Supporting Result it
-names). The accepted CITE Results remain citation authority.
+names). The accepted CITE Results remain citation authority. Both Bib homes stay: each Section keeps its
+own `draft/evidence/bibex/<task>.bib`, and the build merges them into this file, which is generated and never hand-edited.
 Regenerate stale Page delivery before assembly. An included, cited Page missing that Bib
 fails with its exact path; excluded DRAFT stubs keep their not-ready status.
 Retired `outline/evidence/bibex/` and flat `bibex/`

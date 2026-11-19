@@ -1,13 +1,6 @@
 ---
 name: haipipe-labeling-expression
-description: >-
-  The 🛠 expression Task of a labeling Job: rounds e01, e02 … under one signed meaning mNN. One prompt runs a round:
-  Rewrite (the wording the models follow, from Train errors only) → Run (the executors label Train and Test) →
-  Evaluate (score by set and model, sort errors into four kinds, write the round report). It never asks the person
-  and never changes a rule or a reference label: those go back to the meaning Task's next report. Release freezes a
-  version once its criteria pass, and the person signs it. It runs the prompts the workbench's expression page copies.
-  Trigger: expression round, rewrite the wording, run the executors, evaluate, round report, release,
-  /haipipe-labeling-expression.
+description: "The expression Task of a labeling Job: rounds e01, e02 under one signed meaning mNN, each Rewrite the wording, Run the executors on Train and Test, Evaluate. Use to run a round or release a version. Trigger: expression round, rewrite the wording, round report, release, /haipipe-labeling-expression."
 metadata:
   version: "0.2.0"
   last_updated: "2026-11-04"

@@ -1,6 +1,6 @@
 ---
 name: haipipe-evidence
-description: "Find the evidence a claim needs and show it as cards: CITE (another paper, from a discovery Run) and VALUE (our own result, from a work Run). Each item names the sentences and exact words it backs and the Run it comes from; missing pieces become proposals (a new Run, Task or Job) for a person to tick. Also a Page's evidence Runs (ref/page-evidence.md). Its parts cite and work hold how to find each kind. Trigger: evidence, evidence card, CITE, VALUE, what backs this sentence, missing evidence, /haipipe-evidence, /haipipe-draft-evidence."
+description: "Finds the evidence a claim needs and shows it as cards: CITE (another paper) and VALUE (our own result); missing pieces become proposals a person ticks. Use to back a sentence or run a Page's evidence Runs. Trigger: evidence card, CITE, VALUE, /haipipe-evidence, /haipipe-draft-evidence."
 metadata:
   version: "0.9.0"
   last_updated: "2026-11-03"
@@ -131,7 +131,8 @@ An address resolves in the Project's own world: `<project>/discovery/` for CITE,
 Project being the folder that holds `project.yaml`. A Run is found as `tNN_*/runs/rNN_*/result/` or, for a Task whose
 Results sit in its Job, `jNN_*/results/tNN_*/rNN_*/`. `order()` sorts cards by the first sentence each backs (the
 narrative), CITE and VALUE in one sequence, numbered within their kind. A builder calls `check()` first and stops on
-any problem, so a canvas never shows a card that does not resolve.
+any problem, so a canvas never shows a card that does not resolve. `bib` writes the Task's own Bib; the build merges
+it into the generated `delivery/latex/selected-bibliography/<page>.bib`, which is never hand-edited.
 
 ## ⚑ Proposing what to make
 

@@ -73,7 +73,7 @@ data:
 A theme's own Block template sits over this one and keeps these fields: the work theme's is
 `haipipe-task`'s `ref/block-board-template.md`; the others are each theme skill's.
 
-## The six Spaces at Block level
+## The six Spaces at Block level (the older tabbed screen)
 
 | Space | shows (vanilla) | reads | its buttons → skill |
 |---|---|---|---|

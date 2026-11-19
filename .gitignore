@@ -82,3 +82,10 @@ blueprints/**/related/files/
 
 # local server settings and the share door's access table (emails): never committed (b10 s52, 261012)
 /.server_config/
+
+# Third-party clone kept local (its own git repo), and a machine-local node_modules symlink
+references/edithere/
+**/.build/node_modules
+# Local site repos (their own .git, made by the site tool)
+sites/space-code-quality/
+sites/workbench-atlas/

@@ -1,11 +1,6 @@
 ---
 name: remote-error
-description: >-
-  Diagnose a pasted error or log from a remote machine, explain the mechanism,
-  fix the local canonical source when requested, and preserve an evidenced
-  report. Use for remote/server/CI failures. Select environment-specific rules
-  only from a confirmed profile; otherwise use the generic method. Internal
-  debugging Steps and conversation labels do not create Workflow Runs.
+description: "Diagnoses a pasted error or log from a remote machine, explains the mechanism, fixes the local source when asked and keeps an evidenced report. Use for remote, server or CI failures. Trigger: remote error, server error, CI failure, pasted log, /remote-error."
 argument-hint: "<paste the error text or screenshot>  [--profile <name>]  [--register <dir where the report is written>]  [--unit <task folder>]  [--session <name of this debugging round>]"
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:

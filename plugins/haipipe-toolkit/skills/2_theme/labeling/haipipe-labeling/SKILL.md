@@ -1,16 +1,6 @@
 ---
 name: haipipe-labeling
-description: >-
-  The one user-facing door for a human-grounded subjective-labeling theme with
-  two sides: Label Building teaches and freezes what one identified human means
-  by a vague trait; Label Scanning qualifies executors against a sealed
-  human-gold test, scans the corpus under the frozen meaning, and audits the
-  completed labels. Use for starting, resuming, routing, or checking a
-  subjective annotation job; defining H/L/N and boundary regions; calibration
-  rounds; guideline freeze; executor evaluation; corpus scanning; final audit;
-  or /haipipe-labeling (named subjective-label until 2026-10-07). Called with
-  a labeling Job folder, it opens the workbench on the step the Job is at and
-  guides the person through it, one step at a time, from the items Task on.
+description: "The one door for subjective labeling: Building teaches and freezes what one human means by a vague trait; Scanning qualifies executors on a sealed test, scans and audits the corpus. Use to start, resume or check a labeling job. Trigger: subjective labeling, annotation job, /haipipe-labeling."
 metadata:
   version: "0.13.0"
   last_updated: "2026-11-13"

@@ -1,6 +1,6 @@
 ---
 name: haipipe-report
-description: "Owns a Block's Questions and their reports at any level: what a Question is and where it lives (the board.md register; its answer in the Studio topic that answers it; reports/qNN_<topic>/ in an older Block only), shaping and reviewing asks, linking work to it (answers:), its walk open → partial → answered, and the report Page (Opening · Answer · Evidence · Limits · Next) with its figures and check. Trigger: report, answer a question, answers:, board question, qNN, propose a question, review the questions, /haipipe-report, /haipipe-question."
+description: "Owns a Block's Questions and their reports at any level: where a Question lives, shaping and reviewing asks, linking work to it (answers:), and the report Page. Use to propose, review or answer a question. Trigger: report, answer a question, qNN, /haipipe-report, /haipipe-question."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "0.3.2"

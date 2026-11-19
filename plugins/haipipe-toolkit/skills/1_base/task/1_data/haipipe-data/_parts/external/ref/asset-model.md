@@ -9,8 +9,8 @@ code `code/haipipe/external_base/` (`ExternalAsset`, `ExternalRelease`,
 `write_dependency`, `normalize_keys`) landed in code commit 27b1525. Only the
 `local_external_store` provider answers today; `feature_store`,
 `third_party_api` and `local_service` are named and fail with a clear
-message until built. Reference implementation: DrFirst-SPACE
-`examples-1-data/Project-Data-DrFirst-Raw2AIData/tasks/b51_A_externalstore/`
+message until built. Reference implementation: `<Client-SPACE>`
+`examples-1-data/Project-Data-<client>-Raw2AIData/tasks/b51_A_externalstore/`
 (18 assets, release `OptTimeR1v1`) and SourceFn `SMSParquetFTExt_v260923`.
 SourceFns not yet moved keep the v4 attach helpers (`attach_external_fields`,
 `<field>_ids`, `<field>_matched`, `external_release`), and legacy `@{tag}`
@@ -160,25 +160,25 @@ miss at any hop is a miss for the row (`_matched=False`). A frozen version
 stores the final answer per original key, so training replays one table.
 
 **A raw ID is translated first (dialect).** A dialect is a raw ID that only
-one company can read (a WellDoc medication id `612997`, a vendor's exercise
+one company can read (one partner app's medication id `612997`, a vendor's exercise
 code number). Words are never dialect: a label such as `Just Carbs` or
 `Walking` is already plain words, even when one app coined it, and goes to the
 service as it is. When a cohort writes an event as a raw ID, the SourceFn
 translates it before the answers lookup, through that company's own catalog,
-pinned like any other asset (WellDoc's `ext_med_lexicon`: id -> drug name and
+pinned like any other asset (the partner app's `ext_med_lexicon`: id -> drug name and
 NDC; `ext_exercise_codebook`: a vendor's code -> activity words). The answers asset (`ext_<noun>_resolved`) is keyed by the translated
 words. An ID the catalog lacks cannot be translated: its key stays the ID, the
 service is still asked it and answers MISS (describe-medication's own id lookup
 reads the same catalog), and the gallery shows it. Both lookups go through one
 release, and a gallery types every row by its words after the translation (a
-translated code is typed like the words it became). WellDoc b51 does both kinds
+translated code is typed like the words it became). `<Partner-SPACE>` b51 does both kinds
 (`ext_medication_resolved` and `ext_insulin_resolved` S20260927,
 `ext_exercise_resolved` S20260928, release EventNormV3, JL 260927 and 260928).
 
 A dialect belongs to one company's own codes. When the raw key is already a
 public code in its standard form (ZIP, NPI, NDC, NCPDP), there is no dialect
 asset: `normalize_keys` checks the format and the lookup reads the public table
-directly. DrFirst b51 is that case: its raw NDC is 11 digits, NPI 10, NCPDP 7,
+directly. `<Client-SPACE>` b51 is that case: its raw NDC is 11 digits, NPI 10, NCPDP 7,
 and its patient ZIP is already a 3-digit prefix.
 
 Feature-store history
@@ -214,7 +214,7 @@ Serving: the endpoint bundle (local_external_store)
 
 An endpoint that serves pinned local versions ships them in its package
 (`external/`), and the same `ExternalRelease` resolves them there. Full tables
-make the container slow to start and heavy per worker (DrFirst OptTime: 17 s
+make the container slow to start and heavy per worker (`<Client-SPACE>` OptTime: 17 s
 for the first request, 4.0 GB per worker). Stage the bundle this way:
 
 - **Only the release.** Copy `_releases/<release>.yaml`, and for each pinned asset its
@@ -231,7 +231,7 @@ for the first request, 4.0 GB per worker). Stage the bundle this way:
   with invalid keys dropped and the first row per key kept (what the loader
   would compute), and write `key_normalized: int64` in `version.yaml`. The
   loader then indexes `__key__` directly instead of re-keying at start
-  (DrFirst `ext_npi`: about 9 s down to about 1 s).
+  (`<Client-SPACE>` `ext_npi`: about 9 s down to about 1 s).
 - **A record.** `external/_bundle.yaml` lists every asset: shipped or not
   (and why), columns before and after, and size before and after.
 
@@ -245,10 +245,10 @@ Loading at serving:
   first request pays nothing.
 - **Memory is per worker.** Each gunicorn worker loads its own copy. Size the
   instance as workers × peak per worker, and set `MODEL_SERVER_WORKERS` when
-  the CPU count would oversubscribe memory (DrFirst: 2 workers at about
+  the CPU count would oversubscribe memory (`<Client-SPACE>`: 2 workers at about
   1.3 GB each on 8 GB).
 
-Reference implementation: DrFirst-SPACE
+Reference implementation: `<Client-SPACE>`
 `examples-3-model/Project-ExpModel-OptTime/tasks/b31_C_model_serving/j01_opttime_endpoint_package/t01_endpoint_package/scripts/stage_external_bundle.py`
 (`--dependency` trims and pre-keys) and
 `t02_input2src_ext/scripts/build_input2src_extv260924.py` (asset cache and
@@ -402,7 +402,7 @@ work/_legacy/b51_snapshot_<tag>_<yymmdd>/   audit of a legacy @{tag} snapshot, r
 
 A new version is a new Run in the asset's existing Task, never a new Task.
 Scaffold a new asset Task with `src/new_asset_task.py`, then add its section
-to the Job's gallery. DrFirst numbering: `j01_ext_zip3`, `j02_ext_zip5`,
+to the Job's gallery. Example numbering: `j01_ext_zip3`, `j02_ext_zip5`,
 `j03_ext_npi`, `j04_ext_ndc`, `j05_ext_ncpdp`, `j06_ext_engagement`; give
 feature-store and third-party topics the next free numbers.
 

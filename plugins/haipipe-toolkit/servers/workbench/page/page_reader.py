@@ -210,6 +210,17 @@ def markdown_document(path, root, reason=""):
             f'{markdown_html(path.read_text(encoding="utf-8"), base)}</body></html>')
 
 
+
+def _tools_constitution(root: Path, raw: str, target: Path) -> bool:
+    """True for a skill's CONSTITUTION.md or constitution/*.md reached as Tools/... in a SPACE whose Tools/ links to
+    the Tools repo (Home › 📜 Constitution links there). Nothing else outside the SPACE is served."""
+    parts = Path(raw).parts
+    if len(parts) < 3 or parts[0] != "Tools" or any(p.startswith(".") or p == ".." for p in parts):
+        return False
+    tools = (root / "Tools").resolve()
+    named = target.name == "CONSTITUTION.md" or (target.parent.name == "constitution" and target.suffix == ".md")
+    return named and target.is_file() and target.is_relative_to(tools) and "skills" in target.relative_to(tools).parts
+
 class PageReaderMixin:
     """GET /_board/page?path=<page .md or Page folder>: one Page, live, in the reader; any other .md as
     plain Markdown."""
@@ -220,6 +231,15 @@ class PageReaderMixin:
         raw = (parse_qs(urlparse(self.path).query).get("path") or [""])[0].lstrip("/")
         target = (root / raw).resolve()
         status, body = 200, ""
+        if raw and _tools_constitution(root, raw, target):   # a skill's rules, read through the SPACE's Tools/ link
+            data = markdown_document(target, (root / "Tools").resolve(), "").encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(data)))
+            self.end_headers()
+            if not head_only:
+                self.wfile.write(data)
+            return
         if not raw or not target.is_relative_to(root) or any(p.startswith(".") for p in target.relative_to(root).parts):
             status, body = 404, "<h1>No such Page</h1>"
         else:

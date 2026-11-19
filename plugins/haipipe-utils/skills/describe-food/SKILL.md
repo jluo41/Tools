@@ -1,6 +1,6 @@
 ---
 name: describe-food
-description: "Normalize free-text food descriptions (any cohort's dialect) to USDA nutrition. Use when a Diet ProcName's FoodName column needs Calories/Carbs/Protein/Fat/Fiber/Sugar, when a SourceFn must enrich diet data, or when the FoodNorm lexicon needs rebuilding. Trigger: describe food, food to nutrition, food event, food item rules, resolve diet to USDA, fill nutrition columns, foodnorm, 食物营养归一化."
+description: "Normalizes free-text food descriptions to USDA nutrition (calories, carbs, protein, fat, fiber, sugar). Use to fill nutrition columns in diet data or rebuild the food lexicon. Trigger: describe food, food to nutrition, fill nutrition columns, foodnorm, 食物营养归一化, /describe-food."
 metadata:
   version: "0.9.0"
   last_updated: "2026-11-04"

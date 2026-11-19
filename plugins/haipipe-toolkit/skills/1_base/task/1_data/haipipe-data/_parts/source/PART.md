@@ -151,11 +151,11 @@ External-data contract (model: `../external/ref/asset-model.md`):
     call inside a training SourceFn; freeze the pull into ExternalStore first
     (`/haipipe-data external freeze`).
 
-Contract-generated SourceFn (REACH PD2D, JL 260923):
+Contract-generated SourceFn (an EHR project, JL 260923):
   - With written ProcName contracts (b01 topic Jobs), the SourceFn is
     GENERATED from them instead of hand-editing a seed builder; the test is
     the build Run's committed-file check plus a selftest, not `RUN_TEST`.
-    Name it `<Family>V<yymmdd>` (`REACHPD2DV260922`).
+    Name it `<Family>V<yymmdd>` (`<Family><Proj>V260922`).
   - Do not read a huge store back: `Source_Pipeline.run(load_tables=[])`
     writes the tables and returns without loading them (default None = load
     all; `code/haipipe/source_base/source_pipeline.py`).

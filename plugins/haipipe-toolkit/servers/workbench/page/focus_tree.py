@@ -13,6 +13,7 @@ from live.ui_parts import state_mark
 from live.focus_base import (inside, kids, one_line, page_level, page_url, read_face, state_label,
     state_words, task_tally, topic_home)
 from live.focus_styles_bands import FOLD_CSS
+from live.ladder_cards import row_cards
 from live.focus_runs import run_rows, run_url
 from live.focus_interactions import interaction_button
 from live.focus_reports import question_cards
@@ -166,33 +167,33 @@ def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True, only: 
     def kept(p: Path) -> bool:
         return only is None or any(p == o or o in p.parents or p in o.parents for o in only)
 
-    def line(href, name, label, state, note, kids="", extra="", short_note=False):
+    def line(href, name, label, state, note, kids="", extra="", short_note=False, slot=""):
         row = (f'<a href="{frame.esc(href)}" data-pop="{frame.esc(label)}">{frame.esc(name)}</a>'
                + state_mark(state) + extra
                + (f'<small title="{frame.esc(note)}">{frame.esc(note)}</small>' if note and short_note else ""))
         if note and not short_note:                       # a goal sentence waits behind a hover (JL 261103: "too many words")
             row = row.replace(f'data-pop="{frame.esc(label)}"', f'data-pop="{frame.esc(label)}" title="{frame.esc(note)}"', 1)
         if not kids:
-            return f'<li><div class="fold-row leaf">{row}</div></li>'
-        return f'<li><details><summary class=fold-row>{row}</summary><ul>{kids}</ul></details></li>'
+            return f'<li><div class="fold-row leaf">{row}</div>{slot}</li>'
+        return f'<li><details><summary class=fold-row>{row}</summary><ul>{kids}</ul></details>{slot}</li>'
 
     def runs(task: Path) -> str:
         out = ""
         for r, mark, head in run_rows(task):
-            out += line(run_url(r, root), r.name, f"{task.name} · {r.name}", mark, head, short_note=True)
+            strip, slot = row_cards(r, root, head or r.name)      # its marks and cards (JL 261116); its 🙋 says
+            mark = "" if "~ask" in strip and "wait" in (mark or "").lower() else mark   # it waits, no words beside it
+            out += line(run_url(r, root), r.name, f"{task.name} · {r.name}", mark, head, extra=strip,
+                        short_note=True, slot=slot)
         return out
-
-    def marks(child: Path) -> str:
-        """Nothing: a row keeps to the work's state (261106: the per-row Interaction buttons and the "open points wait
-        on you" lines are gone; what waits on the person is the view's 🙋 Interaction, the topics are the Studio's)."""
-        return ""
 
     def task_line(t: Path) -> str:
         d = read_face(t, root)
         out = output_of(t, root) if outputs else ""   # the Task's output, in place, first inside its fold
         kids = (f'<li class=fold-out>{out}</li>' if out else "") + runs(t)
         st = state_label(d["state"])                   # "✅ DONE" as the Jobs' "✅ done" (JL 261103)
-        return line(page_url(t, root), t.name, t.name, state_words(st) if st else "", d["goal"].split("\n")[0], kids, marks(t))
+        strip, slot = row_cards(t, root, t.name)
+        return line(page_url(t, root), t.name, t.name, state_words(st) if st else "", d["goal"].split("\n")[0], kids,
+                    strip, slot=slot)
 
     def family_lines(ts: list) -> str:
         """Same-shaped Tasks as one folded line each family (its state tally, its values), the Tasks inside it."""
@@ -218,8 +219,9 @@ def fold_tree(folder: Path, root: Path, level: str, outputs: bool = True, only: 
                 continue
             ts = [t for t in frame.children(child, "Job") if inside(t, root) and kept(t)]
             tally = task_tally([s for s in (state_label(read_face(t, root)["state"]) for t in ts) if s])
+            strip, slot = row_cards(child, root, child.name)
             items += line(page_url(child, root), child.name, child.name, tally, d["goal"].split("\n")[0],
-                          family_lines(ts), marks(child))
+                          family_lines(ts), strip, slot=slot)
     if level != "Block":
         items += family_lines([c for c in frame.children(folder, level) if inside(c, root) and kept(c)])
     return FOLD_CSS + f'<ul class=fold-tree>{items}</ul>' if items else ""

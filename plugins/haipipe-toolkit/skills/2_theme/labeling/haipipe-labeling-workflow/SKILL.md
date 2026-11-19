@@ -1,12 +1,6 @@
 ---
 name: haipipe-labeling-workflow
-description: >-
-  Defines the labeling Workflow as Run Specs, their dependencies,
-  gates, routes, entry conditions and completion rule. P0-P5 and G0-G6 remain
-  compatibility capability/gate labels on domain records; they are not
-  independent lifecycle units or owners. The graph connects the Building and
-  Scanning Run Specs across the immutable Label Handoff. Use when resolving
-  the next eligible Run Spec, a held route, or /haipipe-labeling workflow.
+description: "Defines the labeling Workflow as Run Specs with their dependencies, gates, routes, entry and completion rules, across Building, the Label Handoff and Scanning. Use to resolve the next eligible Run Spec or a held route. Trigger: labeling workflow, Run Spec, G0-G6, /haipipe-labeling workflow."
 disable-model-invocation: true
 metadata:
   version: "0.12.2"

@@ -462,5 +462,33 @@ def content_gap(target) -> dict | None:
         return None                          # adopt cannot read this Page at all; health's own checks say why
     if not (moved or report["changes"]):
         return None
-    return {"printed": stamp.group(1) if stamp else "an older text", "current": current,
-            "why": "its paragraphs changed (adopt --relayout)" if moved else "sentences changed (adopt)"}
+    face_at, draft_at = _changed_at(page), _changed_at(plan)
+    newer = "content" if face_at and draft_at and face_at > draft_at else "draft"   # AgreeableJama 261116: a refill
+    return {"printed": stamp.group(1) if stamp else "an older text", "current": current,   # wrote Content alone, and
+            "newer": newer, "face_at": _day(face_at), "draft_at": _day(draft_at),          # adopt would have printed
+            "why": ("Content changed after the Draft: bring the Draft up to Content, never adopt" if newer == "content"
+                    else "its paragraphs changed (adopt --relayout)" if moved else "sentences changed (adopt)")}
+
+
+def _changed_at(path: Path) -> float:
+    """When a file last changed: its working copy's time when it differs from git, else its last commit's time."""
+    import subprocess
+    try:
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", path.name], cwd=path.parent,
+                               capture_output=True, text=True, timeout=10).stdout.strip()
+        if not dirty:
+            t = subprocess.run(["git", "log", "-1", "--format=%ct", "--", path.name], cwd=path.parent,
+                               capture_output=True, text=True, timeout=10).stdout.strip()
+            if t:
+                return float(t)
+    except Exception:
+        pass
+    try:
+        return path.stat().st_mtime
+    except OSError:
+        return 0.0
+
+
+def _day(t: float) -> str:
+    import datetime
+    return datetime.datetime.fromtimestamp(t).strftime("%Y-%m-%d %H:%M") if t else ""

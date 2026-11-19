@@ -1,6 +1,6 @@
 ---
 name: haipipe-draft
-description: "The draft behind every Page: create, edit, build and serve a self-contained Page Folder from a file, without a Board; owns the Page Face contract, which Run Spec holds authority, and a draft Task's seven steps (Studio, Plan, Write, Evidence, Display, Revise, Delivery). Planning is haipipe-draft-logic. Trigger: draft, draft folder, file to page, create a page, Page Face, page Run Spec, draft steps, /haipipe-draft, /haipipe-page."
+description: "The draft behind every Page: creates, edits, builds and serves a Page Folder from a file, without a Board; owns the Page Face contract and a draft Task's seven steps. Use to create or build a page. Trigger: draft, draft folder, file to page, Page Face, draft steps, /haipipe-draft, /haipipe-page."
 metadata:
   version: "0.143.0"
   last_updated: "2026-11-13"
@@ -9,6 +9,8 @@ metadata:
 ---
 
 # /haipipe-draft · the draft behind every Page
+
+Read CONSTITUTION.md first; it wins over this file.
 
 > Scripts here need Python 3.11+: where a command says `python3`, run it as `uv run --python 3.13 --with pyyaml python ...` (or a SPACE `.venv/bin/python`); see `plugins/haipipe-toolkit/skills/README.md` § Running a skill's scripts.
 
@@ -88,7 +90,8 @@ grep -nE "⟦|\[(E[0-9]+[^]]* pending|open |block )" <page-folder>/draft/<stem>-
 .venv/bin/python $P health <page-folder>                    # 5. the Folder agrees with itself
 ```
 
-- The gate is the person's ok on the text ("make it v0.5"), which is the bump; `approved:` and an open Structure Run
+- The person's ok here is for delivering the text; the bump itself needs none (the auto revise loop may bump the
+  Draft version, and only the signed gates, plan sign and send, wait for a person); `approved:` and an open Structure Run
   stay as they are, since the person closes a Run (Run bookends).
 - Read both PDFs: no citation may print as "?" (a key missing from the `.bib`) and no S number, paragraph label or
   `⟦…⟧` mark may show.

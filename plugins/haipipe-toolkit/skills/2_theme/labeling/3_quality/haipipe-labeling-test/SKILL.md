@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-test
-description: >-
-  The Quality › Test view skill of the labeling theme: it
-  owns the held-back test: re-drawing its frame when needed and locking the human's blind gold on it. Every Run in this view names this skill, and no other view uses it.
-  Use for held-back test, sealed test, test-reserve, test-gold-lock, T*, blind test labels, or /haipipe-labeling test.
+description: "Quality › Test view of the labeling theme: owns the held-back test, re-drawing its frame when needed and locking the human's blind gold on it. Use for the sealed test and its blind labels. Trigger: held-back test, sealed test, test-reserve, test-gold-lock, T*, /haipipe-labeling test."
 disable-model-invocation: true
 metadata:
   version: "0.1.2"

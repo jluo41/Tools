@@ -1,6 +1,6 @@
 ---
 name: haipipe-block
-description: "Owns the Block level: its face board.md (title, board-kind, spine, close, workbench:, Topic), its six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block, board.md, block face, add a job, which theme, /haipipe-block, /haipipe-board."
+description: "Owns the Block level: its face board.md, its six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block, board.md, block face, /haipipe-block, /haipipe-board."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
   version: "2.2.2"
@@ -52,8 +52,8 @@ The name is a label: every reader knows the Block by its `board.md` (its `board-
 Jobs and Tasks keep `jNN_` and `tNN_`. A `bNN_<topic>` folder of these themes stays readable; every other theme's
 Block is `bNN_<topic>/`. `new_board.py` makes a `bNN_` Block; a special board is made by its theme's scaffold.
 
-Read `ref/board-contract.md` before creating or editing a face: the fields, the six Spaces,
-the buttons, which theme reads a Block.
+Read `ref/board-contract.md` before creating or editing a face: the fields, the six Spaces of the older
+tabbed screen (the focus page's sections are Report, Studio, Delivery, Interaction, Related), the buttons, which theme reads a Block.
 
 (Not the board skill deleted on 261005, which built a static `board/` site; that site is
 retired and never rebuilt. The name is reused for the Block level, b03 s21.)

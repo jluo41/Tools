@@ -1,14 +1,6 @@
 ---
 name: excalidraw-job
-description: >-
-  A Job drawn as one Studio topic, a staircase: the Job on top (why it exists, when it is done), each Task a step lower
-  and further right, every Run named on its own card with its state (the current one marked, none hidden), and each Task's results
-  as charts, tables and the figures it already holds, in a block outside the frame, its panels side by side, the
-  blocks inside the frame's top and bottom or past both by the same amount. Smaller
-  frames that explain it (its words, how sure, what is open) step down and to the right; nothing is left-aligned or
-  filled. Read from disk on every build. Use to draw a Job, to turn a Job's results topic (job_results.py) into the
-  whole Job, or to see at a glance why a Job exists and what it found. Trigger: draw the job, job drawing, the whole
-  job, job staircase, tasks and runs, job results as charts, what did the job find, /excalidraw-job.
+description: "Draws a Job as one Studio topic, a staircase: the Job on top, each Task a step lower, every Run on its own card with its state, and each Task's results as charts and tables. Use to draw a Job or see what it found. Trigger: draw the job, job drawing, job staircase, tasks and runs, /excalidraw-job."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -56,7 +48,7 @@ metadata:
 > and an empty side says `not recorded`. `job_check.py` fails a drawing that names any Task or Run otherwise.
 
 Asked 261012: "show the sNN as the excalidraw as the job, to make the job's aim, plan and results". Asked 261013 on
-Physician-SPACE's LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 each a step lower and further right, a
+`<Project-SPACE>`'s LLMRec Blocks, with a hand sketch (the Job, then T1, T2, T3 each a step lower and further right, a
 "T1 Results" box beside each, outside the frame), and over one afternoon:
 
 1. **A staircase**: "先是 Job，下面跟着 Task 1、Task 2、Task 3，再往下就是各种各样的 Run，相当于一个阶梯状的图".
@@ -262,7 +254,7 @@ group:
 
 The words are the face's; every number is a slot or a cell, read on every build. A table frame holds the bars as a
 picture beside it, so ⑨ reads it as a scoreboard, not a wall of text. First drawn: Proj01 b00_rawdata s21 (seven
-WellDoc drops), s22 (AI-READI), s23 (six external cohorts).
+partner-app drops), s22 (AI-READI), s23 (six external cohorts).
 
 
 Commands
@@ -356,5 +348,5 @@ excalidraw-job/
 ```
 
 The first Jobs drawn: Knowledge-Base's Proj10-LLM-Baseline `discovery/b01_ml_foundations` s21 to s23 (adopted
-261012); the staircase's first, Physician-SPACE LLMRec `work/b04_analysis_physician_visibility` s27 (b03 j03, 261013). Its own
+261012); the staircase's first, `<Project-SPACE>` LLMRec `work/b04_analysis_physician_visibility` s27 (b03 j03, 261013). Its own
 Studio topic is Tools' `blueprints/Project-PageParts/work/b31_excalidraw/s06-excalidraw-job/`.

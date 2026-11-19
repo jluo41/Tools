@@ -19,6 +19,7 @@ ref/                        📜 THE CONSTITUTION · display-unit-output-contrac
                                + display-revise-loop.md; every shown display passes it
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
+                               not a listed skill: its guide is html-ppt/PART.md, read by path
 haipipe-display/_parts/html-to-svg/ · haipipe-display/_parts/icon-to-svg/ 🔧 converters
 haipipe-display/_parts/figure-to-svg/              🔧 converter
 (retired 260816)            🗃 the poster and slides renderers, their paper-side doors, and the
@@ -28,7 +29,7 @@ haipipe-display/_parts/figure-to-svg/              🔧 converter
 
 Why `ref/` stays at the family root, not under the door: the door, its `_parts/` renderers,
 `haipipe-display-method`, `agents/haipipe-display-unit-agent.md` and paper-side skills all cite
-`display/ref/`, and Physician-SPACE review notes cite it by that path.
+`display/ref/`, and `<Project-SPACE>` review notes cite it by that path.
 
 Start at `haipipe-display/SKILL.md`. The Excalidraw drawing skills (excalidraw-studio, -report, -section, -read,
 -revise, -workflow, -job, -task, -slide, -ideation) live in `../excalidraw/` since 2026-10-16.

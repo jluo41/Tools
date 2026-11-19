@@ -5,7 +5,7 @@ Insight ladder: the Question Book, the insight Board, and how they work together
 s21 Runs and skills; special boards JL 261008.) Insight sits on the shared ladder as two special boards. The
 **Question Book** holds the questions and the code that answers them; each of its Jobs is one version, a release. The
 **insight Board** holds one dataset and its dated versions; each of its Jobs runs one release on one data version.
-Each level has the six Spaces of the base workbench (Description · Idea Studio · Audience Report | Work Details |
+On the older tabbed screen each level has the six Spaces of the base workbench (Description · Idea Studio · Audience Report | Work Details |
 Runs · Delivery); the insight workbench fills them (servers/workbench-insight: insight_plan_c.py reads this tree,
 insight_views.py draws it). `scripts/insight_ladder.py` makes each folder and keeps the gates.
 

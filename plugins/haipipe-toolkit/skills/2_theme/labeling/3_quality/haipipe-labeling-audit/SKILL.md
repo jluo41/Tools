@@ -1,9 +1,6 @@
 ---
 name: haipipe-labeling-audit
-description: >-
-  The Quality › Audit view skill of the labeling theme: it
-  audits the completed labels independently: a frozen probability design, a blind human sample, and the weighted analysis with its route. Every Run in this view names this skill, and no other view uses it.
-  Use for final audit, audit-sample, audit-human-gold, audit-analyze, repair, rescan, or /haipipe-labeling audit.
+description: "Quality › Audit view of the labeling theme: audits the completed labels independently with a frozen probability design, a blind human sample and the weighted analysis with its route. Use for the final audit. Trigger: final audit, audit-sample, audit-human-gold, /haipipe-labeling audit."
 disable-model-invocation: true
 metadata:
   version: "0.1.1"

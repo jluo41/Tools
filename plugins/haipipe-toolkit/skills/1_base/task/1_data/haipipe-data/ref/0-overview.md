@@ -238,8 +238,8 @@ A `j5N` number is the same raw dataset in `b00` to `b03`. In `b10` it names an
 AIDataSet, which may merge several raw datasets, so it has its own number;
 the AIData Block is `b10`, not `b04`, so the numbers are never read as the
 same dataset (JL 260925). Task
-folders keep the real CamelCase Fn name (`t02_recordfn_REACHPatientUniverse`).
-Reference: REACH-SPACE `examples/Project-REACH-PD2D/work/`.
+folders keep the real CamelCase Fn name (`t02_recordfn_<Family>PatientUniverse`).
+Reference: `<EHR-SPACE>` `examples/Project-<Family>-<Proj>/work/`.
 
 ---
 
@@ -257,8 +257,8 @@ code/haifn/fn_case/<fn_version>/fn_trigger/<TriggerFnName>.py
 code/haifn/fn_case/<fn_version>/case_casefn/<CaseFnName>.py
 ```
 
-Name it `v<Label><yymmdd>`. The first one is `vDfExt260923` (DrFirst
-OptTimeR1 Extended); the second is `vWearable261101` (WellDoc, Proj01: the Ext
+Name it `v<Label><yymmdd>`. The first one is `vDfExt260923` (`<Client-SPACE>`
+OptTimeR1 Extended); the second is `vWearable261101` (`<Partner-SPACE>`, Proj01: the Ext
 SourceFn with the event norm, `Event` and `EventValue`).
 
 Selection. A Run config says `fn_version: vDfExt260923` at its top level.
@@ -313,14 +313,14 @@ Rules.
   (`b02 jNN_recordfn_*/tNN_*/scripts/`, `b03 j01_triggerfn_*`, `j02_casefn_*`)
   where a Block keeps them; `code/scripts/haibuilder/` may hold older copies.
   A version copy of a Fn can differ from the flat file when the flat file is
-  older than its builder (WellDoc `CGM5MinLTS`, 261102).
+  older than its builder (`<Partner-SPACE>` `CGM5MinLTS`, 261102).
 - An endpoint Input2SrcFn that reuses a versioned SourceFn loads it from
   `fn_source/<fn_version>/` by name and records the version it expects.
 
 The following pre-BJTR tree is a legacy snapshot and remains readable only:
 
 ```
-examples/Project-REACH-ADHD/work/
+examples/Project-<Family>-<Proj>/work/
 +-- A01_data_pipeline_reachadhd/
 |   +-- 01_source_fn_develop_reachadhd/    SourceFn builders   (c<N>_build_source_*.py)
 |   +-- 02_record_fn_develop_reachadhd/    HumanFn + RecordFn builders

@@ -136,7 +136,7 @@ def test_parse_table_rows_reads_nested_specs_and_spans(room, monkeypatch):
     spec.loader.exec_module(m)
     rows = m.parse_table_rows(P_SPEC_TABLE)
     assert rows, "a p{} / >{} / @{} column spec must still yield rows"
-    assert rows[0] == ["", "Outcomes", ""]            # multicolumn{2} pads one empty cell
+    assert rows[0] == ["", "\x02Outcomes\x03", ""]    # multicolumn{2} pads one empty cell; \textbf kept as bold marks
     assert rows[1][1] == "(1) Basic"                  # shortstack stays ONE cell
     assert rows[2][0] == "Agreeableness" and rows[-1][-1] == "765,701"
     xrows = m.parse_table_rows(X_SPEC_TABLE)
@@ -447,7 +447,7 @@ def test_layout_codes_never_print(room, monkeypatch):
         r"\hangindent=2em\hangafter=1\hspace*{1em}Linear & 1 \\"
         r"\hspace*{2em}\textit{2-part model} & 2 \\"
         r"\parbox[t]{1.9in}{\raggedright Primary: Total\textsuperscript{a}} & 3 \\\bottomrule\end{tabular}")
-    assert [r[0] for r in rows[1:]] == [m.INDENT_MARK + "Linear", m.INDENT_MARK * 2 + "2-part model", "Primary: Total\x10a\x11"]
+    assert [r[0] for r in rows[1:]] == [m.INDENT_MARK + "Linear", m.INDENT_MARK * 2 + "\x042-part model\x05", "Primary: Total\x10a\x11"]
     assert m.latex_to_text(r"\setlength{\tabcolsep}{4.5pt}Word\vspace{2em}") == "Word"
 
 

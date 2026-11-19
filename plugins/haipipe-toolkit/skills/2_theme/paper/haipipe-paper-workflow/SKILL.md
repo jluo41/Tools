@@ -1,12 +1,6 @@
 ---
 name: haipipe-paper-workflow
-description: >-
-  The Paper Runs layer: bounded Run Specs, native Run receipts, dependencies,
-  and checkable human gates by level: G0-G2 at the paper Board, G3-G5 in each
-  version; one run card per button of each level's Spaces. Use
-  when asking where a paper is, how its research plan connects to execution,
-  whether work may be released, or what may be compiled next. Trigger: paper
-  journey, paper-runs, paper workflow, Run routing, gate, /haipipe-paper-workflow.
+description: "The Paper Runs layer: bounded Run Specs, Run receipts, dependencies and checkable human gates (G0-G2 at the paper Board, G3-G5 in each version). Use to ask where a paper is or whether work may be released. Trigger: paper journey, paper workflow, Run routing, gate, /haipipe-paper-workflow."
 metadata:
   version: "1.10.0"
   last_updated: "2026-11-01"
@@ -71,7 +65,7 @@ controller steps and compatibility labels do not add Run identities.
 | Ideation (`s01-ideation/` + Questions) | candidate projections, comparisons, venue-fit projection, projection of the final I3 handoff, and its reciprocal route to one Story | owning the I3 decision, minting another selection, evidence execution, binding desk rules, or manuscript prose |
 | Venue (`venues/<venue>/`) | one target/category's typed and versioned external-desk contract | choosing the target or ranking Ideas |
 | Story (a telling's studio topic, its Board Questions and reports) | seed, research questions, Discovery and Task Roadmaps, the selected telling | executing Runs, replacing work records, or storing manuscript Section prose |
-| version face (`## Narrative`, `## Questions`) | one send's layout (claims to displays, display Runs, one row per Section, compile order), pointing at the Story's §8, and its standing questions | changing the telling's research meaning, or copying §8's claims |
+| version face (`## Narrative`, `## Questions`) | one send's layout (claims to displays, display Runs, one row per Section, compile order), pointing at the Story's Section Narrative, and its standing questions | changing the telling's research meaning, or copying §8's claims |
 | Discovery block | external literature/source inquiry and its Results | changing the Story's claim state |
 | Task block | jobs, configurations, and execution Runs | silently releasing itself or rewriting Story rows |
 | Run receipt | what actually ran, its provenance, checks, and Result | deciding how the paper should be told |
@@ -149,7 +143,7 @@ G2  Evidence/Execution → Story
 G3  Narrative → Section
     First the person signs the version face's `## Narrative` (`page.py
     sign-narrative <version> --quote "…"`: `narrative-approved:` and
-    `story-at-sign:` on the face, the Story's §8 kept as text in
+    `story-at-sign:` on the face, the Story's Section Narrative kept as text in
     `<version>/records/narrative-sign.md`). Then a person releases each Section
     row independently, and the Section's plan is signed with `page.py sign
     <task> --quote "…"` (the row kept as text in `draft/records/<stem>-sign.md`).

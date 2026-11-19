@@ -1,6 +1,6 @@
 ---
 name: haipipe-paper
-description: "The router for the Paper family, including manuscript and grant types; manuscript runtime commands are implemented; a grant Board is Grant-<Slug>/ (paper_ladder.py board makes it, board-kind: grant-board). For a paper on the ladder: a paper Board, one version Job per send, one Task per Section, Abstract or letter; routes to the Story, Ideation, Venue, Section, comments and assembly owners. Use for paper setup (paper_ladder.py), bringing an older paper folder onto the latest layout (paper_ladder.py audit, update), where a paper stands (checklist.md, paper_check.py, its sNN-paper-checklist topic), the delivery and its requirements, the submission portal (paper_ladder.py submission, portal_fill.py), drafting, or reviews. Trigger: paper, paper Board, grant proposal, Grant Board, version, send, update the paper folder, paper checklist, delivery requirements, cover letter, submission portal, writing lab, start the paper writing lab, /haipipe-paper."
+description: "The router for the Paper family (manuscript and grant Boards): a paper Board, one version Job per send, one Task per Section. Use for paper setup, updating an older paper folder or the submission portal. Trigger: paper, paper Board, grant proposal, submission portal, writing lab, /haipipe-paper."
 metadata:
   version: "1.40.0"
   last_updated: "2026-11-15"
@@ -137,14 +137,14 @@ paper's Story arc (§8 `#### Story arc`), then a tab per Section, its part of th
 last. L5 asks for both; `haipipe-paper-story` writes them. `version` writes the table's header and `task` adds the new
 Section's row with `<placeholders>`, which count as unwritten until a person or haipipe-paper-story fills them.
 
-**Two layers, one source each (JL 261111).** The Story's §8 holds what every version shares: title, story,
+**Two layers, one source each (JL 261111).** The Story's Section Narrative holds what every version shares: title, story,
 explanation, the claims C1..Cn with their numbers, and no per-Section rows. A new version face's `## Narrative` holds
 that venue's layout only: claims to displays, display Runs, one row per Section, the compile order; it points at the
-Story's §8 (`tells:`) and copies no claim. `version` scaffolds that section, the person signs it with `page.py
+Story's Section Narrative (`tells:`) and copies no claim. `version` scaffolds that section, the person signs it with `page.py
 sign-narrative <version> --quote "…"` (haipipe-draft § The Plan gate) before any Section's `page.py sign`, and the
 whole-paper structure is the version Job's Report › Structure view (workbench-paper), never a Task. Planned for
 `audit` (L5, not yet in `paper_ladder.py`): flag a version face whose `## Narrative` copies claim propositions, and a
-Story §8 that still holds a per-Section table.
+Story Section Narrative that still holds a per-Section table.
 
 **L6, every page says its use (JL 261108, 261109).** Each Board, Job and Task page shows its type and use case under
 its title. The workbench never guesses a use: it shows the face's `use-case:` line, or the one use a type has in
@@ -318,10 +318,10 @@ Work Blocks `work/bNN_.../` hold the Runs that make every number and every under
 Board's evidence Jobs deposit them: `j01_evidence_display` (one Task per display, each picture or table drawn by its
 own Run from the value Job's copies of returned, aggregated Results: values first, then displays, JL 261110),
 `j02_evidence_value`, `j03_evidence_cite`. Until 261031 the display Job sat
-in the work Block (`j21_paper_displays`, `j21_<venue>_displays`); an older Project keeps it there until it is moved. The display Job opens with a **display plan** the authors agree before anything is
+in the work Block (`j21_paper_displays`, `j21_<venue>_displays`); an older Project keeps it there until it is moved. The displays start from a **display plan**, the `s06-paper-displays` Studio topic (haipipe-paper-plan), which the authors agree before anything is
 drawn (JL 261023: "this should be a plan, proposed to the author to think about how to draw them"): one row per
 display with its number, title, the one question it answers, its layout (rows, columns or axes), its source Runs
-and its open choices, written from the team's own record (meeting notes, slides) in the Job face. The Sections write
+and its open choices, written from the team's own record (meeting notes, slides) in that topic's face (older Boards: the plan sits in the display Job face). The Sections write
 their numbers only after the drawn displays pass review and are accepted, so a sentence never describes a table
 that is still changing. The display Task holds the display whole (question, caption, legend, number,
 size, review; JL 261113); its Run only draws from returned, aggregated Results, and no paper folder runs analysis on raw data. The version face (or `board.md`) names the Block in a
@@ -500,7 +500,7 @@ A telling's seed (identity, pitch, stakes) and its roadmaps live in its studio
 topic, alongside the shared Section Narrative (§8: title, story, claims). Its
 research questions live in Board Questions with reports. Each writing version's
 `## Narrative` holds its layout (Section rows, claims to displays, compile order),
-pointing at the Story's §8 and copying no claim;
+pointing at the Story's Section Narrative and copying no claim;
 execution, Section, compile and comments records stay with their native owners. The router reads no retired child
 Page, compatibility alias, or fallback source.
 

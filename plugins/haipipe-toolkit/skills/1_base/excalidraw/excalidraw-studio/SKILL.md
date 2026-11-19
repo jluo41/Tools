@@ -1,14 +1,6 @@
 ---
 name: excalidraw-studio
-description: >-
-  How a Studio topic's drawing looks and reads: nine principles (one screen-sized frame, a workflow or mind
-  map inside, frames as one story joined by named arrows, big words and one key colour, measured density, room
-  between boxes), the look (the five-part drawing by default; draw.py for special shapes such as screens, an older Block's s00,
-  reports and slides), and the shared drawing helpers every builder imports (scripts/draw.py). Use before
-  drawing or redrawing any sNN topic, to check a drawing against the principles, or to pick a pattern. Loaded
-  by /haipipe-studio, which keeps the topic folder, face, numbering and sessions. Trigger: studio drawing,
-  draw a topic, redraw, too many frames, low density, mind map, workflow map, acts, named arrows, key point,
-  folder tree, /excalidraw-studio.
+description: "How a Studio topic's drawing looks and reads: nine principles, the look (the five-part drawing by default), and the shared drawing helpers in scripts/draw.py. Use before drawing any sNN topic, or to check a drawing. Trigger: studio drawing, draw a topic, redraw, mind map, /excalidraw-studio."
 allowed-tools: Bash, Read, Edit, Write, Grep, Glob
 disable-model-invocation: true
 metadata:
@@ -18,6 +10,8 @@ metadata:
 ---
 
 # /excalidraw-studio · how a Studio drawing reads
+
+Read `../../project/haipipe-studio/CONSTITUTION.md` first; it wins over this file (A04: Design is pictures, `icons.py`).
 
 A Studio topic's drawing is where a person and an agent think about one topic together. It has to read as
 one story, zoomed out, and hold enough to work on, zoomed in. The principles were agreed on a drawing of
@@ -185,7 +179,7 @@ How to build it (found by a fresh agent's test, 261031):
 - **The old drawing**: when the topic's owner says the kept first drawing goes, delete `result/first-drawing*` and
   `result/first-drawing-builder/`; they are git-ignored, so read them first and keep any fact the new sketch needs.
 
-Examples: Physician-SPACE b63.j01-s01 `sketch_construction.py` (claim lines → physician x day → absence → stack;
+Examples: `<Project-SPACE>` b63.j01-s01 `sketch_construction.py` (claim lines → physician x day → absence → stack;
 patient x physician x day → pair → Events → Pairs, PairPeriods, PairYears → the estimate) and b63.j01-s02
 `sketch_controls.py` (a middle step: engaged physicians and absences → cells → pool → draws → check → controls →
 the study physicians).

@@ -1,8 +1,8 @@
 ExternalStore Asset Catalog
 ============================
 
-> NOTE: `code-dev/0-EXTERNAL/` is the WellDoc-SPACE builder home. Workspaces
-> without it (e.g. REACH-SPACE — zero external builders on disk) host any new
+> NOTE: `code-dev/0-EXTERNAL/` is the `<Partner-SPACE>` builder home. Workspaces
+> without it (e.g. `<EHR-SPACE>` — zero external builders on disk) host any new
 > external builder in a project task folder, same `e{N}_build_external_*` naming.
 
 Lightweight index of the externally-built assets.
@@ -32,7 +32,7 @@ Task instead of a `code-dev/0-EXTERNAL/` script.
 
 ---
 
-Current Builders (WellDoc-SPACE snapshot; code-dev/0-EXTERNAL/)
+Current Builders (one SPACE's snapshot; code-dev/0-EXTERNAL/)
 ========================================
 
 Discovered via `ls code-dev/0-EXTERNAL/e*.py`.

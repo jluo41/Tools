@@ -112,8 +112,14 @@ def rows(board: Path) -> list[dict]:
             continue
         base = labels(R, where)[0 if kind == "figure" else 1]
         seen[base] = seen.get(base, 0) + 1
-        out.append({**r, "type": kind, "where": where, "as": f"{base} {seen[base]}"})
+        out.append({**r, "type": kind, "where": where, "as": printed_label(base, seen[base])})
     return out
+
+
+def printed_label(base: str, n: int) -> str:
+    """The printed label: "Table S" + 1 is "Table S1" (a letter prefix the venue writes joined), "eTable" + 1 is
+    "eTable 1", "Figure" + 2 is "Figure 2" (Paper-CMS-AI-Usage 261116: nejm-ai printed "Table S 1")."""
+    return f"{base}{n}" if re.search(r"\s[A-Z]$", base) else f"{base} {n}"
 
 
 def keys(text: str) -> list[str]:

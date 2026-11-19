@@ -1,7 +1,7 @@
 """health row `support`: every Draft sentence that prints a number has a VALUE, CITE or DISPLAY Evidence Item whose
-Target names it (a legend's numbers come from its display's Run). This is the rule behind the Draft Lab's "⚠ no item"
-chip (workbench-task-draft draft_step_support.py, the same NUM and NOT_NUM patterns), so health and the page agree
-(JL 261116: "why still no item?"). A split sentence or a renumbered paragraph that the items' Target lines did not
+Target names it (a legend's numbers come from its display's Run). The Draft Lab once showed these as a "⚠ no item" chip; since
+JL 261117 ("I don't wnat this ... Too large") only health lists them (draft_step_support.py keeps the same NUM and
+NOT_NUM patterns). A split sentence or a renumbered paragraph that the items' Target lines did not
 follow shows up here. WARN while writing; the final gate makes it a FAIL."""
 from __future__ import annotations
 
@@ -11,7 +11,9 @@ from pathlib import Path
 # keep in step with workbench-task-draft/draft_step_support.py
 NUM = re.compile(r"(?<![\w.,\-])[-+−]?\d[\d,]*(?:\.\d+)?%?(?![\w])")
 NOT_NUM = re.compile(r"\\(?:ref|cite[pt]?|autoref|label)\*?\{[^}]*\}|\b(?:Extended Data |Supplementary )?"
-                     r"(?:Fig\.|Figs\.|Figure|Table)\s*~?\d+[A-Za-z]?\b|\bC\d+(?:\.P\d+)?(?:\.[BbSs]\d+)?\b|\$[^$]*\$")
+                     r"(?:Fig\.|Figs\.|Figure|Table|Supplement|eTable|eFigure|eAppendix|eMethods)\s*~?\d+[A-Za-z]?\b"
+                     r"|\b\d+-(?:part|day|week|month|year|hour|minute|step|fold|way|level|stage|item|point)s?\b"   # a label or a
+                     r"|\bC\d+(?:\.P\d+)?(?:\.[BbSs]\d+)?\b|\$[^$]*\$")   # modifier (\"See Supplement 2\", \"2-part model\"), not a value
 ITEM = re.compile(r"(?m)^###\s+(E\d+[a-z]?)-(VALUE|CITE|DISPLAY|TABLE)-\S+")
 TARGET = re.compile(r"(?mi)^-\s*\*\*Target\*\*\s*:\s*(.*?)\s*$")
 PARA = re.compile(r"^#{2,6}\s*(C\d+\.P\d+)\b")
@@ -61,7 +63,30 @@ def check_support(items_file: Path, plan_text: str, out: list, Finding, WARN, OK
     loose = [f"{pid}.{sid}" for pid, b, sid, words in rows if sid not in covered and numbers(words)]
     if loose:
         out.append(Finding(WARN, "support",
-                           f"{len(loose)} sentence(s) print a number that no VALUE, CITE or DISPLAY item targets (the page's "
-                           f"⚠ no item): {', '.join(loose[:8])}; add the address to the right item's Target"))
+                           f"{len(loose)} sentence(s) print a number that no VALUE, CITE or DISPLAY item targets: {', '.join(loose[:8])}; add the address to the right item's Target"))
     else:
         out.append(Finding(OK, "support", "every sentence that prints a number has a VALUE, CITE or DISPLAY item"))
+    check_files(items_file, out, Finding, WARN, OK)
+
+
+def check_files(items_file: Path, out: list, Finding, WARN, OK):
+    """health row `evidence-files`: each item's named files, Result or Bib key is on disk, by the same check that
+    marks 📊❗ on the page (evidence_resolve.resolve). WARN while writing, FAIL at the final gate."""
+    from .evidence_resolve import bib_keys, evidence_items, resolve
+    from .result_displays import result_units
+    task = items_file.parent.parent
+    try:
+        done = {u["item"] for u in result_units(task)}
+    except Exception:  # noqa: BLE001  an older Task with no results/ reads as none
+        done = set()
+    bib = bib_keys(task)
+    miss = []
+    for it in evidence_items(task):
+        r = resolve(it, task, bib, done)
+        if r["state"] == "miss":
+            miss.append(f"{it['id']} ({'; '.join(w for w in r['why'] if not w.startswith('its '))[:90]})")
+    if miss:
+        out.append(Finding(WARN, "evidence-files", f"{len(miss)} item(s) show 📊❗ on the page: " + ", ".join(miss[:6])
+                           + "; fix the path in Expected or Local Input"))
+    else:
+        out.append(Finding(OK, "evidence-files", "every Evidence Item's files, Result or Bib key is on disk"))

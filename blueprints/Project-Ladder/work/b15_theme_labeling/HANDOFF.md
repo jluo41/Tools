@@ -24,7 +24,7 @@ How to work
    - the ladder rows and screens (b03's build_ladder_v4.py, level_views.py): design-b03-project
    - the workbench base every theme reuses (servers/workbench/, servers/_host/): design_b02_workbench
    - skill folder moves and path fixes (skills/ layers, plugin merges): design_b04_skill_folder
-   - sibling themes: design_b11_theme_insight, design_b12_theme_design, design_b13_theme_cowork, design_b14_theme_discovery, design_b15_theme_labeling, design_b16_theme_paper, design_b17_theme_work
+   - sibling themes: design_b11_theme_insight, design_b12_theme_design, design_b15_theme_labeling, design_b16_theme_paper, design_b17_theme_work
 4. Rules: a generated file is never changed by hand (AGENTS.md rule 0); no absolute /Users/... paths in tracked files; concept drawings carry no DrFirst content; check for PHI before reading any data file.
 5. Tests: the tests beside the code you change, from the SPACE root (`source .venv/bin/activate && source env.sh`); say the counts and any failure that was already there.
 

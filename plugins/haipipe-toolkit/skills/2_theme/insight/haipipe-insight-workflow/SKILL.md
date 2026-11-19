@@ -1,17 +1,6 @@
 ---
 name: haipipe-insight-workflow
-description: >-
-  Where an insight folder stands and which Run is next, on the insight ladder:
-  the Question Book (its releases and questions) and the insight Board (its data
-  versions, Jobs and Tasks). Owns the run cards (one card per workbench button:
-  its Run, skill, agent, sign and prompt), the gates between levels (agreed
-  questions, set segments, a signed release, a frozen data version, one clock per
-  Job, power before contrast, a checked page, a signed close and handoff), and
-  routing each Run to the skill that does it. Use to ask what is next for a
-  Question Book, release, Board, Job or Task, to find who owns a button, to check the
-  cards, or to run the older register boards' workflow until they are carried
-  over. Trigger: what next, next Run, run card, gate, insight workflow, where
-  does this Job stand, who owns this button, /haipipe-insight workflow.
+description: "Where an insight folder stands and which Run is next on the insight ladder: owns the run cards, the gates between levels and routing each Run to its skill. Use to ask what is next or who owns a button. Trigger: what next, next Run, run card, gate, insight workflow, /haipipe-insight workflow."
 disable-model-invocation: true
 metadata:
   version: "3.1.0"

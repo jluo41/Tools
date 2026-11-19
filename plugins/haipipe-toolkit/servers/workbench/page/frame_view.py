@@ -205,7 +205,8 @@ class FrameMixin:
         themes = frame.themes()
         name = get("theme") or frame.theme_of(folder, root)
         theme = themes.get(name, frame.VANILLA)
-        if get("layout") == "focus":
+        if get("layout") == "focus" or set(query) <= {"path", "theme"}:   # a bare address is the focus page; the
+            # old tabbed frame only on layout=frame or its own tab/sub/view keys (haipipe-ui CONSTITUTION.md A04)
             from live import focus_page
             if focus_page.is_topic(folder):          # an sNN has no page of its own: its card in its level's Studio
                 self.send_response(302)              # (JL 261031)
