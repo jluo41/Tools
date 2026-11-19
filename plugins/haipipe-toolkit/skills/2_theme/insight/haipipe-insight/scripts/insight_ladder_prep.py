@@ -93,11 +93,16 @@ def steps(ver: Path) -> list[Path]:
                   key=lambda p: int(STEP.match(p.name).group(1)))
 
 
-def prep(block: Path, slug: str, carried_from: str, plan: Plan) -> Path:
+def prep(block: Path, slug: str, carried_from: str, plan: Plan, order: str = "") -> Path:
     """The next prep version jNN_prep-vK_<slug>/: it starts from the newest one, every step's face and code copied (never
-    its Runs); `carried_from` names the folder the first version's tools came from."""
+    its Runs); `carried_from` names the folder the first version's tools came from. `order` names the new version's
+    steps in their order (`experiment,source,prepare-cohort`): a step the newest version has is copied to its new
+    number, a new one is made empty, and one left out is not carried (ref/dataprep.md rule 2)."""
     if slug and not SLUG.match(slug):
         sys.exit(f"--slug is a few lower-case words joined by -: {slug!r}")
+    names = [x.strip() for x in order.split(",") if x.strip()]
+    if any(not SLUG.match(x) for x in names) or len(set(names)) != len(names):
+        sys.exit(f"--steps names each step once, a few lower-case words joined by -: {order!r}")
     if face_kind(block) != "dataprep":
         sys.exit(f"{block.name} is not a DataPrep Block (board.md board-kind: insight-dataprep)")
     old = preps(block)
@@ -114,14 +119,26 @@ def prep(block: Path, slug: str, carried_from: str, plan: Plan) -> Path:
         ": the tools that make each dataset's folder, frozen once a person signs them"
     plan.write(path / f"{path.name}.md", with_front(fields, f"\n# prep-v{n}\n\n<what this prep version changes, and "
                                                            "why; each change names the step it is in>\n"))
-    if prev:
-        if (prev / "src").is_dir():
-            plan.copy(prev / "src", path / "src")
-        for s in steps(prev):
-            plan.copy(s, path / s.name)                       # face, scripts, config; never runs/ or results/
-            if not plan.dry:
-                _reset_agreed(path / s.name)
-                _reaim(path / s.name, PREP.match(prev.name).group(2), f"prep-v{n}")
+    if prev and (prev / "src").is_dir():
+        plan.copy(prev / "src", path / "src")
+    have = {STEP.match(x.name).group(2): x for x in steps(prev)} if prev else {}
+    for i, name in enumerate(names or list(have), 1):
+        dst = path / f"t{i:02d}_{name}"
+        src = have.get(name)
+        if src is None:
+            _new_step(dst, name, "", plan)
+            continue
+        plan.copy(src, dst)                                   # face, scripts, config; never runs/ or results/
+        if not plan.dry:
+            if src.name != dst.name:                          # its new place: the face carries the folder's name
+                old_face = dst / f"{src.name}.md"
+                old_face.rename(dst / f"{dst.name}.md")
+                face_md = dst / f"{dst.name}.md"
+                face_md.write_text(face_md.read_text(encoding="utf-8").replace(f"# {src.name}", f"# {dst.name}"),
+                                   encoding="utf-8")
+            _reset_agreed(dst)
+            _one_config_per_dataset(dst)
+            _reaim(dst, PREP.match(prev.name).group(2), f"prep-v{n}")
     runs_readme(path, "prep", plan)
     return path
 
@@ -132,6 +149,17 @@ def _reset_agreed(step_dir: Path) -> None:
     if fields.get("agreed"):
         fields["agreed"] = ""
         md.write_text(with_front(fields, body), encoding="utf-8")
+
+
+def _one_config_per_dataset(step_dir: Path) -> None:
+    """A copied step keeps one Run config per dataset, the newest: the Runs it superseded do not travel, so neither
+    do their configs. The first `run <step> dataset <name>` in the new version takes the one kept."""
+    newest: dict[str, Path] = {}
+    for cfg in sorted((step_dir / "scripts" / "config").glob("r[0-9][0-9]_*.yaml")):
+        name = cfg.stem.split("_", 1)[1]
+        if name in newest:
+            newest[name].unlink()
+        newest[name] = cfg
 
 
 def _reaim(step_dir: Path, old: str, new: str) -> None:
@@ -160,7 +188,11 @@ def step(ver: Path, slug: str, does: str, plan: Plan) -> Path:
     if any(STEP.match(s.name).group(2) == slug for s in have):
         sys.exit(f"{ver.name} already has a step {slug}")
     n = int(STEP.match(have[-1].name).group(1)) + 1 if have else 1
-    path = ver / f"t{n:02d}_{slug}"
+    return _new_step(ver / f"t{n:02d}_{slug}", slug, does, plan)
+
+
+def _new_step(path: Path, slug: str, does: str, plan: Plan) -> Path:
+    """An empty step Task at `path`: its face with placeholders, its config README, its runs README."""
     plan.write(path / f"{path.name}.md", with_front(
         {"step": slug, "worker": slug.replace("-", "_"), "reads": "<what it reads: raw folders, an earlier step>",
          "writes": "<the columns or files it adds>", "checks": ["<a check the output must pass, checkable>"],
@@ -238,6 +270,11 @@ def dataset_run(step_dir: Path, name: str, plan: Plan, again: bool = False) -> P
             ("run", run), ("kind", "hard"), ("type", "dataset"), ("target", step_dir.name), ("prep", k),
             ("ticket", f"{run}.sh"), ("supersedes", old.name), ("status", "planned"), ("passes", "[]"))))
         return path
+    carried = sorted(c for c in cfgdir.glob(f"r[0-9][0-9]_{name}.yaml") if not (step_dir / "runs" / c.stem).is_dir())
+    if carried and not (cfgdir / f"{run}.yaml").exists():   # copied with the step from the version before: it is this
+        plan.made.append(cfgdir / f"{run}.yaml")             # dataset's config, under the new Run's name
+        if not plan.dry:
+            carried[-1].rename(cfgdir / f"{run}.yaml")
     worker = str(face(step_dir).get("worker") or STEP.match(step_dir.name).group(2).replace("-", "_"))
     ticket = TICKET.read_text(encoding="utf-8").replace('TASK_NAME="worker"', f'TASK_NAME="{worker}"', 1)
     plan.write(path / f"{run}.sh", ticket)

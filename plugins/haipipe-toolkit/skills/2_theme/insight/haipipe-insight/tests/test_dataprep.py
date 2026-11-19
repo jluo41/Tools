@@ -288,3 +288,35 @@ def test_a_data_version_whose_dictionary_holds_record_values_is_named(tmp_path):
         L("data", board, f"data-{ver}", "--data-folder", f"_WorkSpace/store/{ver}/")
     assert IL.version_records(board) == ["data-v1"]                            # frozen, so named, never edited
     assert {r[1]: r[2] for r in IL.audit(board, quiet=True)}["records"] == 1
+
+
+def test_a_new_prep_version_names_its_step_order(space):
+    _, p, prep = space
+    L("prep", prep, "--slug", "carried")
+    v1 = prep / "j01_prep-v1_carried"
+    L("step", v1, "prepare-cohort")
+    L("step", v1, "compare-cohorts")
+    L("step", v1, "old-extra")
+    L("run", v1 / "t01_prepare-cohort", "dataset", "demoa")
+    L("run", v1 / "t01_prepare-cohort", "dataset", "demoa", "--again")      # its config is r02_demoa.yaml
+    (v1 / "t01_prepare-cohort" / "scripts" / "config" / "r02_demoa.yaml").write_text(
+        "dataset: DemoA\noutput:\n  prepare_dir: s/demo_a@prep-v1\n")
+    for s_ in (v1 / "t01_prepare-cohort", v1 / "t02_compare-cohorts", v1 / "t03_old-extra"):
+        _agree(s_)
+    L("sign", v1, "--date", "261119")
+    with pytest.raises(SystemExit, match="names each step once"):
+        L("prep", prep, "--steps", "experiment,experiment")
+    L("prep", prep, "--slug", "raw-only", "--steps", "experiment,source,prepare-cohort,compare-cohorts")
+    v2 = prep / "j02_prep-v2_raw-only"
+    assert [s_.name for s_ in IL.PR.steps(v2)] == ["t01_experiment", "t02_source", "t03_prepare-cohort",
+                                                    "t04_compare-cohorts"]       # old-extra left out
+    moved = v2 / "t03_prepare-cohort"
+    assert (moved / "t03_prepare-cohort.md").is_file() and not (moved / "t01_prepare-cohort.md").exists()
+    assert _front(moved / "t03_prepare-cohort.md")["step"] == "prepare-cohort"
+    assert "# t03_prepare-cohort" in (moved / "t03_prepare-cohort.md").read_text()
+    assert _front(moved / "t03_prepare-cohort.md")["agreed"] == "" and not (moved / "runs" / "r02_demoa").exists()
+    assert _front(v2 / "t01_experiment" / "t01_experiment.md")["step"] == "experiment"   # a new step, empty
+    L("run", moved, "dataset", "demoa")                                           # the carried config becomes r01's
+    cfg = moved / "scripts" / "config"
+    assert sorted(c.name for c in cfg.glob("r*.yaml")) == ["r01_demoa.yaml"]
+    assert yaml.safe_load((cfg / "r01_demoa.yaml").read_text())["output"]["prepare_dir"] == "s/demo_a@prep-v2"

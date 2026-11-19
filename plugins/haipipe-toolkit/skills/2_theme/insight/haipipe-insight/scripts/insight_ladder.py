@@ -20,6 +20,7 @@ versions and questions, the insight Board and its data versions, its Jobs and th
                                                                         [--store <SPACE-relative folder>] [--title "…"]
     python insight_ladder.py dataset   <dataprep> <Name> --raw <SPACE-relative raw folder> [--why "…"]   a dataset of the Set
     python insight_ladder.py prep      <dataprep> --slug <what-it-is> [--from <carried-from folder>]   the next jNN_prep-vK_<slug>/
+                                       [--steps a,b,c: its steps in order; a kept step moves to its new number]
     python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   a step Task tNN_<slug>/
     python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed; pins the tools' hash; freezes it
     python insight_ladder.py run       <step> dataset <name> [--again]   a hard Run runs/rNN_<name>/: ticket, card, config
@@ -490,6 +491,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--path", default="", help="reference: the SPACE-relative file or folder it is read from")
     ap.add_argument("--version", default="", help="reference: the version it is read at")
     ap.add_argument("--again", action="store_true", help="run <step> dataset: the next Run, superseding the newest")
+    ap.add_argument("--steps", default="", help="prep: the new version's steps in order, comma-separated")
     ap.add_argument("--prep", default="", help="data: the signed prep version (or its Run) that made the data folder")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply", action="store_true", help="update: write (a dry run without it)")
@@ -518,7 +520,7 @@ def main(argv=None) -> list[Path]:
     elif c == "dataset":
         PR.add_dataset(a.folder, a.what, a.raw, a.why, plan)
     elif c == "prep":
-        PR.prep(a.folder, a.slug, a.source, plan)
+        PR.prep(a.folder, a.slug, a.source, plan, a.steps)
     elif c == "step":
         PR.step(a.folder, a.what, a.ask, plan)
     elif c == "propose":

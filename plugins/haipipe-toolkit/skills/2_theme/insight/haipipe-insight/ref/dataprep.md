@@ -42,7 +42,10 @@ The rules
 1. **A Set, not a dataset.** `<Set>` names a family of datasets made by the same tools; it carries no version. A
    dataset of the Set is a `datasets:` row (`insight_ladder.py dataset … --raw`); a Board still holds one dataset.
 2. **A prep version is signed, then frozen.** `prep` opens the next one from the newest. It copies every step's face,
-   script and config, never its Runs, and clears each step's `agreed:`. `sign` needs every step agreed by an agent
+   script and config, never its Runs, and clears each step's `agreed:`. `--steps experiment,source,prepare-cohort`
+   names the new version's steps in their order: a kept step moves to its new number (`t03_prepare-cohort`), a new
+   one is made empty, and one left out is not carried. A copied step keeps one Run config per dataset, the newest,
+   and the first `run <step> dataset <name>` in the new version takes it. `sign` needs every step agreed by an agent
    that did not write it (run-review-steps). It pins `hash:` (the first 12 hex of a sha256 over `src/` and every step's
    face, scripts and config) and closes the version.
 3. **A step is a Task; a Run is a dataset.** A step's hard Run `rNN_<dataset>` is made by `run <step> dataset <name>`:
@@ -140,7 +143,7 @@ Scripts
 ```text
 insight_ladder.py dataprep <Project>/insight/InsightDataPrep-<Set> --set <Set> --serves <Board>[,…] [--store …] [--title …]
 insight_ladder.py dataset  <dataprep> <Name> --raw <SPACE-relative raw folder> [--why …]
-insight_ladder.py prep     <dataprep> --slug <what-it-is> [--from <carried-from folder>]
+insight_ladder.py prep     <dataprep> --slug <what-it-is> [--from <carried-from folder>] [--steps a,b,c]
 insight_ladder.py step     <prep version> <slug> [--ask "what it does"]
 insight_ladder.py reference <dataprep> <name> --path <SPACE-relative> --version <v> [--why …]
 insight_ladder.py run      <step> dataset <name> [--again]   (and run <prep version> review-steps · sign)

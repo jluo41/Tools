@@ -24,6 +24,7 @@ T16  a step writes outside a folder of its own   fixed
 T17  no prep step checks the stated experiment   open
 T18  a page could show a record value            fixed
 T19  the Board's Data view shows records        fixed
+T20  a new prep version cannot order its steps  fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -325,3 +326,20 @@ T19  the Board's Data view shows records        fixed
   column or a link to the file; Insight-SMSR2v1's data-v1 is the version the `records` row names.
 - **Guard**: `servers/workbench-insight/tests/test_data_view_shapes.py`; `haipipe-insight/tests/test_dataprep.py`
   `test_a_data_version_whose_dictionary_holds_record_values_is_named`.
+
+## T20 · A new prep version cannot order its steps · fixed
+
+- **From**: Report, Insight-Use-Case (drfirst-space-b7), 261119, topic I: opening prep-v2, `prep` copies prep-v1's
+  steps as they are and `step` always takes the next number, so the experiment step would land third while rule 7
+  puts it first, and the raw-only source step must come before prepare-cohort. Renaming step folders by hand would
+  break their Runs and cards.
+- **Questions**: where is a step's place set? What happens to a kept step's face, configs and Runs when it moves?
+- **Answer**: `prep … --steps experiment,source,prepare-cohort,compare-cohorts` names the new version's steps in
+  order: a kept step is copied to its new number (its face renamed with it), a new one is made empty, and one left out
+  is not carried. A new version copies no Runs, so nothing that a Run names moves. A copied step keeps one config per
+  dataset, the newest, and the first `run <step> dataset <name>` takes it under its new Run's name
+  (`ref/dataprep.md` rule 2). `--before`, renumbering folders that hold Runs, was not built.
+- **Case**: on the DrFirstExp Block, the dry run of that command lists t01_experiment, t02_source, t03_prepare-cohort,
+  t04_compare-cohorts, and writes nothing.
+- **Guard**: `test_dataprep.py` `test_a_new_prep_version_names_its_step_order`.
+

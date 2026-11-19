@@ -1,5 +1,11 @@
 # haipipe-insight · version history
 
+## 3.10.4 · 2026-11-19 · a new prep version names its step order
+
+- `insight_ladder.py prep … --steps a,b,c` (workbench-insight T20): kept steps move to their new numbers, new ones
+  are made empty, one left out is not carried; a copied step keeps one config per dataset, which the first
+  `run <step> dataset <name>` takes.
+
 ## 3.10.3 · 2026-11-19 · references, a second Run, the carried card; a Board names a dictionary with record values
 
 - From Insight-Use-Case's Reports and JL's decisions of 261119 (workbench-insight T15-T19).
