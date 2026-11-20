@@ -9,7 +9,7 @@ TASK_NAME="worker"
 # Optional: the worker's path from the Job when it is not scripts/$TASK_NAME.py (a Job's shared worker:
 # "src/describe_table.py"). Empty means scripts/$TASK_NAME.py.
 WORKER_PATH=""
-# Optional: the notebook's name for what it shows ("welldoc_cgm"); empty means the Run's name.
+# Optional: the notebook's name for what it shows ("example_cgm"); empty means the Run's name.
 NOTEBOOK_NAME=""
 RUN_FAMILY="Execution"
 RUN_OPERATION="task-execution"

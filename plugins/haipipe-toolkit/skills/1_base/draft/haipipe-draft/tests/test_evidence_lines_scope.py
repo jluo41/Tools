@@ -1,4 +1,4 @@
-"""A Supporting Run is named from the Page's own Project and world (REACH-SPACE 261005).
+"""A Supporting Run is named from the Page's own Project and world (another SPACE, 261005).
 
 `b01j01t01r01` was a census Run in Project-0's tasks/ and a Paper Run in another
 Project's discoveries/; the SPACE-wide registry named the Paper Run under the census.

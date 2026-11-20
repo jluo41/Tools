@@ -101,7 +101,7 @@ class AuthMixin:
     # authenticated when --public-read is enabled.
     public_read_live_routes = {"/_board/design", "/_board/design-board", "/_board/design-bundle",
                                "/_board/insight-board", "/_board/insight", "/_board/insight-run"}
-    auth_cookie_name = "jjluo_board_session"
+    auth_cookie_name = "haipipe_board_session"
     auth_cookie_days = 0
     auth_cookie_key: bytes | None = None
 
@@ -117,7 +117,7 @@ class AuthMixin:
                 for username, password in sorted(cls.auth_users.items())
             ).encode("utf-8")
             cls.auth_cookie_key = hashlib.sha256(
-                b"jjluo-board-cookie-v1\0" + material
+                b"haipipe-board-cookie-v1\0" + material
             ).digest()
         else:
             cls.auth_cookie_key = None

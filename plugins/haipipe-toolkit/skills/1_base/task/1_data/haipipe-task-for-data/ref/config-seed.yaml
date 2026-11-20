@@ -10,7 +10,7 @@ _meta:
   purpose: |
     <e.g., Build CGM 5-min record dataset v3 for WellReadi cohort>
   note: |
-    <e.g., Stride-4h; clean partitions; mirrors WellDoc v2 schema>
+    <e.g., Stride-4h; clean partitions; mirrors the source's v2 schema>
   input: |
     <e.g., 1-SourceStore/WellReadi v3; ExternalStore cohort lookup>
   output: |

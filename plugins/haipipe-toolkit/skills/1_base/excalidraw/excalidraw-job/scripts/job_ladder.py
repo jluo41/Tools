@@ -2,7 +2,7 @@
 each Task's results, its charts and tables side by side, in a block outside the frame; the blocks stay inside the
 frame's top and bottom, or pass both by the same amount (JL 261014: "超出部分一定要对称、均匀").
 
-Asked 261013 on Physician-SPACE's LLMRec Blocks, with a hand sketch (a Job, then T1, T2, T3 each a step lower and
+Asked 261013 on a Project's Blocks, with a hand sketch (a Job, then T1, T2, T3 each a step lower and
 further right, a "T1 Results" box beside each, outside the frame):
 - "先是 Job，下面跟着 Task 1、Task 2、Task 3，再往下就是各种各样的 Run，相当于一个阶梯状的图 … 右边就开始说明每一个具体的结果
   都是什么" and "current ones in the job sNN are very bad".

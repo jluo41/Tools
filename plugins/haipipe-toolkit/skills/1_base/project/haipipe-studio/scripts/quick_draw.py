@@ -4,7 +4,7 @@ excalidraw for it?"; "could you add them as the default?").
 
     python quick_draw.py <topic folder> [...]     each topic without a drawing gets one; an existing one is never touched
 
-A drawing, never a report (JL 261029, of a first version that listed the face's lines: "this is fucking report, not
+A drawing, never a report (JL 261029, of a first version that listed the face's lines: "this is […] report, not
 the draw"). It follows coleam00/excalidraw-diagram-skill (Tools-SPACE/references/workflow-diagrams/): the idea drawn
 as a pattern (cycle, timeline, tree, fan-in), free text unless a shape carries meaning, colour as meaning
 (SEM below), and rendered and looked at before it is shown. A new topic gets its life line with its stage marked; the

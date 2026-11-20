@@ -127,7 +127,7 @@ b61 to b69   labeling     one Block per labeling schema (subjective-label);
   reads the CaseSets of one or more raw datasets. Its page says which b03 Job
   each AIDataSet reads (`inputs: [b03/j58]`), since its numbers are its own. Topic Jobs `j01`-`j49` hold the TfmFns
   and SplitFns (`j01_tfmfn_<name>`, `j02_splitfn_<name>`); each `j51`-`j99`
-  is one AIDataSet (`j51_welldocglucose_aidata/t01_aidatastore_materialize`),
+  is one AIDataSet (`j51_cgmglucose_aidata/t01_aidatastore_materialize`),
   with its own number, matching no raw dataset Job. Its
   `src/config-defaults.yaml` lists every dataset it merges
   (`record_set_names:`).

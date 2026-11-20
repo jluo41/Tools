@@ -13,7 +13,7 @@ live here: every session that changes a page reads this file first (root AGENTS.
 **Rule:** A page never says an item's state in words ("Status: running", "not signed yet") or shows a tally ("6 to fix", "3 of 7 written"); an emoji mark, a group, a fold or a button shows it.
 **Why:** Pages carried "Status:" lines, "N of M" progress pills and check tallies that JL had to read and re-read.
 **Class:** a state or count written as text in page code or in what page code renders.
-**Cases:** ✅ shared section bars (`ui_parts.word_span`) · ⬜ Project faces rendered as text (WellDoc Proj13 "Status : Planning phase") · ⬜ Paper delivery line ("status: ready") · ⬜ every theme, every running SPACE (scanner)
+**Cases:** ✅ shared section bars (`ui_parts.word_span`) · ⬜ Project faces rendered as text (a Project face "Status : Planning phase") · ⬜ Paper delivery line ("status: ready") · ⬜ every theme, every running SPACE (scanner)
 **Check:** no visible "Status:"/"State:" sentence or "N of M <thing>" tally on any page a running server serves.
 **Run:** `python3 plugins/haipipe-toolkit/skills/1_base/workbench/haipipe-ui/scripts/page_words.py --running --max 30`
 **Status:** open
@@ -53,12 +53,12 @@ live here: every session that changes a page reads this file first (root AGENTS.
 
 ## A04 · Every link to a page lands on the focus page, never the old tabbed frame
 
-> "the fucking old style" (JL 261118, opening http://<host>:5607/w/b12_reach_dataset_setup; relayed by Proj-JHU-REACH)
+> "the […] old style" (JL 261118, opening http://<host>:<port>/w/b12_<block>; relayed by a Project session)
 
 **Rule:** `/w/<block>`, `/b/<block>` and any bare `/_board/workbench?path=…` address open the focus page (`layout=focus`); the old tabbed frame opens only on an explicit `layout=frame` or its own tab, sub, view or format keys.
 **Why:** `home_boards.frame_url` built the short route without `layout=focus`, and `frame_view` drew the old frame for every address that did not say focus.
 **Class:** an address that reaches the retired frame by default.
-**Cases:** ✅ `/w/<block>` and `/b/<block>` (`frame_url`) · ✅ Block links on Home (`home_boards.py:302`) · ✅ any bare `?path=` link anywhere (`frame_view` default) · ✅ WellDoc 5602 checked live · ⬜ REACH 5607 and other servers until restarted
+**Cases:** ✅ `/w/<block>` and `/b/<block>` (`frame_url`) · ✅ Block links on Home (`home_boards.py:302`) · ✅ any bare `?path=` link anywhere (`frame_view` default) · ✅ one SPACE's server checked live · ⬜ other servers until restarted
 **Check:** the short route's URL carries `layout=focus`; a bare address renders the focus page; `layout=frame` still renders the old frame.
 **Run:** `cd plugins/haipipe-toolkit/servers && uv run -q --python 3.13 --with pytest --with pyyaml python -m pytest -q _host/tests/test_workbench_short.py workbench/tests/test_focus_runs.py -k "route"`
 **Status:** solved 261118

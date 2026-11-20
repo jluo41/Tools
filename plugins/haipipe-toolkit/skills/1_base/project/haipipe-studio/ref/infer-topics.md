@@ -65,7 +65,7 @@ The reading: 14 Jobs, 310 Tasks; kinds `profile` 281 · `intake` 14 · `source` 
 topic                          its ground
 s01-table-profile              281 profile Tasks: What is one row? · Whose data, and when? · What does each
                                column hold? · What should Source watch out for? · Where from, how read?
-s02-raw-families               raw-family: welldoc_flat_csv 241 · metric_csv_bundle 26 · aireadi 20 · xml 7 ·
+s02-raw-families               raw-family: vendor_flat_csv 241 · metric_csv_bundle 26 · aireadi 20 · xml 7 ·
                                image_plus_csv 5 · excel 4 · single_flat_csv 3; raw_rules.md
 s03-source-handoff             14 source Tasks: ready_for_sourcefn_review 11 · blocked 3 (j52, j53, j96)
 s04-drop-intake                14 intake Tasks: the files, the family's missing tables, changed since?

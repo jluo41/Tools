@@ -1,4 +1,4 @@
-"""Receipt dialects the Task Workbench must read (REACH-SPACE, 261005).
+"""Receipt dialects the Task Workbench must read (another SPACE, 261005).
 
 A Databricks Run is a `.cmd` ticket whose receipt says `status: ok`; an extraction keeps
 its row-level output on the server and lists it under `outputs:`; a laptop selftest may

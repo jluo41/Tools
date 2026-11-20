@@ -9,7 +9,7 @@ the work got, costs him a read and goes stale.
 ## 2. Now
 AGENTS.md § Page words states the rule, and a memory holds it, but nothing checks a served page. A scan of every
 running workbench (261118, `page_words.py --running --max 30`, 300 pages) still found "Status : Planning phase"
-on WellDoc's Proj13 Project page and "status: ready" in a Paper delivery line.
+on a Project page and "status: ready" in a Paper delivery line.
 
 ## 3. Gap
 - The rule lived in prose (AGENTS.md); page code is written by many sessions that never re-read it.

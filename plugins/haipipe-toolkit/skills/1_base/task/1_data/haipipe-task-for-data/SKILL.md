@@ -228,7 +228,7 @@ b01_sourcestore/
   makes it partial.
 - A new SourceFn version is a new `r0N_build` Run in `t01` of the
   first dataset Job it serves, never a new Task or Job. Name it
-  `<Family>V<yymmdd>`, e.g. `WellDocDataV251226`. Older versions stay as Runs.
+  `<Family>V<yymmdd>`, e.g. `ExampleDataV251226`. Older versions stay as Runs.
 - Ticket suffix says where a Run executes: `.sh` on the local machine, `.cmd`
   on a remote server. In a PHI SPACE EVERY Run is a `.cmd` Databricks
   ticket: the ticket deploys, runs the Task's ONE entry
@@ -273,7 +273,7 @@ b01_sourcestore/
   b10_aidatastore/
   ├── j01_tfmfn_<name>/t01_tfmfn_<TfmFn>/                 r01_build
   ├── j02_splitfn_<name>/t01_splitfn_<SplitFn>/           r01_build
-  └── j51_<aidataset>_aidata/t01_aidatastore_materialize/ r01_<version>, e.g. j51_welldocglucose_aidata
+  └── j51_<aidataset>_aidata/t01_aidatastore_materialize/ r01_<version>, e.g. j51_cgmglucose_aidata
   ```
 
 - A RecordFn reads ONE ProcName. The record framework keeps only the patients

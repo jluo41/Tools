@@ -24,7 +24,7 @@ folder and file names only.
 | figure | · | none yet | |
 | deck | · | none yet | |
 | text | 8 | Physician Project-Personality-OpioidRx/cowork/b01_irb/delivery | files: .md |
-| empty | 5 | WellDoc ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist/j04_questions-before-visit_actionable-insights/delivery | no files |
+| empty | 5 | <SPACE> Project-X/design/Design-Example/j04_<job>/delivery | no files |
 
 ## Each delivery type
 
@@ -47,7 +47,7 @@ The level a `delivery/` belongs to: a Page (a paper Section, a draft), a Task, a
 |---|---:|---|
 | Page | 82 | Tools plugins/haipipe-toolkit/skills/1_base/draft/haipipe-draft/ref/pages-example/haipipe-page-guide/delivery |
 | Task | 32 | REACH Project-0-EHR-Description/discovery/b01_signal_evidence/j03_extraction_rules/t01_signal_rule_table/delivery |
-| Job | 7 | WellDoc ProjI-Insight-1-Wearable/design/Design-PreVisitChecklist/j04_questions-before-visit_actionable-insights/delivery |
+| Job | 7 | <SPACE> Project-X/design/Design-Example/j04_<job>/delivery |
 | Block | 34 | Tools Project-Ladder/work/b12_theme_design/delivery |
 | sNN | 10 | Tools Project-PageParts/work/b35_studio/s02-studio-pages/delivery |
 | Project | · | none yet |

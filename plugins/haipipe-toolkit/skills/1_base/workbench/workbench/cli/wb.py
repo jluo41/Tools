@@ -388,7 +388,7 @@ def launcher(root: Path) -> list[str]:
 def space_port(root: Path) -> int:
     """This SPACE's one port (JL 261012: "if things are sharing the same SPACE, they should be of the same port
     number"). It is settings.env's PORT, and a taken one stops here rather than drifting to the next free port:
-    drifting is how WellDoc came to run on 5602, 5622 and 5641 and Physician on six ports. A SPACE with no PORT
+    drifting is how one SPACE came to run on three ports and another on six. A SPACE with no PORT
     gets the first free port from 5602, written into its .server_config/settings.env so every later start uses it."""
     configured = load_server_config(root).get("PORT")
     if configured:
@@ -487,7 +487,7 @@ def resolve_path(arg: str, root: Path) -> Path | None:
 
 
 def other_space(arg: str, root: Path) -> tuple[Path, Path] | None:
-    """A path that leaves this SPACE into another one (Physician-SPACE/Tools links to ../Tools-SPACE):
+    """A path that leaves this SPACE into another one (a SPACE's Tools links to ../Tools-SPACE):
     that SPACE's root and the folder, so it opens on that SPACE's own host."""
     for base in (Path.cwd(), root):
         candidate = (base / arg).resolve()
@@ -499,7 +499,7 @@ def other_space(arg: str, root: Path) -> tuple[Path, Path] | None:
 
 
 def by_name(name: str, found: list[Place]) -> list[Place]:
-    """Places whose folder name is exactly `name` (b01_irb, Project-Samsung)."""
+    """Places whose folder name is exactly `name` (b01_irb, Project-Example)."""
     return [p for p in found if Path(p.path).name.lower() == name.lower()]
 
 
@@ -553,7 +553,7 @@ def main(argv: list[str] | None = None) -> int:
     result: dict = {"query": query, "root": root.name}
 
     folder = resolve_path(query, root) if query else root
-    if folder is None and (other := other_space(query, root)):     # /wb Tools from Physician-SPACE
+    if folder is None and (other := other_space(query, root)):     # /wb Tools from another SPACE
         root, folder = other
         result["root"] = root.name
     ranked: list[Place] = []

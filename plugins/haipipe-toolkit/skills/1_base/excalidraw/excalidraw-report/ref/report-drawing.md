@@ -277,7 +277,7 @@ doc.source(60, 1030, "j01_table_census/t01_table_catalog/results/r01_deid_derive
 doc.save("q01_table_list.excalidraw")
 ```
 
-Worked examples (Project-Samsung, b13_smartwatch_connector/studio/_build/):
+Worked examples (a cowork Project's b13_smartwatch_connector/studio/_build/):
 `build_connector_path.py` frame "Patient phone setup" (zones in visit order, steps 1 to 8 on
 one spine, coordinator tags) and `build_q03_status.py` (frame "Q03 status" with a one-row
 progress track, frame "Health Connect vs Samsung Health SDK" as a two-column comparison with

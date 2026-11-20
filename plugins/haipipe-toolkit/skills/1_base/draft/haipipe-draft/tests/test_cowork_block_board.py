@@ -1,5 +1,5 @@
 """A cowork Block (haipipe-cowork) checks clean: its Jobs are its tree, so ## Pages is optional, a Job face it lists is
-not a ghost, and a name not on disk still is (Proj-JHU-REACH b12, 261118)."""
+not a ghost, and a name not on disk still is (a Project's b12, 261118)."""
 import subprocess
 import sys
 from pathlib import Path

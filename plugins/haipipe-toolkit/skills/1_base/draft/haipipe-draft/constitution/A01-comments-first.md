@@ -21,7 +21,7 @@ Replying was a memory (`reply-comments-every-round`), not a step any tool showed
 - `src/folder_health.py`: calls `check_comments` after `check_threads`.
 - `tests/test_comment_health.py`: person note, AI note, reply, a note after a reply, closed.
 - haipipe-paper-draft `cli/section_workflow.py`: prints `next: 🙋 reply first, then fix: …` when a person comment waits.
-- Cases: ✅ health row · ✅ workflow line · ✅ t02 Comment 27 replied · ✅ REACH-SPACE Grant-AITC-Dementia is a frozen snapshot from 2026-11-13, answered in the live WellDoc copy, left out · ✅ Physician AgreeableRx t03 Comment 2 replied by its session · ✅ a State of done or closed is skipped.
+- Cases: ✅ health row · ✅ workflow line · ✅ t02 Comment 27 replied · ✅ a Grant Page in another SPACE is a frozen snapshot from 2026-11-13, answered in its live copy, left out · ✅ another Paper's t03 Comment 2 replied by its session · ✅ a State of done or closed is skipped.
 - Run: `python3 -m pytest -q tests/test_comment_health.py` → 2 passed.
 
 ## 6. Never again

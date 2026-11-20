@@ -1,6 +1,6 @@
 # A04 · Every link to a page lands on the focus page, never the old tabbed frame
 
-> "the fucking old style" (JL 261118, opening /w/b12_reach_dataset_setup on REACH 5607; relayed by Proj-JHU-REACH)
+> "the […] old style" (JL 261118, opening /w/b12_<block> on its SPACE's port; relayed by a Project session)
 
 ## 1. Need
 A short link to a Block (`/w/<block>`, `/b/<block>`) opens the page JL works on: the focus page with its
@@ -26,9 +26,9 @@ and every bare `?path=` link, fell through to `frame.render`: Guide · Studio ·
 - `servers/workbench/home/home_boards.py`: `frame_url` adds `&layout=focus`
 - `servers/workbench/page/frame_view.py`: bare address renders the focus page
 - `_host/tests/test_workbench_short.py`, `workbench/tests/test_focus_runs.py`: expect focus; frame on `layout=frame`
-Live, WellDoc 5602 (restarted): `/w/b01_fairglucose_personalize` → `…&layout=focus`; bare `?path=` → focus;
+Live, a SPACE's server (restarted): `/w/b01_<block>` → `…&layout=focus`; bare `?path=` → focus;
 `&layout=frame` → old frame. Suites: 621 passed.
-Cases: ✅ short routes · ✅ Home Block links · ✅ any bare link · ⬜ REACH 5607 and others until restarted.
+Cases: ✅ short routes · ✅ Home Block links · ✅ any bare link · ⬜ other servers until restarted.
 
 ## 6. Never again
 - The default is now the focus page, so a new link written without `layout` cannot reach the old frame.

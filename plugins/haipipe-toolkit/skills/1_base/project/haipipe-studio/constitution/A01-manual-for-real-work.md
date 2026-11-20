@@ -1,9 +1,9 @@
 # A01 · A topic about real work is a manual too
 
-> "make the studio like a things like manual to show how things work. we can help people to understand what is the progress/" (JL 261118, the Obsidian LiveSync setup)
+> "make the studio like a things like manual to show how things work. we can help people to understand what is the progress/" (JL 261118, a note-sync setup)
 
 ## 1. Need
-JL set up Obsidian LiveSync (CouchDB on the Mac Studio, a Cloudflare tunnel, three devices). He wanted one
+JL set up a note sync (a database on one machine, a tunnel, three devices). He wanted one
 Studio topic that a newcomer opens to learn how a note travels between devices and how far the setup is.
 
 ## 2. Now
@@ -27,7 +27,7 @@ running work (a service, a setup) therefore had no allowed place to say where th
 - `s01-how-livesync-works/`: Design A draws the real path; 10 progress steps
 
 Cases: ✅ b01_livesync s01 (A7) · ⬜ other Studio topics about a service or setup, not audited.
-Run: `grep` for couchdb.jjluo.com, obsidian_vault_2026 and "progress, live" in the s01 canvas; `constitution.py --check` ✅ (261118).
+Run: `grep` for sync.example.test, notes_vault and "progress, live" in the s01 canvas; `constitution.py --check` ✅ (261118).
 
 ## 6. Never again
 The constitution line at the top of `haipipe-studio/SKILL.md` makes every agent read A01 before the First

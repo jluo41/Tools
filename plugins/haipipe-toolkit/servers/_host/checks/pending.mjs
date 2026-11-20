@@ -78,7 +78,7 @@ await cmd('Network.enable'); await cmd('Page.enable'); await cmd('Runtime.enable
 /* the page pane is the frame a reader is actually looking at, and the one whose
    scripts post to /_board/activity */
 const page = await out(
-  `ls "${process.env.HOME}/Desktop/Physician-SPACE${BOARD}"/*/[QS]*.html 2>/dev/null | head -1`);
+  `ls "${process.env.SPACE_ROOT || process.cwd()}${BOARD}"/*/[QS]*.html 2>/dev/null | head -1`);
 const rel = page ? page.split('/board/')[1] : 'index.html';
 const url = `${HOST}${BOARD}/${rel}${rel === 'index.html' ? '?pane=index' : '?pane=page'}`;
 

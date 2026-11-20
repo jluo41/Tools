@@ -25,7 +25,7 @@ A work Run's result sits in one of two places; `cards.py` finds either:
 <project>/work/bNN_<block>/jNN_<job>/results/tNN_<task>/rNN_<run>/          the Job keeps its Tasks' Results
 ```
 
-Tested on `Project-Samsung` `b51.j02.t01.r01` (the first) and `Proj32-CGM-Event-FixLenVec` `b04.j04.t02.r01`
+Tested on two Projects' Runs, `b51.j02.t01.r01` (the first) and `b04.j04.t02.r01`
 (the second).
 
 ## What an item holds

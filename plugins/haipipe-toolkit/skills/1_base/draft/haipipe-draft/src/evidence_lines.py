@@ -64,7 +64,7 @@ def _local_run_name(page_src: Path, compact: str, run_kind: str) -> str:
     """The Run's ticket stem looked up in the Page's own Project and world first.
 
     A compact address is not unique across a SPACE: `b01j01t01r01` is a census Run in
-    one Project's `tasks/` and a Paper Run in another's `discoveries/` (REACH-SPACE
+    one Project's `tasks/` and a Paper Run in another's `discoveries/` (another SPACE,
     261005), and the SPACE-wide registry keeps only one of them. An Execution Run lives
     in `tasks/`, a Discovery Run in `discoveries/`; '' when the Project has no single match.
     """

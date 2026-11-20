@@ -17,7 +17,10 @@ include:
   - plugins/haipipe-toolkit/skills/1_base/draft          # the host imports its src/; insight's page check is its agent
   - plugins/haipipe-toolkit/skills/1_base/display
   - plugins/haipipe-toolkit/skills/1_base/evidence
-  - plugins/haipipe-toolkit/skills/1_base/task           # the Task contract and every type family it routes to
+  - plugins/haipipe-toolkit/skills/1_base/task/README.md
+  - plugins/haipipe-toolkit/skills/1_base/task/haipipe-task       # the Task contract and its ticket
+  - plugins/haipipe-toolkit/skills/1_base/task/1_data             # the data family a DataPrep step is
+  - plugins/haipipe-toolkit/skills/1_base/task/agents
   - plugins/haipipe-toolkit/skills/2_theme/insight
   - plugins/haipipe-toolkit/skills/2_theme/design
   - plugins/haipipe-toolkit/skills/2_theme/work           # its workbench serves a work Block, such as a data maker
@@ -72,6 +75,8 @@ exclude:
   # the share door publishes a workbench beyond this machine; a target that leaves it out has none
   - plugins/haipipe-toolkit/skills/1_base/workbench/workbench/cli/wb_share.py
   - plugins/haipipe-toolkit/servers/_host/tests/test_share.py
+  # the Task family catalogue: a target carries the contract and its data family only
+  - plugins/haipipe-toolkit/skills/1_base/task/haipipe-task/tests/test_type_contracts.py
   - plugins/haipipe-toolkit/servers/_host/live/share.py          # the host runs without it and never shares
   - plugins/haipipe-toolkit/skills/1_base/workbench/workbench/tests/test_wb_share.py
   # the source's development history (who asked, which other projects); a target carries the working skills

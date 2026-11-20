@@ -83,7 +83,7 @@ class TaskFolderVocabularyTest(unittest.TestCase):
             if "tests" in path.parts or "__pycache__" in path.parts or path.name == "CHANGELOG.md":
                 continue                                  # the changelog records what things were called
             text = self.read(path)
-            # a real folder name in a code span (WellDoc's `work/_legacy/...`) is a path, not wording
+            # a real folder name in a code span (a SPACE's `work/_legacy/...`) is a path, not wording
             text = re.sub(r"`[^`\n]*/[^`\n]*`", lambda m: " " * len(m.group()), text)
             for label, pattern in patterns.items():
                 for match in pattern.finditer(text):

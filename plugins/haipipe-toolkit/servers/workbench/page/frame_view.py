@@ -56,7 +56,7 @@ def renamed(root: Path, raw: str) -> str:
 
 def _blocks(root: Path, depth: int = 4) -> list:
     """Block folders under root (bNN_* with a face), shallow first; private and old folders skipped, and
-    a link to a folder outside the root (WellDoc's Tools -> ../Tools-SPACE, 261009), which no path= reaches."""
+    a link to a folder outside the root (a SPACE's Tools -> ../Tools-SPACE, 261009), which no path= reaches."""
     found, frontier, top = [], [root], root.resolve()
     for _ in range(depth):
         nxt = []

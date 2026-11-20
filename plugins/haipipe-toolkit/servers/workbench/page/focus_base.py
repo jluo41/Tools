@@ -320,7 +320,7 @@ GOAL_WORD = {"SPACE": "Mission", "Folder": "Mission", "Project": "Mission", "The
 
 def band_title(title: str) -> str:
     """A band's name with its first letter raised, past any emoji: "🧠 heads" -> "🧠 Heads". A name whose first letter
-    is already a capital stays as written: "WellDoc datasets", "AI-READI"."""
+    is already a capital stays as written: "Example datasets", "AI-READI"."""
     return re.sub(r"^([^A-Za-z]*)([a-z])", lambda m: m[1] + m[2].upper(), title.strip())
 
 

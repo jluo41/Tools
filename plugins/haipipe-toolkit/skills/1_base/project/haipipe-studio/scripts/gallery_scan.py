@@ -21,12 +21,12 @@ import re
 from pathlib import Path
 
 DESK = Path(__file__).resolve().parents[7].parent           # the folder holding the SPACEs (Desktop)
-SPACES = ["Tools", "Physician", "DrFirst", "WellDoc", "REACH", "CDHAI", "HAIChat", "Knowledge"]
+SPACES = sorted(p.name[:-len("-SPACE")] for p in DESK.glob("*-SPACE") if p.is_dir())   # every SPACE beside Tools
 SKIP = {".git", "node_modules", "_old", "history", "result", "results", "passes", "_WorkSpace", ".venv", "__pycache__",
         "archive", "_archive", "site-packages", "board", "tests"}   # tests/: fixtures a test writes, never real sNN
 WORLDS = ["work", "paper", "insight", "cowork", "design", "labeling", "discovery", "ideation"]
 SNN = re.compile(r"^s\d+-")
-PROJ = r"^Proj"                                             # Project-X, and WellDoc's and Knowledge's Proj01-X
+PROJ = r"^Proj"                                             # Project-X, and some SPACEs' Proj01-X
 _cache: dict = {}
 
 

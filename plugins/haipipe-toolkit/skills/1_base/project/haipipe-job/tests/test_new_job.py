@@ -67,7 +67,7 @@ class NewJobTest(unittest.TestCase):
 
     def test_a_cowork_jobs_material_is_not_a_task(self):
         """A cowork Job keeps emails/, meetings/, materials/ and design/ beside its face and has no Tasks
-        (haipipe-cowork); an emails/emails.md is not a Task the ## Tasks list must name (Samsung b12, 261021)."""
+        (haipipe-cowork); an emails/emails.md is not a Task the ## Tasks list must name (a cowork Block, 261021)."""
         md = new_job.new_job(self.block, "pace", "Pace")
         for name in ("emails", "meetings", "materials", "design"):
             (md.parent / name).mkdir()

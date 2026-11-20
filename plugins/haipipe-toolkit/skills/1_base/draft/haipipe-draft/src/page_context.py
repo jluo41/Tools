@@ -136,7 +136,7 @@ def scan_related_rows(text, whole=False):
     """Return canonical rows plus malformed bullet rows and near-miss headings.
 
     ``whole`` scans a files record: no `## Files` gate; a Related row is read by
-    its grammar wherever it sits (detail under `- **Role**: related`, physician-space-21 shape)."""
+    its grammar wherever it sits (detail under `- **Role**: related`, a Paper session's shape)."""
     refs, findings = [], []
     in_files = whole
     in_related = whole

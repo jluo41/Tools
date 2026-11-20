@@ -52,7 +52,7 @@ entry and submodule pointer. Report both commits separately.
 ## Adopt an existing Project folder
 
 When the Project folder already exists in the workspace (a `workspace`
-Project becoming its own repo, first done for Project-Samsung on 2026-10-04),
+Project becoming its own repo, first done for a cowork Project on 2026-10-04),
 adopt it in place; never recreate or copy it:
 
 1. Scan what will be pushed: keys, passwords, participant data, files over

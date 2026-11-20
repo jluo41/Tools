@@ -8,11 +8,11 @@
 
 _meta:
   purpose: |
-    <e.g., Extract Prediabetes cohort tables from WellDoc Databricks catalog>
+    <e.g., Extract Prediabetes cohort tables from a Databricks catalog>
   note: |
     <e.g., Stage 1 — SQL extraction only; processing in stage2>
   input: |
-    <e.g., Databricks catalog welldoc_prod, schema claims, tables: encounters, medications, labs>
+    <e.g., Databricks catalog example_prod, schema claims, tables: encounters, medications, labs>
   output: |
     <e.g., _WorkSpace/0-RawDataStore/prediabetes/ — one parquet per table>
   skip_review: true
@@ -37,7 +37,7 @@ execution: <databricks|local>           # Pattern 1: databricks for stage1, loca
 # =============================================================================
 
 databricks:
-  catalog: <catalog_name>               # e.g. welldoc_prod
+  catalog: <catalog_name>               # e.g. example_prod
   schema: <schema_name>                 # e.g. claims
   volume: <volume_name>                 # e.g. raw_extracts
   volume_path: "/Volumes/<catalog>/<schema>/<volume>/<cohort>/"

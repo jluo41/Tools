@@ -1260,7 +1260,7 @@ def draw_explained(job: Path, out: Path, cfg: dict, source: str = "") -> tuple[P
         return ([""] + [str(b_.get("label", "")) for b_ in bars], rows_,
                 [first] + [(inner - first) / len(bars)] * len(bars), file_lines(ats, job.parent))
 
-    # JL's sketch (WellDoc-SPACE image.png, 261013): a wide, low frame; JOB at its top left; Task 1, 2, 3 each a step
+    # JL's sketch (a SPACE's image.png, 261013): a wide, low frame; JOB at its top left; Task 1, 2, 3 each a step
     # lower and further right; from each, one long line out through the frame's right edge to its result, outside,
     # level with it. Measured first (each row as tall as its step or its result), then the frame is made wide.
     d = Drawing()

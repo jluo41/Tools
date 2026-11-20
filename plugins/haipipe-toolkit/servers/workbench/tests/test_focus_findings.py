@@ -141,8 +141,8 @@ class FocusPageTest(fixtures.FocusPageCase):
             self.assertEqual(focus_page.answer_state(face, "Q01")[0], "partial")
 
     def test_band_title_raises_only_a_lowercase_first_letter(self):
-        for given, shown in (("coverage", "Coverage"), ("🧠 heads", "🧠 Heads"), ("the WellDoc datasets", "The WellDoc datasets"),
-                             ("WellDoc datasets", "WellDoc datasets"), ("AI-READI", "AI-READI"), (" public ", "Public")):
+        for given, shown in (("coverage", "Coverage"), ("🧠 heads", "🧠 Heads"), ("the Example datasets", "The Example datasets"),
+                             ("Example datasets", "Example datasets"), ("AI-READI", "AI-READI"), (" public ", "Public")):
             self.assertEqual(focus_page.band_title(given), shown)
 
     def test_findings_holds_the_forms_its_questions_name(self):

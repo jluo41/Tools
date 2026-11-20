@@ -7,7 +7,7 @@ The progress JL reads must be true at the moment he reads it, and the drawing mu
 
 ## 2. Now
 The first sketch B was typed by hand: "first upload 0 docs, stuck". Minutes later CouchDB held 476, then
-951, then 29,461 docs (curl `http://127.0.0.1:5984/obsidian_vault_2026`), so the drawing was wrong.
+951, then 29,461 docs (curl `http://127.0.0.1:5984/notes_vault`), so the drawing was wrong.
 
 ## 3. Gap
 A builder had no habit or helper to read the real state; numbers went in as literals in `sketch_b`. Reading
@@ -23,7 +23,7 @@ the state needs the CouchDB login from `deploy/.env`, with the risk of drawing i
 - `s01-how-livesync-works/sketch_how_livesync_works.py`: `probe()`, `steps()`; feeds Design B and Now
 
 Cases: ✅ b01_livesync s01 · ⬜ Job results topics (job_results.py reads disk already, not audited).
-Run: no "password" in any .excalidraw under Project-Obsidian-Sync, and "live 26" stamp in s01; ✅ (261118).
+Run: no "password" in any .excalidraw under Project-Notes-Sync, and "live 26" stamp in s01; ✅ (261118).
 Found on the way: Cloudflare answered 403 to Python's default User-Agent; the probe sends one curl uses.
 
 ## 6. Never again

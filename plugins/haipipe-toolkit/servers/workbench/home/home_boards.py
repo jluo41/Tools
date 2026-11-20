@@ -132,7 +132,7 @@ def project_matches(card: dict[str, object], wanted: str) -> bool:
 
 def frame_url(rel: str) -> str:
     """The focus page's long address for a Block folder, SPACE-relative (what `/w/<block>` and `/b/<block>` open).
-    The old tabbed frame opens only on an explicit `layout=frame` (Proj-JHU-REACH report, JL 261118)."""
+    The old tabbed frame opens only on an explicit `layout=frame` (a Project session's report, JL 261118)."""
     return "/_board/workbench?path=" + quote(rel, safe="/") + "&layout=focus"
 
 

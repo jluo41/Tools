@@ -1,6 +1,6 @@
 """A paper's workflow as one drawing: its Sections in reader order, the displays they carry, and the dates to the send.
 
-Asked 261019 on Physician-SPACE's Project-LLMRec-Physician (JL: "你觉得我们需要一个 plan 吗？haipipe-paper-plan /
+Asked 261019 on a Paper Project (JL: "你觉得我们需要一个 plan 吗？haipipe-paper-plan /
 plan for the data flow and plan for the paper flow"; "please think about to make the s03 to be the paper-dataflow, and
 s04 to be the s04-paper-workflow"). s03-paper-dataflow is the building map (workflow_drawing.py): how the data becomes
 each answer. This draws s04-paper-workflow: how the answers become the paper. Drawn the way excalidraw-story draws s02

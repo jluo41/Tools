@@ -65,7 +65,7 @@ carries one line near its top: `Read CONSTITUTION.md first; it wins over this fi
    - themes: Insight, Labeling, Design, Work, Paper, Cowork, Project
    - levels: SPACE, Project, Block, Job, Task, Run
    - surfaces: page, Studio drawing, skill doc, script, builder, test, generated output
-   - SPACEs: every live SPACE that holds one (Physician, WellDoc, REACH, DrFirst, jluo41-repo, Tools)
+   - SPACEs: every live SPACE that holds one (each SPACE beside Tools, and Tools)
    - writers: every code path or agent that can produce the thing again
 6. **Write** the article(s) with Class and Cases; add the SKILL.md line if it is missing.
 7. **Fix every case**, not only the one JL saw; the writers too, so a rebuild cannot bring it back.

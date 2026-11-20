@@ -120,7 +120,7 @@ def _format_rows(sub_body):
     for ln in _fence_lines(sub_body):
         # a row starts with the desk's emoji, then an ALL-CAPS label; a
         # continuation line has no emoji, so "CI and P together…" is not a row
-        # (physician-space-21, JAMA SM03 V2, 260831)
+        # (a Paper session, a supplement's second version, 260831)
         m = re.match(r"^\s*[^\w\s]+\s*((?:[A-Z]{2,}(?:\s(?=[A-Z]{2,}))?)+)\s+(.*)$", ln)
         if m:
             lab = m.group(1).strip()
