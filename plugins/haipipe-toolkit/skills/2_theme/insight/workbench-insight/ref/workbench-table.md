@@ -52,6 +52,8 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Job | Runs | every view | Run the Job | haipipe-task-orchestrator-agent | haipipe-insight | none | Job › runs/`run-launch-j<NN>/` |
 | Job | Runs | power | Measure the power | haipipe-insight-agent | haipipe-insight | none | Job › runs/`run-power-j<NN>/` |
 | Job | Runs | hard | Run a segment | haipipe-task-orchestrator-agent | haipipe-insight | none | Job › runs/`rNN_<segment>/` |
+| Job | Runs | hard | Report the Runs | haipipe-insight-agent | haipipe-insight | none | Job › runs/`run-report-j<NN>/` |
+| Job | Runs | hard | Check the Runs' reports | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Job › runs/`run-check-report-j<NN>/` |
 | Job | Runs | compare | Compare with the Job before | haipipe-insight-agent | haipipe-insight-knowledge | none | Job › runs/`run-compare-j<prev>/` |
 | Job | Runs | propose | Propose questions | haipipe-insight-agent | haipipe-insight-question | none | Job › runs/`run-propose-j<NN>/` |
 | Job | Runs | close | Close the Job | haipipe-insight-agent | haipipe-insight-check | the close | Job › runs/`run-close-j<NN>/` |
@@ -64,6 +66,8 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Task | Work Details | every view | Run a segment | haipipe-task-orchestrator-agent | haipipe-insight | none | Task › runs/`rNN_<segment>/` |
 | Task | Work Details | every view | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-alignment-t<NN>/` |
 | Task | Runs | hard | Run a segment | haipipe-task-orchestrator-agent | haipipe-insight | none | Task › runs/`rNN_<segment>/` |
+| Task | Runs | hard | Report the Runs | haipipe-insight-agent | haipipe-insight | none | Task › runs/`run-report-t<NN>/` |
+| Task | Runs | hard | Check the Runs' reports | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-report-t<NN>/` |
 | Task | Runs | soft | Check alignment | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Task › runs/`run-check-alignment-t<NN>/` |
 | Question Book | Description | proposals | Take the proposals | haipipe-insight-agent | haipipe-insight-question | none | Question Book › runs/`run-triage-proposals-question-v<N>/` |
 | Question Book | Description | releases | Open a release | haipipe-insight-agent | haipipe-insight | none | Question Book › runs/`run-open-version-question-v<N>/` |
@@ -83,3 +87,5 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Step | Work Details | every view | Write the step's script | haipipe-task-creator-agent | haipipe-task-for-data | none | Step › runs/`run-write-script-t<NN>/` |
 | Step | Work Details | every view | Review the step's script | haipipe-task-reviewer-agent | haipipe-task-for-data | none | Step › runs/`run-review-script-t<NN>/` |
 | Prep Task | Runs | every view | Run the prep version | haipipe-task-orchestrator-agent | haipipe-insight | none | Job › t01_prep-vK › runs/`rNN_<segment>/` |
+| Prep Task | Runs | every view | Report the prep Run | haipipe-insight-agent | haipipe-insight | none | Job › t01_prep-vK › runs/`run-report-t01/` |
+| Prep Task | Runs | every view | Check the prep Run's report | haipipe-insight-reviewer-agent | haipipe-insight-check | none | Job › t01_prep-vK › runs/`run-check-report-t01/` |

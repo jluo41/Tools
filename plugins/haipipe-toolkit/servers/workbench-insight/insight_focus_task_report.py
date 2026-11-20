@@ -40,7 +40,7 @@ def _task_mindmap(tdir: Path, root: Path):
             for h in sorted(t["hard"], key=lambda h: h["run"]):
                 cut = str(h.get("partition") or h["run"].split("_", 1)[-1])
                 st = str(h.get("status") or "planned").lower()
-                found = (str(takes.get(cut) or "").strip() if st == "ok" else "") or (
+                found = (str(takes.get(cut) or "").strip() if st == "ok" else "") or P.report_headline(h) or (
                     FP.run_headline(Path(h["path"])) if st == "ok" else
                     str(h.get("reason") or "refused: too thin to answer") if st == "refused" else "⬜")
                 leaves.append(f"[{cut}] {found or 'ran; its page says what it found'}")
@@ -326,7 +326,7 @@ def _t_cuts(x: dict) -> str:
     for h in hard:
         cut = str(h.get("partition") or h["run"].split("_", 1)[-1])
         st = str(h.get("status") or "planned").lower()
-        take = str(takes.get(cut) or "").strip()
+        take = str(takes.get(cut) or "").strip() or P.report_headline(h)
         figs = _figures(x, h) if st == "ok" else []
         pics = "".join(f'<figure class=in-tab-fig><a href="/{esc(rel(p, root))}" data-pop="{esc(c)}" target=_blank rel=noopener>'
                        f'<img src="/{esc(rel(p, root))}" alt="{esc(c)}" loading=lazy></a></figure>' for p, c in figs[:2])

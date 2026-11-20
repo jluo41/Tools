@@ -1,5 +1,19 @@
 # haipipe-insight · version history
 
+## 3.13.0 · 2026-11-20 · a Run's report: what one Run's result shows
+
+- JL 261120 (workbench-insight T31): "after each task run, we can have the AI to summarize it a bit, to make it as a
+  report". Each hard Run gets `runs/rNN_<segment>/report.md`, beside `result/` so a rerun keeps it: a headline, a few
+  sentences each citing the result file its numbers come from, and a caveat. It pins `result-sha256`; a changed result
+  makes it stale. `ref/run_report.py` (todo · write · check · carry) lays it out from the writer's spec, refuses its
+  writer as checker, and traces every number into the cited file (or the checker confirms it, `--accept`). A Run whose
+  result equals an earlier Job's carries that checked report. The prep Run gets one too. `ref/run-report.md`.
+- The generated `result/report.md` of a Board Run is now `result/tables.md`; readers fall back to the old name.
+- `write_answer_page.py`: a division with no `takeaway:` takes its Run's report headline; a stale or returned report
+  stops the page. A Job of three versions is a Board Job there too.
+- Run types `report` and `check-report` at the Job, Task and Prep Task levels, with their cards and the gate
+  "a Run reported".
+
 ## 3.12.0 · 2026-11-20 · a Board Job pins three versions: data × prep × question
 
 - JL 261120 (workbench-insight T30): a data version is the raw data (`data <Board> data-vM --raw … --cut … --param …`);

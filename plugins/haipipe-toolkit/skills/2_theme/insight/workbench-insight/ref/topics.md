@@ -510,3 +510,35 @@ T30  a Board Job pins three versions           fixed
 - **Still owed**: the workbench pages for a Job of three versions (the Board page reads question Jobs by name);
   `insight_plan_c.py` does not list these Jobs yet.
 
+
+## T31 · A Run holds numbers and no reading of them · fixed
+
+- **From**: Report, Insight-Use-Case, 261120 (topic R). JL opened `j02_…/t06_D05_levels-too-thin-to-read/runs/r0N_*/result/`
+  and asked where the interpretation is: a Run holds csv, png, `metrics.json` and the generated `result/report.md` (the
+  ask and the tables, no reading). JL: "after each task run, we can have the AI to summarize it a bit, to make it as a
+  report". The only reading is the Task face (`answer:`, `how-sure:`, `takeaways:`), written once after every Run.
+- **Questions**: where does a Run's reading live, so that rerunning the ticket (which owns `result/`) keeps it and marks
+  it stale? Who writes it and who checks it, and how does a checker know each number is in the tables? What does the
+  generated `result/report.md` become? How does the Task's answer use the readings? Can a Run whose tables match an
+  earlier Job's carry its reading over? Does the prep Task's Run get one?
+- **Answer**: each hard Run gets `runs/rNN_<segment>/report.md`, beside `result/` (the ticket clears only `result/`,
+  so a rerun keeps it): a headline, a few sentences each citing the result file its numbers come from, a caveat. It
+  pins `result-sha256`; a changed result makes it stale (❗ on the Run's page; the Task's page refuses to be written
+  over it). `haipipe-insight/ref/run_report.py` (todo · write · check · carry): the maker writes a spec, the tool lays it
+  out; `check` refuses the maker, a stale report, and a number not in the file its sentence cites unless the checker
+  confirms it by hand (`--accept`); `--reject` returns it. A Run whose result equals an earlier Job's (same question,
+  segment, hash) carries that checked report. The prep Task's Run gets one (the card and the steps' checks). The
+  generated `result/report.md` is now `result/tables.md` (readers fall back). `write_answer_page.py` takes a missing
+  takeaway from the Run's headline, so `takeaways:` are the reports' headlines; the workbench shows the headline until
+  the page is written. Run types `report` and `check-report` (Job, Task, Prep Task), their cards and the gate
+  "a Run reported"; `ref/run-report.md`.
+- **Case**: `run_report.py todo` on the real j02 lists 163 Runs with no report (162 ok question Runs and t01's prep Run;
+  the 19 failed ones are skipped). On a copy of `t06_D05…/runs/r01_full`, a four-sentence report was written, refused
+  to its writer as checker, and passed by the reviewer with every number traced into `grouping_audit.csv`.
+- **Guard**: `haipipe-insight/tests/test_run_report.py` (nine tests: kept by a rerun, stale on a changed result, the
+  maker never checks, numbers traced, names not numbers, a refused Run's reason, carry, the prep Run, the Task page's
+  takeaways, the workbench's hash equal to the runner's); `servers/workbench-insight/tests/test_run_report_page.py`;
+  `run_cards.py --check`.
+- **Still owed**: the Board page does not list a Job of three versions yet (T30), so j02's Runs and their reports open
+  by link, not from the Board's Job list.
+

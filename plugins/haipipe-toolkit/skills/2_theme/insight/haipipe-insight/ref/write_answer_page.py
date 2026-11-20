@@ -37,6 +37,7 @@ question of the same Job (`(K01 · t05)`, refused when the Job has no such Task)
     divisions:
       - partition: full                           # one per hard Run, in rNN order, every Run named once
         takeaway: <one line: what this segment adds up to; a refused or planned Run says so>
+                                                  # omitted: its Run's report headline (ref/run-report.md)
         bullets: [{draft: <sentence>, file: rates_by_arm.csv}, ...]
       - title: What it rests on                   # titled sections after the segments (or alone, with no Run)
         bullets: [{draft: <sentence>, cite: K01}, ...]
@@ -88,6 +89,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_report  # noqa: E402  (a Run's report: ref/run-report.md)
+
 
 KEYS = {
     "task": {"answer-status", "answer", "how-sure", "opening", "figures", "divisions"},
@@ -136,7 +140,8 @@ def _board_task(page):
     from open_job import JOB
     board = page.parents[1] / "board.md"
     text = board.read_text(encoding="utf-8") if board.is_file() else ""
-    return bool(JOB.match(page.parent.name)) and bool(re.search(r"(?m)^board-kind:\s*insight-board\s*$", text))
+    three = re.match(r"^j\d+_data-v\d+_prep-v\d+_question-v\d+$", page.parent.name)    # a Job of three versions
+    return bool(JOB.match(page.parent.name) or three) and bool(re.search(r"(?m)^board-kind:\s*insight-board\s*$", text))
 
 
 def _front(md):
@@ -176,6 +181,11 @@ def build_task_page(page: Path, spec: dict) -> None:
         part = div.get("partition")
         if part:
             run, card = cards[part]
+            rep = run_report.state(run) if (run / "report.md").is_file() else ""
+            if rep in ("stale", "returned"):          # the Run's report is what the takeaway rests on (ref/run-report.md)
+                raise SystemExit(f"{run.name}/report.md is {rep}: write it again (run_report.py) before the page")
+            if not str(div.get("takeaway") or "").strip() and rep:
+                div["takeaway"] = str(run_report.front(run / "report.md").get("headline") or "")
             if not str(div.get("takeaway") or "").strip():
                 raise SystemExit(f"division {k} ({part}): its takeaway is missing")
             takeaways[part] = div["takeaway"].strip()

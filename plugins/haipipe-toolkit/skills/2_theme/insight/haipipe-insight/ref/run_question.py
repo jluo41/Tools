@@ -446,9 +446,9 @@ def md_table(df, limit=REPORT_ROWS):
     return "\n".join(lines)
 
 
-def write_report(r, receipt, out, rep):
-    """reports/<run>/report.md, the run's report: generated from the run, never written by hand
-    (the SPACE's AGENTS.md § Working rules). The point first (each need's lead lines), then its figures, then its tables."""
+def write_report(r, receipt, out, rep, name="report.md"):
+    """reports/<run>/report.md (a Board Run's result/tables.md), the run's tables: generated from the run, never
+    written by hand (the SPACE's AGENTS.md § Working rules). The point first (each need's lead lines), then its figures, then its tables."""
     lead = figures.lead
     q, part = r["q"], r["part"]
     status = receipt["status"] + (f" · {receipt.get('reason') or receipt.get('problem')}" if receipt["status"] != "ok" else "")
@@ -489,7 +489,7 @@ def write_report(r, receipt, out, rep):
     if power.is_file():
         lines += ["## Power, before any contrast", "", md_table(pd.read_csv(power)), ""]
     rep.mkdir(parents=True, exist_ok=True)
-    (rep / "report.md").write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
+    (rep / name).write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
 def _clear(folder):

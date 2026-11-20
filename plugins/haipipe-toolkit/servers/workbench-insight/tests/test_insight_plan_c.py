@@ -38,14 +38,14 @@ JOB = {"Description": (["Question Book", "Dataset"], ["Open the release ↗"]),
        # the Job's Work is its steps (b11 s12, 261022); a closed Job opens on its last, 6 · Close
        "Work Details": (["1 · Launch", "2 · Run", "3 · Write", "4 · Check", "5 · Compare", "6 · Close"], ["Close the Job"]),
        "Runs": (["All", "hard", "soft", "launch", "power", "compare", "propose", "close"],
-                ["Run the Job", "Measure the power", "Run a segment", "Compare with the Job before",
-                 "Propose questions", "Close the Job"]),
+                ["Run the Job", "Measure the power", "Run a segment", "Report the Runs", "Check the Runs' reports",
+                 "Compare with the Job before", "Propose questions", "Close the Job"]),
        "Delivery": ([], [])}
 TASK = {"Description": (["Question", "Records"], []),
         "Idea Studio": ([], ["Draw the question map", "Add a topic"]),  # the Block's Studio (b03 s02-D09)
         "Audience Report": (["Table", "Reading"], ["Write the Knowledge report", "Check a report"]),
         "Work Details": (["Partitions"], ["Run a segment", "Check alignment"]),
-        "Runs": (["All", "hard", "soft"], ["Run a segment", "Check alignment"]),
+        "Runs": (["All", "hard", "soft"], ["Run a segment", "Report the Runs", "Check the Runs' reports", "Check alignment"]),
         "Delivery": ([], [])}
 OLD_CLASSES = ("hl-row", "class=lead", "class=pill", "class=pane", "class=shell", "gateset")
 

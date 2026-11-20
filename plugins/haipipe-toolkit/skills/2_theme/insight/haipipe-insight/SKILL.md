@@ -3,7 +3,7 @@ name: haipipe-insight
 description: "The door for insight: a Question Book (the questions, a Job per release), a DataPrep Block (the tools that make the data versions, a Job per prep version) and an insight Board (one dataset, a Task per question, a Run per segment); scaffolds the ladder. Use to set up or update a Board or a DataPrep Block. Trigger: insight, Question Book, insight Board, DataPrep, data prep, DIKW, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.12.0"
+  version: "3.13.0"
   last_updated: "2026-11-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,6 +47,7 @@ Resolve the folder first, by its `board.md` (never its folder name), then load o
 | a Question Book (`board-kind: prototype`) | proposals · a version · a question | this door → the version's Run owner (§ Runs) |
 | an insight Board (`board-kind: insight-board`, or `prototype:` in board.md) | data versions · Jobs · readings | this door → the Board's Run owner |
 | a Board Job `jNN_question-vN-<slug>_data-vM/` or its Task `tNN_<L><NN>_<slug>/` | hard Runs · pages · compare | this door → `haipipe-insight-workflow` |
+| a Run's report: what one Run's result shows (`runs/rNN_<segment>/report.md`) | a Run | [`ref/run-report.md`](ref/run-report.md); `ref/run_report.py` |
 | a DataPrep Block (`board-kind: insight-dataprep`), a prep version `jNN_prep-vK_<slug>/` or a step `tNN_<step>/`; a Board Job of three versions `jNN_data-vM_prep-vK_question-vN/` | the data's code (no Runs) · a Job runs data × prep × question | [`ref/dataprep.md`](ref/dataprep.md); the runners `ref/run_prep.py` (t01) and `ref/run_job.py` (the questions); a step's script → `haipipe-task-for-data` |
 | a new topic | — | `insight_ladder.py prototype`, then `board` (ref/insight-ladder.md § Scripts) |
 | update, audit, bring an older Board up to date | Board · Question Book · Project | § Update below |
@@ -137,8 +138,9 @@ Laws
 
 - **The question owns its code**, and the code exists once: in the release that holds the question. A Board Job
   reads it from there (`run_job.py`), never a copy. A question's id is never reused; it keeps its `tNN` everywhere.
-- **Nothing generated is edited by hand**: a Run's `result/` (tables, figures, `runtime.yaml`, `report.md`), the
-  question map and `meta/status.md` are their generators'. Change the source, rerun the ticket.
+- **Nothing generated is edited by hand**: a Run's `result/` (tables, figures, `runtime.yaml`, `tables.md`), the
+  question map and `meta/status.md` are their generators'. Change the source, rerun the ticket. A Run's `report.md`,
+  beside `result/`, is an agent's reading of it, laid out and checked through `ref/run_report.py` ([`ref/run-report.md`](ref/run-report.md)).
 - **Another agent judges what an agent made**: questions, evidence plans, scripts and pages are reviewed or CHECKed
   in a fresh context, never by their maker.
 - **A person signs** a release, the segments, a Job's close and a Wisdom handoff: `signed: ✅ <YYMMDD>`, never a name

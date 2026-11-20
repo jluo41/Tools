@@ -92,6 +92,24 @@ def _task_parts(t: dict, root: Path) -> str:
         "<p class=mut>No segment runs: this question cites the answers below it.</p>"
 
 
+def _run_report(rundir: Path) -> str:
+    """The Run's report, an agent's reading of its result (runs/rNN_<segment>/report.md; haipipe-insight
+    ref/run_report.py), first on its page: the headline, its sentences each with the file it cites, the caveat. A mark
+    beside the heading: ✅ checked, ❗ returned or written before the result changed."""
+    rep = P.run_report(rundir)
+    if not rep:
+        return ""
+    check = rep["check"]
+    mark = " ❗" if rep["stale"] or check.startswith("❗") else " ✅" if check.startswith("✅") else ""
+    why = ('<p class=mut>The result changed after this was written: write it again.</p>' if rep["stale"] else
+           f'<p class=mut>{esc(check.split(": ", 1)[-1])}</p>' if check.startswith("❗") else "")
+    items = "".join(f'<li>{esc(str(s.get("text", "")))} <span class=mut>({esc(str(s.get("file", "")))})</span></li>'
+                    for s in rep["sentences"] if isinstance(s, dict))
+    return (f'<h2>Report{mark}</h2>{why}<p><b>{esc(rep["headline"])}</b></p>' + (f"<ul>{items}</ul>" if items else "")
+            + (f'<p><b>Caveat</b>: {esc(rep["caveat"])}</p>' if rep["caveat"] else "")
+            + (f'<p class=mut>Carried from <code>{esc(rep["carried"])}</code></p>' if rep["carried"] else ""))
+
+
 # ── a hard Run's own page, for the pop-out (/_board/insight-run?run=<its folder>) ──────────────
 def render_task_page(tdir: Path, root: Path) -> str:
     """One Task of a plan-C Job as a page: its answer (the face's fields and body), then each of its hard
@@ -109,7 +127,7 @@ def render_task_page(tdir: Path, root: Path) -> str:
         body.append('<p class=mut>The answer is not written yet: run-write writes it here from the runs below.</p>')
     rows = []
     for run in t["hard"]:
-        leads = _leads(run.get("report"))
+        leads = [P.report_headline(run)] if P.report_headline(run) else _leads(run.get("report"))
         rows.append((_run_link(run, root, run["run"]), _st(run.get("status")), esc(run.get("n", "—")),
                      esc(_cap(leads[0])) if leads else ""))
     if rows:
@@ -118,8 +136,8 @@ def render_task_page(tdir: Path, root: Path) -> str:
 
 
 def render_run_page(rundir: Path, root: Path) -> str:
-    """One hard Run as a page: where it is, its card, its generated report (the point, its figures, its
-    tables) first, then every table it wrote, its receipt and its other files. Read-only."""
+    """One hard Run as a page: where it is, its card, its report (an agent's reading) first, then its generated tables
+    (the point, its figures, its tables), every table it wrote, its receipt and its other files. Read-only."""
     from live.paper import _RESULT_PAGE, _csv_view, _md_view
     from urllib.parse import quote
     rundir, root = Path(rundir).resolve(), Path(root).resolve()
@@ -137,12 +155,13 @@ def render_run_page(rundir: Path, root: Path) -> str:
     body = [f'<h1>{esc(card.get("target", rundir.parent.parent.name))} · {esc(rundir.name)}</h1>'
             f'<p class="where mut"><code>{esc(rel(rundir, root))}</code></p><p>{esc(facts)}</p>',
             f'<div class=links>{" · ".join(links)}</div>']
-    report = res / "report.md"
+    body.append(_run_report(rundir))
+    report = next((f for f in (res / "tables.md", res / "report.md") if f.is_file()), res / "tables.md")
     if report.is_file():
-        body.append('<h2>Report</h2><div class=doc>'
+        body.append('<h2>Tables</h2><div class=doc>'
                     + _md_view(report.read_text(encoding="utf-8", errors="replace"), base=raw(report).rsplit("/", 1)[0] + "/") + "</div>")
     else:
-        body.append('<p class=mut>Not run yet: no report.</p>')
+        body.append('<p class=mut>Not run yet.</p>')
     receipt = res / "runtime.yaml"
     if receipt.is_file():
         body.append(f'<details><summary><b>Receipt</b></summary><pre>{esc(receipt.read_text(encoding="utf-8", errors="replace")[:4000])}</pre></details>')

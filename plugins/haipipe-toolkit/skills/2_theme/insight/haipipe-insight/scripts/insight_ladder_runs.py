@@ -55,7 +55,7 @@ def _default_target(folder: Path, level: str, rtype: str) -> str:
         return TASK.match(name).group(2).lower()                   # k01
     if level == "job":
         return name.split("_", 1)[0]                               # j03
-    if level == "task":
+    if level in ("task", "preptask"):
         return name.split("_", 1)[0]                               # t03
     sys.exit(f"a {level} Run needs its target: run {name} {rtype} <target>")
 

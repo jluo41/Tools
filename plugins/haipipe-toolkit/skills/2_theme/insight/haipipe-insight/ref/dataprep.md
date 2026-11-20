@@ -90,7 +90,8 @@ The rules
    `runtime.yaml`, the exact scripts and their sha256 in `provenance/`, the experiment card, each step's light
    `metrics.json`, and `heavy.yaml`. On success it writes the ready folder `<store>/<dataset>_data-vM@prep-vK/` and the
    Job face's `ready:`; a done Run is never run again. The question Runs read `ready:` and are refused until it is
-   there. A later Job with the same data and prep versions reuses the ready folder, its t01 done. `drop-datajob <Job>`
+   there. A later Job with the same data and prep versions reuses the ready folder, its t01 done. The prep Run gets
+   a report like any Run: the card and each step's checks in a few sentences ([run-report.md](run-report.md)). `drop-datajob <Job>`
    undoes a Job of the withdrawn shape (`jNN_prep-vK-<slug>_data-vM/`, a Task per step).
 7. **The experiment card comes first.** Each prep version's first step reads only `ctx.raw`: the export's rows and the
    documents that describe the experiment. It writes `experiment_card.json` and `.md` in its Result, aggregates only:

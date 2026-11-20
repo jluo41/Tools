@@ -94,8 +94,43 @@ def run_card(run_dir: Path) -> dict:
     if card["status"] == "refused" and not card.get("reason"):       # a card written before run_job.py kept the reason
         card["reason"] = str(_yaml(run_dir / "result" / "runtime.yaml").get("reason") or "")
     card["path"] = run_dir
-    card["report"] = run_dir / "result" / "report.md" if (run_dir / "result" / "report.md").is_file() else None
+    card["report"] = next((f for f in (run_dir / "result" / "tables.md", run_dir / "result" / "report.md")  # generated;
+                           if f.is_file()), None)                                     # report.md before 261120
+    card["run_report"] = run_report(run_dir)
     return card
+
+
+# ── a Run's report: an agent's reading of its result, beside result/ (workbench-insight T31) ──────────
+def result_hash(run_dir: Path) -> str:
+    """The result's content, as haipipe-insight ref/run_report.py result_hash pins it (a test keeps the two equal)."""
+    import hashlib
+    rec = _yaml(run_dir / "result" / "runtime.yaml")
+    if rec.get("tables_sha256"):
+        return str(rec["tables_sha256"])
+    h = hashlib.sha256(f"{rec.get('status')}\n{rec.get('reason') or ''}\n".encode())
+    res = run_dir / "result"
+    for f in sorted(res.rglob("*")) if res.is_dir() else []:
+        if f.is_file() and f.suffix in (".csv", ".json") and "provenance" not in f.relative_to(res).parts:
+            h.update(f.relative_to(res).as_posix().encode() + b"\n" + f.read_bytes())
+    return h.hexdigest()
+
+
+def run_report(run_dir: Path) -> dict | None:
+    """runs/rNN_<segment>/report.md: {path, headline, sentences, caveat, check, carried, stale}; None when unwritten.
+    A rerun keeps it (the ticket clears only result/); a result that changed since makes it stale."""
+    md = run_dir / "report.md"
+    fm = front(md) if md.is_file() else {}
+    if not str(fm.get("headline") or "").strip():
+        return None
+    return {"path": md, "headline": str(fm["headline"]).strip(), "sentences": fm.get("sentences") or [],
+            "caveat": str(fm.get("caveat") or ""), "check": str(fm.get("check") or ""),
+            "carried": str(fm.get("carried-from") or ""), "stale": str(fm.get("result-sha256")) != result_hash(run_dir)}
+
+
+def report_headline(run: dict) -> str:
+    """A Run card's report headline, '' when it has none or the result changed after it was written."""
+    rep = run.get("run_report")
+    return rep["headline"] if rep and not rep["stale"] else ""
 
 
 def runs(folder: Path) -> list:

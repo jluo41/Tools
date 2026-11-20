@@ -7,7 +7,8 @@ the one runner of their tickets (`runs/rNN_<segment>/run.sh`, written by open_jo
 
 It reads the question and its script from the release (never a copy), the cut from the release's
 partitions.md, the extract from the data version, and writes only its Run: `result/` (the tables, their
-figures, `runtime.yaml`, the generated `report.md`) and the Run's card `run.yaml`. The statistics, the
+figures, `runtime.yaml`, the generated `tables.md`) and the Run's card `run.yaml`; the Run's `report.md`,
+beside `result/`, is an agent's reading of it (ref/run_report.py), kept across reruns. The statistics, the
 power check before any contrast and the gate are run_question.py's, unchanged.
 
 Exit 0 on ok or refused (a refusal is an answer), 1 on failed.
@@ -207,9 +208,9 @@ def run(task, stem):
     same = receipt["status"] == "ok" and old_since and receipt.get("tables_sha256") == old_sha
     receipt["content_since"] = old_since if same else receipt["ended"]
     write()
-    RQ.write_report(r, receipt, out, out)                    # the generated report, beside its results
-    report = out / "report.md"
-    report.write_text(report.read_text(encoding="utf-8").replace(f"../../results/{stem}/", "")
+    RQ.write_report(r, receipt, out, out, "tables.md")       # the generated tables; the Run's report.md beside
+    tables = out / "tables.md"                               # result/ is written by an agent (ref/run_report.py)
+    tables.write_text(tables.read_text(encoding="utf-8").replace(f"../../results/{stem}/", "")
                       .replace("ref/run_question.py", "ref/run_job.py"), encoding="utf-8")
     card.update(run=stem, kind="hard", type="cross" if partition == "cross" else "partition", partition=partition,
                 target=r["task"].name, question=r["qid"], release=r["release"], data=r["data"],

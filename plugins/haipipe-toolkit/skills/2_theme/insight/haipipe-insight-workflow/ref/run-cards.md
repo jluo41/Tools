@@ -163,25 +163,25 @@ base frame adds its own (Add a topic); a "… ↗" link opens a file and makes n
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of data question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of data question a question in {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of information question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of information question a question in {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question a question in {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Job › Audience Report · ^run-write-t\d+$ · views current
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question a question in {folder} from its Runs' generated reports, a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question a question in {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Check a report · Job › Audience Report · ^run-check-t\d+$ · views current overall-report
 🧩 SKILL    haipipe-report
@@ -216,7 +216,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
+💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed; then run-report-j<NN> writes each Run's report.
 
 🔘 BUTTON   Measure the power · Job › Work Details · ^run-power-j\d+$ · views launch
 🧩 SKILL    haipipe-insight
@@ -240,19 +240,19 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of each data question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of each data question in {folder} not written yet, from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of each information question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of each information question in {folder} not written yet, from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of each knowledge question in {folder} not written yet, from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of each knowledge question in {folder} not written yet, from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Job › Work Details · ^run-write-t\d+$ · views write
 🧩 SKILL    haipipe-insight-wisdom
@@ -302,7 +302,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed.
+💬 PROMPT   /haipipe-insight run the Job {folder}: check power per segment first (run-power-j<NN>), then every Task's tickets runs/rNN_<segment>/run.sh, as run-launch-j<NN>; report each Run ok, refused (with its reason) or failed; then run-report-j<NN> writes each Run's report.
 
 🔘 BUTTON   Measure the power · Job › Runs · ^run-power-j\d+$ · views power
 🧩 SKILL    haipipe-insight
@@ -315,6 +315,18 @@ the person's notes, what is running, what a person signs) over its result. `view
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight run one question of {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+
+🔘 BUTTON   Report the Runs · Job › Runs · ^run-report-j\d+$ · views hard
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}; carry first: run_report.py carry {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file its numbers come from, and its caveat (thin, refused, not checkable), saying no more than its question's level allows (ref/run-report.md), as run-report-j<NN>.
+
+🔘 BUTTON   Check the Runs' reports · Job › Runs · ^run-check-report-j\d+$ · views hard
+🧩 SKILL    haipipe-insight-check
+🤖 AGENT    haipipe-insight-reviewer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-check check each unchecked Run report of {folder} in a fresh context, as run-check-report-j<NN>: each sentence against its Run's tables, each number traced (python ref/run_report.py check <Run> --by haipipe-insight-reviewer-agent; a number it cannot find, confirm by hand and --accept, or --reject with why); never rewrite a report yourself.
 
 🔘 BUTTON   Compare with the Job before · Job › Runs · ^run-compare-j\d+$ · views compare
 🧩 SKILL    haipipe-insight-knowledge
@@ -340,25 +352,25 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight-data
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-data write the page of data question {folder} from its Runs' generated reports, a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-data write the page of data question {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Data level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Information report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-information
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-information write the page of information question {folder} from its Runs' generated reports, a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-information write the page of information question {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Information level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Knowledge report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-knowledge
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question {folder} from its Runs' generated reports, a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-knowledge write the page of knowledge question {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Knowledge level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Write the Wisdom report · Task › Audience Report · ^run-write-t\d+$
 🧩 SKILL    haipipe-insight-wisdom
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question {folder} from its Runs' generated reports, a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
+💬 PROMPT   /haipipe-insight-wisdom write the page of wisdom question {folder} from its Runs' checked reports (runs/rNN_<segment>/report.md), a part per segment, saying no more than the Wisdom level allows, as run-write-t<NN>; another agent checks it.
 
 🔘 BUTTON   Check a report · Task › Audience Report · ^run-check-t\d+$
 🧩 SKILL    haipipe-report
@@ -393,6 +405,18 @@ the person's notes, what is running, what a person signs) over its result. `view
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight run {folder} on one segment: runs/rNN_<segment>/run.sh (ref/run_job.py reads the question and script from the release, writes only result/ and run.yaml); a refusal is an answer.
+
+🔘 BUTTON   Report the Runs · Task › Runs · ^run-report-t\d+$ · views hard
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file its numbers come from, and its caveat, saying no more than its question's level allows (ref/run-report.md), as run-report-t<NN>.
+
+🔘 BUTTON   Check the Runs' reports · Task › Runs · ^run-check-report-t\d+$ · views hard
+🧩 SKILL    haipipe-insight-check
+🤖 AGENT    haipipe-insight-reviewer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-check check each unchecked Run report of {folder} in a fresh context, as run-check-report-t<NN>: each sentence against its Run's tables, each number traced (python ref/run_report.py check <Run> --by haipipe-insight-reviewer-agent; --accept a number confirmed by hand, or --reject with why).
 
 🔘 BUTTON   Check alignment · Task › Runs · ^run-check-alignment-t\d+$ · views soft
 🧩 SKILL    haipipe-insight-check
@@ -532,6 +556,18 @@ the person's notes, what is running, what a person signs) over its result. `view
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-insight run the prep Task of the Job {folder} (python ref/run_prep.py {folder}, or t01's own run.sh), as rNN_<dataset>: every step of its prep version in one Run on its data version's raw export, stopping at the first that refuses or fails; the ready folder it writes is what the Job's question Tasks read. Report each step's status and reason, never a row.
 
+🔘 BUTTON   Report the prep Run · Prep Task › Runs · ^run-report-t\d+$
+🧩 SKILL    haipipe-insight
+🤖 AGENT    haipipe-insight-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight write the report of the prep Run of {folder} (python ref/run_report.py todo {folder}), reading only its result/: the experiment card and each step's checks in a few sentences, each citing experiment_card.json or a step's steps/<step>/metrics.json, shapes and counts only, never a row (ref/run-report.md), as run-report-t01.
+
+🔘 BUTTON   Check the prep Run's report · Prep Task › Runs · ^run-check-report-t\d+$
+🧩 SKILL    haipipe-insight-check
+🤖 AGENT    haipipe-insight-reviewer-agent
+✍️ SIGNS    none
+💬 PROMPT   /haipipe-insight-check check the prep Run's report of {folder} in a fresh context, as run-check-report-t01: each sentence against the card and the steps' metrics, each number traced (python ref/run_report.py check <Run> --by haipipe-insight-reviewer-agent).
+
 ## Gates
 
 Each gate belongs to one level and one Run; the Run that passes it records it, and the scaffold refuses to go past
@@ -557,4 +593,7 @@ a prep version signed    Prep       run-sign-prep-v<N>          every step agree
                                                                 signed; the code's hash pinned
 a ready folder made      Job        t01's rNN_<dataset>         every step of the prep version done in order on the
                                                                 data version's raw export; the Job face's ready:
+a Run reported           Task       run-report-t<NN>,           each ok, refused or done Run's report.md written from
+                                    run-check-report-t<NN>      its result/ alone and checked by another agent: every
+                                                                number in the file it cites, or confirmed by hand
 ```

@@ -74,6 +74,13 @@ TYPES = {
     ("job", "propose"): ("haipipe-insight-question", "haipipe-insight-agent", "none", False),
     ("job", "overall"): ("haipipe-insight", "haipipe-insight-agent", "none", False),   # the Overall Report
     ("job", "close"): ("haipipe-insight-check", "haipipe-insight-agent", "a person", False),
+    # a Run's report beside its result/, written by one agent and checked by another (ref/run-report.md)
+    ("job", "report"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
+    ("job", "check-report"): ("haipipe-insight-check", "haipipe-insight-reviewer-agent", "none", False),
+    ("task", "report"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
+    ("task", "check-report"): ("haipipe-insight-check", "haipipe-insight-reviewer-agent", "none", False),
+    ("preptask", "report"): ("haipipe-insight", "haipipe-insight-agent", "none", False),
+    ("preptask", "check-report"): ("haipipe-insight-check", "haipipe-insight-reviewer-agent", "none", False),
     ("task", "partition"): ("haipipe-insight", "haipipe-task-orchestrator-agent", "none", True),
     ("task", "write"): ("haipipe-insight-<its level>", "haipipe-insight-agent", "none", False),
     ("task", "check"): ("haipipe-report", "haipipe-draft-check-agent", "none", False),

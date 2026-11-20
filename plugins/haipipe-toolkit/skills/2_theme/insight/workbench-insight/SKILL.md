@@ -53,7 +53,7 @@ figure, a click to its section. The figures are the X pages' `figures:`, drawn b
 `ref/overall_figures.py` into `delivery/<job>/figures/`; one not drawn yet says so. At the Board it is the latest
 Job's. No segment's table lists the X questions (`insight_views._overall`, `_figure`, `_board_overall`). Each Space reads files only: the Board's `board.md` (dataset, versions, prototype), the Question Book's releases
 (`release.yaml`, `partitions.md`, each question's `question.md`), a Job's face and `reports/vs-<prev>.md`, a Task's
-page and its Runs' `run.yaml` and `result/report.md`. A "… ↗" opens a file in the pop-out. The Question Book in `work/`
+page and its Runs' `run.yaml`, `report.md` (an agent's reading, shown first) and `result/tables.md`. A "… ↗" opens a file in the pop-out. The Question Book in `work/`
 opens in the work theme until a Question Book level is drawn (s21 lists its run types).
 
 
@@ -176,7 +176,7 @@ Sign the close   6 · Close, once every step before it is done: tick "I read wha
 Each re-reads the files and checks its gate before it writes (an unwritten page, a closed Job, a page a person wrote,
 a step still open: refused, nothing written). The route answers only a page of this host (its Origin) and never a
 read-only host. Board files carry no names: "a person". Everything else on the screen copies a prompt. The
-workbench never shows a row of data: counts, rates and the Runs' generated reports only.
+workbench never shows a row of data: counts, rates, the Runs' reports and their generated tables only.
 In a real browser: `servers/_host/checks/person_actions_browser.mjs`, on `person_actions_fixture.py`'s throwaway
 Projects.
 

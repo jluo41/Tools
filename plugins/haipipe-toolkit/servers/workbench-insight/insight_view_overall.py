@@ -89,13 +89,14 @@ def _q_work(q: dict, trail: list) -> str:
 
 def _takeaway(run: dict) -> str:
     """The takeaway of a question on one segment: its Task face's `takeaways: {<segment>: …}`, written by
-    run-write-<tNN> with the Task's page (a part per segment); '' until then."""
+    run-write-<tNN> with the Task's page (a part per segment); else its Run's report headline; '' until then."""
     path = Path(run.get("path") or "")
     task = path.parent.parent if path.parent.name == "runs" else None
     if task is None:
         return ""
     got = (P.front(task / f"{task.name}.md").get("takeaways") or {})
-    return str(got.get(run.get("partition"), "") or "") if isinstance(got, dict) else ""
+    said = str(got.get(run.get("partition"), "") or "") if isinstance(got, dict) else ""
+    return said or P.report_headline(run)                  # until the page is written, the Run's own report
 
 
 def _q_report(name: str, run, root: Path, cut: str, extra: str = "") -> str:

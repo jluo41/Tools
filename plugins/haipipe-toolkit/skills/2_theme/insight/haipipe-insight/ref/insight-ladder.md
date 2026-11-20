@@ -59,8 +59,9 @@ The two trees
         ├── tNN_<L><NN>_<slug>.md             THE PAGE: question · answer-status · answer · how-sure · check
         └── runs/
             ├── rNN_<segment>/              hard: run.sh (the ticket) · run.yaml · result/ (tables, figures,
-            │                                 partition_power.csv, runtime.yaml, report.md, provenance/)
-            └── run-<type>-t<NN>/             soft: write · check · pool · check-alignment
+            │                                 partition_power.csv, runtime.yaml, tables.md, provenance/) ·
+            │                                 report.md (an agent's reading of result/, ref/run-report.md)
+            └── run-<type>-t<NN>/             soft: write · check · pool · check-alignment · report · check-report
 ```
 
 **Names.** Both are special boards, named by their kind (JL 261008), side by side in `insight/` (JL 261109): the
@@ -167,7 +168,8 @@ The rules
 8. **A hard Run reads the release, never a copy.** `runs/rNN_<segment>/run.sh` runs `ref/run_job.py`: the
    question and its script from the release, the cut from its `partitions.md`, the extract from the data version.
    It writes only its Run: `result/` (the spec's tables, their figures, `partition_power.csv`, the `runtime.yaml`
-   receipt, the generated `report.md`, `provenance/`) and `run.yaml`. Power is checked before any contrast and the
+   receipt, the generated `tables.md`, `provenance/`) and `run.yaml`. Its `report.md`, beside `result/`, is written
+   after it by an agent and checked by another ([run-report.md](run-report.md)); a rerun keeps it and marks it stale. Power is checked before any contrast and the
    output gated against the spec (`ref/run_question.py`, unchanged). Heavy output goes to
    `_WorkSpace/ProjectResult/<Project>/<Board>/<Job>/<Task>/<run>/`.
 9. **Decided (261008): a kept question reruns on a code-moved Job.** Same script, same data, same tables: the
