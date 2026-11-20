@@ -28,6 +28,8 @@ T20  a new prep version cannot order its steps  fixed
 T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
 T22  a new prep version copies the Runs' notebooks  fixed
 T23  a description from another pull stops a dataset  fixed
+T24  a later step does not wait for the card    open
+T25  a signature does not freeze a called library  open
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -404,4 +406,24 @@ T23  a description from another pull stops a dataset  fixed
   with no stamp on either file, they are compared. A setting the rows cannot test is "not checkable", never passed.
 - **Case**: SMSR3Full builds, its card saying "nothing stated for this export (1 description from another pull)".
 - **Guard**: the rule, read by the step review (reviewer rule 5); the card worker is prep-v2's.
+
+## T24 · A later step does not wait for the experiment card · open
+
+- **From**: Report, Insight-Use-Case, 261120, from the prep-v2 review (topic L): "nothing makes a later step wait for
+  the experiment card. t02 builds even if t01 failed; only sign catches it."
+- **Questions**: should a dataset's later steps refuse while its card has not passed? Where is "passed" read from?
+- **Direction**: the card's two files reach the dataset's `@prep-vK` folder only when every check passes (rule 7), so a
+  later step's worker stops unless `<prepare_dir>/experiment_card.json` is there; rule 7 says so and the step review
+  checks it.
+- **Still owed**: the sentence in rule 7 and reviewer rule 5; prep-v3's workers.
+
+## T25 · A signature does not freeze a library a step calls · open
+
+- **From**: Report, Insight-Use-Case, 261120 (topic M): the prep hash covers `src/` and the step folders, not a
+  library a step calls (`code/haifn/fn_source/<SourceFn>.py`); each receipt records its sha256, but a change after the
+  signature goes unseen.
+- **Questions**: how does a step name a library it depends on? What does `sign` pin, and what does `audit` compare?
+- **Direction**: a step's face lists `libraries: [{path, sha256}]`; the prep hash covers those pins; the worker
+  refuses when a library's sha256 differs from its pin; `audit` row `libraries` names a pinned file that changed.
+- **Still owed**: the face key, the hash, the audit row and a test.
 
