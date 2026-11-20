@@ -1,12 +1,18 @@
 DataPrep: the code that turns a raw export into a folder ready for insight
 ==========================================================================
 
-(261116, redesigned 261120; workbench-insight topics T10-T26.) The ladder has three Blocks. The **Question Book**
-holds the questions' code, one signed question version at a time. The **DataPrep** Block holds the data's code: the
-chain of steps that turns a raw export into a folder ready for insight, one signed prep version at a time (JL 261120:
-"they are code only … the real data processing and real question processing are in the insight block"). The
-**insight Board** runs both. A data Job runs a prep version on the Board's raw export and makes the Board's next data
-version; a question Job runs a question version on a data version. Each Job moves one clock.
+(261116, redesigned 261120; workbench-insight topics T10-T30.) A Board Job pins three versions (JL 261120: "I think it
+should be three versions"):
+
+```text
+data version      the raw data: a raw export, its cut and params (board.md versions:)       on the Board
+prep version      the DataPrep Block's code: a chain of steps, signed                      in the DataPrep Block
+question version  the Question Book's code: the questions and their scripts, signed        in the Question Book
+```
+
+A Job `jNN_data-vM_prep-vK_question-vN/` runs them: its first Task runs the prep version on the data version's raw
+export and writes a ready folder; the question version's Tasks follow and read that folder. One version moves per Job,
+so a change in an answer keeps one cause.
 
 Read this before making, growing or running a DataPrep Block. The Question Book and the Board's question Jobs stay as
 [insight-ladder.md](insight-ladder.md) draws them.
@@ -27,36 +33,41 @@ The trees
     ├── src/                                     code two or more steps share
     ├── runs/                                    soft: run-review-steps-prep-v<K> · run-sign-prep-v<K>
     └── tNN_<step>/                              one step (experiment · source · prepare …), code only
-        ├── tNN_<step>.md                        its page's goal line
-        ├── step.md                              the spec: step · script · reads · writes · checks · cut · params ·
+        ├── step.md                              the spec: step · script · goal · reads · writes · checks · cut · params ·
         │                                        agreed (cut and params: the keys of ctx.cut, ctx.params it reads)
         └── scripts/<script>.py                  run(ctx), and nothing else that runs
 
 <Project>/insight/Insight-<D>/                   the Board: one dataset
-├── board.md                                     … · raw: <SPACE-relative raw export> · cut: {…} ·
-│                                                params: {…} · dataprep: <the DataPrep Block> · versions: [{version, folder,
-│                                                frozen, prep, made-by}]
-└── jNN_prep-vK-<slug>_data-vM/                  a data Job: prep-vK on this Board's raw export, making data-vM
-    ├── jNN_prep-vK-<slug>_data-vM.md            prep · dataprep · prep-hash · data · raw · cut · params · state · made
-    └── tNN_<step>/runs/r01_<dataset>/           the same steps, one hard Run each: run.sh (calls ref/run_prep.py),
-                                                 run.yaml, result/ (runtime.yaml, provenance/, the card or heavy.yaml)
+├── board.md                                     … · dataprep: <the DataPrep Block> ·
+│                                                versions: [{version: data-vM, raw, cut: {…}, params: {…}, frozen}]
+└── jNN_data-vM_prep-vK_question-vN/             a Job of three versions
+    ├── jNN_data-vM_prep-vK_question-vN.md       data · prep · prep-hash · dataprep · release · hash · moved · ready
+    ├── t01_prep-vK_<slug>/runs/r01_<dataset>/   the whole prep version, one Run (run.sh calls ref/run_prep.py):
+    │                                            result/ runtime.yaml (a line per step), provenance/, the card,
+    │                                            steps/<step>/metrics.json, heavy.yaml; it writes the ready folder
+    │                                            <store>/<dataset>_data-vM@prep-vK/
+    └── tNN+1_<L><NN>_<slug>/runs/rNN_<segment>/  the question version's Tasks, one place after their release number,
+                                                 reading the ready folder (ref/run_job.py)
 ```
 
 The rules
 ---------
 
-1. **A Set, not a dataset.** `<Set>` names a family of datasets made by the same code; it carries no version. A
-   dataset belongs to its Board: `datasource <Board> --raw … --dataprep …` names its raw export and the DataPrep Block
-   it runs, which must name the Board in `serves:`.
+1. **A Set, not a dataset; a data version is raw data.** `<Set>` names a family of datasets made by the same code; it
+   carries no version. A Board names its DataPrep Block (`datasource <Board> --dataprep …`, which must list the Board
+   in `serves:`) and its data versions: `data <Board> data-vM --raw … --cut … --param …` adds the raw export, its cut
+   and its params as a row of `versions:`, frozen. New raw data is the next data version; an older row that names only
+   a folder made by hand gains its raw, cut and params once.
 2. **A prep version is code, signed, then frozen.** `prep` opens the next one from the newest; `--steps a,b,c` names
    its steps in order (a kept step moves to its new number, a new one is made empty, one left out is not carried). A
-   step is `step.md` and `scripts/<script>.py` exposing `run(ctx)`; it holds no Run, no config and no output. `sign`
+   step is `step.md` (its goal line among its fields) and `scripts/<script>.py` exposing `run(ctx)`, as a question
+   is `question.md` and its scripts; it holds no face of its own, no Run, no config and no output. `sign`
    needs every step agreed by an agent that did not write it (run-review-steps) and every script exposing `run(ctx)`;
    it pins `hash:` over `src/` and every step's face, spec and scripts.
-3. **A step reads only what `ctx` gives it.** `ctx.raw` is the Board's raw export, `ctx.prev` the earlier step's
+3. **A step reads only what `ctx` gives it.** `ctx.raw` is the data version's raw export, `ctx.prev` the earlier step's
    output, `ctx.refs` the Block's `references:` (each read at the version named there), `ctx.cut` and `ctx.params` the
-   Board's cut and settings (`datasource --cut … --param …`, pinned on the data Job when it opens). A step declares the
-   cut and params keys it reads (`step.md` `cut:` and `params:`); `datajob` and the runner refuse a Board key no step
+   data version's cut and settings (`data … --cut … --param …`, frozen with it). A step declares the
+   cut and params keys it reads (`step.md` `cut:` and `params:`); `job` and the runner refuse a data version's key no step
    declares. A step refuses an unknown key in a dict it reads (cut or params) rather than ignore it, and leaves a dict
    it does not read alone: every step sees the whole ctx (T28). No cache, no other
    pipeline's store, no shared source stage is an input. A library a step imports pins its sha256 in the step's own
@@ -69,14 +80,18 @@ The rules
    carries shapes, counts and names: no sample column, no first value, no `head()` of a table. The runner fails a
    ready folder whose dictionary has a sample column; `audit <Block>` names each script line that takes a record's
    value (`records`).
-5. **A Board runs a prep version in a data Job.** `datajob <Board> --prep prep-vK` refuses an unsigned version, or one
-   whose code changed since its signature, and opens `jNN_prep-vK-<slug>_data-vM/`: one Task per step, the same names,
-   one hard Run each. Question Jobs and data Jobs share one count. `ref/run_prep.py <Job>` runs the steps in order and
-   stops at the first that refuses or fails; a step's own `run.sh` runs that step alone, refused until the step before
-   it is done. Each Run copies the exact scripts and their sha256 into `result/provenance/`.
-6. **The last step makes the data version.** When it finishes, the ready folder becomes the Board's next data version
-   `{version, folder, frozen, prep, made-by}` and the Job closes. A folder a data version names is frozen: no data Job
-   writes it again. A data version made before this (b01's, by hand) names its prep with `data … --prep prep-vK`.
+5. **A Job pins three versions.** `job <Board> --data data-vM --prep prep-vK --release question-vN` refuses an unsigned
+   prep or question version, a prep version whose code changed since its signature, a data version with no raw export,
+   a key no step reads, and a Job that moves more than one version from the Job before it. It opens
+   `jNN_data-vM_prep-vK_question-vN/`: `t01_prep-vK_<slug>/` with one hard Run, then the question version's Tasks one
+   place after their release number. Every Job on a Board shares one count.
+6. **t01 runs the whole prep version in one Run and makes the ready folder.** `ref/run_prep.py <Job>` runs every step
+   in order inside t01's Run and stops at the first that refuses or fails. The Run keeps a line per step in
+   `runtime.yaml`, the exact scripts and their sha256 in `provenance/`, the experiment card, each step's light
+   `metrics.json`, and `heavy.yaml`. On success it writes the ready folder `<store>/<dataset>_data-vM@prep-vK/` and the
+   Job face's `ready:`; a done Run is never run again. The question Runs read `ready:` and are refused until it is
+   there. A later Job with the same data and prep versions reuses the ready folder, its t01 done. `drop-datajob <Job>`
+   undoes a Job of the withdrawn shape (`jNN_prep-vK-<slug>_data-vM/`, a Task per step).
 7. **The experiment card comes first.** Each prep version's first step reads only `ctx.raw`: the export's rows and the
    documents that describe the experiment. It writes `experiment_card.json` and `.md` in its Result, aggregates only:
    - **settings:** experiment ids and names, arms and their counts, batches, message content;
@@ -100,18 +115,18 @@ the future of a row
 
 A derivation moves from a question version's `src/` to a prep step only when it makes one column per row, reads no
 outcome, and is the same for every question. Rates, tests, privacy blanking and the groupings that define segments
-stay with the questions. A signed question version is never edited: the next prep version adds the column (a data Job,
-then a question Job with `moved: data`), and the next question version drops its own copy (`moved: code`).
+stay with the questions. A signed question version is never edited: the next prep version adds the column (a Job with `moved: prep`), and the next question version drops its own copy (`moved: code`).
 
 `ctx`
 -----
 
 ```text
-ctx.raw      Path   the Board's raw export (board.md raw:)
+ctx.raw      Path   the data version's raw export (board.md versions: raw)
 ctx.out      Path   where this step writes (rule 4)
+ctx.data     str    the data version
 ctx.prev     Path   the earlier step's ctx.out; None for the first step
-ctx.cut      dict   the Board's cut: (dates, a sub-cohort), applied by the step that cuts
-ctx.params   dict   the Board's params: (the settings its steps read, such as source_fn); {} when none
+ctx.cut      dict   the data version's cut: (dates, a sub-cohort), applied by the step that cuts
+ctx.params   dict   the data version's params: (the settings its steps read, such as source_fn); {} when none
 ctx.refs     dict   {name: Path}, the DataPrep Block's references:
 ctx.dataset  str    the Board's dataset;  ctx.prep  the prep version
 ctx.result   Path   the Run's result/: one light metrics.json may go there (rule 4)
@@ -128,12 +143,13 @@ insight_ladder.py prep       <dataprep> --slug <what-it-is> [--steps a,b,c]
 insight_ladder.py step       <prep version> <slug> [--ask "what it does"]
 insight_ladder.py sign       <prep version> --date YYMMDD
 insight_ladder.py audit      <dataprep>      serves · references · scripts · records · agreed · hash
-insight_ladder.py datasource <Board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block> [--cut k=v,…] [--param k=v,…]
-insight_ladder.py datajob    <Board> --prep prep-v<K>
-python ref/run_prep.py       <data Job>            (or <data Task> r01_<dataset>, which its run.sh does)
-insight_ladder.py data       <Board> data-v<M> --data-folder … --prep prep-v<K>   (a version made by hand)
+insight_ladder.py datasource <Board> --dataprep <DataPrep Block>
+insight_ladder.py data       <Board> data-v<M> --raw <SPACE-relative raw export> [--cut k=v,…] [--param k=v,…]
+insight_ladder.py job        <Board> --data data-v<M> --prep prep-v<K> --release question-v<N>
+python ref/run_prep.py       <Job>                 (or <Job>/t01_prep-vK… r01_<dataset>, which its run.sh does)
+insight_ladder.py drop-datajob <Board Job of the withdrawn shape>
 ```
 
 The DataPrep commands live in `scripts/insight_ladder_prep.py` (its checks in `insight_ladder_prep_checks.py`), the
-Board's in `scripts/insight_ladder_datajob.py`, the runner in `ref/run_prep.py`; `tests/test_dataprep.py` keeps them.
+Board's (the data version, the Job of three versions) in `scripts/insight_ladder_datajob.py`, the runner in `ref/run_prep.py`; `tests/test_dataprep.py` keeps them.
 The cards are `haipipe-insight-workflow/ref/run-cards.md` § Data Prep, Prep, Step and Data Job.

@@ -23,10 +23,13 @@ versions and questions, the insight Board and its data versions, its Jobs and th
                                        the next jNN_prep-vK_<slug>/: code only (a kept step moves to its new number)
     python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   tNN_<slug>/: step.md, scripts/<slug>.py
     python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed, every script run(ctx); pins its hash
-    python insight_ladder.py datasource <board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block>
-                                       [--cut k=v,…] [--param k=v,…]   (ctx.cut, ctx.params)
-    python insight_ladder.py datajob   <board> --prep prep-v<K>       the next jNN_prep-vK-<slug>_data-vM/: a Task per step,
-                                       one Run each; ref/run_prep.py runs them and adds data-vM
+    python insight_ladder.py datasource <board> --dataprep <DataPrep Block>   the DataPrep Block whose prep versions it runs
+    python insight_ladder.py data      <board> data-v<M> --raw <SPACE-relative raw export> [--cut k=v,…] [--param k=v,…]
+                                       a data version as raw data (an older row without raw: gains it once)
+    python insight_ladder.py job       <board> --data data-v<M> --prep prep-v<K> --release question-v<N>
+                                       jNN_data-vM_prep-vK_question-vN/: t01 the prep version (one Run, ref/run_prep.py),
+                                       then the question Tasks one place after their release number, reading t01's folder
+    python insight_ladder.py drop-datajob <Board Job of the withdrawn shape>   its data version row, its folder, the Job
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> segment <name|all>   a hard Run runs/rNN_<segment>/ (planned)
     python insight_ladder.py goals     <Board, Question Book, Job or Task>     write each face's missing `goal:` line
@@ -112,9 +115,13 @@ def board(path: Path, dataset: str, proto: str, title: str, accumulates: str, pl
 
 
 def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, folder: str = "", label: str = "",
-         prep: str = "") -> None:
+         prep: str = "", raw: str = "", cut: str = "", params: str = "") -> None:
     if face_kind(path) != "board":
         sys.exit(f"{path.name} is not an insight Board (board.md board-kind: insight-board)")
+    if raw:                                    # a data version as raw data: raw export, cut, params (ref/dataprep.md)
+        if not re.fullmatch(r"data-v\d+", ver or ""):
+            sys.exit("a data version is: data <board> data-v<M> --raw <SPACE-relative raw export> [--cut …] [--param …]")
+        return DJ.raw_version(path, ver, raw, cut, params, label, new, plan)
     if not re.fullmatch(r"data-v\d+", ver or "") or not (extract or folder):
         sys.exit("a data version is: data <board> data-v<M> --data-folder <its data folder>/ (or --extract <one .parquet>)")
     if (extract or folder).startswith("/"):
@@ -158,7 +165,7 @@ def release_hash(ver: Path) -> str:
     return h.hexdigest()[:12]
 
 
-def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
+def job(block: Path, rel: str, ver: str, plan: Plan, prep: str = "") -> Path:
     """The next Job: one question version × one data version, its Tasks one per question of the question version."""
     if face_kind(block) != "board":
         sys.exit(f"{block.name} is not an insight Board (board.md board-kind: insight-board)")
@@ -169,6 +176,10 @@ def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
         sys.exit(f"{rel} is not a version of {proto.name}: open and sign it first")
     if str(face(pver).get("state")) != "closed" or not str(face(pver).get("signed", "")).startswith("✅"):
         sys.exit(f"{pver.name} is not signed: a person signs a release before a Board runs it (run-sign-release)")
+    if prep:                                              # a Job of three versions (ref/dataprep.md; JL 261120)
+        if not ver:
+            sys.exit("a Job of three versions is: job <Board> --data data-v<M> --prep prep-v<K> --release question-v<N>")
+        return DJ.three_job(block, ver, prep, rel, release_hash(pver), plan)
     if ver not in [str(v.get("version")) for v in fm.get("versions") or []]:
         sys.exit(f"{ver} is not a data version of {block.name}: add it first (insight_ladder.py data, run-add-version)")
     old = jobs(block)
@@ -367,9 +378,9 @@ def audit(folder: Path, quiet: bool = False) -> list[tuple]:
         rows.append((b, "receipts", len(st), "update --apply --rerun (each ticket's run.sh; needs env.sh at the SPACE root)"))
         rows.append((b, "records", len(version_records(b)), "a data version's dictionary holds a sample column: the page "
                      "shows none of it, the folder stays frozen, and the next data version's carries none (T19)"))
-        unmade = [v for v in front(b / "board.md")[0].get("versions") or [] if not v.get("prep")] if PR.serving(b) else []
-        rows.append((b, "prep", len(unmade), "data … --prep: each data version names the signed prep version that made it "
-                     "(ref/dataprep.md); an older one is named by hand"))
+        unraw = [v for v in front(b / "board.md")[0].get("versions") or [] if not v.get("raw")] if PR.serving(b) else []
+        rows.append((b, "raw", len(unraw), "data <Board> data-vM --raw … --cut … --param …: each data version names its raw "
+                     "export, cut and params (ref/dataprep.md)"))
     if not quiet:
         for b, check, n, step in rows:
             print(f"{'✅' if n == 0 else '❗'} {b.name:<28} {check:<9} {n:>4}" + ("" if n == 0 else f"   ▶ {step}"))
@@ -463,7 +474,8 @@ def main(argv=None) -> list[Path]:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=("prototype", "version", "question", "change", "retire", "sign", "propose",
                                         "board", "data", "job", "run", "goals", "audit", "review", "update",
-                                        "dataprep", "dataset", "prep", "step", "reference", "datasource", "datajob"))
+                                        "dataprep", "dataset", "prep", "step", "reference", "datasource", "datajob",
+                                        "drop-datajob"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
@@ -524,9 +536,12 @@ def main(argv=None) -> list[Path]:
     elif c == "dataset":
         sys.exit("a dataset's raw export is its Board's raw: (insight_ladder.py datasource <Board> --raw … --dataprep …)")
     elif c == "datasource":
-        DJ.datasource(a.folder, a.raw, a.dataprep, a.cut, plan, a.param)
+        DJ.datasource(a.folder, a.dataprep, plan, a.raw)
     elif c == "datajob":
-        DJ.datajob(a.folder, a.prep, plan)
+        sys.exit("withdrawn (JL 261120): a Job pins three versions, job <Board> --data data-v<M> --prep prep-v<K> --release "
+                 "question-v<N>; drop-datajob <Job> undoes one of the old shape")
+    elif c == "drop-datajob":
+        DJ.drop_datajob(a.folder, plan)
     elif c == "prep":
         PR.prep(a.folder, a.slug, a.source, plan, a.steps)
     elif c == "step":
@@ -536,9 +551,9 @@ def main(argv=None) -> list[Path]:
     elif c == "board":
         board(a.folder, a.dataset, a.prototype, a.title, a.accumulates, plan)
     elif c == "data":
-        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label, a.prep)
+        data(a.folder, a.what, a.extract, a.rows, a.new, plan, a.data_folder, a.label, a.prep, a.raw, a.cut, a.param)
     elif c == "job":
-        job(a.folder, a.release, a.data, plan)
+        job(a.folder, a.release, a.data, plan, a.prep)
     elif c == "goals":
         goals(a.folder, plan)
     elif c == "audit":

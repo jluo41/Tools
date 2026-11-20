@@ -1,5 +1,17 @@
 # haipipe-insight · version history
 
+## 3.12.0 · 2026-11-20 · a Board Job pins three versions: data × prep × question
+
+- JL 261120 (workbench-insight T30): a data version is the raw data (`data <Board> data-vM --raw … --cut … --param …`);
+  `job <Board> --data … --prep … --release …` opens `jNN_data-vM_prep-vK_question-vN/`, one version moved from the Job
+  before. Its t01 runs the whole prep version in one Run (`ref/run_prep.py`: a line per step, provenance, the card, the
+  steps' metrics, heavy.yaml) and writes `<store>/<dataset>_data-vM@prep-vK/` and the Job face's `ready:`; the question
+  Tasks, one place after their release number, read it (`ref/run_job.py`) and are refused until it exists. A later Job
+  with the same data and prep versions reuses the folder. A done prep Run is never rerun.
+- A DataPrep step is `step.md` (its goal among its fields) and `scripts/`, no face and no runs/; a copied step's older
+  face gives its goal to step.md. `datasource` names only the DataPrep Block. `datajob` is withdrawn; `drop-datajob`
+  undoes a Job of that shape (its data version row, its ready folder, the Job). The Board audit's `prep` row is `raw`.
+
 ## 3.11.3 · 2026-11-20 · one light metrics.json per Result; a step reads its own dicts
 
 - workbench-insight T28, T29: every step may write one light `ctx.result/metrics.json`; `ref/run_prep.py` fails a middle

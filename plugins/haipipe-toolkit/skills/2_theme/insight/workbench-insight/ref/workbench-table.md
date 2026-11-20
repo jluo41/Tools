@@ -82,4 +82,4 @@ Shape and check: `skills/0_utils/table-workbench/SKILL.md`. Level is the insight
 | Prep | Delivery | every view | Sign the prep version | haipipe-insight-agent | haipipe-insight | the prep version | Prep version › runs/`run-sign-prep-v<N>/` |
 | Step | Work Details | every view | Write the step's script | haipipe-task-creator-agent | haipipe-task-for-data | none | Step › runs/`run-write-script-t<NN>/` |
 | Step | Work Details | every view | Review the step's script | haipipe-task-reviewer-agent | haipipe-task-for-data | none | Step › runs/`run-review-script-t<NN>/` |
-| Data Job | Runs | every view | Run a data step | haipipe-task-orchestrator-agent | haipipe-insight | none | Board data Task › runs/`rNN_<segment>/` |
+| Prep Task | Runs | every view | Run the prep version | haipipe-task-orchestrator-agent | haipipe-insight | none | Job › t01_prep-vK › runs/`rNN_<segment>/` |

@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 
 from insight_ladder_base import (
-    SOFT, VERSION, JOB, TASK, PREP, STEP, DATAJOB, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front,
+    SOFT, VERSION, JOB, TASK, PREP, STEP, JOB3, PREPTASK, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front,
     dump_yaml,
     project_of, face, face_kind)
 import open_job as OJ  # noqa: E402  (ref/, put on the path by insight_ladder_base)
@@ -22,12 +22,10 @@ def level_of(folder: Path) -> str:
             return kind
     if VERSION.match(name) and face_kind(folder.parent) == "prototype":
         return "version"
-    if JOB.match(name) and face_kind(folder.parent) == "board":
+    if (JOB.match(name) or JOB3.match(name)) and face_kind(folder.parent) == "board":
         return "job"
-    if DATAJOB.match(name) and face_kind(folder.parent) == "board":
-        return "datajob"
-    if STEP.match(name) and DATAJOB.match(folder.parent.name) and face_kind(folder.parent.parent) == "board":
-        return "datatask"
+    if PREPTASK.match(name) and JOB3.match(folder.parent.name) and face_kind(folder.parent.parent) == "board":
+        return "preptask"
     if PREP.match(name) and face_kind(folder.parent) == "dataprep":
         return "prep"
     if STEP.match(name) and PREP.match(folder.parent.name) and face_kind(folder.parent.parent) == "dataprep":
@@ -36,7 +34,7 @@ def level_of(folder: Path) -> str:
         above = face_kind(folder.parent.parent)
         if VERSION.match(folder.parent.name) and above == "prototype":
             return "question"
-        if JOB.match(folder.parent.name) and above == "board":
+        if (JOB.match(folder.parent.name) or JOB3.match(folder.parent.name)) and above == "board":
             return "task"
     sys.exit(f"not an insight Block, version, Job, Task, prep version or step folder: {folder}")
 
@@ -100,7 +98,7 @@ def run(folder: Path, rtype: str, target: str, plan: Plan, again: bool = False) 
     if (level, rtype) not in TYPES:
         sys.exit(f"run-{rtype} does not run at the {level} level; its run types: {RUN_TYPES[level]}")
     skill, agent, signs, hard = TYPES[(level, rtype)]
-    if hard and level == "datatask":                           # its one Run, made with the data Job (insight_ladder.py datajob)
+    if hard and level == "preptask":                           # its one Run, made with the Job (insight_ladder.py job --prep)
         return sorted(r for r in (folder / "runs").glob("r[0-9][0-9]_*") if r.is_dir())
     if hard:
         return hard_run(folder, target or "all", plan)

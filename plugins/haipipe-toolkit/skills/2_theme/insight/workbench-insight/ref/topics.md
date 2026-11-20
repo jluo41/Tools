@@ -34,6 +34,7 @@ T26  DataPrep holds code; the Board runs it     fixed
 T27  a step cannot read a per-Board setting     fixed
 T28  a cut key nobody reads is ignored          fixed
 T29  a step's Result has no light summary       fixed
+T30  a Board Job pins three versions           fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -487,4 +488,25 @@ T29  a step's Result has no light summary       fixed
   256 KB): what a reader opens first. A middle or last step writes nothing else into `result/`, which is the runner's;
   `ref/run_prep.py` fails a step that does, and a `metrics.json` over the size (rule 4; reviewer rule 5, the card).
 - **Guard**: `test_dataprep.py` `test_a_step_adds_one_light_metrics_json_to_its_result_and_nothing_else`.
+
+## T30 · A Board Job pins three versions · fixed
+
+- **From**: Report, Insight-Use-Case, 261120 (topic Q), quoting JL on the data Job of T26: "Job here is a data prep
+  version as a task, and then the question book as a task sequences. try to follow this." Then, exactly: "please
+  recreate the j02 which has the data version and dataprep version and the question version. I think it should be
+  three versions." And, comparing a DataPrep step with a question: no `runs/README.md`, no second face file.
+- **Questions**: what is a data version once prep is code? Where does the prep version run, and what do the question
+  Tasks read? How do one-clock Jobs work with three versions? What becomes of a Job of the withdrawn shape?
+- **Answer**: a data version is the raw data, `versions: [{version, raw, cut, params}]` (`data … --raw`). A Job
+  `jNN_data-vM_prep-vK_question-vN/` (`job --data --prep --release`) moves one version from the Job before; its
+  `t01_prep-vK_<slug>/` runs the whole prep version in one Run (`ref/run_prep.py`) and writes the ready folder
+  `<store>/<dataset>_data-vM@prep-vK/` and the Job's `ready:`; the question Tasks, one place after their release
+  number, read it (`ref/run_job.py`) and are refused until it exists. A step is `step.md` and `scripts/`.
+  `drop-datajob` undoes the withdrawn shape. `ref/dataprep.md` rewritten again.
+- **Case**: on a placeholder SPACE, data-v1 × prep-v1 × question-v1 runs t01 (three steps, one Run), its question
+  Task resolves its extract inside the ready folder, the next Job (question-v2) reuses the folder, and a Job moving data
+  and question together is refused; the withdrawn j02 shape is dropped with its data version and folder.
+- **Guard**: `test_dataprep.py` (ten tests); `run_cards.py --check`.
+- **Still owed**: the workbench pages for a Job of three versions (the Board page reads question Jobs by name);
+  `insight_plan_c.py` does not list these Jobs yet.
 

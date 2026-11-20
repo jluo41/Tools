@@ -3,7 +3,7 @@ name: haipipe-insight
 description: "The door for insight: a Question Book (the questions, a Job per release), a DataPrep Block (the tools that make the data versions, a Job per prep version) and an insight Board (one dataset, a Task per question, a Run per segment); scaffolds the ladder. Use to set up or update a Board or a DataPrep Block. Trigger: insight, Question Book, insight Board, DataPrep, data prep, DIKW, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.11.3"
+  version: "3.12.0"
   last_updated: "2026-11-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---
@@ -47,7 +47,7 @@ Resolve the folder first, by its `board.md` (never its folder name), then load o
 | a Question Book (`board-kind: prototype`) | proposals · a version · a question | this door → the version's Run owner (§ Runs) |
 | an insight Board (`board-kind: insight-board`, or `prototype:` in board.md) | data versions · Jobs · readings | this door → the Board's Run owner |
 | a Board Job `jNN_question-vN-<slug>_data-vM/` or its Task `tNN_<L><NN>_<slug>/` | hard Runs · pages · compare | this door → `haipipe-insight-workflow` |
-| a DataPrep Block (`board-kind: insight-dataprep`), a prep version `jNN_prep-vK_<slug>/` or a step `tNN_<step>/`; a Board data Job `jNN_prep-vK-<slug>_data-vM/` | the data's code (no Runs) · a Board runs it and makes its data version | [`ref/dataprep.md`](ref/dataprep.md); the runner `ref/run_prep.py`; a step's script → `haipipe-task-for-data` |
+| a DataPrep Block (`board-kind: insight-dataprep`), a prep version `jNN_prep-vK_<slug>/` or a step `tNN_<step>/`; a Board Job of three versions `jNN_data-vM_prep-vK_question-vN/` | the data's code (no Runs) · a Job runs data × prep × question | [`ref/dataprep.md`](ref/dataprep.md); the runners `ref/run_prep.py` (t01) and `ref/run_job.py` (the questions); a step's script → `haipipe-task-for-data` |
 | a new topic | — | `insight_ladder.py prototype`, then `board` (ref/insight-ladder.md § Scripts) |
 | update, audit, bring an older Board up to date | Board · Question Book · Project | § Update below |
 | a dataset-first topic for one Task Board | Task-side | `haipipe-task` → `fn/insight.md` → `haipipe-page-insight` |

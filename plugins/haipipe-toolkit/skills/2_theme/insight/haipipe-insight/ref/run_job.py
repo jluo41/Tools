@@ -81,6 +81,10 @@ def resolve(task, stem):
     version = next((v for v in bface.get("versions") or [] if v.get("version") == data), None)
     if not version:
         raise RQ.GateError(f"no data version {data} in {board.name}/board.md versions:")
+    if jface.get("prep"):                               # a Job of three versions: its questions read t01's ready folder
+        if not jface.get("ready"):
+            raise RQ.GateError(f"the ready folder is not made yet: run the Job's prep Task (t01_{jface['prep']}…) first")
+        version = {"version": data, "folder": jface["ready"]}
     m = RUN.match(stem)
     if not m:
         raise RQ.GateError(f"{stem} is not rNN_<segment>")

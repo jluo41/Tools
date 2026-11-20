@@ -18,7 +18,7 @@ _spec.loader.exec_module(RC)
 WHERE = {"Guide": "Guide › runs/", "Block": "Board › runs/", "Job": "Job › runs/", "Task": "Task › runs/",
          "Question Book": "Question Book › runs/", "Release": "Release › runs/", "Question": "Question › runs/",
          "Data Prep": "DataPrep › runs/", "Prep": "Prep version › runs/", "Step": "Step › runs/",
-         "Data Job": "Board data Task › runs/"}
+         "Prep Task": "Job › t01_prep-vK › runs/"}
 
 
 def rows() -> list[dict]:

@@ -129,12 +129,13 @@ def prep(block: Path, slug: str, carried_from: str, plan: Plan, order: str = "")
         if src is None:
             _new_step(dst, name, "", plan)
             continue
-        plan.copy(src, dst, also=("notebooks", "config"))      # the face, the spec and the scripts: the code only
+        plan.copy(src, dst, also=("notebooks", "config", f"{src.name}.md"))   # the spec and the scripts: code only
         if not plan.dry:
-            if src.name != dst.name:
-                (dst / f"{src.name}.md").rename(dst / f"{dst.name}.md")
-                md = dst / f"{dst.name}.md"
-                md.write_text(md.read_text(encoding="utf-8").replace(f"# {src.name}", f"# {dst.name}"), encoding="utf-8")
+            old_face = front(src / f"{src.name}.md")[0]            # an older step's face: its goal moves into step.md
+            fields, body = front(dst / "step.md")
+            if old_face.get("goal") and not fields.get("goal"):
+                fields["goal"] = old_face["goal"]
+                (dst / "step.md").write_text(with_front(fields, body), encoding="utf-8")
             _reset_agreed(dst)
     runs_readme(path, "prep", plan)
     return path
@@ -156,8 +157,8 @@ def _prep_open(ver: Path) -> None:
 
 
 def step(ver: Path, slug: str, does: str, plan: Plan) -> Path:
-    """The next step tNN_<slug>/ of an open prep version: its face (the page's goal line), its spec `step.md`, and its
-    script `scripts/<slug>.py` with run(ctx) waiting to be written."""
+    """The next step tNN_<slug>/ of an open prep version: its spec `step.md` (with its goal line) and its script
+    `scripts/<slug>.py` with run(ctx) waiting to be written."""
     _prep_open(ver)
     if not SLUG.match(slug or ""):
         sys.exit("a step is: step <prep version> <slug> (a few lower-case words joined by -)")
@@ -169,17 +170,16 @@ def step(ver: Path, slug: str, does: str, plan: Plan) -> Path:
 
 
 def _new_step(path: Path, slug: str, does: str, plan: Plan) -> Path:
+    """A code-only step, as a question is: its spec `step.md` (with its goal line) and `scripts/<script>.py`; no face of
+    its own, no runs/ (JL 261120)."""
     script = slug.replace("-", "_")
     goal = does or f"<what the {slug} step does to a raw export, one sentence>"
-    plan.write(path / f"{path.name}.md", with_front({"goal": goal}, f"\n# {path.name}\n\n<why this step exists; what "
-                                                                       "a later step or a question reads from it>\n"))
     plan.write(path / "step.md", with_front(
-        {"step": slug, "script": script, "reads": "<ctx.raw, ctx.prev or a reference: what it reads>",
+        {"step": slug, "script": script, "goal": goal, "reads": "<ctx.raw, ctx.prev or a reference: what it reads>",
          "writes": "<what it writes to ctx.out>", "checks": ["<a check that stops the Run when it fails>"],
          "cut": [], "params": [], "agreed": ""},
-        f"\n# {slug}\n\n{goal}\n"))
+        f"\n# {slug}\n\n<why this step exists; what a later step or a question reads from it>\n"))
     plan.write(path / "scripts" / f"{script}.py", SCRIPT.format(slug=slug))
-    runs_readme(path, "step", plan)
     return path
 
 

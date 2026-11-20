@@ -1,23 +1,24 @@
-"""run_prep.py · run a signed prep version's steps on a Board's dataset (ref/dataprep.md; JL 261120).
+"""run_prep.py · run a whole signed prep version, in one Run, on a data version's raw export (ref/dataprep.md; JL 261120).
 
-    python run_prep.py <data Task folder> <r01_<dataset>>   one step's Run (its ticket, run.sh, calls this)
-    python run_prep.py <data Job folder>                    every step in order, stopping at the first that does not finish
+    python run_prep.py <Job>/t01_prep-vK_<slug> r01_<dataset>    (its ticket, run.sh, calls this)
+    python run_prep.py <Job>                                     the same, found from the Job
 
-A Board data Job `jNN_prep-vK-<slug>_data-vM/` pins one prep version (its face's `prep:` and `prep-hash:`) of the
-Board's DataPrep Block (board.md `dataprep:`) and the Board's raw export (`raw:`, `cut:`). Each Task `tNN_<step>/` is that
-version's step of the same name; its one Run calls the step's script, `run(ctx)`:
+A Board Job `jNN_data-vM_prep-vK_question-vN/` pins a data version (board.md `versions:`: its `raw:`, `cut:`, `params:`),
+a prep version of the Board's DataPrep Block (the Job face's `prep:`, `prep-hash:`) and a question version. Its first
+Task `t01_prep-vK_<slug>/` has one hard Run, and this runs every step of the prep version inside it, in order, each
+step's `run(ctx)`:
 
-    ctx.raw    the raw export folder          ctx.prev     the earlier step's output folder (None for the first)
-    ctx.out    where this step writes         ctx.refs     {name: path}, the DataPrep Block's references:
-    ctx.cut    the Board's cut: (a dict)      ctx.params   the Board's params: (a dict, such as source_fn)
-    ctx.dataset  ctx.prep  ctx.result (the Run's result/: a step may add one light metrics.json there)
-    ctx.refuse(reason)   stop here: the Run is refused, with its reason
+    ctx.raw     the raw export folder            ctx.prev    the earlier step's output (None for the first)
+    ctx.out     where this step writes           ctx.refs    {name: path}, the DataPrep Block's references:
+    ctx.cut     the data version's cut (a dict)  ctx.params  its params (a dict, such as source_fn)
+    ctx.result  this step's light place in the Result (one metrics.json)
+    ctx.dataset  ctx.prep  ctx.refuse(reason)    stop here: the Run is refused, with its reason
 
-Where a step writes: the first its Run's `result/` (the experiment card, rule 7); the last the ready folder
-`<store>/<dataset>@prep-vK` (the DataPrep Block's `store:`); one between them the Run's heavy folder under
-`_WorkSpace/ProjectResult` (the Result keeps `heavy.yaml`). The runner writes the Run's `result/runtime.yaml`, its
-`result/provenance/` (the exact scripts and their sha256) and the card's status. When the last step has finished, the
-ready folder becomes the Board's next data version {version, folder, frozen, prep, made-by}, and the Job closes.
+Where a step writes: the first step `result/steps/<step>/` (the experiment card, rule 7); the last step the ready
+folder `<store>/<dataset>_data-vM@prep-vK/` (the DataPrep Block's `store:`); a step between them its heavy folder
+under `_WorkSpace/ProjectResult/…/<step>/` (the Result keeps `heavy.yaml`). The Run's Result holds `runtime.yaml` (a
+line per step), `provenance/` (the exact scripts and their sha256), the card, each step's light `metrics.json`. When
+the last step has finished, the Job face records `ready:`, which the question Runs read (ref/run_job.py).
 
 Exit 0 on done or refused (a refusal is an answer), 1 on failed.
 """
@@ -38,13 +39,12 @@ import yaml
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parent / "scripts"))
-from insight_ladder_base import DATAJOB, STEP, front, with_front, face  # noqa: E402
+from insight_ladder_base import JOB3, PREPTASK, front, with_front, face  # noqa: E402
 import insight_ladder_prep as PR  # noqa: E402
 from insight_ladder_prep_checks import DICT_SAMPLE  # noqa: E402
 
 CARD = ("experiment_card.json", "experiment_card.md")
-METRICS, METRICS_MAX = "metrics.json", 256 * 1024          # the one file a step may add to its Result (rule 4)
-RUNNER_FILES = {"runtime.yaml", "provenance", "heavy.yaml"}  # what the runner writes there
+METRICS, METRICS_MAX = "metrics.json", 256 * 1024          # the one file a step may add to its light place (rule 4)
 
 
 class Refused(Exception):
@@ -84,89 +84,76 @@ def _rel(path: Path, root: Path) -> str:
 
 
 class Job:
-    """What one data Job pins, resolved once."""
+    """What one Job of three versions pins, resolved once."""
 
     def __init__(self, job: Path):
         self.path = job.resolve()
-        if not DATAJOB.match(self.path.name):
-            sys.exit(f"{self.path.name} is not a Board data Job (jNN_prep-vK-<slug>_data-vM)")
+        if not JOB3.match(self.path.name):
+            sys.exit(f"{self.path.name} is not a Board Job of three versions (jNN_data-vM_prep-vK_question-vN)")
         self.board = self.path.parent
         self.face = face(self.path)
         self.fm = front(self.board / "board.md")[0]
         self.root = space_root(self.board)
         home = self.board.parent.parent
+        self.data = str(self.face.get("data"))
+        self.row = next((v for v in self.fm.get("versions") or [] if str(v.get("version")) == self.data), {})
         self.block = _find(home, str(self.face.get("dataprep") or self.fm.get("dataprep") or ""))
         self.pid = str(self.face.get("prep"))
         self.ver = PR.prep_version(self.block, self.pid) if self.block else None
-        self.raw = _find(home, str(self.face.get("raw") or self.fm.get("raw") or ""))
+        self.raw = _find(home, str(self.row.get("raw") or ""))
+        self.cut, self.params = dict(self.row.get("cut") or {}), dict(self.row.get("params") or {})
         self.dataset = str(self.fm.get("dataset") or "dataset")
-        pinned = lambda k: (self.face.get(k) if k in self.face else self.fm.get(k)) or {}   # noqa: E731 · the Job's own
-        self.cut, self.params = dict(pinned("cut")), dict(pinned("params"))                # values; an older Job: the Board's
-        self.tasks = sorted((t for t in self.path.iterdir() if t.is_dir() and STEP.match(t.name)),
-                            key=lambda t: int(STEP.match(t.name).group(1)))
+        self.task = next((t for t in sorted(self.path.iterdir()) if t.is_dir() and PREPTASK.match(t.name)), None)
+        self.run = next(iter(sorted(r for r in (self.task / "runs").glob("r[0-9][0-9]_*") if r.is_dir())), None) \
+            if self.task else None
         bfm = front(self.block / "board.md")[0] if self.block else {}
         self.store = self.root / str(bfm.get("store") or "_WorkSpace/stage")
+        self.ready = self.store / f"{self.dataset}_{self.data}@{self.pid}"
         self.refs = {str(r.get("name")): _find(self.block.parent.parent, str(r.get("path"))) or self.root / str(r.get("path"))
                      for r in bfm.get("references") or []} if self.block else {}
 
-    def run_of(self, task: Path) -> Path:
-        return next(iter(sorted(r for r in (task / "runs").glob("r[0-9][0-9]_*") if r.is_dir())), task / "runs" / "r01")
-
-    def out_of(self, i: int) -> Path:
-        """Where step i writes: the first its result/, the last the ready folder, one between them its heavy folder."""
-        task = self.tasks[i]
-        run = self.run_of(task)
-        if i == 0:
-            return run / "result"
-        if i == len(self.tasks) - 1:
-            return self.store / f"{self.dataset}@{self.pid}"
+    def heavy(self, step: Path) -> Path:
         pr = Path(os.environ.get("LOCAL_PROJECT_RESULT") or (self.root / "_WorkSpace" / "ProjectResult"))
-        if not pr.is_absolute():
-            pr = self.root / pr
-        return pr / self.board.parent.parent.name / self.board.parent.name / self.board.name / self.path.name / task.name / run.name
-
-    def status(self, task: Path) -> str:
-        rt = self.run_of(task) / "result" / "runtime.yaml"
-        return str((yaml.safe_load(rt.read_text(encoding="utf-8")) or {}).get("status", "")) if rt.is_file() else ""
+        pr = pr if pr.is_absolute() else self.root / pr
+        return (pr / self.board.parent.parent.name / self.board.parent.name / self.board.name / self.path.name
+                / self.task.name / self.run.name / step.name)
 
 
-def _gate(job: Job, i: int) -> None:
+def _gate(job: Job) -> None:
     if job.ver is None:
         raise Refused(f"{job.pid} is not a prep version of the Board's DataPrep Block")
     if not PR.signed(job.ver):
         raise Refused(f"{job.ver.name} is not signed")
     if PR.prep_hash(job.ver) != str(job.face.get("prep-hash")):
-        raise Refused(f"{job.ver.name}'s code is not what this Job pinned ({job.face.get('prep-hash')}): open a new data Job")
+        raise Refused(f"{job.ver.name}'s code is not what this Job pinned ({job.face.get('prep-hash')}): open a new Job")
+    if not job.row:
+        raise Refused(f"{job.data} is not a data version of the Board")
+    if job.raw is None or not job.raw.exists():
+        raise Refused(f"{job.data}'s raw export is not there ({job.row.get('raw')})")
     stray = PR.undeclared(job.ver, job.cut, job.params)
     if stray:
         raise Refused(f"no step of {job.pid} reads {', '.join(stray)}: a key nobody reads is refused, never ignored")
-    if job.raw is None or not job.raw.exists():
-        raise Refused("the Board's raw export is not there (board.md raw:)")
-    if i > 0 and job.status(job.tasks[i - 1]) != "done":
-        raise Refused(f"the earlier step, {job.tasks[i - 1].name}, has not finished")
-    if i == len(job.tasks) - 1:
-        out = job.out_of(i)
-        frozen = {str(v.get("folder") or "").rstrip("/") for v in job.fm.get("versions") or []}
-        if _rel(out, job.root) in frozen:
-            raise Refused(f"{_rel(out, job.root)} is a data version already, frozen")
-        mark = out / "made-by.yaml"
-        if out.exists() and any(out.iterdir()):
-            if not mark.is_file() or (yaml.safe_load(mark.read_text()) or {}).get("job") != job.path.name:
-                raise Refused(f"{_rel(out, job.root)} holds another Job's folder")
-            shutil.rmtree(out)                                  # this Job's own earlier attempt, never registered
+    mark = job.ready / "made-by.yaml"
+    if job.ready.exists() and any(job.ready.iterdir()):
+        if not mark.is_file() or (yaml.safe_load(mark.read_text()) or {}).get("job") != job.path.name:
+            raise Refused(f"{_rel(job.ready, job.root)} holds another Job's folder")
+        shutil.rmtree(job.ready)                                # this Job's own earlier attempt
 
 
-def _provenance(job: Job, step_dir: Path, script: Path, result: Path) -> str:
+def _provenance(job: Job, result: Path) -> dict:
+    """The exact scripts of every step, and src/, with their sha256: {step: sha256 of its script}."""
     prov = result / "provenance"
     prov.mkdir(parents=True, exist_ok=True)
+    files = [PR.script_of(s) for s in PR.steps(job.ver)] + \
+        (sorted((job.ver / "src").rglob("*.py")) if (job.ver / "src").is_dir() else [])
     lines = []
-    for f in [script] + (sorted((job.ver / "src").rglob("*.py")) if (job.ver / "src").is_dir() else []):
+    for f in files:
         dst = prov / f.relative_to(job.ver)
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(f, dst)
         lines.append(f"{_sha(f)}  {f.relative_to(job.ver).as_posix()}")
     (prov / "sha256.txt").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    return _sha(script)
+    return {s.name: _sha(PR.script_of(s)) for s in PR.steps(job.ver)}
 
 
 def _card_status(run: Path, status: str) -> None:
@@ -176,83 +163,95 @@ def _card_status(run: Path, status: str) -> None:
                         encoding="utf-8")
 
 
-def _register(job: Job, out: Path) -> str:
-    """The ready folder becomes the Board's next data version; the Job closes."""
-    fields, body = front(job.board / "board.md")
-    ver = str(job.face.get("data"))
-    if ver in [str(v.get("version")) for v in fields.get("versions") or []]:
-        raise Refused(f"{ver} is a data version of the Board already")
-    fields.setdefault("versions", []).append({"version": ver, "folder": _rel(out, job.root) + "/",
-                                              "frozen": dt.date.today().strftime("%y%m%d"), "prep": job.pid,
-                                              "made-by": job.path.name, "new": f"made by {job.pid}"})
-    (job.board / "board.md").write_text(with_front(fields, body), encoding="utf-8")
-    jf, jbody = front(job.path / f"{job.path.name}.md")
-    jf.update(state="closed", made=ver)
-    (job.path / f"{job.path.name}.md").write_text(with_front(jf, jbody), encoding="utf-8")
-    return ver
-
-
-def run_step(job: Job, task: Path) -> str:
-    """One step's Run: the gates, the step's run(ctx), the checks the runner keeps, the receipt."""
-    i = job.tasks.index(task)
-    run = job.run_of(task)
-    result = run / "result"
-    result.mkdir(parents=True, exist_ok=True)
-    started, t0 = dt.datetime.now(), time.time()
-    receipt = {"status": "failed", "step": task.name, "prep": job.pid, "prep_hash": job.face.get("prep-hash"),
-               "dataset": job.dataset, "started": started.isoformat(timespec="seconds")}
-    _card_status(run, "running")
+def _step(job: Job, i: int, step: Path, result: Path, outs: list) -> dict:
+    """One step inside the Run: its out, its light place, its run(ctx), the checks the runner keeps."""
+    steps = PR.steps(job.ver)
+    light = result / "steps" / step.name
+    light.mkdir(parents=True, exist_ok=True)
+    out = light if i == 0 else job.ready if i == len(steps) - 1 else job.heavy(step)
+    out.mkdir(parents=True, exist_ok=True)
+    if i == len(steps) - 1:
+        (out / "made-by.yaml").write_text(yaml.safe_dump({"job": job.path.name, "data": job.data, "prep": job.pid}),
+                                          encoding="utf-8")
+    outs.append(out)
+    t0 = time.time()
+    line = {"step": step.name, "status": "failed", "out": _rel(out, job.root)}
     try:
-        _gate(job, i)
-        step_dir = job.ver / task.name
-        if not step_dir.is_dir():
-            raise Refused(f"{job.pid} has no step {task.name}")
-        script = PR.script_of(step_dir)
-        receipt.update(script=script.name, script_sha256=_provenance(job, step_dir, script, result))
-        out = job.out_of(i)
-        out.mkdir(parents=True, exist_ok=True)
-        if i == len(job.tasks) - 1:
-            (out / "made-by.yaml").write_text(yaml.safe_dump({"job": job.path.name, "prep": job.pid}), encoding="utf-8")
-        receipt["out"] = _rel(out, job.root)
-        spec = importlib.util.spec_from_file_location(f"prep_step_{task.name.replace('-', '_')}", script)
+        script = PR.script_of(step)
+        spec = importlib.util.spec_from_file_location(f"prep_{step.name.replace('-', '_')}", script)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        receipt["params"] = job.params
-        mod.run(Ctx(raw=job.raw, out=out, prev=job.out_of(i - 1) if i else None, cut=dict(job.cut), params=dict(job.params),
-                    refs=job.refs, dataset=job.dataset, prep=job.pid, result=result))
-        if i > 0:                                                # result/ is the runner's, and one light metrics.json
-            extra = sorted(p.name for p in result.iterdir() if p.name not in RUNNER_FILES | {METRICS})
-            if extra:
-                raise RuntimeError(f"a step writes only ctx.out and one light result/{METRICS}; it also wrote "
-                                   f"{', '.join(extra)} (rule 4)")
-        if (result / METRICS).is_file() and (result / METRICS).stat().st_size > METRICS_MAX:
-            raise RuntimeError(f"result/{METRICS} is light (shapes, counts, checks): under {METRICS_MAX // 1024} KB (rule 4)")
+        mod.run(Ctx(raw=job.raw, out=out, prev=outs[i - 1] if i else None, cut=dict(job.cut), params=dict(job.params),
+                    refs=job.refs, dataset=job.dataset, prep=job.pid, data=job.data, result=light))
         if i == 0 and not all((out / f).is_file() for f in CARD):
             raise RuntimeError("the first step wrote no experiment card (experiment_card.json and .md; rule 7)")
-        if i == len(job.tasks) - 1:
+        if i > 0:
+            extra = sorted(p.name for p in light.iterdir() if p.name != METRICS)
+            if extra:
+                raise RuntimeError(f"a step writes only ctx.out and one light {METRICS}; it also wrote {', '.join(extra)}")
+        if (light / METRICS).is_file() and (light / METRICS).stat().st_size > METRICS_MAX:
+            raise RuntimeError(f"{METRICS} is light (shapes, counts, checks): under {METRICS_MAX // 1024} KB (rule 4)")
+        if i == len(steps) - 1:
             d = out / "data_dictionary.csv"
             if d.is_file() and {h.strip().lower() for h in d.read_text(encoding="utf-8").splitlines()[0].split(",")} & DICT_SAMPLE:
                 raise RuntimeError("the ready folder's dictionary holds a sample column: no record value (rule 4)")
-        if 0 < i < len(job.tasks) - 1:
-            files = [p for p in sorted(out.rglob("*")) if p.is_file()]
-            (result / "heavy.yaml").write_text(yaml.safe_dump(
-                {"heavy_dir": _rel(out, job.root), "files": [{"path": _rel(p, out), "bytes": p.stat().st_size}
-                                                             for p in files]}, sort_keys=False), encoding="utf-8")
-        receipt["status"] = "done"
-        if i == len(job.tasks) - 1:
-            for f in CARD:                                       # the ready folder carries its experiment card
-                if (job.out_of(0) / f).is_file():
-                    shutil.copy2(job.out_of(0) / f, out / f)
-            receipt["data_version"] = _register(job, out)
+        line["status"] = "done"
+    except Refused as why:
+        line.update(status="refused", reason=str(why))
+    except Exception as e:                                       # a script's own failure, kept as its last lines
+        line.update(status="failed", reason=f"{type(e).__name__}: {e}", trace=traceback.format_exc().strip().splitlines()[-3:])
+    line["seconds"] = round(time.time() - t0, 1)
+    return line
+
+
+def run(job: Job) -> str:
+    """The whole prep version in the Job's prep Run: the gates, every step in order, the receipt; `ready:` on success."""
+    if job.task is None or job.run is None:
+        sys.exit(f"{job.path.name} has no prep Task (t01_prep-vK…) with a Run")
+    result = job.run / "result"
+    done = yaml.safe_load((result / "runtime.yaml").read_text()) if (result / "runtime.yaml").is_file() else {}
+    if (done or {}).get("status") == "done":                    # its ready folder may be read already: never rerun
+        print(f"{job.task.name}/{job.run.name}: done already" + (f" (reused {done.get('reused')})" if done.get("reused") else ""))
+        return "done"
+    if result.exists():
+        shutil.rmtree(result)                                   # an earlier attempt that did not finish
+    result.mkdir(parents=True)
+    receipt = {"status": "failed", "data": job.data, "prep": job.pid, "prep_hash": job.face.get("prep-hash"),
+               "raw": job.row.get("raw"), "cut": job.cut, "params": job.params,
+               "started": dt.datetime.now().isoformat(timespec="seconds")}
+    _card_status(job.run, "running")
+    try:
+        _gate(job)
+        receipt["scripts_sha256"] = _provenance(job, result)
+        lines, outs = [], []
+        for i, step in enumerate(PR.steps(job.ver)):
+            lines.append(_step(job, i, step, result, outs))
+            if lines[-1]["status"] != "done":
+                break
+        receipt["steps"] = lines
+        receipt["status"] = lines[-1]["status"] if lines else "failed"
+        if lines and lines[-1].get("reason"):
+            receipt["reason"] = f"{lines[-1]['step']}: {lines[-1]['reason']}"
+        heavy = [o for k, o in enumerate(outs) if 0 < k < len(PR.steps(job.ver)) - 1]
+        if heavy:
+            (result / "heavy.yaml").write_text(yaml.safe_dump({"heavy": [
+                {"dir": _rel(o, job.root), "files": [{"path": _rel(p, o), "bytes": p.stat().st_size}
+                                                     for p in sorted(o.rglob("*")) if p.is_file()]} for o in heavy]},
+                sort_keys=False), encoding="utf-8")
+        if receipt["status"] == "done":
+            for f in CARD:                                       # the card at the Result's top, and in the ready folder
+                shutil.copy2(outs[0] / f, result / f)
+                shutil.copy2(outs[0] / f, job.ready / f)
+            receipt["ready"] = _rel(job.ready, job.root) + "/"
+            jf, jbody = front(job.path / f"{job.path.name}.md")
+            jf["ready"] = receipt["ready"]
+            (job.path / f"{job.path.name}.md").write_text(with_front(jf, jbody), encoding="utf-8")
     except Refused as why:
         receipt.update(status="refused", reason=str(why))
-    except Exception as e:                                       # a script's own failure, kept as its last line
-        receipt.update(status="failed", reason=f"{type(e).__name__}: {e}",
-                       trace=traceback.format_exc().strip().splitlines()[-3:])
-    receipt.update(finished=dt.datetime.now().isoformat(timespec="seconds"), seconds=round(time.time() - t0, 1))
+    receipt["finished"] = dt.datetime.now().isoformat(timespec="seconds")
     (result / "runtime.yaml").write_text(yaml.safe_dump(receipt, sort_keys=False, allow_unicode=True), encoding="utf-8")
-    _card_status(run, receipt["status"])
-    print(f"{task.name}/{run.name}: {receipt['status']}" + (f" · {receipt.get('reason')}" if receipt.get("reason") else ""))
+    _card_status(job.run, receipt["status"])
+    print(f"{job.task.name}/{job.run.name}: {receipt['status']}" + (f" · {receipt.get('reason')}" if receipt.get("reason") else ""))
     return receipt["status"]
 
 
@@ -261,17 +260,8 @@ def main(argv=None) -> int:
     if not argv:
         sys.exit(__doc__.split("\n\n")[1])
     folder = Path(argv[0]).resolve()
-    if DATAJOB.match(folder.name):                              # the whole chain, in order
-        job = Job(folder)
-        for task in job.tasks:
-            if job.status(task) == "done":
-                continue
-            if run_step(job, task) != "done":
-                return 0 if job.status(task) == "refused" else 1
-        return 0
-    job = Job(folder.parent)
-    status = run_step(job, folder)
-    return 1 if status == "failed" else 0
+    job = Job(folder if JOB3.match(folder.name) else folder.parent)
+    return 1 if run(job) == "failed" else 0
 
 
 if __name__ == "__main__":

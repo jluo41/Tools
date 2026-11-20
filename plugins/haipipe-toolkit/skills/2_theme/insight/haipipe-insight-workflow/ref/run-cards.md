@@ -524,14 +524,13 @@ the person's notes, what is running, what a person signs) over its result. `view
 💬 PROMPT   /haipipe-task-for-data review the worker of {folder} against its face in a fresh context, as run-review-script-t<NN>: it reads, writes and checks what the face says and nothing else, no outcome shapes a row; return it with what is wrong, never fix it yourself.
 
 
-## Data Job › Runs · a Board runs a signed prep version (ref/dataprep.md)
+## Prep Task › Runs · a Job's t01, the prep version (ref/dataprep.md)
 
-🔘 BUTTON   Run a data step · Data Job › Runs · ^r\d\d_
+🔘 BUTTON   Run the prep version · Prep Task › Runs · ^r\d\d_
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight run the data Job {folder} (python ref/run_prep.py {folder}, or a step's own run.sh), as rNN_<dataset>: its steps in order on the Board's raw export, each stopping the chain when it refuses or fails; the last step's folder becomes the Board's next data version. Report each step's status and reason, never a row.
-
+💬 PROMPT   /haipipe-insight run the prep Task of the Job {folder} (python ref/run_prep.py {folder}, or t01's own run.sh), as rNN_<dataset>: every step of its prep version in one Run on its data version's raw export, stopping at the first that refuses or fails; the ready folder it writes is what the Job's question Tasks read. Report each step's status and reason, never a row.
 
 ## Gates
 
@@ -556,6 +555,6 @@ a handoff signed         Block      run-draft-handoff           a person signed;
 a step agreed            Step       run-review-steps-prep-v<N>  another agent passed its script against its face (agreed: ✅)
 a prep version signed    Prep       run-sign-prep-v<N>          every step agreed and its script run(ctx); a person
                                                                 signed; the code's hash pinned
-a data version made      Data Job   rNN_<dataset> (last step)   every step done in order on the Board's raw export;
-                                                                the ready folder registered with prep: and made-by:
+a ready folder made      Job        t01's rNN_<dataset>         every step of the prep version done in order on the
+                                                                data version's raw export; the Job face's ready:
 ```

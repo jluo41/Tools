@@ -130,7 +130,8 @@ def _front(fields, body):
     return "---\n" + yaml.safe_dump(fields, sort_keys=False, allow_unicode=True) + "---\n\n" + body
 
 
-def open_job(board, release, data, previous="", moved="start", number=None):
+def open_job(board, release, data, previous="", moved="start", number=None, name=None, extra=None, require_data=True,
+             shift=0):
     board = Path(board).resolve()
     face, _ = RQ.front(board / "board.md")
     proto = board.parent.parent / str(face.get("prototype", ""))
@@ -138,17 +139,17 @@ def open_job(board, release, data, previous="", moved="start", number=None):
                  and re.match(rf"^j\d+_{release}(_.+)?$", p.name)), None)
     if rdir is None:
         raise SystemExit(f"no release {release} in {proto}")
-    if not any(v.get("version") == data for v in face.get("versions") or []):
-        raise SystemExit(f"no data version {data} in {board.name}/board.md versions:")
+    if require_data and not any(v.get("version") == data for v in face.get("versions") or []):
+        raise SystemExit(f"no data version {data} in {board.name}/board.md versions:")   # a prep Job's head Task makes it
     jobs = sorted(p for p in board.glob("j[0-9][0-9]_*") if p.is_dir() and JOB.match(p.name))
     dataset = str(face.get("dataset", ""))
-    job = next((j for j in jobs if JOB.match(j.name).group(2, 4) == (release, data)), None) \
+    job = board / name if name else next((j for j in jobs if JOB.match(j.name).group(2, 4) == (release, data)), None) \
         or board / job_name(number or len(jobs) + 1, release, release_slug(rdir), dataset, data)
     made = []
     plan_words = _words(rdir, release)
     heading = f"{plan_words[:1].upper()}{plan_words[1:]} ({code_id(release)}) on {data_id(data)}"   # the folder, in words
-    jface = {"release": release, "prototype": str(rdir.relative_to(board.parent.parent)), "data": data, "state": "open",
-             "moved": moved, "previous": previous}
+    jface = {**(extra or {}), "release": release, "prototype": str(rdir.relative_to(board.parent.parent)), "data": data,
+             "state": "open", "moved": moved, "previous": previous}
     jface["goal"] = job_goal(board, jface)
     _write(job / f"{job.name}.md", _front(jface,
                                           f"# {heading}\n\n{code_id(release)} on {data_id(data)}. "
@@ -160,6 +161,9 @@ def open_job(board, release, data, previous="", moved="start", number=None):
         qdir = (rdir / row["task"]).resolve()
         q, _ = RQ.front(qdir / RQ.QFILE)
         tdir = job / Path(row["task"]).name
+        if shift:                                       # a Job of three versions: t01 is its prep Task (insight_ladder_datajob)
+            m = re.match(r"^t(\d+)_(.+)$", tdir.name)
+            tdir = job / f"t{int(m.group(1)) + shift:02d}_{m.group(2)}"
         ask = str(q.get("ask") or q.get("question") or "").strip()
         _write(tdir / f"{tdir.name}.md", _front({"question": qid, **({"goal": ask} if ask and not ask.startswith("<") else {}),
                                                  "answer-status": "open", "answer": "", "how-sure": "", "check": ""},
