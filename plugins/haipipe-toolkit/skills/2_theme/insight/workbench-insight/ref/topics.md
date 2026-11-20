@@ -28,8 +28,9 @@ T20  a new prep version cannot order its steps  fixed
 T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
 T22  a new prep version copies the Runs' notebooks  fixed
 T23  a description from another pull stops a dataset  fixed
-T24  a later step does not wait for the card    open
+T24  a later step does not wait for the card    fixed
 T25  a signature does not freeze a called library  open
+T26  DataPrep holds code; the Board runs it     fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -407,15 +408,14 @@ T25  a signature does not freeze a called library  open
 - **Case**: SMSR3Full builds, its card saying "nothing stated for this export (1 description from another pull)".
 - **Guard**: the rule, read by the step review (reviewer rule 5); the card worker is prep-v2's.
 
-## T24 · A later step does not wait for the experiment card · open
+## T24 · A later step does not wait for the experiment card · fixed
 
 - **From**: Report, Insight-Use-Case, 261120, from the prep-v2 review (topic L): "nothing makes a later step wait for
   the experiment card. t02 builds even if t01 failed; only sign catches it."
 - **Questions**: should a dataset's later steps refuse while its card has not passed? Where is "passed" read from?
-- **Direction**: the card's two files reach the dataset's `@prep-vK` folder only when every check passes (rule 7), so a
-  later step's worker stops unless `<prepare_dir>/experiment_card.json` is there; rule 7 says so and the step review
-  checks it.
-- **Still owed**: the sentence in rule 7 and reviewer rule 5; prep-v3's workers.
+- **Answer** (with T26): `ref/run_prep.py` refuses a step until the step before it is done, and fails a first step
+  that wrote no experiment card; the chain stops at the first step that refuses or fails.
+- **Guard**: `test_dataprep.py` `test_a_data_job_refuses_out_of_order_without_a_card_or_on_changed_code`.
 
 ## T25 · A signature does not freeze a library a step calls · open
 
@@ -426,4 +426,25 @@ T25  a signature does not freeze a called library  open
 - **Direction**: a step's face lists `libraries: [{path, sha256}]`; the prep hash covers those pins; the worker
   refuses when a library's sha256 differs from its pin; `audit` row `libraries` names a pinned file that changed.
 - **Still owed**: the face key, the hash, the audit row and a test.
+
+## T26 · DataPrep holds code; the Board runs it · fixed
+
+- **From**: Report, Insight-Use-Case, 261120 (topic N), quoting JL: "the prep-v1 and just like the things we do in the
+  questionbook-v1, they are code only … the real data processing and real question processing are in the insight
+  block"; "what we want to deliver is like a script … input is the raw_folder, and output is
+  ready_for_insight_folder"; "each tNN is a script, maybe we can follow them".
+- **Questions**: what does a prep version hold, and what a step? Where does a prep version run, and how does its
+  output become a data version? What becomes of the per-dataset Runs, configs and their checks?
+- **Answer**: `ref/dataprep.md` rewritten. A prep version is code only: a step is `step.md` and a script exposing
+  `run(ctx)`. A Board names its raw export and DataPrep Block (`datasource`) and opens a data Job (`datajob`), one Task
+  per step and one hard Run each; `ref/run_prep.py` runs them in order with `ctx` (raw, out, prev, cut, refs, refuse),
+  writes the card, the heavy middle and the ready folder, copies the scripts and their sha256 into each Run's
+  provenance, and registers the ready folder as the Board's next data version (`prep`, `made-by`). Question Jobs and
+  data Jobs share one count. The per-dataset Runs, `--again`, configs and their checks are gone.
+- **Case**: on a placeholder SPACE a signed three-step version runs on a Board's raw export and becomes data-v1;
+  out of order, without a card, on changed code, on a step's own refusal or with a sample column, it stops as the rule
+  says.
+- **Guard**: `test_dataprep.py` (nine tests); `run_cards.py --check`.
+- **Still owed**: the workbench pages for a DataPrep Block and a Board data Job (the frame's fallback shows them);
+  `haipipe-task`'s ticket still admits an `InsightDataPrep-*` Block, which no longer runs one.
 

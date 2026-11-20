@@ -501,13 +501,13 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-reviewer-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight review every step of {folder} in a fresh context, as run-review-steps-prep-v<N>: each worker does what its face says it reads, writes and checks; every check on the face is enforced (the Run stops when it fails), not only listed; the worker reads its dataset and output folder from its config ($HAIPIPE_CONFIG, or a carried ticket's env:) and stops without them, never defaulting to a dataset; it reads only its raw: folder and earlier steps, with no shared source stage, and writes only a new folder ending @prep-v<N> (insight_ladder.py audit shows outputs 0 and inputs 0, and you read each records line); nothing it writes beside the rows, and nothing in its Result or notebook, shows a record value; the first step's experiment card stops on a stated-versus-observed mismatch (a carried version is held to neither the raw-only reading nor the card: dataprep.md § Carrying); no step reads an outcome. Write agreed: ✅ <YYMMDD> on a step that passes (your one write); return the rest with what is wrong, never fix them yourself.
+💬 PROMPT   /haipipe-insight review every step of {folder} in a fresh context, as run-review-steps-prep-v<N>: each step's script does what its step.md says it reads, writes and checks, through run(ctx) only (ctx.raw, ctx.prev, ctx.refs; nothing else read, nothing written but ctx.out); every check on the spec is enforced (ctx.refuse), not only listed; nothing it writes beside the rows, and nothing in a Result, shows a record value (insight_ladder.py audit shows records 0, or you read each line); the first step writes the experiment card and stops on a stated-versus-observed mismatch; no step reads an outcome. Write agreed: ✅ <YYMMDD> in a step's step.md when it passes (your one write); return the rest with what is wrong, never fix them yourself.
 
 🔘 BUTTON   Sign the prep version · Prep › Delivery · ^run-sign-prep-v\d+$
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    the prep version
-💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-prep-v<N>: every step agreed, every dataset Run passed its checks; show me the steps and their checks, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after, its tools' hash pinned.
+💬 PROMPT   /haipipe-insight get {folder} ready to sign, as run-sign-prep-v<N>: every step agreed, every step's script exposing run(ctx); show me the steps and their checks, and record my signature (insight_ladder.py sign --date YYMMDD). It is frozen after, its code's hash pinned; a Board runs it in a data Job.
 
 ## Step › Work Details · its script and its datasets
 
@@ -523,11 +523,14 @@ the person's notes, what is running, what a person signs) over its result. `view
 ✍️ SIGNS    none
 💬 PROMPT   /haipipe-task-for-data review the worker of {folder} against its face in a fresh context, as run-review-script-t<NN>: it reads, writes and checks what the face says and nothing else, no outcome shapes a row; return it with what is wrong, never fix it yourself.
 
-🔘 BUTTON   Run a dataset · Step › Runs · ^r\d\d_
-🧩 SKILL    haipipe-task-for-data
+
+## Data Job › Runs · a Board runs a signed prep version (ref/dataprep.md)
+
+🔘 BUTTON   Run a data step · Data Job › Runs · ^r\d\d_
+🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-task-orchestrator-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-task-for-data run {folder} on one dataset (insight_ladder.py run {folder} dataset <name>, then its ticket), as rNN_<dataset>: the rows land in the store its config names, the Result keeps the receipt, the checks and the dictionary, never a row.
+💬 PROMPT   /haipipe-insight run the data Job {folder} (python ref/run_prep.py {folder}, or a step's own run.sh), as rNN_<dataset>: its steps in order on the Board's raw export, each stopping the chain when it refuses or fails; the last step's folder becomes the Board's next data version. Report each step's status and reason, never a row.
 
 
 ## Gates
@@ -551,6 +554,8 @@ a page checked           Task       run-check-t<NN>             another agent's 
 a Job closed             Job        run-close-j<NN>             every page checked, the comparison written; a person signed
 a handoff signed         Block      run-draft-handoff           a person signed; Design reads only a signed handoff
 a step agreed            Step       run-review-steps-prep-v<N>  another agent passed its script against its face (agreed: ✅)
-a prep version signed    Prep       run-sign-prep-v<N>          every step agreed; a person signed; the tools' hash pinned
-a data version made      Block      run-add-version-data-v<M>   names the signed prep version (or its Run) that made it
+a prep version signed    Prep       run-sign-prep-v<N>          every step agreed and its script run(ctx); a person
+                                                                signed; the code's hash pinned
+a data version made      Data Job   rNN_<dataset> (last step)   every step done in order on the Board's raw export;
+                                                                the ready folder registered with prep: and made-by:
 ```

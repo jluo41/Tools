@@ -18,7 +18,8 @@ HERE = Path(__file__).resolve().parent
 CARDS = HERE.parent / "ref" / "run-cards.md"
 SKILLS = HERE.parents[3]                                  # plugins/haipipe-toolkit/skills
 AGENTS = SKILLS.parent / "agents"
-LEVELS = ("Guide", "Block", "Job", "Task", "Question Book", "Release", "Question", "Data Prep", "Prep", "Step")
+LEVELS = ("Guide", "Block", "Job", "Task", "Question Book", "Release", "Question", "Data Prep", "Prep", "Step",
+          "Data Job")
 SPACES = ("Description", "Idea Studio", "Audience Report", "Work Details", "Runs", "Delivery")
 GUIDE = ("Method", "Related Paper")
 BUTTON = re.compile(r"^🔘 BUTTON\s+(.+?) · (" + "|".join(LEVELS) + r") › (.+?) · (\^\S+)(?: · views (.+))?$")
@@ -107,7 +108,7 @@ def check(path: Path = CARDS) -> list[str]:
 
 
 LADDER_LEVEL = {"prototype": "Question Book", "version": "Release", "question": "Question", "board": "Block", "job": "Job",
-                "task": "Task", "dataprep": "Data Prep", "prep": "Prep", "step": "Step"}
+                "task": "Task", "dataprep": "Data Prep", "prep": "Prep", "step": "Step", "datatask": "Data Job"}
 
 
 def against_scaffold(path: Path = CARDS) -> list[str]:

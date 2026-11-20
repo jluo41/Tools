@@ -48,17 +48,13 @@ Check alignment           haipipe-insight-check                      the checker
    need names its segment, unit, measure, grouping, uncertainty, rivals and output (T1);
    the kinds are legal at the question's level; the plan was drafted without reading results.
    Only then `agreed: ✅ <YYMMDD>`.
-5. **Review the steps** (a DataPrep prep version): each worker does what its step face says it
-   reads, writes and checks; every check on the face is enforced (the Run stops when it fails),
-   not only listed; the worker reads its dataset and output folder from its config and stops
-   without them, never defaulting to a dataset; it reads only its `raw:` folder and earlier
-   steps, with no shared source stage; nothing it writes beside the rows, and nothing in its
-   Result or notebook, shows a record value; `insight_ladder.py audit <Block>` shows
-   `outputs 0` and `inputs 0`, and each `records` line is read; no step reads an outcome.
-   The first step's experiment card compares stated with observed and stops on a mismatch. A
-   carried version is held to neither the raw-only reading nor the card (dataprep.md § Carrying):
-   its signature approves both.
-   Only then `agreed: ✅ <YYMMDD>` on that step's face.
+5. **Review the steps** (a DataPrep prep version: code only): each step's script does what its
+   `step.md` says it reads, writes and checks, through `run(ctx)` only: it reads `ctx.raw`,
+   `ctx.prev` and `ctx.refs` and writes nothing but `ctx.out`; every check on the spec is
+   enforced (`ctx.refuse`), not only listed; nothing it writes beside the rows, and nothing in a
+   Result, shows a record value (`insight_ladder.py audit <Block>`: `records 0`, or each line
+   read); the first step writes the experiment card and stops on a stated-versus-observed
+   mismatch; no step reads an outcome. Only then `agreed: ✅ <YYMMDD>` in that step's `step.md`.
 6. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.
 7. **Aggregates only**: no names, no row values, no ids from the data in a verdict.

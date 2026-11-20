@@ -1,5 +1,18 @@
 # haipipe-insight · version history
 
+## 3.11.0 · 2026-11-20 · DataPrep holds code only; a Board runs it in a data Job
+
+- JL 261120 (workbench-insight T26): a prep version is a chain of steps, each `step.md` and `scripts/<script>.py`
+  exposing `run(ctx)`; it holds no Run, config or output. A Board names its raw export and DataPrep Block
+  (`insight_ladder.py datasource`) and opens a data Job `jNN_prep-vK-<slug>_data-vM/` (`datajob`): a Task per step, one
+  hard Run each, run in order by `ref/run_prep.py`, which writes the experiment card, the heavy middle, and the ready
+  folder `<store>/<dataset>@prep-vK`, and registers it as the Board's next data version (`prep`, `made-by`).
+- The runner refuses a step until the one before it is done and fails a first step with no experiment card (T24), and
+  fails a ready folder whose dictionary has a sample column. Question Jobs and data Jobs share one count.
+- Gone: per-dataset Runs in the DataPrep Block (`run <step> dataset`, `--again`), its configs and their checks, and
+  `dataset` (a dataset's raw export is its Board's `raw:`). `audit <DataPrep>`: serves, references, scripts, records,
+  agreed, hash. A Data Job run card; the review and sign cards and reviewer rule 5 describe a code-only step.
+
 ## 3.10.5 · 2026-11-19 · the experiment card gates a signature; a new version leaves the Runs' notebooks behind
 
 - workbench-insight T17, T22, T23. `sign` refuses a version whose first step has a Run without

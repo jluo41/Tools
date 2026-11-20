@@ -5,8 +5,9 @@ Insight ladder: the Question Book, the insight Board, and how they work together
 s21 Runs and skills; special boards JL 261008.) Insight sits on the shared ladder as two special boards. The
 **Question Book** holds the questions and the code that answers them; each of its Jobs is one version, a release. The
 **insight Board** holds one dataset and its dated versions; each of its Jobs runs one release on one data version.
-A third Block, the **DataPrep** Block (`insight/InsightDataPrep-<Set>/`, 261116), makes the data versions: its Jobs are
-prep versions of the tools, and a Board's data version names the one that made it ([dataprep.md](dataprep.md)).
+A third Block, the **DataPrep** Block (`insight/InsightDataPrep-<Set>/`, 261116; code only since 261120), holds the
+data's code: its Jobs are prep versions, and a Board runs one in a data Job that makes its next data version
+([dataprep.md](dataprep.md)).
 On the older tabbed screen each level has the six Spaces of the base workbench (Description · Idea Studio · Audience Report | Work Details |
 Runs · Delivery); the insight workbench fills them (servers/workbench-insight: insight_plan_c.py reads this tree,
 insight_views.py draws it). `scripts/insight_ladder.py` makes each folder and keeps the gates.
@@ -123,8 +124,8 @@ jNN_question-vN_<slug>/ open ▶ ask · plan · script ─▶ set the segments �
 
 Two clocks: the **code** clock (a release) moves in the Question Book, the **data** clock (a data version) on the
 Board. A new data version needs no release, and a new release needs no new data; a Job moves exactly one of them,
-so a change in an answer has one cause. The data clock has its own maker, the DataPrep Block: a signed prep version
-makes each dataset's folder, and the Board adds that folder as its next data version ([dataprep.md](dataprep.md)).
+so a change in an answer has one cause. The data clock has its own code, the DataPrep Block: a Board runs a signed prep
+version in a data Job, and the last step's folder becomes its next data version ([dataprep.md](dataprep.md)).
 
 
 The rules
@@ -156,7 +157,7 @@ The rules
    (named by its manifest.json `output_file`, else the one .parquet on top), and may hold manifest.json,
    data_dictionary.csv, cohort_summary.txt, figures/ and documents, all shown on Description › Dataset; a name
    starting with `_` is work beside it, listed, never read. No row of a data version reaches a page; the Data view shows its columns, counts and files (an older
-   board.md's `preview:` is no longer read). `prep:` names the signed prep version (or its Run) that made the folder (`data … --prep`; [dataprep.md](dataprep.md)).
+   board.md's `preview:` is no longer read). `prep:` and `made-by:` name the signed prep version and the data Job that made the folder ([dataprep.md](dataprep.md)).
    `label:` gives the data version its few words (`first 5 days`; `insight_ladder.py data --label`). An older version may still name one `extract:` file (with `rows:`). Paths are SPACE-relative (or
    through a variable), never absolute.
    `accumulates:` says whether a later version holds the earlier rows. `meta/meta.md` says what the extract holds.

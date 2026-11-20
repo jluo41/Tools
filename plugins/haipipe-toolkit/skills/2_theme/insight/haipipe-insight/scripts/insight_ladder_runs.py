@@ -7,7 +7,8 @@ import sys
 from pathlib import Path
 
 from insight_ladder_base import (
-    SOFT, VERSION, JOB, TASK, PREP, STEP, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front, dump_yaml,
+    SOFT, VERSION, JOB, TASK, PREP, STEP, DATAJOB, LEVEL, TYPES, ALONE, DEFAULT_TARGET, RUN_TYPES, Plan, front,
+    dump_yaml,
     project_of, face, face_kind)
 import open_job as OJ  # noqa: E402  (ref/, put on the path by insight_ladder_base)
 
@@ -23,6 +24,10 @@ def level_of(folder: Path) -> str:
         return "version"
     if JOB.match(name) and face_kind(folder.parent) == "board":
         return "job"
+    if DATAJOB.match(name) and face_kind(folder.parent) == "board":
+        return "datajob"
+    if STEP.match(name) and DATAJOB.match(folder.parent.name) and face_kind(folder.parent.parent) == "board":
+        return "datatask"
     if PREP.match(name) and face_kind(folder.parent) == "dataprep":
         return "prep"
     if STEP.match(name) and PREP.match(folder.parent.name) and face_kind(folder.parent.parent) == "dataprep":
@@ -95,9 +100,8 @@ def run(folder: Path, rtype: str, target: str, plan: Plan, again: bool = False) 
     if (level, rtype) not in TYPES:
         sys.exit(f"run-{rtype} does not run at the {level} level; its run types: {RUN_TYPES[level]}")
     skill, agent, signs, hard = TYPES[(level, rtype)]
-    if hard and level == "step":
-        from insight_ladder_prep import dataset_run
-        return [dataset_run(folder, target, plan, again)]
+    if hard and level == "datatask":                           # its one Run, made with the data Job (insight_ladder.py datajob)
+        return sorted(r for r in (folder / "runs").glob("r[0-9][0-9]_*") if r.is_dir())
     if hard:
         return hard_run(folder, target or "all", plan)
     if level == "task" and rtype == "write":

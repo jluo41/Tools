@@ -30,6 +30,7 @@ TASK = re.compile(r"^t(\d+)_([DIKWX]\d\d)_([a-z0-9-]+)$")     # a question Task:
 PREP_BLOCK = re.compile(r"^InsightDataPrep-[A-Za-z0-9][A-Za-z0-9.-]*$")   # the DataPrep Block (ref/dataprep.md)
 PREP = re.compile(r"^j(\d+)_(prep-v\d+)(?:_([a-z0-9][a-z0-9-]*))?$")      # a prep version: j02_prep-v2_<slug>
 STEP = re.compile(r"^t(\d+)_([a-z0-9][a-z0-9-]*)$")                        # a prep step Task: t01_join
+DATAJOB = re.compile(r"^j(\d+)_(prep-v\d+)(?:-([a-z0-9][a-z0-9-]*))?_(data-v\d+)$")   # a Board data Job (JL 261120)
 LOADER = getattr(yaml, "CSafeLoader", yaml.SafeLoader)   # the C loader when built (a Board has many faces)
 LEVEL = {"X": "executive", "D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 KINDS = ("new question", "fix", "retire", "cut")
@@ -82,12 +83,14 @@ TYPES = {
     ("prep", "sign"): ("haipipe-insight", "haipipe-insight-agent", "a person", False),
     ("step", "write-script"): ("haipipe-task-for-data", "haipipe-task-creator-agent", "none", False),
     ("step", "review-script"): ("haipipe-task-for-data", "haipipe-task-reviewer-agent", "none", False),
-    ("step", "dataset"): ("haipipe-task-for-data", "haipipe-task-orchestrator-agent", "none", True)}
+    # a Board's data Job runs a signed prep version on the Board's one dataset: a Task per step, one hard Run each
+    ("datatask", "prep"): ("haipipe-insight", "haipipe-task-orchestrator-agent", "none", True)}
 ALONE = {("board", "coverage")}                       # a Run whose target is the whole level: run-coverage
 DEFAULT_TARGET = {("prototype", "map"): "questions", ("board", "map"): "questions", ("board", "write"): "counsel",
                   ("board", "draft"): "handoff", ("board", "propose"): "coverage"}
 RUN_TYPES = {level: " · ".join(t for (lv, t) in TYPES if lv == level)
-             for level in ("prototype", "version", "question", "board", "job", "task", "dataprep", "prep", "step")}
+             for level in ("prototype", "version", "question", "board", "job", "task", "dataprep", "prep", "step",
+                           "datajob", "datatask")}
 
 
 # ── small helpers ───────────────────────────────────────────────────────────────────────────────

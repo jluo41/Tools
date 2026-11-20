@@ -18,14 +18,14 @@ versions and questions, the insight Board and its data versions, its Jobs and th
     python insight_ladder.py job       <board> --release question-v<N> --data data-v<M>   the next Job jNN_question-vN-<slug>_data-vM/
     python insight_ladder.py dataprep  <Project>/insight/InsightDataPrep-<Set> --set <Set> --serves insight/Insight-<name>[,…]
                                                                         [--store <SPACE-relative folder>] [--title "…"]
-    python insight_ladder.py dataset   <dataprep> <Name> --raw <SPACE-relative raw folder> [--why "…"]   a dataset of the Set
-    python insight_ladder.py prep      <dataprep> --slug <what-it-is> [--from <carried-from folder>]   the next jNN_prep-vK_<slug>/
-                                       [--steps a,b,c: its steps in order; a kept step moves to its new number]
-    python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   a step Task tNN_<slug>/
-    python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed; pins the tools' hash; freezes it
-    python insight_ladder.py run       <step> dataset <name> [--again]   a hard Run runs/rNN_<name>/: ticket, card, config
-                                       (--again: the next Run of that dataset, superseding the newest)
     python insight_ladder.py reference <dataprep> <name> --path <SPACE-relative> --version <v> [--why "…"]   a reference table
+    python insight_ladder.py prep      <dataprep> --slug <what-it-is> [--from <carried-from folder>] [--steps a,b,c]
+                                       the next jNN_prep-vK_<slug>/: code only (a kept step moves to its new number)
+    python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   tNN_<slug>/: step.md, scripts/<slug>.py
+    python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed, every script run(ctx); pins its hash
+    python insight_ladder.py datasource <board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block> [--cut k=v,…]
+    python insight_ladder.py datajob   <board> --prep prep-v<K>       the next jNN_prep-vK-<slug>_data-vM/: a Task per step,
+                                       one Run each; ref/run_prep.py runs them and adds data-vM
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
     python insight_ladder.py run       <Board Task> segment <name|all>   a hard Run runs/rNN_<segment>/ (planned)
     python insight_ladder.py goals     <Board, Question Book, Job or Task>     write each face's missing `goal:` line
@@ -76,6 +76,7 @@ from insight_ladder_runs import (  # noqa: E402,F401 · this module keeps answer
     level_of, _default_target, _partitions, hard_run, run)
 import open_job as OJ  # noqa: E402  (ref/, put on the path by insight_ladder_base)
 import insight_ladder_prep as PR  # noqa: E402  (the DataPrep Block: ref/dataprep.md)
+import insight_ladder_datajob as DJ  # noqa: E402  (a Board's data Jobs: ref/dataprep.md)
 
 
 def board_goal(title: str, dataset: str) -> str:
@@ -128,8 +129,8 @@ def data(path: Path, ver: str, extract: str, rows: str, new: str, plan: Plan, fo
     # reads them all, the Runs find the data file in it (run_job.version_extract)
     entry = ({"version": ver, "folder": folder.rstrip("/") + "/", "frozen": today()} if folder else
              {"version": ver, "extract": extract, "frozen": today(), "rows": rows or "<n>"})
-    if prep:                                   # the signed prep version (or its Run) that made the folder (ref/dataprep.md)
-        PR.prep_of(project_of(path), prep)
+    if prep:                                   # the signed prep version that made the folder (ref/dataprep.md)
+        DJ.check_prep(path, prep)
         entry["prep"] = prep
     if label:                                  # the data version's few words, shown as data-v<M> · <label>
         entry = {"version": ver, "label": label, **{k: v for k, v in entry.items() if k != "version"}}
@@ -181,7 +182,7 @@ def job(block: Path, rel: str, ver: str, plan: Plan) -> Path:
             sys.exit(f"one clock per Job: {prev.name} ran {prel} on {pver_}; add {rel} on {pver_} (or {prel} on {ver}) "
                      "first, so each Job's change has one cause")
         moved = "code" if prel != rel else "data"
-    n = int(JOB.match(prev.name).group(1)) + 1 if prev else 1
+    n = DJ.next_number(block)                 # question Jobs and data Jobs share one count
     path = block / OJ.job_name(n, rel, OJ.release_slug(pver), fm["dataset"], ver)
     if plan.dry:
         plan.made.append(path / f"{path.name}.md")
@@ -461,7 +462,7 @@ def main(argv=None) -> list[Path]:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("command", choices=("prototype", "version", "question", "change", "retire", "sign", "propose",
                                         "board", "data", "job", "run", "goals", "audit", "review", "update",
-                                        "dataprep", "dataset", "prep", "step", "reference"))
+                                        "dataprep", "dataset", "prep", "step", "reference", "datasource", "datajob"))
     ap.add_argument("folder", type=Path)
     ap.add_argument("what", nargs="?", default="", help="question/change/retire: <L><NN>; propose: <slug>; "
                                                         "data: v<M>; run: its type")
@@ -490,9 +491,10 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--raw", default="", help="dataset: the SPACE-relative folder its raw rows sit in")
     ap.add_argument("--path", default="", help="reference: the SPACE-relative file or folder it is read from")
     ap.add_argument("--version", default="", help="reference: the version it is read at")
-    ap.add_argument("--again", action="store_true", help="run <step> dataset: the next Run, superseding the newest")
+    ap.add_argument("--dataprep", default="", help="datasource: the DataPrep Block whose prep versions the Board runs")
+    ap.add_argument("--cut", default="", help="datasource: the cut its steps apply, key=value[,key=value]")
     ap.add_argument("--steps", default="", help="prep: the new version's steps in order, comma-separated")
-    ap.add_argument("--prep", default="", help="data: the signed prep version (or its Run) that made the data folder")
+    ap.add_argument("--prep", default="", help="datajob: the signed prep version to run (prep-vK); data: the one that made the folder")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply", action="store_true", help="update: write (a dry run without it)")
     ap.add_argument("--rerun", action="store_true", help="update --apply: run each stale receipt's ticket again")
@@ -518,7 +520,11 @@ def main(argv=None) -> list[Path]:
     elif c == "reference":
         PR.add_reference(a.folder, a.what, a.path, a.version, a.why, plan)
     elif c == "dataset":
-        PR.add_dataset(a.folder, a.what, a.raw, a.why, plan)
+        sys.exit("a dataset's raw export is its Board's raw: (insight_ladder.py datasource <Board> --raw … --dataprep …)")
+    elif c == "datasource":
+        DJ.datasource(a.folder, a.raw, a.dataprep, a.cut, plan)
+    elif c == "datajob":
+        DJ.datajob(a.folder, a.prep, plan)
     elif c == "prep":
         PR.prep(a.folder, a.slug, a.source, plan, a.steps)
     elif c == "step":
@@ -546,7 +552,7 @@ def main(argv=None) -> list[Path]:
     else:
         if not a.what:
             ap.error("run needs a type, e.g. add, compare, segment")
-        run(a.folder, RUN_WORDS.get(a.what, WORDS.get(a.what, a.what)), a.extra, plan, a.again)
+        run(a.folder, RUN_WORDS.get(a.what, WORDS.get(a.what, a.what)), a.extra, plan)
     for p in plan.made:
         print(("would make " if a.dry_run else "made ") + str(p))
     return plan.made
