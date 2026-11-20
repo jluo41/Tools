@@ -10,7 +10,7 @@ version's step of the same name; its one Run calls the step's script, `run(ctx)`
     ctx.raw    the raw export folder          ctx.prev     the earlier step's output folder (None for the first)
     ctx.out    where this step writes         ctx.refs     {name: path}, the DataPrep Block's references:
     ctx.cut    the Board's cut: (a dict)      ctx.params   the Board's params: (a dict, such as source_fn)
-    ctx.dataset  ctx.prep  ctx.result (the Run's result/)
+    ctx.dataset  ctx.prep  ctx.result (the Run's result/: a step may add one light metrics.json there)
     ctx.refuse(reason)   stop here: the Run is refused, with its reason
 
 Where a step writes: the first its Run's `result/` (the experiment card, rule 7); the last the ready folder
@@ -43,6 +43,8 @@ import insight_ladder_prep as PR  # noqa: E402
 from insight_ladder_prep_checks import DICT_SAMPLE  # noqa: E402
 
 CARD = ("experiment_card.json", "experiment_card.md")
+METRICS, METRICS_MAX = "metrics.json", 256 * 1024          # the one file a step may add to its Result (rule 4)
+RUNNER_FILES = {"runtime.yaml", "provenance", "heavy.yaml"}  # what the runner writes there
 
 
 class Refused(Exception):
@@ -218,6 +220,13 @@ def run_step(job: Job, task: Path) -> str:
         receipt["params"] = job.params
         mod.run(Ctx(raw=job.raw, out=out, prev=job.out_of(i - 1) if i else None, cut=dict(job.cut), params=dict(job.params),
                     refs=job.refs, dataset=job.dataset, prep=job.pid, result=result))
+        if i > 0:                                                # result/ is the runner's, and one light metrics.json
+            extra = sorted(p.name for p in result.iterdir() if p.name not in RUNNER_FILES | {METRICS})
+            if extra:
+                raise RuntimeError(f"a step writes only ctx.out and one light result/{METRICS}; it also wrote "
+                                   f"{', '.join(extra)} (rule 4)")
+        if (result / METRICS).is_file() and (result / METRICS).stat().st_size > METRICS_MAX:
+            raise RuntimeError(f"result/{METRICS} is light (shapes, counts, checks): under {METRICS_MAX // 1024} KB (rule 4)")
         if i == 0 and not all((out / f).is_file() for f in CARD):
             raise RuntimeError("the first step wrote no experiment card (experiment_card.json and .md; rule 7)")
         if i == len(job.tasks) - 1:

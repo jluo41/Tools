@@ -50,12 +50,12 @@ Check alignment           haipipe-insight-check                      the checker
    Only then `agreed: ✅ <YYMMDD>`.
 5. **Review the steps** (a DataPrep prep version: code only): each step's script does what its
    `step.md` says it reads, writes and checks, through `run(ctx)` only: it reads `ctx.raw`,
-   `ctx.prev` and `ctx.refs` and writes nothing but `ctx.out`; every check on the spec is
+   `ctx.prev` and `ctx.refs` and writes nothing but `ctx.out` and one light `ctx.result/metrics.json`; every check on the spec is
    enforced (`ctx.refuse`), not only listed; nothing it writes beside the rows, and nothing in a
    Result, shows a record value (`insight_ladder.py audit <Block>`: `records 0`, or each line
    read); the first step writes the experiment card and stops on a stated-versus-observed
    mismatch; `step.md` `cut:` and `params:` name every key its script reads, and the script refuses
-   a key it does not know; a step that imports a library pins its sha256 in its own code and refuses when
+   an unknown key in a dict it reads, leaving a dict it does not read alone; a step that imports a library pins its sha256 in its own code and refuses when
    the library differs; no step reads an outcome. Only then `agreed: ✅ <YYMMDD>` in that step's `step.md`.
 6. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.

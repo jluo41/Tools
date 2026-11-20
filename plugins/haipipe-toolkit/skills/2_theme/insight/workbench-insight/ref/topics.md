@@ -33,6 +33,7 @@ T25  a signature does not freeze a called library  fixed
 T26  DataPrep holds code; the Board runs it     fixed
 T27  a step cannot read a per-Board setting     fixed
 T28  a cut key nobody reads is ignored          fixed
+T29  a step's Result has no light summary       fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -472,7 +473,18 @@ T28  a cut key nobody reads is ignored          fixed
 - **Answer**: a step declares the keys it reads, `step.md` `cut:` and `params:`; `datajob` refuses a Board key no step
   of the prep version declares, and `ref/run_prep.py` refuses it again for a Job opened before; a step refuses a key it
   does not know rather than ignore it (`ref/dataprep.md` rule 3; reviewer rule 5 and the review card).
+  Read per dict (the step review's question, 261120): every step sees the whole ctx, so a step refuses an unknown key
+  in a dict it reads (cut or params) and leaves a dict it does not read alone.
 - **Case**: a Board with `cut: {end: …}` for a step that reads `end_date` is refused at `datajob`; a Job whose pinned
   params name a key no step reads is refused at its first step.
 - **Guard**: `test_dataprep.py` `test_a_board_key_no_step_reads_is_refused`.
+
+## T29 · A step's Result has no light summary · fixed
+
+- **From**: Report, Insight-Use-Case, 261120, a question from the prep-v1 step review: may a middle or last step write a
+  light `result/metrics.json`? prep-v1's t02 and t03 did, and were returned under the strict reading of rule 4.
+- **Answer**: yes. Every step may write one light `ctx.result/metrics.json` (shapes, counts, check outcomes, under
+  256 KB): what a reader opens first. A middle or last step writes nothing else into `result/`, which is the runner's;
+  `ref/run_prep.py` fails a step that does, and a `metrics.json` over the size (rule 4; reviewer rule 5, the card).
+- **Guard**: `test_dataprep.py` `test_a_step_adds_one_light_metrics_json_to_its_result_and_nothing_else`.
 

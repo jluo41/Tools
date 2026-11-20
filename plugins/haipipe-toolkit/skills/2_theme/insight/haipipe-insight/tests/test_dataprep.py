@@ -275,3 +275,29 @@ def test_a_board_key_no_step_reads_is_refused(space):
     assert RP.main([str(job)]) == 0
     rt = yaml.safe_load((job / "t01_experiment" / "runs" / "r01_demoa" / "result" / "runtime.yaml").read_text())
     assert rt["status"] == "refused" and "params source" in rt["reason"]
+
+
+def test_a_step_adds_one_light_metrics_json_to_its_result_and_nothing_else(space):
+    root, p, prep, board = space
+    L("datasource", board, "--raw", "_WorkSpace/raw/demo_a", "--dataprep", "insight/InsightDataPrep-DemoSet")
+    light = SOURCE + '    (ctx.result / "metrics.json").write_text(\'{"rows": 2}\')\n'
+    stray = SOURCE + '    (ctx.result / "rows_copy.csv").write_text("x")\n'
+    _signed_prep(prep, scripts=(("experiment", EXPERIMENT), ("source", light), ("prepare", PREPARE)))
+    L("datajob", board, "--prep", "prep-v1")
+    job = board / "j01_prep-v1-first_data-v1"
+    assert RP.main([str(job)]) == 0
+    assert (job / "t02_source" / "runs" / "r01_demoa" / "result" / "metrics.json").read_text() == '{"rows": 2}'
+    ver = prep / "j01_prep-v1_first"
+    shutil.rmtree(ver)
+    md = board / "board.md"                                                   # a fresh Board state for the second case
+    fm = _front(md)
+    fm.pop("versions", None)
+    md.write_text("---\n" + yaml.safe_dump(fm, sort_keys=False) + "---\n", encoding="utf-8")
+    shutil.rmtree(job)
+    shutil.rmtree(root / "_WorkSpace" / "stage")
+    _signed_prep(prep, scripts=(("experiment", EXPERIMENT), ("source", stray), ("prepare", PREPARE)))
+    L("datajob", board, "--prep", "prep-v1")
+    job = board / "j01_prep-v1-first_data-v1"
+    assert RP.main([str(job)]) == 1
+    rt = yaml.safe_load((job / "t02_source" / "runs" / "r01_demoa" / "result" / "runtime.yaml").read_text())
+    assert rt["status"] == "failed" and "rows_copy.csv" in rt["reason"]

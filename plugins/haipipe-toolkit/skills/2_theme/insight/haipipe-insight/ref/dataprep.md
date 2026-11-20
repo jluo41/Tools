@@ -57,12 +57,15 @@ The rules
    output, `ctx.refs` the Block's `references:` (each read at the version named there), `ctx.cut` and `ctx.params` the
    Board's cut and settings (`datasource --cut … --param …`, pinned on the data Job when it opens). A step declares the
    cut and params keys it reads (`step.md` `cut:` and `params:`); `datajob` and the runner refuse a Board key no step
-   declares, and a step refuses a key it does not know, never ignores it (T28). No cache, no other
+   declares. A step refuses an unknown key in a dict it reads (cut or params) rather than ignore it, and leaves a dict
+   it does not read alone: every step sees the whole ctx (T28). No cache, no other
    pipeline's store, no shared source stage is an input. A library a step imports pins its sha256 in the step's own
    code, so the signature covers the pin, and the step refuses when the library differs (T25).
 4. **A step writes only `ctx.out`, and no page shows a record value.** The first step writes its Run's `result/`; the
    last step writes the ready folder `<store>/<dataset>@prep-vK`; one between them writes the Run's heavy folder under
-   `_WorkSpace/ProjectResult/…` (the Result keeps `heavy.yaml`). A Result, a dictionary, a manifest or a summary
+   `_WorkSpace/ProjectResult/…` (the Result keeps `heavy.yaml`). Every step may also write one light
+   `ctx.result / "metrics.json"` (its shapes, counts and check outcomes, under 256 KB), what a reader opens first; a
+   middle or last step writes nothing else into `result/`, which is the runner's (T29). A Result, a dictionary, a manifest or a summary
    carries shapes, counts and names: no sample column, no first value, no `head()` of a table. The runner fails a
    ready folder whose dictionary has a sample column; `audit <Block>` names each script line that takes a record's
    value (`records`).
@@ -110,7 +113,8 @@ ctx.prev     Path   the earlier step's ctx.out; None for the first step
 ctx.cut      dict   the Board's cut: (dates, a sub-cohort), applied by the step that cuts
 ctx.params   dict   the Board's params: (the settings its steps read, such as source_fn); {} when none
 ctx.refs     dict   {name: Path}, the DataPrep Block's references:
-ctx.dataset  str    the Board's dataset;  ctx.prep  the prep version;  ctx.result  the Run's result/
+ctx.dataset  str    the Board's dataset;  ctx.prep  the prep version
+ctx.result   Path   the Run's result/: one light metrics.json may go there (rule 4)
 ctx.refuse(reason)  stops the step: the Run is refused, with its reason, and the chain stops
 ```
 

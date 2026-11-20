@@ -1,5 +1,11 @@
 # haipipe-insight · version history
 
+## 3.11.3 · 2026-11-20 · one light metrics.json per Result; a step reads its own dicts
+
+- workbench-insight T28, T29: every step may write one light `ctx.result/metrics.json`; `ref/run_prep.py` fails a middle
+  or last step that writes anything else into `result/`. Rule 3: a step refuses an unknown key in a dict it reads and
+  leaves a dict it does not read alone.
+
 ## 3.11.2 · 2026-11-20 · a step declares the cut and params keys it reads
 
 - workbench-insight T28: `step.md` `cut:` and `params:` list the keys a step reads; `datajob` and `ref/run_prep.py`
