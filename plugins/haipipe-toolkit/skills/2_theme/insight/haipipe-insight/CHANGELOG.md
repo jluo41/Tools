@@ -1,5 +1,11 @@
 # haipipe-insight · version history
 
+## 3.11.1 · 2026-11-20 · ctx.params, and the Job pins its cut and params
+
+- workbench-insight T25, T27. `datasource … --param k=v` writes the Board's `params:`; a data Job pins `cut:` and
+  `params:` when it opens; `ref/run_prep.py` passes `ctx.params`. A step that imports a library pins its sha256 in its
+  own code (rule 3; the review checks it).
+
 ## 3.11.0 · 2026-11-20 · DataPrep holds code only; a Board runs it in a data Job
 
 - JL 261120 (workbench-insight T26): a prep version is a chain of steps, each `step.md` and `scripts/<script>.py`

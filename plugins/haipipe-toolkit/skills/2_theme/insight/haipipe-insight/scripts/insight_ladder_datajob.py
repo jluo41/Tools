@@ -39,9 +39,10 @@ def dataprep_of(board: Path) -> Path:
     return block
 
 
-def datasource(board: Path, raw: str, dataprep: str, cut: str, plan: Plan) -> None:
+def datasource(board: Path, raw: str, dataprep: str, cut: str, plan: Plan, params: str = "") -> None:
     """Where a Board's one dataset comes from: its raw export (`raw:`), the cut a step applies (`cut:`), and the
-    DataPrep Block whose prep versions it runs (`dataprep:`). Paths are Project- or SPACE-relative, never absolute."""
+    DataPrep Block whose prep versions it runs (`dataprep:`), and the settings its steps read (`params:`, such as the
+    source function: ctx.params). Paths are Project- or SPACE-relative, never absolute."""
     if face_kind(board) != "board":
         sys.exit(f"{board.name} is not an insight Board (board.md board-kind: insight-board)")
     if not raw or not dataprep or raw.startswith("/") or dataprep.startswith("/"):
@@ -56,9 +57,10 @@ def datasource(board: Path, raw: str, dataprep: str, cut: str, plan: Plan) -> No
         sys.exit(f"{block.name} does not name {board.name} in serves:; add it there first")
     fields, body = front(board / "board.md")
     fields.update({"raw": raw, "dataprep": dataprep})
-    pairs = [kv.split("=", 1) for kv in cut.split(",") if "=" in kv]
-    if pairs:
-        fields["cut"] = {k.strip(): v.strip() for k, v in pairs}
+    for key, given in (("cut", cut), ("params", params)):
+        pairs = [kv.split("=", 1) for kv in given.split(",") if "=" in kv]
+        if pairs:
+            fields[key] = {**(fields.get(key) or {}), **{k.strip(): v.strip() for k, v in pairs}}
     plan.write(board / "board.md", with_front(fields, body), replace=True)
 
 
@@ -103,7 +105,7 @@ def datajob(board: Path, pid: str, plan: Plan) -> Path:
     dataset = str(fm.get("dataset") or "dataset")
     plan.write(path / f"{path.name}.md", with_front(
         {"prep": pid, "dataprep": fm["dataprep"], "prep-hash": face(ver).get("hash"), "data": f"data-v{m}",
-         "raw": fm["raw"], "state": "open",
+         "raw": fm["raw"], "cut": dict(fm.get("cut") or {}), "params": dict(fm.get("params") or {}), "state": "open",
          "goal": f"{pid} on {dataset}'s raw export: the folder ready for insight that becomes data-v{m}"},
         f"\n# {path.name}\n\nRuns {pid} of `{block.name}` on `{fm['raw']}`, one step a Task, in order; the last step's\n"
         f"folder becomes data-v{m} on this Board once every step has finished (ref/run_prep.py).\n"))

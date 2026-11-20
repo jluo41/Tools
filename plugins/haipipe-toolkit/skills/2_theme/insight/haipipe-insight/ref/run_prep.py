@@ -9,7 +9,8 @@ version's step of the same name; its one Run calls the step's script, `run(ctx)`
 
     ctx.raw    the raw export folder          ctx.prev     the earlier step's output folder (None for the first)
     ctx.out    where this step writes         ctx.refs     {name: path}, the DataPrep Block's references:
-    ctx.cut    the Board's cut: (a dict)      ctx.dataset  ctx.prep  ctx.result (the Run's result/)
+    ctx.cut    the Board's cut: (a dict)      ctx.params   the Board's params: (a dict, such as source_fn)
+    ctx.dataset  ctx.prep  ctx.result (the Run's result/)
     ctx.refuse(reason)   stop here: the Run is refused, with its reason
 
 Where a step writes: the first its Run's `result/` (the experiment card, rule 7); the last the ready folder
@@ -97,6 +98,8 @@ class Job:
         self.ver = PR.prep_version(self.block, self.pid) if self.block else None
         self.raw = _find(home, str(self.face.get("raw") or self.fm.get("raw") or ""))
         self.dataset = str(self.fm.get("dataset") or "dataset")
+        pinned = lambda k: (self.face.get(k) if k in self.face else self.fm.get(k)) or {}   # noqa: E731 · the Job's own
+        self.cut, self.params = dict(pinned("cut")), dict(pinned("params"))                # values; an older Job: the Board's
         self.tasks = sorted((t for t in self.path.iterdir() if t.is_dir() and STEP.match(t.name)),
                             key=lambda t: int(STEP.match(t.name).group(1)))
         bfm = front(self.block / "board.md")[0] if self.block else {}
@@ -209,7 +212,8 @@ def run_step(job: Job, task: Path) -> str:
         spec = importlib.util.spec_from_file_location(f"prep_step_{task.name.replace('-', '_')}", script)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)
-        mod.run(Ctx(raw=job.raw, out=out, prev=job.out_of(i - 1) if i else None, cut=dict(job.fm.get("cut") or {}),
+        receipt["params"] = job.params
+        mod.run(Ctx(raw=job.raw, out=out, prev=job.out_of(i - 1) if i else None, cut=dict(job.cut), params=dict(job.params),
                     refs=job.refs, dataset=job.dataset, prep=job.pid, result=result))
         if i == 0 and not all((out / f).is_file() for f in CARD):
             raise RuntimeError("the first step wrote no experiment card (experiment_card.json and .md; rule 7)")

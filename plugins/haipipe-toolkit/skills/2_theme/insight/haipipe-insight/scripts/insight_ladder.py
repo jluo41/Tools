@@ -23,7 +23,8 @@ versions and questions, the insight Board and its data versions, its Jobs and th
                                        the next jNN_prep-vK_<slug>/: code only (a kept step moves to its new number)
     python insight_ladder.py step      <prep version> <slug> [--ask "what it does"]   tNN_<slug>/: step.md, scripts/<slug>.py
     python insight_ladder.py sign      <prep version> --date YYMMDD    every step agreed, every script run(ctx); pins its hash
-    python insight_ladder.py datasource <board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block> [--cut k=v,…]
+    python insight_ladder.py datasource <board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block>
+                                       [--cut k=v,…] [--param k=v,…]   (ctx.cut, ctx.params)
     python insight_ladder.py datajob   <board> --prep prep-v<K>       the next jNN_prep-vK-<slug>_data-vM/: a Task per step,
                                        one Run each; ref/run_prep.py runs them and adds data-vM
     python insight_ladder.py run       <folder> <type> [<target>]          a soft Run runs/run-<type>-<target>/
@@ -493,6 +494,7 @@ def main(argv=None) -> list[Path]:
     ap.add_argument("--version", default="", help="reference: the version it is read at")
     ap.add_argument("--dataprep", default="", help="datasource: the DataPrep Block whose prep versions the Board runs")
     ap.add_argument("--cut", default="", help="datasource: the cut its steps apply, key=value[,key=value]")
+    ap.add_argument("--param", default="", help="datasource: a setting its steps read (ctx.params), key=value[,…]")
     ap.add_argument("--steps", default="", help="prep: the new version's steps in order, comma-separated")
     ap.add_argument("--prep", default="", help="datajob: the signed prep version to run (prep-vK); data: the one that made the folder")
     ap.add_argument("--dry-run", action="store_true")
@@ -522,7 +524,7 @@ def main(argv=None) -> list[Path]:
     elif c == "dataset":
         sys.exit("a dataset's raw export is its Board's raw: (insight_ladder.py datasource <Board> --raw … --dataprep …)")
     elif c == "datasource":
-        DJ.datasource(a.folder, a.raw, a.dataprep, a.cut, plan)
+        DJ.datasource(a.folder, a.raw, a.dataprep, a.cut, plan, a.param)
     elif c == "datajob":
         DJ.datajob(a.folder, a.prep, plan)
     elif c == "prep":

@@ -33,10 +33,10 @@ The trees
 
 <Project>/insight/Insight-<D>/                   the Board: one dataset
 ├── board.md                                     … · raw: <SPACE-relative raw export> · cut: {…} ·
-│                                                dataprep: <the DataPrep Block> · versions: [{version, folder,
+│                                                params: {…} · dataprep: <the DataPrep Block> · versions: [{version, folder,
 │                                                frozen, prep, made-by}]
 └── jNN_prep-vK-<slug>_data-vM/                  a data Job: prep-vK on this Board's raw export, making data-vM
-    ├── jNN_prep-vK-<slug>_data-vM.md            prep · dataprep · prep-hash · data · raw · state · made
+    ├── jNN_prep-vK-<slug>_data-vM.md            prep · dataprep · prep-hash · data · raw · cut · params · state · made
     └── tNN_<step>/runs/r01_<dataset>/           the same steps, one hard Run each: run.sh (calls ref/run_prep.py),
                                                  run.yaml, result/ (runtime.yaml, provenance/, the card or heavy.yaml)
 ```
@@ -53,9 +53,10 @@ The rules
    needs every step agreed by an agent that did not write it (run-review-steps) and every script exposing `run(ctx)`;
    it pins `hash:` over `src/` and every step's face, spec and scripts.
 3. **A step reads only what `ctx` gives it.** `ctx.raw` is the Board's raw export, `ctx.prev` the earlier step's
-   output, `ctx.refs` the Block's `references:` (each read at the version named there), `ctx.cut` the Board's cut. No
-   cache, no other pipeline's store, no shared source stage is an input; a library a step imports is code, recorded in
-   the receipt (T25: pinned by the signature).
+   output, `ctx.refs` the Block's `references:` (each read at the version named there), `ctx.cut` and `ctx.params` the
+   Board's cut and settings (`datasource --cut … --param …`, pinned on the data Job when it opens). No cache, no other
+   pipeline's store, no shared source stage is an input. A library a step imports pins its sha256 in the step's own
+   code, so the signature covers the pin, and the step refuses when the library differs (T25).
 4. **A step writes only `ctx.out`, and no page shows a record value.** The first step writes its Run's `result/`; the
    last step writes the ready folder `<store>/<dataset>@prep-vK`; one between them writes the Run's heavy folder under
    `_WorkSpace/ProjectResult/…` (the Result keeps `heavy.yaml`). A Result, a dictionary, a manifest or a summary
@@ -104,6 +105,7 @@ ctx.raw      Path   the Board's raw export (board.md raw:)
 ctx.out      Path   where this step writes (rule 4)
 ctx.prev     Path   the earlier step's ctx.out; None for the first step
 ctx.cut      dict   the Board's cut: (dates, a sub-cohort), applied by the step that cuts
+ctx.params   dict   the Board's params: (the settings its steps read, such as source_fn); {} when none
 ctx.refs     dict   {name: Path}, the DataPrep Block's references:
 ctx.dataset  str    the Board's dataset;  ctx.prep  the prep version;  ctx.result  the Run's result/
 ctx.refuse(reason)  stops the step: the Run is refused, with its reason, and the chain stops
@@ -119,7 +121,7 @@ insight_ladder.py prep       <dataprep> --slug <what-it-is> [--steps a,b,c]
 insight_ladder.py step       <prep version> <slug> [--ask "what it does"]
 insight_ladder.py sign       <prep version> --date YYMMDD
 insight_ladder.py audit      <dataprep>      serves · references · scripts · records · agreed · hash
-insight_ladder.py datasource <Board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block> [--cut key=value,…]
+insight_ladder.py datasource <Board> --raw <SPACE-relative raw export> --dataprep <DataPrep Block> [--cut k=v,…] [--param k=v,…]
 insight_ladder.py datajob    <Board> --prep prep-v<K>
 python ref/run_prep.py       <data Job>            (or <data Task> r01_<dataset>, which its run.sh does)
 insight_ladder.py data       <Board> data-v<M> --data-folder … --prep prep-v<K>   (a version made by hand)

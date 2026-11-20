@@ -15,7 +15,8 @@ from insight_ladder_base import SLUG, PREP_BLOCK, PREP, STEP, Plan, front, with_
 SET = re.compile(r"^[A-Za-z][A-Za-z0-9]*$")
 SCRIPT = '''"""{slug} · one step of a prep version (haipipe-insight ref/dataprep.md). ref/run_prep.py calls run(ctx) once per
 Board data Job, on that Board's dataset: ctx.raw (its raw export folder), ctx.out (where this step writes), ctx.prev (the
-earlier step's output, or None), ctx.cut (the Board's cut), ctx.refs ({{name: path}}), ctx.dataset, ctx.refuse(reason).
+earlier step's output, or None), ctx.cut and ctx.params (the Board's), ctx.refs ({{name: path}}), ctx.dataset,
+ctx.refuse(reason).
 Aggregates only in anything a page shows; rows go to ctx.out."""
 
 

@@ -29,8 +29,9 @@ T21  three linked views: Folder, Element, Session  open (map sent, no code yet)
 T22  a new prep version copies the Runs' notebooks  fixed
 T23  a description from another pull stops a dataset  fixed
 T24  a later step does not wait for the card    fixed
-T25  a signature does not freeze a called library  open
+T25  a signature does not freeze a called library  fixed
 T26  DataPrep holds code; the Board runs it     fixed
+T27  a step cannot read a per-Board setting     fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -417,15 +418,17 @@ T26  DataPrep holds code; the Board runs it     fixed
   that wrote no experiment card; the chain stops at the first step that refuses or fails.
 - **Guard**: `test_dataprep.py` `test_a_data_job_refuses_out_of_order_without_a_card_or_on_changed_code`.
 
-## T25 · A signature does not freeze a library a step calls · open
+## T25 · A signature does not freeze a library a step calls · fixed
 
 - **From**: Report, Insight-Use-Case, 261120 (topic M): the prep hash covers `src/` and the step folders, not a
   library a step calls (`code/haifn/fn_source/<SourceFn>.py`); each receipt records its sha256, but a change after the
   signature goes unseen.
 - **Questions**: how does a step name a library it depends on? What does `sign` pin, and what does `audit` compare?
-- **Direction**: a step's face lists `libraries: [{path, sha256}]`; the prep hash covers those pins; the worker
-  refuses when a library's sha256 differs from its pin; `audit` row `libraries` names a pinned file that changed.
-- **Still owed**: the face key, the hash, the audit row and a test.
+- **Answer** (Insight-Use-Case's, 261120): a step that imports a library pins its sha256 in its own code and refuses
+  when the library differs; the prep hash covers the step's code, so the signature freezes the pin. No face-level
+  `libraries:` key. `ref/dataprep.md` rule 3 says so.
+- **Case**: prep-v1's `source.py` carries `PINNED = {SourceFn: sha256}` and stops on a changed haifn file.
+- **Guard**: the rule, read by the step review (reviewer rule 5 and the review card).
 
 ## T26 · DataPrep holds code; the Board runs it · fixed
 
@@ -447,4 +450,14 @@ T26  DataPrep holds code; the Board runs it     fixed
 - **Guard**: `test_dataprep.py` (nine tests); `run_cards.py --check`.
 - **Still owed**: the workbench pages for a DataPrep Block and a Board data Job (the frame's fallback shows them);
   `haipipe-task`'s ticket still admits an `InsightDataPrep-*` Block, which no longer runs one.
+
+## T27 · A step cannot read a per-Board setting · fixed
+
+- **From**: Report, Insight-Use-Case, 261120 (topic O): the source step must pick the source function per Board (two
+  exports with the same columns need different ones), and `ctx` carried only the cut.
+- **Answer**: `datasource … --param key=value` writes the Board's `params:`; a data Job pins `cut:` and `params:` on its
+  face when it opens, and `ref/run_prep.py` passes them as `ctx.cut` and `ctx.params` ({} when none) and records the
+  params in each Run's receipt. A later edit to the Board does not change a Job already open.
+- **Guard**: `test_dataprep.py` `test_a_board_runs_a_signed_prep_version_and_adds_its_data_version` (a param changed
+  after the Job opened keeps its pinned value).
 

@@ -34,6 +34,7 @@ PREPARE = '''def run(ctx):
     (ctx.out / "data.csv").write_text("\\n".join(rows) + "\\n")
     (ctx.out / "data_dictionary.csv").write_text("name,dtype,null_pct\\narm,str,0\\n")
     (ctx.out / "cut.txt").write_text(str(sorted(ctx.cut.items())) + str(sorted(ctx.refs)))
+    (ctx.out / "params.txt").write_text(str(sorted(ctx.params.items())))
 '''
 
 
@@ -137,9 +138,9 @@ def test_a_board_runs_a_signed_prep_version_and_adds_its_data_version(space):
     with pytest.raises(SystemExit, match="not there"):
         L("datasource", board, "--raw", "_WorkSpace/raw/gone", "--dataprep", "insight/InsightDataPrep-DemoSet")
     L("datasource", board, "--raw", "_WorkSpace/raw/demo_a", "--dataprep", "insight/InsightDataPrep-DemoSet",
-      "--cut", "end_date=2025-07-03")
+      "--cut", "end_date=2025-07-03", "--param", "source_fn=FnA")
     fm = _front(board / "board.md")
-    assert (fm["raw"], fm["cut"]) == ("_WorkSpace/raw/demo_a", {"end_date": "2025-07-03"})
+    assert (fm["raw"], fm["cut"], fm["params"]) == ("_WorkSpace/raw/demo_a", {"end_date": "2025-07-03"}, {"source_fn": "FnA"})
     L("prep", prep, "--slug", "first")
     with pytest.raises(SystemExit, match="not signed"):
         L("datajob", board, "--prep", "prep-v1")
@@ -148,6 +149,9 @@ def test_a_board_runs_a_signed_prep_version_and_adds_its_data_version(space):
     _signed_prep(prep)
     L("datajob", board, "--prep", "prep-v1")
     job = board / "j01_prep-v1-first_data-v1"
+    L("datasource", board, "--raw", "_WorkSpace/raw/demo_a", "--dataprep", "insight/InsightDataPrep-DemoSet",
+      "--param", "source_fn=FnB")                                             # after the Job opened: it keeps FnA
+    assert _front(job / f"{job.name}.md")["params"] == {"source_fn": "FnA"}
     assert [t.name for t in sorted(job.iterdir()) if t.is_dir() and t.name.startswith("t")] == [
         "t01_experiment", "t02_source", "t03_prepare"]
     for t in ("t01_experiment", "t02_source", "t03_prepare"):
@@ -164,6 +168,7 @@ def test_a_board_runs_a_signed_prep_version_and_adds_its_data_version(space):
     ready = root / "_WorkSpace" / "stage" / "DemoA@prep-v1"
     assert (ready / "data.csv").is_file() and (ready / "experiment_card.json").is_file()
     assert (ready / "cut.txt").read_text() == "[('end_date', '2025-07-03')]['area']"
+    assert (ready / "params.txt").read_text() == "[('source_fn', 'FnA')]"
     row = _front(board / "board.md")["versions"][0]
     assert (row["version"], row["folder"], row["prep"], row["made-by"]) == (
         "data-v1", "_WorkSpace/stage/DemoA@prep-v1/", "prep-v1", job.name)
