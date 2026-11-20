@@ -28,7 +28,8 @@ The trees
     ├── runs/                                    soft: run-review-steps-prep-v<K> · run-sign-prep-v<K>
     └── tNN_<step>/                              one step (experiment · source · prepare …), code only
         ├── tNN_<step>.md                        its page's goal line
-        ├── step.md                              the spec: step · script · reads · writes · checks · agreed
+        ├── step.md                              the spec: step · script · reads · writes · checks · cut · params ·
+        │                                        agreed (cut and params: the keys of ctx.cut, ctx.params it reads)
         └── scripts/<script>.py                  run(ctx), and nothing else that runs
 
 <Project>/insight/Insight-<D>/                   the Board: one dataset
@@ -54,7 +55,9 @@ The rules
    it pins `hash:` over `src/` and every step's face, spec and scripts.
 3. **A step reads only what `ctx` gives it.** `ctx.raw` is the Board's raw export, `ctx.prev` the earlier step's
    output, `ctx.refs` the Block's `references:` (each read at the version named there), `ctx.cut` and `ctx.params` the
-   Board's cut and settings (`datasource --cut … --param …`, pinned on the data Job when it opens). No cache, no other
+   Board's cut and settings (`datasource --cut … --param …`, pinned on the data Job when it opens). A step declares the
+   cut and params keys it reads (`step.md` `cut:` and `params:`); `datajob` and the runner refuse a Board key no step
+   declares, and a step refuses a key it does not know, never ignores it (T28). No cache, no other
    pipeline's store, no shared source stage is an input. A library a step imports pins its sha256 in the step's own
    code, so the signature covers the pin, and the step refuses when the library differs (T25).
 4. **A step writes only `ctx.out`, and no page shows a record value.** The first step writes its Run's `result/`; the

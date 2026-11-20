@@ -32,6 +32,7 @@ T24  a later step does not wait for the card    fixed
 T25  a signature does not freeze a called library  fixed
 T26  DataPrep holds code; the Board runs it     fixed
 T27  a step cannot read a per-Board setting     fixed
+T28  a cut key nobody reads is ignored          fixed
 ```
 
 ## T01 · What a question delivers, and how its output is reviewed · fixed
@@ -460,4 +461,18 @@ T27  a step cannot read a per-Board setting     fixed
   params in each Run's receipt. A later edit to the Board does not change a Job already open.
 - **Guard**: `test_dataprep.py` `test_a_board_runs_a_signed_prep_version_and_adds_its_data_version` (a param changed
   after the Job opened keeps its pinned value).
+
+## T28 · A cut key nobody reads is ignored · fixed
+
+- **From**: Report, Insight-Use-Case, 261120 (topic P): a reply from this session suggested `--cut end_date=…` while
+  prep-v1's steps read `ctx.cut['start']` and `['end']`; the step would have seen no cut and made the whole export
+  (751,110 rows, not data-v1's 444,691), and every gate would have passed.
+- **Questions**: what ties a Board's cut and params keys to the keys a prep version's steps read? What does a step do
+  with a key it does not know?
+- **Answer**: a step declares the keys it reads, `step.md` `cut:` and `params:`; `datajob` refuses a Board key no step
+  of the prep version declares, and `ref/run_prep.py` refuses it again for a Job opened before; a step refuses a key it
+  does not know rather than ignore it (`ref/dataprep.md` rule 3; reviewer rule 5 and the review card).
+- **Case**: a Board with `cut: {end: …}` for a step that reads `end_date` is refused at `datajob`; a Job whose pinned
+  params name a key no step reads is refused at its first step.
+- **Guard**: `test_dataprep.py` `test_a_board_key_no_step_reads_is_refused`.
 

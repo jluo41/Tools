@@ -3,7 +3,7 @@ name: haipipe-insight
 description: "The door for insight: a Question Book (the questions, a Job per release), a DataPrep Block (the tools that make the data versions, a Job per prep version) and an insight Board (one dataset, a Task per question, a Run per segment); scaffolds the ladder. Use to set up or update a Board or a DataPrep Block. Trigger: insight, Question Book, insight Board, DataPrep, data prep, DIKW, /haipipe-insight, /haipipe-insight update."
 allowed-tools: Bash, Read, Write, Grep, Glob, Skill
 metadata:
-  version: "3.11.1"
+  version: "3.11.2"
   last_updated: "2026-11-20"
   # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
 ---

@@ -135,6 +135,9 @@ def _gate(job: Job, i: int) -> None:
         raise Refused(f"{job.ver.name} is not signed")
     if PR.prep_hash(job.ver) != str(job.face.get("prep-hash")):
         raise Refused(f"{job.ver.name}'s code is not what this Job pinned ({job.face.get('prep-hash')}): open a new data Job")
+    stray = PR.undeclared(job.ver, job.cut, job.params)
+    if stray:
+        raise Refused(f"no step of {job.pid} reads {', '.join(stray)}: a key nobody reads is refused, never ignored")
     if job.raw is None or not job.raw.exists():
         raise Refused("the Board's raw export is not there (board.md raw:)")
     if i > 0 and job.status(job.tasks[i - 1]) != "done":

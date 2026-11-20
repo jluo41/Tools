@@ -54,7 +54,8 @@ Check alignment           haipipe-insight-check                      the checker
    enforced (`ctx.refuse`), not only listed; nothing it writes beside the rows, and nothing in a
    Result, shows a record value (`insight_ladder.py audit <Block>`: `records 0`, or each line
    read); the first step writes the experiment card and stops on a stated-versus-observed
-   mismatch; a step that imports a library pins its sha256 in its own code and refuses when
+   mismatch; `step.md` `cut:` and `params:` name every key its script reads, and the script refuses
+   a key it does not know; a step that imports a library pins its sha256 in its own code and refuses when
    the library differs; no step reads an outcome. Only then `agreed: ✅ <YYMMDD>` in that step's `step.md`.
 6. **Check alignment**: I run the Instance checker and read its findings; a cell's status is
    computed, never settled by hand.

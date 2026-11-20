@@ -85,7 +85,8 @@ def steps(ver: Path) -> list[Path]:
 
 
 def spec(step_dir: Path) -> dict:
-    """A step's spec, `step.md`: step · script · reads · writes · checks · agreed."""
+    """A step's spec, `step.md`: step · script · reads · writes · checks · cut and params (the keys of ctx.cut and
+    ctx.params it reads) · agreed."""
     return front(step_dir / "step.md")[0]
 
 
@@ -175,7 +176,7 @@ def _new_step(path: Path, slug: str, does: str, plan: Plan) -> Path:
     plan.write(path / "step.md", with_front(
         {"step": slug, "script": script, "reads": "<ctx.raw, ctx.prev or a reference: what it reads>",
          "writes": "<what it writes to ctx.out>", "checks": ["<a check that stops the Run when it fails>"],
-         "agreed": ""},
+         "cut": [], "params": [], "agreed": ""},
         f"\n# {slug}\n\n{goal}\n"))
     plan.write(path / "scripts" / f"{script}.py", SCRIPT.format(slug=slug))
     runs_readme(path, "step", plan)
@@ -212,6 +213,21 @@ def sign_prep(ver: Path, date: str, plan: Plan) -> None:
     fields, body = front(ver / f"{ver.name}.md")
     fields.update(state="closed", signed=f"✅ {date}", hash=prep_hash(ver))
     plan.write(ver / f"{ver.name}.md", with_front(fields, body), replace=True)
+
+
+def declared(ver: Path) -> dict[str, set]:
+    """The cut and params keys a prep version's steps read, from their step.md `cut:` and `params:` lists (rule 3)."""
+    out = {"cut": set(), "params": set()}
+    for s in steps(ver):
+        for key in out:
+            out[key] |= {str(k) for k in spec(s).get(key) or []}
+    return out
+
+
+def undeclared(ver: Path, cut: dict, params: dict) -> list[str]:
+    """Each Board cut or params key no step of the prep version reads: a key nobody reads is refused, never ignored."""
+    have = declared(ver)
+    return [f"{key} {k}" for key, given in (("cut", cut), ("params", params)) for k in (given or {}) if k not in have[key]]
 
 
 def prep_version(block: Path, pid: str) -> Path | None:

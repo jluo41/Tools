@@ -99,6 +99,10 @@ def datajob(board: Path, pid: str, plan: Plan) -> Path:
         sys.exit(f"{ver.name} is not signed: a person signs a prep version before a Board runs it")
     if str(face(ver).get("hash")) != PR.prep_hash(ver):
         sys.exit(f"{ver.name}'s code changed after its signature (audit hash): restore it, or open the next version")
+    stray = PR.undeclared(ver, fm.get("cut") or {}, fm.get("params") or {})
+    if stray:
+        sys.exit(f"no step of {pid} reads the Board's {', '.join(stray)} (step.md cut: and params:): fix the key on the "
+                 f"Board (datasource), or declare it in the step that reads it")
     n, m = next_number(board), next_data(board)
     slug = PREP.match(ver.name).group(3)
     path = board / (f"j{n:02d}_{pid}" + (f"-{slug}" if slug else "") + f"_data-v{m}")

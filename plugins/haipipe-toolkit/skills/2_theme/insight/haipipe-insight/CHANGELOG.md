@@ -1,5 +1,10 @@
 # haipipe-insight · version history
 
+## 3.11.2 · 2026-11-20 · a step declares the cut and params keys it reads
+
+- workbench-insight T28: `step.md` `cut:` and `params:` list the keys a step reads; `datajob` and `ref/run_prep.py`
+  refuse a Board key no step declares; a step refuses a key it does not know (rule 3).
+
 ## 3.11.1 · 2026-11-20 · ctx.params, and the Job pins its cut and params
 
 - workbench-insight T25, T27. `datasource … --param k=v` writes the Board's `params:`; a data Job pins `cut:` and

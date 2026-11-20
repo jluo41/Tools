@@ -55,6 +55,14 @@ def _agree(step: Path) -> None:
     md.write_text("---\n" + yaml.safe_dump(f, sort_keys=False, allow_unicode=True) + "---\n" + m.group(2), encoding="utf-8")
 
 
+def _declare(step: Path, cut=(), params=()) -> None:
+    md = step / "step.md"
+    m = re.match(r"(?s)^---\n(.*?)\n---\n(.*)$", md.read_text(encoding="utf-8"))
+    f = yaml.safe_load(m.group(1))
+    f.update(cut=list(cut), params=list(params))
+    md.write_text("---\n" + yaml.safe_dump(f, sort_keys=False, allow_unicode=True) + "---\n" + m.group(2), encoding="utf-8")
+
+
 def _signed_prep(prep: Path, scripts=(("experiment", EXPERIMENT), ("source", SOURCE), ("prepare", PREPARE))) -> Path:
     L("prep", prep, "--slug", "first")
     ver = prep / "j01_prep-v1_first"
@@ -62,6 +70,8 @@ def _signed_prep(prep: Path, scripts=(("experiment", EXPERIMENT), ("source", SOU
         L("step", ver, name)
         step = next(s for s in IL.PR.steps(ver) if s.name.endswith("_" + name))
         (step / "scripts" / f"{name}.py").write_text(code)
+        if name == "prepare":
+            _declare(step, cut=("end_date",), params=("source_fn",))           # the keys prepare reads
         _agree(step)
     L("sign", ver, "--date", "261120")
     return ver
@@ -247,3 +257,21 @@ def test_references_and_record_lines_are_audited(space):
     assert [w for w, _ in IL.PR.records(ver)] == ["t01_prepare/scripts/prepare.py:3", "t01_prepare/scripts/prepare.py:4"]
     rows = {r[1]: r[2] for r in IL.audit(prep, quiet=True)}
     assert (rows["references"], rows["records"]) == (1, 2)
+
+
+def test_a_board_key_no_step_reads_is_refused(space):
+    root, p, prep, board = space
+    _signed_prep(prep)
+    L("datasource", board, "--raw", "_WorkSpace/raw/demo_a", "--dataprep", "insight/InsightDataPrep-DemoSet",
+      "--cut", "end=2025-07-03")                                              # the step reads end_date, not end
+    with pytest.raises(SystemExit, match="no step of prep-v1 reads the Board's cut end"):
+        L("datajob", board, "--prep", "prep-v1")
+    md = board / "board.md"
+    md.write_text(md.read_text(encoding="utf-8").replace("end: '2025-07-03'", "end_date: '2025-07-03'"), encoding="utf-8")
+    L("datajob", board, "--prep", "prep-v1")
+    job = board / "j01_prep-v1-first_data-v1"
+    face = job / f"{job.name}.md"                                             # a Job opened before the check, by hand
+    face.write_text(face.read_text(encoding="utf-8").replace("params: {}", "params:\n  source: x"), encoding="utf-8")
+    assert RP.main([str(job)]) == 0
+    rt = yaml.safe_load((job / "t01_experiment" / "runs" / "r01_demoa" / "result" / "runtime.yaml").read_text())
+    assert rt["status"] == "refused" and "params source" in rt["reason"]
