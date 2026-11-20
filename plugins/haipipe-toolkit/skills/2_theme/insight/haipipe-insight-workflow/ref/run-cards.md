@@ -320,7 +320,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}; carry first: run_report.py carry {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file its numbers come from, and its caveat (thin, refused, not checkable), saying no more than its question's level allows (ref/run-report.md), as run-report-j<NN>.
+💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}; carry first: run_report.py carry {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file(s) its numbers come from, a count or share no cell holds as derived: with its rule, a headline giving only its sentences' numbers, and its caveat (thin, refused, not checkable), saying no more than its question's level allows (ref/run-report.md), as run-report-j<NN>.
 
 🔘 BUTTON   Check the Runs' reports · Job › Runs · ^run-check-report-j\d+$ · views hard
 🧩 SKILL    haipipe-insight-check
@@ -410,7 +410,7 @@ the person's notes, what is running, what a person signs) over its result. `view
 🧩 SKILL    haipipe-insight
 🤖 AGENT    haipipe-insight-agent
 ✍️ SIGNS    none
-💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file its numbers come from, and its caveat, saying no more than its question's level allows (ref/run-report.md), as run-report-t<NN>.
+💬 PROMPT   /haipipe-insight write the report of each Run of {folder} that has none or a stale one (python ref/run_report.py todo {folder}), reading only that Run's result/: a headline, a few sentences each citing the result file(s) its numbers come from, a count or share no cell holds as derived: with its rule, a headline giving only its sentences' numbers, and its caveat, saying no more than its question's level allows (ref/run-report.md), as run-report-t<NN>.
 
 🔘 BUTTON   Check the Runs' reports · Task › Runs · ^run-check-report-t\d+$ · views hard
 🧩 SKILL    haipipe-insight-check

@@ -1,7 +1,7 @@
 A Run's report: what one Run's result shows, in a few sentences
 ================================================================
 
-(261120; workbench-insight T31.) A hard Run's `result/` holds what its code made: tables, figures, `metrics.json`, the
+(261120; workbench-insight T31, T32.) A hard Run's `result/` holds what its code made: tables, figures, `metrics.json`, the
 receipt, and the generated `tables.md` (the ask and the tables, laid out). None of it says what the numbers mean.
 After each Run, an agent reads only that Run's result and writes the Run's report; another agent checks it. Opening a
 Run shows its reading first, and the Task's page is built from its Runs' reports.
@@ -45,17 +45,33 @@ run-check-report-j<NN> · run-check-report-t<NN>  haipipe-insight-reviewer-agent
 The writer's spec:
 
 ```yaml
-headline: <one line>
+headline: <one line>          # it gives only numbers its sentences give
 sentences:
   - {text: "<sentence>", file: <a file of result/, such as grouping_audit.csv>}
+  - text: "17 of the 29 groupings have a thin level; zip3's 23,535 thin rows are 44.1% of the segment's 53,342"
+    files: [grouping_audit.csv, partition_power.csv]     # a sentence may join files
+    derived:                                             # a number no cell holds, with the rule that makes it
+      - {value: 17, how: "count rows in grouping_audit.csv where n_levels_suppressed > 0"}
+      - {value: 29, how: "count rows in grouping_audit.csv"}
+      - {value: 44.1%, how: "23535 / 53342"}
 caveat: <one line>            # optional
 ```
 
-`check` refuses the agent that wrote the report, a stale report, and a number not found in the file its sentence
-cites (rounded to the sentence's decimals; a percent may be a share). A number the checker confirms by hand against
-the tables (a count of rows, a difference) is passed with `--accept`, and the report keeps it in `accepted:`.
-`--reject "why"` returns the report (`check: ❗ …`) to be written again. A small number (0, 1, 2) is found in almost
-any table, so the trace is a floor: the checker still reads each sentence against its row.
+Every number has one source:
+
+- **In a cited file**, as written, rounded to the sentence's decimals; a percent may be a share. A small number (0, 1,
+  2) is found in almost any table, so this is a floor: the checker still reads each sentence against its row.
+- **Derived**, under the sentence's `derived:` with its rule, computed by the tool from the files the sentence cites:
+  `count rows`, or `sum | min | max | mean <column>`, each with `in <file>` when the sentence cites two tables and
+  `where <column> <op> <value> [and …]`; or arithmetic (`+ - * /`) over numbers the report gives or the files hold. A
+  derived number is computed, never looked up: one that a cell elsewhere happens to hold no longer passes for it.
+- **The headline** gives only numbers its sentences give, since the Task's page quotes it.
+
+`write` refuses a derived number its rule computes to another value, and a derived value the sentence does not give.
+`check` refuses the agent that wrote the report, a stale report, a derived number its rule does not give, and a number
+with no source. A number the checker confirms by hand against the tables, or one whose rule the tool cannot read, is
+passed with `--accept`, and the report keeps it in `accepted:`. `--reject "why"` returns the report (`check: ❗ …`) to
+be written again. The rules are `ref/run_report_numbers.py`.
 
 The Task's page
 ---------------
@@ -72,6 +88,8 @@ python ref/run_report.py todo  <Job | Task | Run>               missing · stale
 python ref/run_report.py carry <Job | Task>                     carry checked reports of the same result
 python ref/run_report.py write <Run> <spec.yaml> --by <agent>
 python ref/run_report.py check <Run> --by <agent> [--accept 9,22] [--reject "why"]
+python ref/run_report.py tables <Job | Task | Run>              a Run made before 261120: its generated
+                                                                result/report.md renamed result/tables.md
 ```
 
 `tests/test_run_report.py` keeps it.

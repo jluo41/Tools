@@ -542,3 +542,36 @@ T30  a Board Job pins three versions           fixed
 - **Still owed**: the Board page does not list a Job of three versions yet (T30), so j02's Runs and their reports open
   by link, not from the Board's Job list.
 
+
+## T32 · A Run's report cannot cite a count of rows · fixed
+
+- **From**: Report, Insight-Use-Case, 261120, the first real use of T31 (six D05 reports on Insight-SMSR2v1 j02):
+  1. "Headline numbers are never traced: `untraced()` reads only `sentences`, yet the Task page quotes the headline."
+  2. "Row counts cannot be cited: '17 of 29 groupings' is a count of rows of grouping_audit.csv, so every Data report
+     needs `--accept` by hand, and some such counts pass only because the same number is a cell elsewhere." Asked: a
+     sentence marks a number as derived, with its rule, so the checker verifies the rule.
+  3. "Two files named report.md per Run: Runs made today still write `result/report.md`, not `tables.md`."
+  4. "One file per sentence: a sentence cannot join the segment's rows (partition_power.csv) with the audit table, so
+     no share can be stated. Allow `files: [a, b]`."
+  5. For the Question Book (not the tool): D05's result gives counts per grouping, not the levels; filed by the sender.
+- **Questions**: what may a headline say that its sentences do not? How does a derived number name its rule so a tool
+  can compute it, and what happens to a rule it cannot compute? Which file does a rule read when a sentence cites two?
+  What becomes of a Run's older `result/report.md` without rerunning 162 tickets?
+- **Answer**: (1) a headline gives only numbers its sentences give; `check` names a headline number with no source.
+  (2) a sentence names a number no cell holds under `derived: [{value, how}]`; the rule (`count rows [in <file>]
+  [where <col> <op> <value> and …]`, `sum|min|max|mean <col>`, or arithmetic over the report's numbers) is computed by
+  `haipipe-insight/ref/run_report_numbers.py` at `write` and at `check`: a wrong count stops the writer, and a derived
+  number is never looked up, so one that a cell elsewhere holds no longer passes. A rule the tool cannot read stays
+  for the checker (`--accept`, with the tool's reason). (3) not the generator: run_job.py writes `tables.md` since
+  748db8958; j02's 181 Runs ran before it (12:48, the switch 13:30). `run_report.py tables <Job>` renames a generated
+  `result/report.md` to `tables.md` without a rerun; the result's hash reads no `.md`, so no report goes stale.
+  (4) `files: [a, b]`; a rule names its table with `in <file>` when there are two. (5) the sender's, for question-v2.
+  A spec that is not YAML is refused with its reason, not a traceback. `ref/run-report.md`, the cards' prompts.
+- **Case**: on the six real D05 reports (read only), the trace now names exactly the row counts the maker reported:
+  29 in each, and 17, 16 or 14 where no cell holds them (r03 and r05's 17 had passed as a cell elsewhere). On a copy
+  of r02 with its counts derived (17, 29, 12) and a share across two files (44.1% = 23535 / 53342), `check` passed with
+  no `--accept`; written as 16, `write` refused: "`count rows where n_levels_suppressed > 0` gives 17".
+- **Guard**: `test_run_report.py` `test_a_headline_gives_only_numbers_its_sentences_give`,
+  `test_a_count_of_rows_is_derived_by_its_rule`, `test_a_sentence_may_join_two_files`,
+  `test_an_older_runs_generated_report_becomes_tables`.
+

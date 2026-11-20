@@ -1,5 +1,14 @@
 # haipipe-insight · version history
 
+## 3.13.1 · 2026-11-20 · a Run's report: derived numbers, two files, the headline traced
+
+- workbench-insight T32 (the first six D05 reports): a sentence may cite `files: [a, b]`, and may name a number no cell
+  holds under `derived: [{value, how}]`; the rule (`count rows … where …`, `sum|min|max|mean <column>`, or arithmetic over
+  the report's numbers) is computed by `ref/run_report_numbers.py`, at `write` and at `check`. A derived number is never
+  looked up, so a count that a cell elsewhere happens to hold no longer passes. A headline gives only numbers its
+  sentences give. `run_report.py tables` renames a Run's generated `result/report.md` from before 261120 to
+  `result/tables.md`; a spec that is not YAML is refused with its reason.
+
 ## 3.13.0 · 2026-11-20 · a Run's report: what one Run's result shows
 
 - JL 261120 (workbench-insight T31): "after each task run, we can have the AI to summarize it a bit, to make it as a

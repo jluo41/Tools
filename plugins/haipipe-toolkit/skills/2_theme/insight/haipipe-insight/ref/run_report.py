@@ -3,19 +3,28 @@
 An agent reads only the Run's `result/` and writes a spec; this tool lays the report out at
 `runs/rNN_<segment>/report.md`, beside `result/` (the ticket's, cleared on every rerun), so a rerun keeps it. The
 report pins the result's hash: a rerun that changes the result makes it stale. Another agent checks it; every number
-a sentence gives must be in the table that sentence cites, or be confirmed by that agent by hand.
+a sentence gives must be in a file that sentence cites, or be derived by a rule this tool computes, or be confirmed by
+that agent by hand; the headline gives only numbers its sentences give (ref/run_report_numbers.py).
 
     run_report.py todo  <Job | Task | Run>                 the Runs whose report is missing, stale, returned or unchecked
     run_report.py write <Run> <spec.yaml> --by <agent>     lay the report out from the writer's spec
     run_report.py check <Run> --by <agent> [--accept 9,22] [--reject "why"]
     run_report.py carry <Job | Task>                       carry a checked report from an earlier Job's Run whose
                                                            result is the same (same question, segment and hash)
+    run_report.py tables <Job | Task | Run>                rename a Run's generated result/report.md (before 261120)
+                                                           to result/tables.md; its content and hash do not change
 
 The spec:
 
     headline: <one line: what this segment's result shows>
-    sentences:                                   # a few; each cites the result file its numbers come from
+    sentences:                                   # a few; each cites the result file(s) its numbers come from
       - {text: "<sentence>", file: grouping_audit.csv}
+      - text: "17 of the 29 groupings (59%) have a thin level"
+        file: grouping_audit.csv                 # or files: [grouping_audit.csv, partition_power.csv]
+        derived:                                 # a number no cell holds: its rule (run_report_numbers.py)
+          - {value: 17, how: "count rows where n_levels_suppressed > 0"}
+          - {value: 29, how: "count rows"}
+          - {value: 59%, how: "17 / 29"}
     caveat: <one line: thin, refused, not checkable>   # optional
 
 Exit 0 when done, 1 when refused (the reason is printed).
@@ -23,7 +32,6 @@ Exit 0 when done, 1 when refused (the reason is printed).
 from __future__ import annotations
 
 import argparse
-import bisect
 import datetime
 import hashlib
 import re
@@ -32,13 +40,16 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from run_report_numbers import (  # noqa: E402,F401  (sentence_numbers and traced stay importable from here)
+    cited, problems, sentence_numbers, traced, written)
+
 RUN = re.compile(r"^r(\d{2})_(.+)$")
 JOBDIR = re.compile(r"^j\d+_")
 TASKDIR = re.compile(r"^t\d+_")
 READABLE = ("ok", "refused", "done")              # a failed Run has nothing to read: fix and rerun its ticket
 SPEC_KEYS = {"headline", "sentences", "caveat"}
-SENT = re.compile(r"(?<![\w.])([-−])?(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?(\s?%)?(?![\w])")
-FILENUM = re.compile(r"[-−]?\d+(?:\.\d+)?(?:[eE][-+]?\d+)?")
+SENTENCE_KEYS = {"text", "file", "files", "derived"}
 
 
 class Refused(Exception):
@@ -108,43 +119,6 @@ def runs_under(folder: Path) -> list[Path]:
             if r.is_dir() and (r / "run.yaml").is_file()]
 
 
-# ── numbers: a sentence's against its file's ──────────────────────────────────────────────────
-def sentence_numbers(text: str) -> list[tuple[str, float, int, bool]]:
-    """[(as written, value, decimals, percent)]; a number inside a name (D05, r01_full, 7d) is not one."""
-    out = []
-    for m in SENT.finditer(text.replace("`", " ")):
-        sign, whole, frac, pct = m.groups()
-        value = float(whole.replace(",", "") + (frac or "")) * (-1 if sign else 1)
-        out.append((m.group(0).strip(), value, len(frac) - 1 if frac else 0, bool(pct)))
-    return out
-
-
-def file_numbers(path: Path) -> list[float]:
-    text = path.read_text(encoding="utf-8", errors="replace").replace("−", "-")
-    return sorted(float(x) for x in FILENUM.findall(text))
-
-
-def traced(value: float, decimals: int, percent: bool, nums: list[float]) -> bool:
-    """The value is in the file as written, rounded to the sentence's decimals, or (a percent) as a share."""
-    tol = 0.5 * 10 ** -decimals + 1e-9
-    for v in (value, value / 100) if percent else (value,):
-        t = tol if v == value else tol / 100
-        i = bisect.bisect_left(nums, v - t)
-        if i < len(nums) and nums[i] <= v + t:
-            return True
-    return False
-
-
-def untraced(run: Path, sentences: list) -> list[str]:
-    """Each number a sentence gives that its cited file does not hold: 'file: number'."""
-    out, cache = [], {}
-    for s in sentences:
-        f = run / "result" / s["file"]
-        nums = cache.setdefault(f, file_numbers(f) if f.is_file() else [])
-        out += [f"{s['file']}: {w}" for w, v, d, p in sentence_numbers(s["text"]) if not traced(v, d, p, nums)]
-    return out
-
-
 # ── write · check · carry ─────────────────────────────────────────────────────────────────────
 def render(run: Path, fields: dict) -> str:
     """The report: its front (what check and the pages read) and the same, laid out to read."""
@@ -153,7 +127,7 @@ def render(run: Path, fields: dict) -> str:
     lines = [f"# {what} · {seg}", "", fields["headline"], ""]
     if rec.get("status") == "refused":
         lines += [f"**Refused**: {rec.get('reason') or ''}", ""]
-    lines += [f"- {s['text'].strip().rstrip('.')} (`{s['file']}`)." for s in fields["sentences"]]
+    lines += [f"- {s['text'].strip().rstrip('.')} ({', '.join(f'`{f}`' for f in cited(s))})." for s in fields["sentences"]]
     if fields.get("caveat"):
         lines += ["", f"**Caveat**: {fields['caveat']}"]
     if fields.get("carried-from"):
@@ -176,17 +150,29 @@ def write(run: Path, spec: dict, by: str) -> Path:
     if not sents:
         raise Refused("sentences: at least one, each citing the result file its numbers come from")
     for k, s in enumerate(sents, 1):
-        if not isinstance(s, dict) or set(s) != {"text", "file"}:
-            raise Refused(f"sentence {k}: {{text, file}}")
-        f = (run / "result" / s["file"]).resolve()
-        if not f.is_file() or (run / "result").resolve() not in f.parents:
-            raise Refused(f"sentence {k}: {run.name}/result/{s['file']} is not a file of this Run")
+        if not isinstance(s, dict) or not s.get("text") or set(s) - SENTENCE_KEYS or ("file" in s) == ("files" in s):
+            raise Refused(f"sentence {k}: {{text, file}} or {{text, files: [a, b]}}, and derived: when a number is")
+        for name in cited(s):
+            f = (run / "result" / name).resolve()
+            if not f.is_file() or (run / "result").resolve() not in f.parents:
+                raise Refused(f"sentence {k}: {run.name}/result/{name} is not a file of this Run")
+        given = [v for _, v, _, _ in sentence_numbers(s["text"])]
+        for d in s.get("derived") or []:
+            w = written(d.get("value")) if isinstance(d, dict) and set(d) == {"value", "how"} else None
+            if w is None:
+                raise Refused(f"sentence {k}: derived: [{{value: <one number>, how: <its rule>}}]")
+            if not any(abs(w[1] - v) < 1e-9 for v in given):
+                raise Refused(f"sentence {k}: derived {d['value']} is not a number the sentence gives")
     what, seg = identity(run)
     fields = {"run": run.name, "question": what, "segment": seg, "status": status, "result-sha256": result_hash(run),
               "written-by": by, "written": today(), "check": "", "headline": str(spec["headline"]).strip(),
-              "sentences": [{"text": str(s["text"]).strip(), "file": s["file"]} for s in sents]}
+              "sentences": [{"text": str(s["text"]).strip(), **{k: s[k] for k in ("file", "files", "derived") if k in s}}
+                            for s in sents]}
     if str(spec.get("caveat") or "").strip():
         fields["caveat"] = str(spec["caveat"]).strip()
+    wrong = problems(run / "result", fields)[1]
+    if wrong:
+        raise Refused("a derived number its rule does not give: " + "; ".join(wrong))
     (run / "report.md").write_text(render(run, fields), encoding="utf-8")
     return run / "report.md"
 
@@ -205,15 +191,36 @@ def check(run: Path, by: str, accept: tuple = (), reject: str = "") -> str:
     if reject:
         rep["check"] = f"❗ {today()} {by}: {reject}"
     else:
-        left = [u for u in untraced(run, rep.get("sentences") or []) if u.split(": ", 1)[1] not in accept]
+        untr, wrong, hand = problems(run / "result", rep)
+        if wrong:
+            raise Refused("a derived number its rule does not give: " + "; ".join(wrong) + ". Return it with --reject")
+        left = [u for u in untr + hand if _number_of(u) not in accept]
         if left:
-            raise Refused("not in the cited file: " + "; ".join(left) + ". Confirm each by hand against the "
+            raise Refused("not traced: " + "; ".join(left) + ". A headline gives only its sentences' numbers; a count "
+                          "or a share is a sentence's derived: with its rule. Confirm a number by hand against the "
                           "tables and pass --accept, or return the report with --reject")
         rep["check"] = f"✅ {today()} {by}"
         if accept:
             rep["accepted"] = list(accept)
     md.write_text(render(run, rep), encoding="utf-8")
     return rep["check"]
+
+
+def _number_of(problem: str) -> str:
+    """'grouping_audit.csv: 17' → '17'; 'sentence 3: 17 (count …)' → '17'; 'headline: 6' → '6'."""
+    return problem.split(": ", 1)[1].split(" (", 1)[0]
+
+
+def tables(folder: Path) -> list[Path]:
+    """A Run made before 261120 holds its generated tables as result/report.md: renamed to result/tables.md (only a
+    file run_job.py generated; the result's hash reads no .md, so no report goes stale)."""
+    done = []
+    for run in runs_under(folder):
+        old, new = run / "result" / "report.md", run / "result" / "tables.md"
+        if old.is_file() and not new.exists() and "Generated by haipipe-insight" in old.read_text(encoding="utf-8"):
+            old.rename(new)
+            done.append(run)
+    return done
 
 
 def earlier(run: Path) -> Path | None:
@@ -255,7 +262,7 @@ def todo(folder: Path) -> list[tuple[str, Path]]:
 
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("action", choices=("todo", "write", "check", "carry"))
+    ap.add_argument("action", choices=("todo", "write", "check", "carry", "tables"))
     ap.add_argument("folder")
     ap.add_argument("spec", nargs="?")
     ap.add_argument("--by", default="")
@@ -267,15 +274,19 @@ def main(argv=None) -> int:
         if a.action == "todo":
             for st, r in todo(folder):
                 print(f"{st:<10} {r.relative_to(folder) if r != folder else r.name}")
-        elif a.action == "carry":
-            for r in carry(folder):
-                print(f"carried    {r.relative_to(folder)}")
+        elif a.action in ("carry", "tables"):
+            for r in (carry if a.action == "carry" else tables)(folder):
+                print(f"{'carried' if a.action == 'carry' else 'renamed':<10} {r.relative_to(folder) if r != folder else r.name}")
         elif not a.by:
             raise Refused("--by <agent>: who writes or checks it")
         elif a.action == "write":
             if not a.spec:
                 raise Refused("write <Run> <spec.yaml> --by <agent>")
-            print(write(folder, _yaml(Path(a.spec)), a.by))
+            try:
+                spec = _yaml(Path(a.spec))
+            except yaml.YAMLError as e:
+                raise Refused(f"{a.spec} is not YAML: {str(e).splitlines()[0]}; quote a text that holds a colon") from e
+            print(write(folder, spec, a.by))
         else:
             acc = tuple(x.strip() for x in re.split(r"[;|]|,(?!\d{3})", a.accept) if x.strip())
             print(f"{folder.name}: {check(folder, a.by, acc, a.reject)}")

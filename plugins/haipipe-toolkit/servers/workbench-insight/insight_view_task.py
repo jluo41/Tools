@@ -103,7 +103,8 @@ def _run_report(rundir: Path) -> str:
     mark = " ❗" if rep["stale"] or check.startswith("❗") else " ✅" if check.startswith("✅") else ""
     why = ('<p class=mut>The result changed after this was written: write it again.</p>' if rep["stale"] else
            f'<p class=mut>{esc(check.split(": ", 1)[-1])}</p>' if check.startswith("❗") else "")
-    items = "".join(f'<li>{esc(str(s.get("text", "")))} <span class=mut>({esc(str(s.get("file", "")))})</span></li>'
+    items = "".join(f'<li>{esc(str(s.get("text", "")))} <span class=mut>'
+                    f'({esc(", ".join(s.get("files") or [s.get("file", "")]))})</span></li>'
                     for s in rep["sentences"] if isinstance(s, dict))
     return (f'<h2>Report{mark}</h2>{why}<p><b>{esc(rep["headline"])}</b></p>' + (f"<ul>{items}</ul>" if items else "")
             + (f'<p><b>Caveat</b>: {esc(rep["caveat"])}</p>' if rep["caveat"] else "")
