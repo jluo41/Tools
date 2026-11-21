@@ -94,8 +94,9 @@ cards:                                     # card addresses it changed, when bel
 `paths:` is written when the episode happens, by the one writer every session uses,
 `haipipe-run/scripts/soft_run.py pass <run> --title … --changed <files> --session <name> [--cards …]`, from the
 files the session itself wrote (its Edit and Write calls; `git diff` shows other sessions' work too).
-It cannot be recovered later: a Claude transcript (`~/.claude/projects/<slug>/*.jsonl`) carries only the folder the
-session started in. Several sessions edit the same folders at once, so one folder will have many overlapping
+A Claude session file (`~/.claude/projects/<slug>/*.jsonl`) carries its Edit and Write calls, so a Block chat's
+QAs take their outputs from it (haipipe-chat `scripts/qa.py`); a file a shell command wrote is not seen there and
+is named with `--changed`. Several sessions edit the same folders at once, so one folder will have many overlapping
 episodes; that is expected.
 
 ### 4.3 Records that already count
@@ -104,7 +105,7 @@ These are read as episodes where they are, never copied into a second record:
 
 | Theme | Existing record | Read as |
 | --- | --- | --- |
-| every theme | Block chat `cNN_<slug>/cNN_<slug>.md` (haipipe-chat; transcript.md beside it) | one episode per chat |
+| every theme | Block chat `cNN_<slug>/cNN_<slug>.md` (haipipe-chat; its QAs: question, answer, outputs) | one episode per chat |
 | every theme | Studio topic `sNN-<topic>/passes/pNN-<MMDD>/` (digest.md, transcript.md) | one episode per pass |
 | Insight, Work, Design | soft Run `runs/run-*/passes/pNN-<MMDD>/pass.md` | one episode per pass |
 | Labeling, Work | collect Run `runs/rNN_collect_*/passes/pNN-<MMDD>/pass.md` (a person's form round) | one episode per pass |

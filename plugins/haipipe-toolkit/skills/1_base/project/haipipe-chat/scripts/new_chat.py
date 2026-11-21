@@ -1,18 +1,20 @@
 """A Block's chat sessions: `cNN_<slug>/`, one folder per kept session, numbered in time order (haipipe-chat).
 
-    python new_chat.py new <block> --slug <slug> --title '<title>' [--ask '…'] [--summary '…']
-                           [--changed a b …] [--cards a b …] [--session NAME] [--provider claude|codex]
-                           [--transcript <session.jsonl>] [--date YYYY-MM-DD] [--dry-run]
+    python new_chat.py new <block> --slug <slug> --title '<title>' --from <session.jsonl> [--summary '…']
+                           [--session NAME] [--provider claude|codex] [--cards a b …] [--date YYYY-MM-DD] [--dry-run]
+    python new_chat.py new <block> --slug <slug> --title '<title>' --ask '…' --answer '…' --changed a b …
+    python new_chat.py refresh <block>/cNN_<slug> --from <session.jsonl>
     python new_chat.py list  <block>
     python new_chat.py check <block>
 
-`new` writes the next `cNN_<slug>/cNN_<slug>.md` beside the Block's Jobs and Studio topics: front matter (session,
-provider, date, goal, paths, cards), then `# cNN · <title>`, `## Ask`, `## Summary`, `## Changed`. `--changed`
-paths that exist are written relative to the SPACE root (the nearest folder above holding env.sh or
-.server_config), so the Session view joins the chat to the folders it changed. `--transcript` renders a Claude
-Code session file into `transcript.md` beside the face (kept for reference; a page never links it). `list` prints
-the chats in number order. `check` exits 1 when a chat has no face, no date or no goal, or names a path that is
-not on disk.
+A chat is kept as QAs: one question the person asked, its answer, and what it produced (scripts/qa.py). `new` writes
+the next `cNN_<slug>/cNN_<slug>.md` beside the Block's Jobs and Studio topics: front matter (session, provider, date,
+goal, paths, cards), `# cNN · <title>`, a summary when given, `## QA` (a few lines a turn). Paths are
+written relative to the SPACE root (the nearest folder above holding env.sh or .server_config), else to the Block,
+so the Session view joins the chat to the folders it changed. No transcript is kept. `refresh` rewrites a chat's
+face from its session as it now stands; the Stop hook (`chat_hook.py`) runs it once when each answer ends, for a
+session saved with `--from`. `check` exits 1 when a chat has no face, no date or no goal, or names a
+path that is not on disk.
 """
 from __future__ import annotations
 
@@ -25,6 +27,8 @@ import sys
 from pathlib import Path
 
 import yaml
+
+import qa
 
 SLUG = re.compile(r"^[a-z0-9][a-z0-9_]*$")
 CHAT = re.compile(r"^c(\d{2,})_([a-z0-9][a-z0-9_]*)$")       # cNN_<slug>/, beside a Block's jNN_ and sNN-
@@ -66,38 +70,28 @@ def space_relative(raw: str, block: Path) -> str:
     return raw
 
 
-def _text(content) -> str:
-    if isinstance(content, str):
-        return content.strip()
-    if isinstance(content, list):
-        return "\n\n".join(c.get("text", "").strip() for c in content
-                           if isinstance(c, dict) and c.get("type") == "text" and c.get("text", "").strip())
-    return ""
-
-
-def transcript_markdown(jsonl: Path, title: str) -> str:
-    """The person's and the assistant's words from a Claude Code session file; tool calls and results left out."""
-    out = [f"# {title} · transcript", "", f"source: `{jsonl.name}`", ""]
-    for line in jsonl.read_text(encoding="utf-8", errors="ignore").splitlines():
-        try:
-            row = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-        msg = row.get("message") if isinstance(row, dict) else None
-        if not isinstance(msg, dict) or row.get("type") not in ("user", "assistant"):
-            continue
-        words = _text(msg.get("content"))
-        if words:
-            out += [f"## {'You' if row['type'] == 'user' else 'Assistant'}", "", words, ""]
-    return "\n".join(out).rstrip() + "\n"
-
-
-def face_text(nn: int, title: str, meta: dict, ask: str, summary: str, changed: list[str]) -> str:
+def face_text(nn: int, title: str, meta: dict, summary: str, qas: list[dict]) -> str:
+    """The face: front matter, # cNN · <title>, a summary when given, ## QA (a few lines a turn)."""
     head = yaml.safe_dump(meta, sort_keys=False, allow_unicode=True).strip()
-    lines = [f"---\n{head}\n---", "", f"# c{nn:02d} · {title}", "", "## Ask", "", ask or "", "",
-             "## Summary", "", summary or "", "", "## Changed", ""]
-    lines += [f"- `{p}`" for p in changed]
+    lines = [f"---\n{head}\n---", "", f"# c{nn:02d} · {title}", ""]
+    if summary:
+        lines += [summary, ""]
+    lines += qa.markdown(qas)
     return "\n".join(lines).rstrip() + "\n"
+
+
+def collect(a, block: Path) -> tuple[list[dict], list[str]]:
+    """The QAs (from --from, else one QA from --ask, --answer and --changed) and every path they produced."""
+    if a.source:
+        qas = qa.from_session(Path(a.source))
+    else:
+        qas = [{"q": a.ask, "time": "", "answer": a.answer, "outputs": list(a.changed)}] if a.ask else []
+    paths = []
+    for p in [*(o for q in qas for o in q["outputs"]), *a.changed]:
+        r = space_relative(p, block)
+        if r not in paths:
+            paths.append(r)
+    return qas, paths
 
 
 def cmd_new(a) -> int:
@@ -108,18 +102,54 @@ def cmd_new(a) -> int:
         sys.exit(f"slug {a.slug!r}: lower-case words joined by _")
     nn = next_number(block)
     folder = block / f"c{nn:02d}_{a.slug}"
-    paths = [space_relative(p, block) for p in a.changed]
-    meta = {"session": a.session or "", "provider": a.provider, "date": a.date or dt.date.today().isoformat(),
-            "goal": a.title, "paths": paths, "cards": list(a.cards)}
-    text = face_text(nn, a.title, meta, a.ask, a.summary, paths)
+    write(folder, nn, a, block, a.date or dt.date.today().isoformat())
+    return 0
+
+
+def registry() -> Path:
+    """Which session is kept as which chat: {session id: cNN folder}. Machine state, never in a repository."""
+    return Path(os.environ.get("HAIPIPE_CHAT_REGISTRY") or Path.home() / ".claude" / "haipipe-chat" / "kept.json")
+
+
+def register(session_id: str, folder: Path) -> None:
+    reg = registry()
+    kept = json.loads(reg.read_text()) if reg.is_file() else {}
+    kept[session_id] = str(folder.resolve())
+    reg.parent.mkdir(parents=True, exist_ok=True)
+    reg.write_text(json.dumps(kept, indent=1, sort_keys=True))
+
+
+def write(folder: Path, nn: int, a, block: Path, date: str) -> None:
+    qas, paths = collect(a, block)
+    meta = {"session": a.session or "", "provider": a.provider, "date": date, "goal": a.title,
+            "paths": paths, "cards": list(a.cards)}
+    text = face_text(nn, a.title, meta, a.summary, qas)
     if a.dry_run:
         print(f"would write {folder.name}/{folder.name}.md\n\n{text}")
-        return 0
-    folder.mkdir()
+        return
+    folder.mkdir(exist_ok=True)
     (folder / f"{folder.name}.md").write_text(text, encoding="utf-8")
-    if a.transcript:
-        (folder / "transcript.md").write_text(transcript_markdown(Path(a.transcript), a.title), encoding="utf-8")
-    print(folder)
+    if a.source:
+        register(Path(a.source).stem, folder)    # the Stop hook refreshes it when each answer ends (chat_hook.py)
+    if not getattr(a, "quiet", False):
+        print(folder)
+
+
+def cmd_refresh(a) -> int:
+    """Rewrite a chat's face from its session as it now stands (a re-keep); its number, title and date stay."""
+    folder = Path(a.chat).resolve()
+    m = CHAT.match(folder.name)
+    read = read_face(folder) if m else None
+    if read is None:
+        sys.exit(f"{folder}: not a chat folder with its face")
+    meta, body = read
+    old = re.search(r"(?ms)^## Summary\s*$(.*?)(?=^## |\Z)", body) or re.search(r"(?ms)^# c\d+ · .*?$(.*?)(?=^## |\Z)", body)
+    summary = a.summary or (old.group(1).strip() if old else "")
+    a.title = a.title or str(meta.get("goal") or folder.name)
+    a.session = a.session or str(meta.get("session") or "")
+    a.cards = a.cards or list(meta.get("cards") or [])
+    a.summary = summary
+    write(folder, int(m.group(1)), a, folder.parent, str(meta.get("date") or dt.date.today().isoformat()))
     return 0
 
 
@@ -176,20 +206,25 @@ def main(argv=None) -> int:
     n = sub.add_parser("new")
     n.add_argument("block")
     n.add_argument("--slug", required=True)
-    n.add_argument("--title", required=True)
-    n.add_argument("--ask", default="")
-    n.add_argument("--summary", default="")
-    n.add_argument("--changed", nargs="*", default=[])
-    n.add_argument("--cards", nargs="*", default=[])
-    n.add_argument("--session", default="")
-    n.add_argument("--provider", default="claude", choices=("claude", "codex"))
-    n.add_argument("--transcript", default="")
-    n.add_argument("--date", default="")
-    n.add_argument("--dry-run", action="store_true")
+    r = sub.add_parser("refresh")
+    r.add_argument("chat")
+    for p, need in ((n, True), (r, False)):
+        p.add_argument("--title", required=need, default="")
+        p.add_argument("--from", dest="source", default="", help="a Claude Code session .jsonl: its QAs")
+        p.add_argument("--ask", default="", help="without --from: the one question")
+        p.add_argument("--answer", default="", help="without --from: its answer")
+        p.add_argument("--summary", default="")
+        p.add_argument("--changed", nargs="*", default=[])
+        p.add_argument("--cards", nargs="*", default=[])
+        p.add_argument("--session", default="")
+        p.add_argument("--provider", default="claude", choices=("claude", "codex"))
+        p.add_argument("--date", default="")
+        p.add_argument("--dry-run", action="store_true")
+        p.add_argument("--quiet", action="store_true")
     for name in ("list", "check"):
         sub.add_parser(name).add_argument("block")
     a = ap.parse_args(argv)
-    return {"new": cmd_new, "list": cmd_list, "check": cmd_check}[a.cmd](a)
+    return {"new": cmd_new, "refresh": cmd_refresh, "list": cmd_list, "check": cmd_check}[a.cmd](a)
 
 
 if __name__ == "__main__":
