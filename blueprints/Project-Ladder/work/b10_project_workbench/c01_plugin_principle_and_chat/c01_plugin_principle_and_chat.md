@@ -50,4 +50,5 @@ A plugin is a File System, a UI System and the map (PRINCIPLE.md); a Block holds
   → Line 97 of `three-views.md` now contradicts `qa.py`: it says the session file can't tell which files were changed, but it can (from the Edit and Write …
   ⇢ `qa.py`
 - **q11** 01:14 · you should not update the chat everytime, it should be at the end of the answer, and then you update it, how do you think? I even what to make it as concise as possible.
-  → Close. One leftover: Claude Code's "[Request interrupted by user]" marker is being counted as a question, so I'm filtering it out.
+  → 对，应该在每次回答结束后只更新一次，格式也已经压到最短。不过自动更新还差一步：要把一个 hook 写进你的设置，我这边改设置被权限拦下了，需要你自己加一行。
+- **q12** 01:17 · please add all the changes and push it to remote
