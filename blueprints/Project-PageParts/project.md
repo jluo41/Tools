@@ -2,7 +2,7 @@
 
 Decide how any page is made, from its drawings, draft and evidence to its figures and tables, so every paper and report page is built the same way.
 
-One of the three Projects of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
+One Project of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
 
 ## Blocks
 

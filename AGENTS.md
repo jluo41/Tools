@@ -6,6 +6,7 @@
 - `references/` contains upstream projects and reference material; many directories are Git submodules. `references/sources.yaml` records origins and license notes.
 - The installers discover skills recursively under `plugins/**/skills/`. They do not install skills from `references/`.
 - Root install behavior is implemented by `install.sh` and `install.ps1`; both read the shared sound-hook table in `install-hooks.json`.
+- `blueprints/` holds the Projects that plan Tools, each with its Blocks in `work/`. A loose thought or a meeting note that has no Block yet lands in `blueprints/Project-RandomThoughts/` first: a thought in its `note/`, a meeting in its `cowork/meetings/`, each under a topic (its `project.md` gives the shapes). It is the one inbox of Tools; the other Projects keep no `note/` of their own.
 
 ## Protect existing work
 

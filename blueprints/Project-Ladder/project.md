@@ -2,7 +2,7 @@
 
 Decide how every research Project is organized and how its workbench shows it, one Theme at a time, so the skills and the workbench follow one agreed plan.
 
-One of the three Projects of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
+One Project of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
 
 ## Blocks
 

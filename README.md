@@ -19,7 +19,7 @@ This table covers the three package directories directly under `plugins/`. The H
 | Path | Purpose |
 |---|---|
 | `plugins/` | First-party packages. The installers discover skills recursively under these package roots. |
-| `blueprints/` | Shared foundation and independent Theme Blocks, with questions, reports, studio topics and Runs. |
+| `blueprints/` | Shared foundation and independent Theme Blocks, with questions, reports, studio topics and Runs. [Project-RandomThoughts](blueprints/Project-RandomThoughts/project.md) is the inbox: loose thoughts and meeting notes land there first, by topic. |
 | `references/` | Upstream projects, reference material, and Git submodules. The installers do not install skills from this tree. |
 | `references/sources.yaml` | Source, origin, and license notes for the reference collection. |
 | `.claude-plugin/marketplace.json` | Claude Code marketplace catalog for this repository. |

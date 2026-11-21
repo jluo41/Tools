@@ -1,6 +1,6 @@
 schema: haipipe-project/v1
-id: Project-Replay
+id: Project-RandomThoughts
 profile: research
 git_mode: workspace
 state: active
-mission: "Replay how a piece of work was decided: read the sessions' own transcripts and lay out, day by day, what was asked, what was decided and what was built."
+mission: "The one inbox of Tools: a loose thought or a meeting note lands here first, kept by topic and by date, and points to the Block it feeds."

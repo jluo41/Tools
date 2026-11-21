@@ -2,7 +2,7 @@
 
 Plan the three code packages Tools ships (haipipe-toolkit, haipipe-utils, inlab-human): what each one is for and what to build next.
 
-One of the three Projects of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
+One Project of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `examples-*/` does in a SPACE; each Project keeps its Blocks in `work/`). Block numbers are unique across all of Tools.
 
 ## Blocks
 
