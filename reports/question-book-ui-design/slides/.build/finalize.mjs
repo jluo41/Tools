@@ -1,6 +1,0 @@
-import path from 'node:path';
-import {finalizePresentation} from '/Users/jluo41/.codex/plugins/cache/openai-primary-runtime/presentations/26.1111.10934/skills/presentations/container_tools/artifact_tool_utils.mjs';
-const workspaceDir=path.resolve('reports/question-book-ui-design/slides');
-const skill='/Users/jluo41/.codex/plugins/cache/openai-primary-runtime/presentations/26.1111.10934/skills/presentations';
-const result=await finalizePresentation({workspaceDir,candidatePath:path.join(workspaceDir,'.build/candidate.pptx'),finalPath:path.join(workspaceDir,'output/Question-Book-设计逻辑.pptx'),pythonExecutable:'/Users/jluo41/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3',integrityValidatorPath:path.join(skill,'container_tools/inspect_presentation_package_integrity.py'),layoutValidatorPath:path.join(skill,'container_tools/inspect_presentation_layout_geometry.py'),layoutArgs:['--expected-slide-size-emu','12192000,6858000','--validate-bullet-geometry','--validate-heading-fit'],requiredNativeTableOwnerSlides:[],requiredNativeChartOwnerSlides:[],fontPolicy:{basis:'design',families:['Arial Unicode MS']},verifyArtifactToolImport:true,receiptPath:path.join(workspaceDir,'.build/validation.json')});
-console.log(JSON.stringify(result));

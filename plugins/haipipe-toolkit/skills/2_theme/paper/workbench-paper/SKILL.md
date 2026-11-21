@@ -253,3 +253,10 @@ The frame (`servers/workbench/`, `servers/_host/`) belongs to its owner; ask bef
 - Every button of every level's Space is a run card; `render_workbench_table.py ref/workbench-table.md --check
   --cards ../haipipe-paper-workflow/ref/run-cards.md` says PASS.
 - No view writes, and none reads a `console/`, `data.js` or other per-paper projection.
+
+## 🗂 Topics
+
+This theme's topics (a problem, a missing step or a rule that was unclear, each with its state and the guard that
+keeps it fixed) are kept in [`ref/topics.md`](ref/topics.md); a new one is added there before it is worked (the
+repository's AGENTS.md § Report). The paper's writing lab (`haipipe-paper/scripts/open_writing_lab.py`,
+`ref/writing-lab.md`) reports here too.
