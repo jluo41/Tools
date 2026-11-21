@@ -1,0 +1,42 @@
+[
+  {
+    "file": "01-one-work-two-surfaces.png",
+    "source": "output/imagegen/work-concept-2026-11-19/01-one-work-two-surfaces.png",
+    "sha256": "df1f108dbde29757a4a62c374d5471108e3903abd2c82e1a1cbfa03119bb1699"
+  },
+  {
+    "file": "02-one-brick-many-views.png",
+    "source": "output/imagegen/work-concept-2026-11-19/02-one-brick-many-views.png",
+    "sha256": "b246e20b5a215fcd548ac9dfa22f68a0e1360d18a340b38b83412e14e8a255a8"
+  },
+  {
+    "file": "03-how-work-evolves.png",
+    "source": "output/imagegen/work-concept-2026-11-19/03-how-work-evolves.png",
+    "sha256": "f7b8bf6f47c2a13f33b62a88612be35e3aeea45b5cb110c7fca9b341d3a88e1b"
+  },
+  {
+    "file": "04-sessions-and-records.png",
+    "source": "output/imagegen/work-concept-2026-11-19/04-sessions-and-records.png",
+    "sha256": "47505755f798667df5712dc55a163654dfee82b369a56c7876f6af069bed9317"
+  },
+  {
+    "file": "concept-notes.md",
+    "source": "output/imagegen/work-concept-2026-11-19/README.md",
+    "sha256": "e5340180413ee747ee68b70bd0ba04528e50af56885fb6403fa3aea3171640de"
+  },
+  {
+    "file": "prompts.json",
+    "source": "output/imagegen/work-concept-2026-11-19/prompts.json",
+    "sha256": "6ee59a048a7521e0ae6f87fc57c72c45b6369a06be6448e22cd42a8d2bff3880"
+  },
+  {
+    "file": "04-sessions-design.md",
+    "source": "output/imagegen/work-concept-2026-11-19/04-sessions-design.md",
+    "sha256": "6c1c45981af20c6638ed15929330932f0fefb22b192997fe3d878bcbbc3ec91d"
+  },
+  {
+    "file": "04-session-prompt.txt",
+    "source": "output/imagegen/work-concept-2026-11-19/04-session-prompt.txt",
+    "sha256": "c7ab82337205aaa10bb0ac841ad069c9fe01b74db5487a32eba7b12d0992ff81"
+  }
+]

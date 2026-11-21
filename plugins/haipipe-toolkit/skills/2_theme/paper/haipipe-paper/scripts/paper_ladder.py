@@ -150,6 +150,7 @@ class Run:
             dst.parent.mkdir(parents=True, exist_ok=True)
             dst.write_text(read(b / rel), encoding="utf-8")
             (b / rel).write_text(text, encoding="utf-8")
+        sys.path.insert(0, str(Path(__file__).resolve().parent))   # loaded by path from another skill's script
         import paper_check
         for rel, text in self.create.items():
             (b / rel).parent.mkdir(parents=True, exist_ok=True)

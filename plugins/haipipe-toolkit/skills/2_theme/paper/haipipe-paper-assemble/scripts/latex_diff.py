@@ -49,8 +49,13 @@ def materialize(spec: str, into: Path) -> Path:
             dest.write_bytes(subprocess.run(["git", "show", f"{rev}:{f}"], cwd=top, capture_output=True).stdout)
         return src
     src = Path(spec).resolve()
-    shutil.copytree(src, into, dirs_exist_ok=True,
-                    ignore=shutil.ignore_patterns("*.pdf", "*.aux", "*.log", "*.out", "*.blg", "*.toc"))
+    build_junk = shutil.ignore_patterns("*.aux", "*.log", "*.out", "*.blg", "*.toc")
+    def skip(d, names):                  # the room's own built PDFs only; figures under displays/ are PDFs too (261120)
+        out = set(build_junk(d, names))
+        if Path(d).resolve() == src:
+            out |= {n for n in names if n.endswith(".pdf")}
+        return out
+    shutil.copytree(src, into, dirs_exist_ok=True, ignore=skip)
     return src
 
 

@@ -138,8 +138,11 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
     pieces = [p for p in pieces if p[2] or p[3]]
     if not pieces:
         return ""
-    earlier = sum(1 for p in pieces if p[0] in TAB_GROUPS)
-    pieces = sorted(pieces[:earlier], key=lambda p: TAB_GROUP_ORDER.index(TAB_GROUPS[p[0]][0])) + pieces[earlier:]
+    # the named tabs by heading, then the rest (earlier rounds) in their own order; a tab missing from TAB_GROUPS
+    # ("The combined copy" was, 261120) no longer breaks the page
+    pieces = sorted((p for p in pieces if p[0] in TAB_GROUPS), key=lambda p: TAB_GROUP_ORDER.index(TAB_GROUPS[p[0]][0])) + \
+        [p for p in pieces if p[0] not in TAB_GROUPS]
+    earlier = sum(1 for p in pieces if p[0] in TAB_GROUPS)   # the named tabs come first; the rest fold under Earlier
     href = lambda x: "/" + quote(ds._rel(x, root))
     items, panels = [], []
     for name, how, pdf, doc, *web in pieces:
@@ -176,6 +179,7 @@ TAB_GROUPS = {
     "The paper · LaTeX": ("LaTeX", "The paper"),
     "The paper · LaTeX diff": ("LaTeX", "Changes since the last round"),
     "The supplement · LaTeX": ("LaTeX", "The supplement"),
+    "The combined copy": ("LaTeX", "Paper and supplement"),
     "The paper · Word": ("Word", "The paper"),
     "The paper · Word, tracked": ("Word", "Tracked changes"),
     "The supplement · Word": ("Word", "The supplement"),

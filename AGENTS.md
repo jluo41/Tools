@@ -1,5 +1,9 @@
 # Repository guidance
 
+## The two systems
+
+Read `PRINCIPLE.md` first: it is how every plugin here is designed (a File System, a UI System, and the map between them).
+
 ## Layout and scope
 
 - `plugins/` contains the first-party packages. Top-level package metadata lives in each package's `.claude-plugin/plugin.json`.

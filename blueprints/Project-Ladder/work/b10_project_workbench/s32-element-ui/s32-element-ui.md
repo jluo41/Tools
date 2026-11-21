@@ -18,6 +18,9 @@ UI is very bad, not as good as the previous ones": the previous looks are all he
 
 **Feeds:** Q08 (one shared base, a theme each)
 
+**Saved discussion:** [Folder, UI, Bricks and chat-session history](passes/p09-1120/pass.md), with the conversation,
+four concept pictures, and open design questions about building the UI itself.
+
 Reshot 261012 (JL: "please read s32, it is old enough, right? DO we want to update it again?"): the
 261010 shots showed six theme pages that have since retired or moved. Every theme now draws on the shared
 frame, so the versions are the base and each theme on the frame. Only what is still used is kept (s32-D24).
