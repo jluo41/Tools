@@ -6,7 +6,6 @@
 - `references/` contains upstream projects and reference material; many directories are Git submodules. `references/sources.yaml` records origins and license notes.
 - The installers discover skills recursively under `plugins/**/skills/`. They do not install skills from `references/`.
 - Root install behavior is implemented by `install.sh` and `install.ps1`; both read the shared sound-hook table in `install-hooks.json`.
-- `export/` writes one part of this repository (a profile, such as `insight-design`) into a separate target repository, from a commit; `export/README.md`. A profile is named for what it holds; who a target is for lives only in the target's own files.
 
 ## Protect existing work
 
