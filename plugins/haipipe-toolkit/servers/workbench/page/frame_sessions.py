@@ -1,6 +1,7 @@
 """Studio > Sessions: the episodes that changed a Block, each joined to the folders it touched (ref/three-views.md).
 
-An episode is a pass (`passes/pNN-<MMDD>/pass.md` of a Run, a Studio topic's `passes/pNN-<MMDD>/`) or one
+An episode is a pass (`passes/pNN-<MMDD>/pass.md` of a Run, a Studio topic's `passes/pNN-<MMDD>/`), a Block's
+chat session (`cNN_<slug>/cNN_<slug>.md`, haipipe-chat) or one
 `## Pass` of a Paper Section's `draft/records/<stem>-revise.md`. They are read where they are, at fixed depths
 (never a recursive walk: a Block's results/ and data/ hold thousands of files), and each file is parsed once per
 version of it. The Folder part puts a 🧵 on each row an episode touched; a click shows those episodes here.
@@ -19,6 +20,8 @@ from live.frame_base import _e, _file_url, _reader, _rel, pop
 # where episodes live, relative to a Block: its own level, a Job, a Task (a Job's and a Task's Runs and topics)
 PASS_DIRS = ("runs/*/passes/p[0-9]*", "*/runs/*/passes/p[0-9]*", "*/*/runs/*/passes/p[0-9]*",
              "s[0-9]*-*/passes/p[0-9]*", "*/s[0-9]*-*/passes/p[0-9]*")
+CHAT_DIRS = ("c[0-9]*_*",)                    # a Block's chat sessions, beside its Jobs (haipipe-chat)
+_CHAT = re.compile(r"^c\d{2,}_[a-z0-9][a-z0-9_]*$")
 REVISE_FILES = ("*/draft/records/*-revise.md", "*/*/draft/records/*-revise.md")
 RECORD_NAMES = ("pass.md", "digest.md")      # what a pass shows; a transcript is never linked from the page
 _PASS = re.compile(r"^p(\d+)-(\d{2})(\d{2})$")
@@ -94,6 +97,15 @@ def _read_pass(record: Path) -> list:
              "paths": [str(p) for p in meta.get("paths") or _changed(body)], "cards": list(meta.get("cards") or [])}]
 
 
+def _read_chat(face: Path) -> list:
+    """One episode per chat folder: its face's front matter, as a pass's (haipipe-chat ref/chat-contract.md)."""
+    meta, body = _split(face.read_text(encoding="utf-8", errors="ignore"))
+    owner = face.parent
+    return [{"day": str(meta.get("date") or ""), "goal": str(meta.get("goal") or _title(body, owner.name)),
+             "record": face, "owner": owner, "session": meta.get("session") or "",
+             "paths": [str(p) for p in meta.get("paths") or _changed(body)], "cards": list(meta.get("cards") or [])}]
+
+
 def _read_revise(md: Path) -> list:
     """One episode per `## Pass` heading of a Paper Section's revise record; its day is in the heading."""
     text = md.read_text(encoding="utf-8", errors="ignore")
@@ -141,6 +153,11 @@ def _episodes(block: Path) -> tuple[list, tuple]:
             record = _record(pdir) if pdir.is_dir() else None
             if record:
                 out.extend(_cached(record, _read_pass, sigs))
+    for pattern in CHAT_DIRS:
+        for cdir in block.glob(pattern):
+            face = cdir / f"{cdir.name}.md"
+            if _CHAT.match(cdir.name) and face.is_file():
+                out.extend(_cached(face, _read_chat, sigs))
     for pattern in REVISE_FILES:
         for md in block.glob(pattern):
             out.extend(_cached(md, _read_revise, sigs))
@@ -203,7 +220,8 @@ def sessions_part(block: Path, root: Path, under: Path | None = None) -> str:
         if under and under != block and not any(p.is_relative_to(under)
                                                  for p in touched(e, block) + [e["owner"].resolve()]):
             continue
-        groups.setdefault(e["owner"].parent.parent if e["owner"].parent.name == "runs" else e["owner"], []).append(e)
+        holder = e["owner"].parent.parent if e["owner"].parent.name == "runs" else e["owner"]
+        groups.setdefault(block if _CHAT.match(holder.name) else holder, []).append(e)   # chats group at their Block
     if not groups:
         return ""                               # a part with nothing in it is not shown
     parts = []

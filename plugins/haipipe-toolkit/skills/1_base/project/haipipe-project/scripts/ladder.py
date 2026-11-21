@@ -45,6 +45,7 @@ def load_table() -> dict:
 
 T = load_table()
 STUDIO_ITEM = re.compile(r"^s\d{2}[-_]")             # an sNN-<topic>/ folder, beside a level's Jobs or Tasks
+CHAT_ITEM = re.compile(r"^c\d{2,}_")                  # a cNN_<slug>/ chat session, beside a Block's Jobs (haipipe-chat)
 NAMES = {k: re.compile(v) for k, v in T["names"].items()}
 ABS = re.compile(T["checks"]["absolute_path"])
 HEAVY = T["checks"]["heavy_mb"] * 1024 * 1024
@@ -139,8 +140,9 @@ def ladder_dirs(path: Path, level: str, fam: str, child: str | None, node: Node)
             continue
         if child and NAMES[child].match(d.name):
             kids.append(d)
-        elif d.name in allowed or (level in ("block", "job", "task") and STUDIO_ITEM.match(d.name)):
-            continue                                    # an sNN beside the Jobs or Tasks (haipipe-studio, JL 261030)
+        elif d.name in allowed or (level in ("block", "job", "task") and STUDIO_ITEM.match(d.name)) \
+                or (level == "block" and CHAT_ITEM.match(d.name)):
+            continue                                    # an sNN beside the Jobs or Tasks (haipipe-studio, JL 261030), a cNN chat
         elif d.name in rules.get("debt", {}):
             node.add("debt", rules["debt"][d.name])
         else:
@@ -786,7 +788,7 @@ def runs_folders(path: Path) -> list[Path]:
     for dirpath, dirnames, _ in os.walk(path):
         dirnames[:] = [d for d in dirnames if not d.startswith((".", "_")) and d not in
                        {"results", "notebooks", "draft", "src", "sbatch", "scripts", "studio"}
-                       and not STUDIO_ITEM.match(d)]                # an sNN topic beside the Jobs is no Run holder
+                       and not STUDIO_ITEM.match(d) and not CHAT_ITEM.match(d)]   # an sNN or cNN is no Run holder
         if "runs" in dirnames:
             out.append(Path(dirpath) / "runs")
             dirnames.remove("runs")

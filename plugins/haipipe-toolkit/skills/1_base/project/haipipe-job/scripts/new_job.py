@@ -28,6 +28,7 @@ SLUG = re.compile(r"^[a-z0-9][a-z0-9_]*$")
 SKIP = {"studio", "reports", "runs", "delivery", "src", "sbatch", "draft", "scripts", "results", "_old",
         "emails", "meetings", "materials", "design", "files", "related"}   # a cowork Job's material, not its Tasks
 STUDIO_ITEM = re.compile(r"^s\d{2}[-_]")             # an sNN-<topic>/ beside the Jobs or Tasks (JL 261030): not a kid
+CHAT_ITEM = re.compile(r"^c\d{2,}_")                  # a cNN_<slug>/ chat beside the Jobs (haipipe-chat): not a kid
 
 
 def face(folder: Path) -> Path | None:
@@ -40,6 +41,7 @@ def face(folder: Path) -> Path | None:
 def kids(folder: Path) -> list[Path]:
     """Direct child folders that carry a face of their own name: a Block's Jobs, a Job's Tasks (not its sNN topics)."""
     return [p for p in sorted(folder.iterdir()) if p.is_dir() and p.name not in SKIP and not STUDIO_ITEM.match(p.name)
+            and not CHAT_ITEM.match(p.name)
             and not p.name.startswith((".", "_")) and (p / (p.name + ".md")).is_file()]
 
 

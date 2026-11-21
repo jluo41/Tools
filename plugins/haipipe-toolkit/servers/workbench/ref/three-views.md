@@ -61,8 +61,10 @@ Run that served the goal (`runs/run-<verb>-<target>/`, haipipe-run). It may span
 (a Labeling meaning loop is four Runs; a Design sitting walks generate, verify and revise across Tasks). Runs it
 starts, such as 181 Insight segment Runs, are folders it touched, never episodes of their own.
 
-When no soft Run fits the goal (a face edit, a refactor across Jobs, a Project move), the session opens one at the
-level it acts on, as haipipe-run already allows. So every episode is a pass, and a pass is found the same way at
+A session that is worth keeping as a conversation, not as one Run's round, is saved at its Block as the next
+`cNN_<slug>/` (haipipe-chat, `scripts/new_chat.py new`); its face carries the same front matter as a pass. When no
+soft Run fits the goal and the session is not kept as a chat, it opens a soft Run at the level it acts on, as
+haipipe-run already allows. So every episode is a pass, and a pass is found the same way at
 every level.
 
 ### 4.2 The record
@@ -102,6 +104,7 @@ These are read as episodes where they are, never copied into a second record:
 
 | Theme | Existing record | Read as |
 | --- | --- | --- |
+| every theme | Block chat `cNN_<slug>/cNN_<slug>.md` (haipipe-chat; transcript.md beside it) | one episode per chat |
 | every theme | Studio topic `sNN-<topic>/passes/pNN-<MMDD>/` (digest.md, transcript.md) | one episode per pass |
 | Insight, Work, Design | soft Run `runs/run-*/passes/pNN-<MMDD>/pass.md` | one episode per pass |
 | Labeling, Work | collect Run `runs/rNN_collect_*/passes/pNN-<MMDD>/pass.md` (a person's form round) | one episode per pass |
@@ -126,7 +129,7 @@ An older record without `paths:` is joined to the folder that holds it, and its 
 ## 5. Rules
 
 0. **Speed.** The reader never walks a folder recursively: it globs fixed depths (`frame_sessions.PASS_DIRS`,
-   `REVISE_FILES`), never enters results/, data/ or node_modules/, and parses each record once per version of it
+   `CHAT_DIRS`, `REVISE_FILES`), never enters results/, data/ or node_modules/, and parses each record once per version of it
    (path, mtime, size). At SPACE and Project level it runs on every Home load.
 
 1. **Page words** (AGENTS.md): no count labels ("12 episodes"), no state words, no hashes, no "JL 2611xx" tags. The

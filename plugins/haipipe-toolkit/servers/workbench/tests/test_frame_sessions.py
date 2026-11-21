@@ -86,6 +86,21 @@ class SessionsTest(unittest.TestCase):
         self.assertIn("Tighten Methods", html)
         self.assertNotIn("Story round", html)
 
+    def test_a_block_chat_is_an_episode_grouped_at_its_block(self):
+        chat = self.block / "c01_tighten_methods"
+        chat.mkdir()
+        (chat / "c01_tighten_methods.md").write_text(
+            f"---\nsession: Paper-X\ndate: 2026-11-21\ngoal: Talk through Methods\npaths:\n  - {self.rel}\n---\n\n"
+            "# c01 · Talk through Methods\n")
+        (chat / "transcript.md").write_text("# raw\n")
+        eps = frame_sessions.episodes(self.block)
+        self.assertEqual(eps[0]["goal"], "Talk through Methods")
+        self.assertEqual(eps[0]["record"].name, "c01_tighten_methods.md")
+        html = frame_sessions.sessions_part(self.block, self.root)
+        self.assertIn("<h4 class=ss-where>Paper-X/</h4>", html)
+        self.assertNotIn("transcript.md", html)
+        self.assertIn("Talk through Methods", frame_sessions.sessions_part(self.block, self.root, under=self.task))
+
     def test_the_focus_files_section_carries_the_thread_and_sessions(self):
         html = focus_studio.files_html(self.block, self.root)
         self.assertIn('class=fd-th data-th="Project-X/paper/Paper-X/j02_writing_v1115_jama"', html)

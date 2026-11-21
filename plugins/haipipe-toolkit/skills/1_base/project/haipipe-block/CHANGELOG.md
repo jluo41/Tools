@@ -1,6 +1,12 @@
 haipipe-block · Changelog
 =========================
 
+**[2.3.0] · 2026-11-21 · A Block holds cNN chats**
+
+A Block holds `cNN_<slug>/` chat sessions beside its `jNN` Jobs and `sNN` Studio topics, owned by `haipipe-chat`
+(JL 261121: "Chat, Job, Studio, you should add it under the block folders"). `ref/board-contract.md` and the tree
+above list it; `haipipe-project` ladder and audit accept it at a Block, `haipipe-job` and `haipipe-report` never read it as a Job.
+
 **[2.2.2] · 2026-11-04 · `bands:` is a face field**
 
 `ref/board-contract.md` names the optional `bands:` line: it names each group of Jobs by first digit, with its own emoji

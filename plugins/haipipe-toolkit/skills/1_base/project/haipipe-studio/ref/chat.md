@@ -169,6 +169,10 @@ sessions are noise that never lands here.
 Flat `<page>/chat/` is readable migration input only; the keep writer always
 targets the nested Studio lane directly.
 
+A session kept for the whole Block, not for one Page, is the Block's next
+`cNN_<slug>/` beside its Jobs and Studio topics: `haipipe-chat` owns that folder,
+its face and its one writer (`scripts/new_chat.py new`).
+
 ## 📂 Files
 
 - `../../../../../servers/workbench/studio/chat.py` · the GUI form: sessions, the SDK turn,

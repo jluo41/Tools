@@ -46,6 +46,7 @@ COWORK_BLOCK = re.compile(r"b\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 COWORK_JOB = re.compile(r"j\d{2}_[a-z0-9]+(?:_[a-z0-9]+)*")
 # an sNN-<topic>/ Studio topic sits beside its level's Jobs or Tasks, no longer in studio/ (haipipe-studio, JL 261030)
 STUDIO_ITEM = re.compile(r"s\d{2}[-_]")
+CHAT_ITEM = re.compile(r"c\d{2,}_")                   # a cNN_<slug>/ chat session beside a Block's Jobs (haipipe-chat)
 
 
 @dataclass
@@ -147,7 +148,7 @@ def cowork_topic_findings(cowork: Path) -> list[str]:
                 found.append(f"cowork/{topic.name}/{name}: {hint}")
         for sub in sorted(topic.iterdir()):
             if not sub.is_dir() or sub.name.startswith(".") or sub.name in COWORK_BLOCK_DIRS \
-                    or STUDIO_ITEM.match(sub.name):
+                    or STUDIO_ITEM.match(sub.name) or CHAT_ITEM.match(sub.name):
                 continue
             if not COWORK_JOB.fullmatch(sub.name):
                 found.append(f"cowork/{topic.name}/{sub.name}/ is not a Block folder; move it into a Job")

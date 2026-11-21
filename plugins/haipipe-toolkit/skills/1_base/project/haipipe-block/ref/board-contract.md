@@ -10,6 +10,7 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 <Project>/<theme folder>/bNN_<topic>/      work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
 ├── board.md                               the face (this contract)
 ├── sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
+├── cNN_<slug>/                     a kept chat session, numbered in time order (haipipe-chat)
 ├── reports/qNN_<topic>/                   an older Block only: a Question's answer now sits in its topic (haipipe-report)
 ├── runs/run-<type>-<target>/              soft Runs only at a Block (haipipe-run)
 ├── delivery/                              what the Block hands on
