@@ -515,6 +515,7 @@ def test_a_word_draft_never_measures(monkeypatch):
     monkeypatch.delenv("PYTEST_CURRENT_TEST", raising=False)
     monkeypatch.delenv("HAIPIPE_WORD_PREVIEW", raising=False)
     monkeypatch.delenv("HAIPIPE_WORD_DRAFT", raising=False)
+    monkeypatch.setattr(L, "_WORD_FREE", True)   # the person's Word is not asked in a test (word_lock.word_in_use)
     assert L.word_can_measure()
     monkeypatch.setenv("HAIPIPE_WORD_DRAFT", "1")
     assert not L.word_can_measure()

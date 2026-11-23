@@ -55,7 +55,8 @@ Without a template file, `heading_numbers` types the numbers.
 
 ## 🎭 Venue profiles
 
-A profile is presentation, never claims: `profiles/<name>.toml`, selected by
+A profile is presentation, never claims: `venues/<name>/profile.toml` (one folder per venue, its contract in
+`venues/README.md`), selected by
 `[paper] venue_profile` in `paper-build.toml`; `[profile]` there may override
 single keys. Flat keys drive the Word engine (`layout`, `font`, `line_numbers`,
 `venue_label`, `draft_label`, `abstract_heading`, `references_heading`, …); the
@@ -74,7 +75,14 @@ display_page         true · false               each table or figure on a page 
 display_at_first_ref true · false               each float moved after the paragraph that first \ref's it
 float_page           top (default) · center     where a display sits on its own page; top = page top
 abstract_new_page    true · false               the Abstract starts a page after the Key Points
+title_block          maketitle · center         center = a centred title block the venue's Word layout parses
+section_headings     ["Introduction", …]        a \section{..} added where a page has none
+abstract_as_written  true · false               keep the page's own \section*{Abstract}, no abstract environment
+supplement_float_names ["eTable", "eFigure"]    supplement floats restart as eTable 1, eFigure 1
 ```
+
+Every master starts with `\XeTeXgenerateactualtext=1`, so a copied or searched character is the one the source
+wrote: without it Times New Roman's shared glyph made every ";" copy as U+037E, the Greek question mark (261122).
 
 Word-lane keys (flat `[profile]`, 0.12.0): `display_float = "top"` (default; `"inline"` keeps text order),
 `display_float_max_rows = 25`, `display_float_max_inches = 5.5` (bigger displays get a page of their own),

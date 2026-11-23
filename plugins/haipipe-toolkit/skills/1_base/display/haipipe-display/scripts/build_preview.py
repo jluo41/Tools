@@ -127,6 +127,37 @@ def paper_head(master: Path) -> str:
     return "\n".join(keep).strip() + "\n"
 
 
+CITE = re.compile(r"\\(?:cite[a-zA-Z]*|nocite)\*?(?:\[[^]]*\])*\{")
+
+
+def cited(unit: Path) -> bool:
+    """Whether the float, or a file it \\inputs from its own folder, cites a paper."""
+    seen, todo = set(), [unit / "float.tex"]
+    while todo:
+        f = todo.pop()
+        if f in seen or not f.is_file():
+            continue
+        seen.add(f)
+        text = f.read_text(encoding="utf-8", errors="ignore")
+        if CITE.search(text):
+            return True
+        todo += [unit / (n if n.endswith(".tex") else n + ".tex") for n in re.findall(r"\\input\{([^}]+)\}", text)]
+    return False
+
+
+def hidden_bib(master: Path) -> str:
+    """The built paper's \\bibliographystyle and \\bibliography, set in a box that is never printed, so a citation in the
+    display prints as the paper prints it ("(Dowell et al., 2016)"), not "(?)" (Pp-AgreeableRx 261121, Table C1)."""
+    body = master.read_text(encoding="utf-8", errors="ignore").split(r"\begin{document}")[-1]
+    files = re.findall(r"\\bibliography\{([^}]+)\}", body)
+    if not files:
+        return ""
+    paths = ",".join((master.parent / re.sub(r"\.bib$", "", f.strip())).as_posix() for f in files[-1].split(","))
+    style = re.findall(r"\\bibliographystyle\{([^}]+)\}", body)
+    return ("\\setbox0=\\vbox{" + (f"\\bibliographystyle{{{style[-1]}}}" if style else "")
+            + f"\\bibliography{{{paths}}}}}\n")
+
+
 NUMBERED = re.compile(r"^\s*(e|Extended Data |Supplementary |Appendix )?(Figure|Table)\s+([A-Za-z]?\d+[a-z]?)\b")
 
 
@@ -215,6 +246,8 @@ def build(unit: Path, method_from: Path | None = None, look: str = "", preamble_
     if earlier and "graphicx" not in preamble:
         preamble += r"\usepackage{graphicx}" + "\n"
     tail = earlier_tex(unit, earlier) if earlier else ""
+    if preamble_from is not None and cited(unit):
+        tail += hidden_bib(preamble_from.resolve())
     method = unit / "method.md"
     if method_from is not None:                    # the source version's method pages, as they are
         src = method_from.resolve()
@@ -255,9 +288,12 @@ def _compile(unit: Path, old: Path, body: str) -> Path:
         sys.exit("stop: the paper look loads fontspec, which needs xelatex; install it or pass no --look")
     for ext in (".aux", ".out"):                 # a build that was cut off leaves a broken .aux, and the next one stops on it
         (unit / f"preview{ext}").unlink(missing_ok=True)
-    for _ in range(2):
+    passes = 3 if "\\bibliography{" in body else 2
+    for k in range(passes):
         r = subprocess.run([engine, "-interaction=nonstopmode", "-halt-on-error", "preview.tex"], cwd=unit,
                            capture_output=True, text=True)
+        if k == 0 and passes == 3:           # the paper's bib, read once: the citations then print as the paper does
+            subprocess.run(["bibtex", "preview"], cwd=unit, capture_output=True, text=True)
     if r.returncode != 0 or not (unit / "preview.pdf").is_file():
         sys.exit("stop: the preview did not compile:\n" + "\n".join(r.stdout.splitlines()[-20:]))
     pages = re.search(r"PREVIEW-METHOD-PAGES=(\d+)", r.stdout)
@@ -266,7 +302,7 @@ def _compile(unit: Path, old: Path, body: str) -> Path:
         side.write_text(pages.group(1) + "\n")
     else:
         side.unlink(missing_ok=True)
-    for ext in (".aux", ".log", ".out"):
+    for ext in (".aux", ".log", ".out", ".bbl", ".blg"):
         (unit / f"preview{ext}").unlink(missing_ok=True)
     return unit / "preview.pdf"
 

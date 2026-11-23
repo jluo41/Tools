@@ -9,10 +9,14 @@ left ("the file today"). Was b21_event_cgm's `delivery/word_versions.py` (2026-1
 
     python word_round.py --word-dir <dir> --name <name> [--onedrive <file>] status
     python word_round.py ... pull              read back: OneDrive's file as the next version, rendered, its new comments
+                                               (and, with haipipe-paper-assemble beside it, its citation order)
     python word_round.py ... adopt <glob>      number the build(s) a builder just wrote into the lane folder
     python word_round.py ... import <file>     save a dated copy as the next version, keeping its date
     python word_round.py ... render <N>        the pages of version N as pictures
     python word_round.py ... push <N>          put version N in OneDrive, only at a person's word
+
+A co-author round as one folder (RoundN-vMMDD/ with previous/, track/, clean/, submission/; JL 261122) has its own
+verbs, passed to word_round_folder.py: open-round, adopt-round, settle, refresh, submit, submitted, round-status; check (check_round.py) (see that file).
 
 push refuses when OneDrive holds edits no version has (pull first), when N is not newer than what OneDrive holds, or
 when N lacks a comment someone else wrote in OneDrive's copy; --force overrides, only at a person's word. push adds
@@ -162,6 +166,8 @@ class Round:
         print(f"{len(fresh)} new comments by others:" if fresh else "no new comments by others")
         for a, t in fresh:
             print(f"  {a}: {t[:90]}")
+        for line in citation_check(self.onedrive):
+            print(line)
         who = ", ".join(sorted({a for a, _ in fresh})) or "someone"
         self.row(f"back from {who}: OneDrive `{self.onedrive.name}`, saved {when(self.onedrive)} as v{n}, "
                  f"{len(fresh)} new comments (`word_round.py pull`)", self.word / f"{self.name}-v{n}.docx", "back")
@@ -173,6 +179,12 @@ class Round:
             raise SystemExit(f"no v{n} in {self.rel(self.word)}")
         if self.onedrive is None:
             raise SystemExit("no OneDrive copy named (--onedrive)")
+        round_dir = next((d for d in Path(self.onedrive).parents if re.fullmatch(r"Round\d+-v\d{4}", d.name)), None)
+        if round_dir is not None:   # a round is written by its own verbs (Pp-AgreeableRx 261122: push made a flat Round3)
+            raise SystemExit(f"refused: {round_dir.name}/ is a round folder; its top holds only the numbered working "
+                             "files (N-<Name>-vMMDD-<kind>.docx). Start it with `word_round.py open-round <rounds-dir> "
+                             "--file N=<built.docx>`, or replace an unedited file with `word_round.py refresh <round> N "
+                             "--clean N=<docx>,<pdf>` (ref/round-folder.md)")
         if self.onedrive.is_file():
             now = self.held(self.onedrive)
             if now is None and not force:
@@ -204,6 +216,23 @@ class Round:
             print(f"OneDrive: changed since the last version (saved there {when(self.onedrive)}); pull reads it back")
 
 
+def citation_check(docx):
+    """The paper skill's citation-order check on a file that came back (haipipe-paper-assemble word_compare.py,
+    AgreeableJama-Board 261122): numbered references must run in the order first cited. Nothing when that skill
+    is not installed beside this one."""
+    tool = Path(__file__).resolve().parents[4] / "2_theme/paper/haipipe-paper-assemble/scripts/word_compare.py"
+    if not tool.is_file():
+        return []
+    sys.path.insert(0, str(tool.parent))
+    try:
+        from word_compare import citation_order
+        return citation_order(Path(docx))
+    except Exception as e:   # a check that fails never stops a pull
+        return [f"citation check skipped: {e}"]
+    finally:
+        sys.path.remove(str(tool.parent))
+
+
 def when(path):
     return datetime.datetime.fromtimestamp(Path(path).stat().st_mtime).strftime("%Y-%m-%d %H:%M")
 
@@ -220,6 +249,13 @@ def comments(path):
 
 def main(argv=None, **fixed):
     """The command line; a Block's own script passes its lane, name and OneDrive copy as `fixed`."""
+    args = list(sys.argv[1:] if argv is None else argv)
+    if args and args[0] == "check":   # the round layout check (check_round.py): one round, or <rounds-dir> --all
+        from check_round import main as check_main
+        return check_main(args[1:])
+    if args and args[0] in {"open-round", "adopt-round", "settle", "refresh", "submit", "submitted", "round-status"}:   # the round folder (word_round_folder.py)
+        from word_round_folder import main as folder_main
+        return folder_main(["status" if args[0] == "round-status" else args[0], *args[1:]])
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     if not fixed:
         ap.add_argument("--word-dir", required=True, type=Path, help="the lane folder holding <name>-v<N>.docx")

@@ -1,0 +1,38 @@
+# Nature Machine Intelligence manuscript presentation rules (Article).
+# Venue behaviour only. Paper prose, values, citations and display choices stay in the paper's pages.
+# First written from Paper-ScalingGlucose-NatSeries2026, which carried these keys inline (JL 261123).
+layout = "generic"
+venue_label = "Nature Machine Intelligence"
+article_type = "Article"
+venue_pack = "playbook-nature-portfolio/NMI"
+font = "Times New Roman"
+line_numbers = false
+draft_label = "DRAFT — NOT SUBMISSION READY"
+abstract_heading = "Abstract"
+references_heading = "References"
+# must match what build_delivery.py emits verbatim ("Acknowledgments"); latex_room_to_docx.py reads this key
+backmatter_heading = "Acknowledgments"
+# Nature: superscript numbers in the order cited; author-year is not used
+citation_style = "numeric"
+# NMI Article: up to 3,500 words of main text, counting Introduction, Results and Discussion only
+main_text_word_limit = 3500
+back_matter_headings = ["Methods"]
+word_count_label = "Main-text word count (excluding abstract, Methods, references and figure legends)"
+# Data availability and Code availability are their own sections after Methods, as Nature articles print them
+word_top_level = ["Data availability", "Code availability"]
+# The supplement file is the Extended Data: no "Appendix A" line, single-spaced, Nature's own float names.
+# A paper's Supplementary Information file overrides the title and prefixes in its own [profile].
+supplement_title = "EXTENDED DATA"
+appendix_heading = false
+supplement_line_spacing = 1.0
+supplement_table_prefix = "Extended Data Table "
+supplement_figure_prefix = "Extended Data Fig. "
+
+[latex]
+bibstyle = "unsrtnat"   # numbered, order of appearance; the paper's preamble.tex switches natbib to superscript
+spacing = "onehalf"
+displays = "inline"
+appendix_newpage = true
+title_page = "inline"
+abstract_page = false
+running_head = true

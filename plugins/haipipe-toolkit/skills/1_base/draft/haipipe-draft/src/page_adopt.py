@@ -229,13 +229,13 @@ def adopt(target, *, plan: Path | None = None, relayout: bool = False) -> dict:
         old = lines[span[0]:span[1]]
         skeleton = _skeleton(text, plan_text)
         if skeleton:
-            kept = [l for l in old if l.lstrip().startswith(">")]
+            skeleton, lost = _carry_under(old, skeleton)
             lines = lines[:span[0]] + skeleton + lines[span[1]:]
             span = (span[0], span[0] + len(skeleton))
             report["changes"].append("laid out the Content again from the Draft (--relayout: its paragraphs changed)")
-            if kept:
-                report["notes"].append("%d `>` line(s) of the old Content were not carried; the evidence lines are "
-                                       "rewritten from the Draft" % len(kept))
+            if lost:
+                report["notes"].append("%d `>` line(s) of the old Content were not carried: their sentence is no "
+                                       "longer in the Draft" % len(lost))
     elif not any(REALIZES.search(line) for line in lines[span[0]:span[1]]):
         # a Page whose Content holds no tagged sentence yet (a new Section's placeholder) gets its paragraph blocks
         # laid out from the Draft, one `####` block per paragraph, which the exporters print as a paragraph break and
@@ -261,6 +261,7 @@ def adopt(target, *, plan: Path | None = None, relayout: bool = False) -> dict:
                 report["refused"].append("%s appears under two headings" % paragraph)
             on_page[paragraph] = i
             block["paragraph"] = paragraph
+    _tag_untagged(blocks_, sorted(wanted - set(on_page), key=_address_key), order, drafts, on_page, report)
     missing = sorted(wanted - set(on_page), key=_address_key)
     extra = sorted(set(on_page) - set(order), key=_address_key)
     if missing:
@@ -286,6 +287,55 @@ def adopt(target, *, plan: Path | None = None, relayout: bool = False) -> dict:
     check_sync(report["text"], blocks, plan_text, findings)
     report["sync"] = [(f.level, f.message) for f in findings]
     return report
+
+
+def _carry_under(old: list, skeleton: list) -> tuple[list, list]:
+    """A relayout keeps the `>` lines (a Value, a Note) each old sentence carried, under the same address in the new
+    layout; _with_evidence then rewrites the ones an Evidence Item owns. Before, every `>` line was dropped, and a
+    Value line that names a Run rather than an Item was lost (AgreeableRx t00_abstract, 261121). Returns the new
+    skeleton and the `>` lines whose sentence is no longer in the Draft."""
+    under: dict = {}
+    for block in _heading_blocks(old):
+        for unit in _units(block["lines"])[1]:
+            under.setdefault(unit["address"], []).extend(l for l in unit["under"] if l.lstrip().startswith(">"))
+    out, placed = [], set()
+    for line in skeleton:
+        out.append(line)
+        match = REALIZES.match(line)
+        if match and under.get(match.group(2)):
+            out.extend(under[match.group(2)])
+            placed.add(match.group(2))
+    return out, [l for a, ls in under.items() if a not in placed for l in ls]
+
+
+def _plain(line: str) -> str:
+    return " ".join(line.split())
+
+
+def _tag_untagged(blocks: list, missing: list, order: dict, drafts: dict, on_page: dict, report: dict) -> None:
+    """A Draft paragraph with no tagged Page paragraph is found by its words: a heading block that holds no tag and
+    whose prose lines equal that paragraph's Draft sentences, one to one, gets the tags in place. Its heading
+    (`### Title`, `### Keywords`, which the paper build reads) and its other lines stay (AgreeableRx t00_abstract
+    261121: adopt refused on the untagged Title and Keywords, and relayout replaced those headings)."""
+    for paragraph in missing:
+        addresses = [a for a in order.get(paragraph, []) if drafts.get(a)]
+        want = [_plain(drafts[a]) for a in addresses]
+        hits = []
+        for i, block in enumerate(blocks):
+            if block.get("units") or block.get("paragraph"):
+                continue
+            prose = [k for k, l in enumerate(block["lines"]) if l.strip() and not l.lstrip().startswith(NOT_PROSE)]
+            if [_plain(block["lines"][k]) for k in prose] == want:
+                hits.append((i, prose))
+        if len(hits) != 1:
+            continue
+        i, prose = hits[0]
+        block = blocks[i]
+        for k, address in zip(prose, addresses):
+            block["lines"][k] = "%s <!-- realizes: %s -->" % (block["lines"][k].rstrip(), address)
+        block["lead"], block["units"] = _units(block["lines"])
+        block["paragraph"], on_page[paragraph] = paragraph, i
+        report["changes"].append("tagged %s under %s by its words" % (paragraph, (block["head"] or "").strip()))
 
 
 def _group(units: list) -> list:

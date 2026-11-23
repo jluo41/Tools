@@ -33,3 +33,9 @@ back_matter_headings = ["Contributors", "Declaration of interests", "Data sharin
 [latex]
 natbib = "super,sort&compress"
 bibstyle = "vancouver"
+# What this layout's Word file (venue.py) reads from the LaTeX master: a centred title block, the four body
+# headings, the page's own Key Points and Abstract headings, and eTable / eFigure in the supplement.
+title_block = "center"
+section_headings = ["Introduction", "Methods", "Results", "Discussion"]
+abstract_as_written = true
+supplement_float_names = ["eTable", "eFigure"]

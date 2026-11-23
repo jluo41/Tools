@@ -312,3 +312,13 @@ def test_a_pdf_only_builds_word_count_says_it_is_old():
     assert load("portal_fill_w", SCRIPTS / "portal_fill.py").checked({"check": "words"}, "774", "", b)[1] == [
         "This count is from the last full build; the text may have changed. Run a full build before pasting it."]
     assert load("portal_fill_w", SCRIPTS / "portal_fill.py").checked({"check": "words"}, "774", "", {"facts": {"words": 774}}) == ([], [])
+
+
+def test_an_alternative_plan_that_asks_for_a_url_disagrees():
+    """Pp-AgreeableRx 261122: "aggregated output at [repository URL]" under MISQ's fourth choice read as a blocker."""
+    import portal_fill as pf
+    bad = "Fourth choice. Materials / Alternative Plan: code and aggregated output at [repository URL]."
+    good = "Fourth choice. Materials / Alternative Plan: code and aggregated output, deposited when the paper is accepted."
+    assert pf.url_unasked(bad, "") and pf.url_unasked(good, "add the repository URL")
+    assert not pf.url_unasked(good, "a person ticks the fourth choice; no URL at submission")
+    assert not pf.url_unasked("Second choice. https://osf.io/abc", "provide a URL")   # choice 2 does want one

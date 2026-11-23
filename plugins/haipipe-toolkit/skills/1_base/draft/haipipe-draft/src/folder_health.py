@@ -143,6 +143,11 @@ def check_structure(plan: Path, text: str, out: list):
     from .plan_layout import structure_draft_mismatches
     for issue in structure_draft_mismatches(text):
         out.append(Finding(FAIL, "structure", issue + "; update both in the same edit", plan.name))
+    # a Bullet read as C0 sits under no part line the reader understood: say so, never address it as C0 (AgreeableJama 261122)
+    lost = sorted({b["paragraph"] for b in iter_plan_bullets(text) if b["address"].startswith("C0.")})
+    if lost:
+        out.append(Finding(FAIL, "structure", f"part line needs a label: {', '.join(lost[:6])} sit under no `- C<n> · <name>` "
+                           "line (or `## C<n>` heading) the reader understood", plan.name))
 
 
 def check_ids(plan: Path, text: str, out: list):
@@ -241,6 +246,12 @@ def check_sync(page_text: str, blocks: list, plan_text: str, out: list):
     if not drafts:
         out.append(Finding(INFO, "sync", "plan carries no Drafts; nothing to compare"))
         return
+    for a in differ[:3]:   # where they part: an untagged Page line after the Draft reads as part of this Bullet (261122)
+        d, p = drafts[a], page[a]
+        k = next((i for i, (x, y) in enumerate(zip(d, p)) if x != y), min(len(d), len(p)))
+        what = (f"the Page goes on after the Draft with untagged text: \"{p[k:k + 60].strip()}\" (tag it or add it to the Draft)"
+                if p.startswith(d) else f"they part at \"{d[max(0, k - 20):k + 30]}\" vs \"{p[max(0, k - 20):k + 30]}\"")
+        out.append(Finding(WARN, "sync", f"{a}: {what}"))
     if differ or unadopted:
         out.append(Finding(WARN, "sync",
                            f"{len(shared) - len(differ)} of {len(drafts)} Drafts equal their Page sentence; "

@@ -31,9 +31,9 @@ from docx.shared import Inches, Pt, RGBColor
 
 
 def _load_part(name: str) -> None:
-    """Run a part file beside this engine (latex_parse.py, venue_jama.py, docx_receipts.py) inside this module's
+    """Run a part file beside this engine (latex_parse.py, docx_receipts.py, ../venues/<layout>/venue.py) inside this module's
     namespace, so its functions read this paper's config and stay reachable as latex_room_to_docx.<name>."""
-    path = Path(__file__).resolve().with_name(name)
+    path = Path(__file__).resolve().parent / name
     doc = globals().get("__doc__")
     exec(compile(path.read_text(encoding="utf-8"), str(path), "exec"), globals())
     globals()["__doc__"] = doc   # the part's own docstring never replaces this engine's
@@ -48,7 +48,7 @@ CONFIG_PATH = (
 WORD_ROOM = CONFIG_PATH.parent
 ROOT = WORD_ROOM.parent
 SKILL_ROOT = Path(__file__).resolve().parent.parent
-PROFILE_ROOT = SKILL_ROOT / "profiles"
+PROFILE_ROOT = SKILL_ROOT / "venues"   # venues/<venue>/profile.toml, and venue.py when its layout has one (261122)
 
 
 def load_config() -> dict[str, object]:
@@ -66,7 +66,7 @@ def load_shared_profile(name: str) -> dict[str, object]:
     """Load venue behaviour from the skill, never manuscript content from a paper."""
     if not name:
         return {}
-    path = PROFILE_ROOT / f"{name}.toml"
+    path = PROFILE_ROOT / name / "profile.toml"
     if not path.exists():
         raise FileNotFoundError(f"Venue profile not found: {path}")
     return tomllib.loads(path.read_text(encoding="utf-8"))
@@ -894,7 +894,20 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
                 # 0.16.0: the number printed before a heading. A template's Heading styles draw the main text's numbers; an appendix's A.1 is typed
                 if number_headings and ((template and appendix_letters) or (not template and bool(PROFILE_CONFIG.get("heading_numbers", False)))):
                     title = f"{next_heading_number(event.level, chr(ord('A') + letter - 1) if appendix_letters and letter else '')} {title}"
-            add_heading(doc, title, event.level, upper=upper, unnumbered=unnumbered)
+            # appendix_heading = false (profile): no "Appendix A. <title>" line in a supplement whose cover already
+            # names it (Nature's Extended Data file; JL deleted it in the ScalingGlucose v1118 Word file, 261122)
+            if appendix_letters and event.level == 1 and PROFILE_CONFIG.get("appendix_heading", True) is False:
+                continue
+            # word_top_level (profile): headings printed as top-level sections in Word whatever their LaTeX level, e.g.
+            # Nature's Data availability and Code availability after Methods; word_new_page: headings that start a page
+            # (ScalingGlucose 261123: the v1118 Word file had both; JL "you didn't have the good page break here?")
+            key = re.sub(r"\s+", " ", title).strip().lower()
+            level = 1 if key in {str(x).lower() for x in PROFILE_CONFIG.get("word_top_level", [])} else event.level
+            if level != event.level:
+                upper = heading_upper
+            add_heading(doc, title, level, upper=upper, unnumbered=unnumbered)
+            if key in {str(x).lower() for x in PROFILE_CONFIG.get("word_new_page", [])}:
+                doc.paragraphs[-1].paragraph_format.page_break_before = True
             if appendix_letters and event.level == 1 and letter == 1 and bool(PROFILE_CONFIG.get("appendix_new_page", False)):
                 doc.paragraphs[-1].paragraph_format.page_break_before = True
         elif event.kind == "text":
@@ -957,347 +970,7 @@ def add_events(doc: Document, events: Iterable[Event], *, include_displays: bool
             break_before(doc, start)
 
 
-# ---- full-page displays held for the next page (0.12.0) -------------------------------------------------------
-# Word cannot hold a display back while the text keeps filling the page, the way LaTeX does with a [p] float. So a
-# display that needs a whole page is left out at first; Microsoft Word lays the document out and reports where the
-# page that holds the citing paragraph ends; the display is then put at that boundary on a page of its own, splitting
-# the paragraph that crosses it, and the text goes on after it. Without Word (no Mac, a test) it prints at once.
-MSWORD_APP = Path("/Applications/Microsoft Word.app")
-WORD_BOX = Path.home() / "Library" / "Containers" / "com.microsoft.Word" / "Data" / "Documents" / "haipipe-measure"
-HELD: dict[int, list[dict]] = {}
-
-
-def word_can_measure() -> bool:
-    if os.environ.get("HAIPIPE_WORD_DRAFT") == "1":   # build.py --word-draft (JL 261104): floats, no measuring; Word sets
-        return False                                  # each display at the top of the page its citing text reaches
-    return (sys.platform == "darwin" and MSWORD_APP.exists() and os.environ.get("HAIPIPE_WORD_PREVIEW") != "html"
-            and "PYTEST_CURRENT_TEST" not in os.environ)
-
-
-def element_text(el) -> str:
-    return "".join(node.text or "" for node in el.iter(qn("w:t")))
-
-
-def last_text_paragraph(doc: Document):
-    for el in reversed(body_children(doc)):
-        if el.tag == qn("w:p") and len(element_text(el).strip()) >= 25:
-            return el
-    return None
-
-
-def _squash(text: str) -> tuple[str, list[int]]:
-    """the text without whitespace, and for each kept character its index in the original"""
-    keep = [(c, i) for i, c in enumerate(text) if not c.isspace()]
-    return "".join(c for c, _ in keep), [i for _, i in keep]
-
-
-def _applescript_string(text: str) -> str:
-    return '"' + text.replace("\\", "\\\\").replace('"', '\\"') + '"'
-
-
-def word_running() -> bool:
-    return subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode == 0
-
-
-WORD_STUCK = "Word did not answer"     # build_delivery.py finds this line in the step's output and warns
-
-
-def word_answers(wait: int = 30) -> bool:
-    """A quick question only a working Word can answer. A stuck Word (b16.j02-s22, 261104: its main thread on a lock, 0%
-    CPU) let every display wait out AppleScript's 120 seconds and still fall back, about 28 minutes a paper, in silence."""
-    script = f'with timeout of {wait} seconds\ntell application "Microsoft Word" to get name of documents\nend timeout'
-    try:
-        return subprocess.run(["osascript", "-e", script], capture_output=True, timeout=wait + 10).returncode == 0
-    except (OSError, subprocess.TimeoutExpired):
-        return False
-
-
-def word_page_boundaries(path: Path, anchors: list[str]) -> list[str | None]:
-    """For each anchor ("E|text": the page the text ends on; "S|text": the page it starts on), the ~120 characters
-    Word lays out just before the end of that page (paragraph marks as <P>, cell marks as <C>), or None."""
-    WORD_BOX.mkdir(parents=True, exist_ok=True)
-    copy = WORD_BOX / path.name
-    shutil.copy2(path, copy)
-    # "E|3|text": the 3rd match of text (the Abstract repeats Results phrases, so the first match can be wrong)
-    finds = ", ".join(_applescript_string(a.split("|", 2)[0] + "|" + a.split("|", 2)[1] + "|"
-                                          + a.split("|", 2)[2].replace("^", "^^")) for a in anchors)
-    script = f"""
-on rep(t, a, b)
-  set AppleScript's text item delimiters to a
-  set xs to text items of t
-  set AppleScript's text item delimiters to b
-  set r to xs as text
-  set AppleScript's text item delimiters to ""
-  return r
-end rep
-tell application "Microsoft Word"
-  set d to open file name "{copy}"
-  repaginate d
-  set n to end of content of text object of d
-  set out to ""
-  repeat with a in {{{finds}}}
-   try
-    home key selection move unit a story
-    set q to a as text
-    set AppleScript's text item delimiters to "|"
-    set parts to text items of q
-    set mode to item 1 of parts
-    set k to (item 2 of parts) as integer
-    set q to (items 3 thru -1 of parts) as text
-    set AppleScript's text item delimiters to ""
-    set ok to false
-    repeat with i from 1 to k
-      if i > 1 then set selection start of selection to (selection end of selection)
-      set ok to (execute find (find object of selection) find text q match case true wrap find find stop with match forward)
-      if not ok then exit repeat
-    end repeat
-    if ok then
-      if mode is "S" then
-        set fe to selection start of selection
-      else
-        set fe to selection end of selection
-      end if
-      set pe to ((get range information (create range d start fe end fe) information type active end page number) as integer)
-      set lo to fe
-      set hi to n
-      if ((get range information (create range d start (hi - 1) end (hi - 1)) information type active end page number) as integer) > pe then
-        repeat while hi - lo > 1
-          set m to (lo + hi) div 2
-          if ((get range information (create range d start m end m) information type active end page number) as integer) > pe then
-            set hi to m
-          else
-            set lo to m
-          end if
-        end repeat
-        set s to hi - 120
-        if s < 0 then set s to 0
-        set bt to content of (create range d start s end hi)
-        set bt to my rep(my rep(bt, return, "<P>"), (ASCII character 7), "<C>")
-        set out to out & "OK" & tab & bt & linefeed
-      else
-        set out to out & "END" & linefeed
-      end if
-    else
-      set out to out & "MISS" & linefeed
-    end if
-   on error e
-    set out to out & "ERR " & e & linefeed
-   end try
-  end repeat
-  close d saving no
-end tell
-return out
-"""
-    try:
-        r = subprocess.run(["osascript", "-e", script], capture_output=True, text=True, timeout=600)
-    finally:
-        copy.unlink(missing_ok=True)
-    if r.returncode != 0:
-        print(f"Word could not lay out {path.name}: {r.stderr.strip()[:300]}", file=sys.stderr)
-        return [None] * len(anchors)
-    lines = [ln for ln in r.stdout.split("\n") if ln.strip()]
-    for ln in lines:
-        if not ln.startswith("OK\t"):
-            print(f"Word page end for {path.name}: {ln[:200]}", file=sys.stderr)
-    found = [ln.split("\t", 1)[1] if ln.startswith("OK\t") else None for ln in lines]
-    return (found + [None] * len(anchors))[:len(anchors)]
-
-
-def set_page_break_before(el) -> None:
-    if el is None:
-        return
-    if el.tag == qn("w:p"):
-        pPr = el.find(qn("w:pPr"))
-        if pPr is None:
-            pPr = OxmlElement("w:pPr"); el.insert(0, pPr)
-        if pPr.find(qn("w:pageBreakBefore")) is None:
-            pPr.insert(0, OxmlElement("w:pageBreakBefore"))
-        return
-    para = OxmlElement("w:p"); pPr = OxmlElement("w:pPr"); pPr.append(OxmlElement("w:pageBreakBefore")); para.append(pPr)
-    el.addprevious(para)
-
-
-def split_paragraph(p_el, offset: int):
-    """Split a body paragraph after `offset` characters of its text; the second part carries on the same paragraph
-    (no first-line indent) and is returned."""
-    new_p = OxmlElement("w:p")
-    pPr = p_el.find(qn("w:pPr"))
-    if pPr is not None:
-        new_pPr = deepcopy(pPr)
-        ind = new_pPr.find(qn("w:ind"))
-        if ind is None:
-            ind = OxmlElement("w:ind"); new_pPr.append(ind)
-        ind.set(qn("w:firstLine"), "0")
-        if ind.get(qn("w:hanging")) is not None:
-            del ind.attrib[qn("w:hanging")]
-        new_p.append(new_pPr)
-    else:
-        new_pPr = OxmlElement("w:pPr"); ind = OxmlElement("w:ind"); ind.set(qn("w:firstLine"), "0")
-        new_pPr.append(ind); new_p.append(new_pPr)
-    count, moving = 0, False
-    for child in [c for c in p_el if c.tag != qn("w:pPr")]:
-        if moving:
-            new_p.append(child)
-            continue
-        text = element_text(child)
-        if count + len(text) <= offset:
-            count += len(text)
-            continue
-        k = offset - count
-        if child.tag == qn("w:r") and 0 < k < len(text):
-            tail = deepcopy(child)
-            ts, tail_ts = child.findall(qn("w:t")), tail.findall(qn("w:t"))
-            if len(ts) == 1:
-                ts[0].text = text[:k]
-                tail_ts[0].text = text[k:].lstrip()
-                for node in (ts[0], tail_ts[0]):
-                    node.set("{http://www.w3.org/XML/1998/namespace}space", "preserve")
-                new_p.append(tail)
-                moving = True
-                continue
-        new_p.append(child)   # the split falls at this child's start
-        moving = True
-    p_el.addnext(new_p)
-    return new_p
-
-
-def boundary_target(anchor, before: str | None):
-    """The body element a held display goes in front of, splitting a paragraph when the page ends inside it."""
-    if anchor is None or before is None:
-        return None
-    following = [anchor]
-    while following[-1].getnext() is not None and following[-1].getnext().tag != qn("w:sectPr"):
-        following.append(following[-1].getnext())
-    at_par_start = before.endswith("<P>") or before.endswith("<C>")
-    segments = [s for s in re.split(r"<P>|<C>", before) if s.strip()]
-    if not segments:
-        return None
-    seg, _ = _squash(segments[-1])
-    if len(seg) < 8:
-        return None
-    for el in following:
-        squashed, index = _squash(element_text(el))
-        if at_par_start:
-            if el.tag == qn("w:p") and squashed.endswith(seg):
-                return el.getnext()
-        elif el.tag == qn("w:p"):
-            pos = squashed.find(seg)
-            if pos >= 0:
-                end = index[pos + len(seg) - 1] + 1
-                full = element_text(el)
-                if end >= len(full.rstrip()):
-                    return el.getnext()
-                # split only where a sentence ends, never inside one (JL 261028: a display cut a sentence in two);
-                # the page then ends on a full stop and the display opens the next page, as LaTeX does. When the
-                # page ends inside the paragraph's first sentence, the display goes in front of the paragraph.
-                stops = [m.end() for m in re.finditer(r"[.?!][)\]\"”’]*\s+", full) if m.end() <= end]
-                if not stops:
-                    return el
-                return split_paragraph(el, stops[-1])
-    return None
-
-
-def is_heading1(p_el) -> bool:
-    """A paragraph set in the Heading 1 style: a main Section or an Appendix opens here."""
-    pPr = p_el.find(qn("w:pPr"))
-    style = pPr.find(qn("w:pStyle")) if pPr is not None else None
-    return style is not None and style.get(qn("w:val")) in {"Heading1", "Heading 1", "Subtitle"}   # Subtitle: a template's REFERENCES, APPENDIX
-
-
-def _body_index(el) -> int:
-    body = el.getparent()
-    return list(body).index(el) if body is not None else -1
-
-
-def save_docx(doc: Document, path: Path) -> None:
-    """Save; then place each held display, in order, at the top of the page after the one its citing paragraph ends
-    on, as Microsoft Word lays the document out, and save again. A display cited before the end of the one placed
-    just before it goes to the page after that one, so the order of the displays and their citations holds."""
-    doc.save(path)
-    held = HELD.pop(id(doc), [])
-    if not held:
-        return
-    sys.path.insert(0, str(Path(__file__).resolve().parent))
-    from word_lock import word_turn
-    with word_turn() as turn:      # builds take turns in Word, for the whole document (b16.j02-s22)
-        place_held(doc, path, held, turn)
-
-
-def place_held(doc: Document, path: Path, held: list, turn: bool) -> None:
-    was_running, placed, last = word_running(), 0, None
-    answers = turn and word_answers()
-    if not answers:
-        print(f"{WORD_STUCK} in 30 seconds: {Path(path).name}'s {len(held)} display(s) go right after their citing "
-              "paragraphs, not at page tops. Restart Word and build again.", file=sys.stderr)
-    try:
-        for h in held:
-            anchor, mode = h["anchor"], "E"
-            if last is not None and (anchor is None or _body_index(anchor) < _body_index(last)):
-                anchor, mode = last.getnext(), "S"     # after the display placed just before
-                while anchor is not None and not (anchor.tag == qn("w:p") and len(element_text(anchor).strip()) >= 25):
-                    anchor = anchor.getnext()
-            target, measured = None, False
-            if anchor is not None:
-                text = element_text(anchor).strip()
-                snippet = text[:50] if mode == "S" else text[-60:]
-                # which match is the anchor's own: count the matches in the body up to and including it
-                k = 0
-                for el in body_children(doc):
-                    k += element_text(el).count(snippet)
-                    if el is anchor:
-                        break
-                doc.save(path)
-                before = word_page_boundaries(Path(path), [f"{mode}|{max(k, 1)}|{snippet}"])[0] if answers else None
-                target = boundary_target(anchor, before)
-                placed += target is not None
-                measured = target is not None
-                if target is None:                   # Word could not say: right after the citing paragraph
-                    target = anchor.getnext()
-                # a display never crosses into the next Section or Appendix: if a Heading 1 lies between its citing
-                # paragraph and the measured page, it goes in front of that heading, as LaTeX's \clearpage flushes
-                # floats before the next appendix (261101: Table B1 printed under Appendix C, Table C2 under D)
-                el = anchor.getnext()
-                while el is not None and el is not target and el.tag != qn("w:sectPr"):
-                    if el.tag == qn("w:p") and is_heading1(el):
-                        target = el
-                        break
-                    el = el.getnext()
-            start = len(body_children(doc))
-            display = h["display"]
-            if display.kind == "table":
-                add_table(doc, display, h["title"], compact=h["compact"])
-            else:
-                add_figure(doc, display, h["title"], compact=h["compact"], max_height=6.4 if h["full_page"] else None)
-            moved = body_children(doc)[start:]
-            pars = [el for el in moved if el.tag == qn("w:p")]
-            if pars:   # a clear gap under the legend, so it never reads as the body text that follows (JL 261028)
-                Paragraph(pars[-1], doc._body).paragraph_format.space_after = Pt(18)
-                no_contextual_spacing(pars[-1])
-            if target is not None and target.tag != qn("w:sectPr"):
-                for el in moved:
-                    target.addprevious(el)
-                # a figure that fills its page sends the text on to the next page; after a table, or a short
-                # figure, the text goes on below it
-                if h["full_page"] and display.kind != "table":
-                    set_page_break_before(target)
-            # a display placed at a page Word measured starts that page; one placed by the fallback (Word could not
-            # find its citing paragraph) stays right after it with no break, so it never strands a page of two lines
-            if measured or h["full_page"]:
-                set_page_break_before(moved[0])
-            last = moved[-1]
-    finally:
-        if not was_running and word_running():
-            try:   # never with a document open: a person may have opened one during the build
-                subprocess.run(["osascript", "-e", 'tell application "Microsoft Word" to if (count of documents) is 0 then quit saving no'],
-                               capture_output=True, timeout=30)
-            except subprocess.TimeoutExpired:
-                pass
-            for _ in range(40):   # wait until Word has gone, or the preview step takes it for the user's own Word
-                if not word_running():
-                    break
-                import time; time.sleep(0.25)
-    doc.save(path)
-    print(f"{Path(path).name}: {len(held)} display(s) placed at the top of a page; {placed} where Word ended the page")
+_load_part("docx_held.py")   # HELD, word_can_measure, word_page_boundaries, boundary_target, is_heading1, save_docx, place_held
 
 
 def add_supplement_contents(doc: Document, events: list[Event]) -> None:
@@ -1396,18 +1069,22 @@ def add_title_page(doc: Document, title: str, running_title: str, word_count: in
                             if _front_matter_on_one_page() else
                             add_text(doc, title, size=16, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)),
         "running":     lambda: add_text(doc, f"Running title: {running_title}", align=WD_ALIGN_PARAGRAPH.CENTER),
-        "author":      lambda: add_text(doc, author or str(PROFILE_CONFIG.get(
+        # [paper] authors / affiliations / corresponding print as written (ScalingGlucose 261121); unset, the placeholders
+        "author":      lambda: add_text(doc, str(PAPER_CONFIG.get("authors", "")).strip() or author or str(PROFILE_CONFIG.get(
                            "author_placeholder", "[AUTHOR NAMES: first, middle, and last names]")),
                            align=WD_ALIGN_PARAGRAPH.CENTER),
-        "affiliations": lambda: add_text(doc, str(PROFILE_CONFIG.get(
-                           "affiliations_placeholder", "[AFFILIATIONS]")), align=WD_ALIGN_PARAGRAPH.CENTER),
-        "corresponding": lambda: add_text(doc, str(PROFILE_CONFIG.get(
+        "affiliations": lambda: ([add_text(doc, str(line), align=WD_ALIGN_PARAGRAPH.CENTER)
+                                  for line in PAPER_CONFIG.get("affiliations", [])] or
+                                 add_text(doc, str(PROFILE_CONFIG.get("affiliations_placeholder", "[AFFILIATIONS]")),
+                                          align=WD_ALIGN_PARAGRAPH.CENTER)),
+        "corresponding": lambda: add_text(doc, str(PAPER_CONFIG.get("corresponding", "")).strip() or str(PROFILE_CONFIG.get(
                            "corresponding_author_placeholder", "Corresponding author: [FULL NAME]; [email]")),
                            align=WD_ALIGN_PARAGRAPH.CENTER),
         "article_type": lambda: add_text(doc, f"Article type: {PROFILE_CONFIG.get('article_type', 'Research Article')}",
                            align=WD_ALIGN_PARAGRAPH.CENTER),
-        "word_count":  lambda: add_text(doc, "Main-text word count (excluding tables, legends, title page, "
-                           f"acknowledgments, and references): {word_count}", align=WD_ALIGN_PARAGRAPH.CENTER),
+        "word_count":  lambda: add_text(doc, str(PROFILE_CONFIG.get("word_count_label", "Main-text word count (excluding "
+                           "tables, legends, title page, acknowledgments, and references)")) + f": {word_count}",
+                           align=WD_ALIGN_PARAGRAPH.CENTER),
         "display_count": lambda: add_text(doc, f"Number of main displays: {table_count + figure_count} "
                            f"({table_count} tables, {figure_count} figures)", align=WD_ALIGN_PARAGRAPH.CENTER),
         "keywords_hint": lambda: None,
@@ -1437,7 +1114,7 @@ def _front_matter_on_one_page() -> bool:
     return str(PROFILE_CONFIG.get("front_matter", "title-page")).lower() == "title-abstract-keywords"
 
 
-_load_part("venue_jama.py")   # labelled_blocks, jama_parts, add_byline, add_jama_title_page, build_jama_internal_medicine
+if PROFILE_CONFIG.get("layout") and (PROFILE_ROOT / str(PROFILE_CONFIG["layout"]) / "venue.py").is_file(): _load_part(f"../venues/{PROFILE_CONFIG['layout']}/venue.py")   # build_word
 
 
 def initials(author: str) -> str:
@@ -1584,8 +1261,51 @@ def add_references(doc: Document) -> None:
         set_font(run, size=11)
 
 
+def _braced(text: str, at: int) -> tuple[str, int]:
+    """The {...} group that opens at text[at], and the index after it."""
+    depth, k = 0, at
+    while k < len(text):
+        depth += (text[k] == "{") - (text[k] == "}")
+        k += 1
+        if depth == 0:
+            break
+    return text[at + 1:k - 1], k
+
+
+def longtable_as_table(value: str) -> str:
+    """A longtable (a table over several pages, the ScalingGlucose Supplementary Information, JL 261121) as the
+    table float the Word lane reads: its caption and label, its first header, every row; the repeated
+    "(continued)" header and the page foot are LaTeX's page breaking, which Word does by itself."""
+    out, pos = [], 0
+    for m in re.finditer(r"\\begin\{longtable\}", value):
+        if m.start() < pos:
+            continue
+        end = value.find("\\end{longtable}", m.end())
+        if end < 0:
+            break
+        cols, k = _braced(value, m.end())
+        body = value[k:end]
+        cap = lab = ""
+        c = body.find("\\caption{")
+        if c >= 0:
+            cap, ce = _braced(body, c + len("\\caption"))
+            body = body[:c] + body[ce:]
+        lm = re.search(r"\\label\{([^}]*)\}", body)
+        if lm:
+            lab, body = lm.group(1), body[:lm.start()] + body[lm.end():]
+        head, _, rest = body.partition("\\endfirsthead")
+        rest = rest.split("\\endlastfoot", 1)[-1] if "\\endlastfoot" in rest else rest.split("\\endhead", 1)[-1]
+        head = re.sub(r"^\s*\\\\", "", head.strip())          # the row end after the caption
+        out.append(value[pos:m.start()])
+        out.append("\\begin{table}\n\\caption{" + cap + "}" + ("\\label{" + lab + "}" if lab else "") + "\n\\begin{tabular}{" + cols + "}\n"
+                   + head.strip() + "\n" + rest.strip() + "\n\\bottomrule\n\\end{tabular}\n\\end{table}")
+        pos = end + len("\\end{longtable}")
+    out.append(value[pos:])
+    return "".join(out)
+
+
 def clean_fragment(raw: str, base: Path, *, remove_abstract: bool = True) -> str:
-    value = expand_inputs(raw, base)
+    value = longtable_as_table(expand_inputs(raw, base))
     value = strip_comments(value)
     if remove_abstract:
         value = re.sub(r"\\(?:begin|end)\{abstract\}", "", value)
@@ -1617,8 +1337,8 @@ def build() -> tuple[Path, Path]:
 
     raw_master = MASTER.read_text(encoding="utf-8")
     evidence = evidence_preflight()
-    if str(PROFILE_CONFIG.get("layout", "")).lower() == "jama-internal-medicine":
-        return build_jama_internal_medicine(raw_master, evidence)
+    if "build_word" in globals():   # a venue folder whose venue.py prints the whole Word file its own way
+        return build_word(raw_master, evidence)
     running_match = re.search(r"Running title\s*\(<[^>]+>\):\s*(.+)", raw_master)
     running_title = running_match.group(1).strip() if running_match else RUNNING_TITLE_FALLBACK
     # a paper-owned head may write \title{\thetitle}, a macro this reader cannot expand: use the
@@ -1648,12 +1368,19 @@ def build() -> tuple[Path, Path]:
         raise RuntimeError("Master manuscript is missing the bibliography or appendix boundary")
     # 0.8.4: a blind copy (profile [latex] acknowledgments = false) has no back-matter section;
     # the main text then runs to the bibliography.
+    # a back-matter section printed after the references (Nature's order) is not the main text's end
+    if ack_match is not None and ack_match.start() > bib_match.start():
+        ack_match = None
     main_end = ack_match.start() if ack_match is not None else bib_match.start()
+    _bib_end = body.find("\n", bib_match.start())
+    after_refs_text = re.sub(r"\\bibliography\s*\{[^}]*\}", "", body[bib_match.start():appendix_match.start()])
+    after_refs_text = re.sub(r"\\bibliographystyle\s*\{[^}]*\}", "", after_refs_text)
     main_text = body[abstract_match.end():main_end]
     back_text = body[main_end:bib_match.start()]
     supplement_text = body[appendix_match.end():]
     main_events, main_displays = parse_events(main_text)
     back_events, _ = parse_events(back_text)
+    after_refs_events, _ = parse_events(after_refs_text) if after_refs_text.strip() else ([], [])
     supplement_events, _ = parse_events(supplement_text)
     missing = [key for key in CITATION_NUMBERS if key not in BIB]
     if missing:
@@ -1683,6 +1410,8 @@ def build() -> tuple[Path, Path]:
                number_displays=inline_displays, main_numbering=True, number_headings=True)
     add_events(main_doc, back_events, include_displays=False)
     add_references(main_doc)
+    if after_refs_events:   # Nature's closing sections after the references ([source] back_matter, 261121)
+        add_events(main_doc, after_refs_events, include_displays=False)
     # Displays after the references is the MEDICAL convention. A venue whose
     # profile places displays inline wants them where the prose cites them, and
     # the MISQ profile already says displays = "inline" for the LaTeX lane; Word
@@ -1723,7 +1452,27 @@ def build() -> tuple[Path, Path]:
     configure_document(supp_doc, body_size=11, line_spacing=supp_spacing)
     add_text(supp_doc, title, size=14, bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
     add_text(supp_doc, str(PROFILE_CONFIG.get("supplement_title", "ONLINE-ONLY SUPPLEMENTAL MATERIAL")), bold=True, align=WD_ALIGN_PARAGRAPH.CENTER)
-    add_text(supp_doc, "[AUTHOR ACTION REQUIRED: confirm that all supplement citations, table labels, and figure labels match the final main manuscript]", size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+    # A paper that sets [paper] authors prints them under the supplement's title, with affiliations and the corresponding
+    # author; the reminder line is only for a paper that has not (JL deleted it and typed the authors in the
+    # ScalingGlucose v1118 Extended Data and SI Word files, 261122).
+    if str(PAPER_CONFIG.get("authors", "")).strip():
+        add_text(supp_doc, str(PAPER_CONFIG["authors"]).strip(), size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+        for line in PAPER_CONFIG.get("affiliations", []):
+            add_text(supp_doc, str(line), size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+        if str(PAPER_CONFIG.get("corresponding", "")).strip():
+            add_text(supp_doc, str(PAPER_CONFIG["corresponding"]).strip(), size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+    else:
+        add_text(supp_doc, "[AUTHOR ACTION REQUIRED: confirm that all supplement citations, table labels, and figure labels match the final main manuscript]", size=11, align=WD_ALIGN_PARAGRAPH.CENTER)
+    # supplement_contents = true (profile): a Contents list of the supplement's top headings (the SI's Supplementary
+    # Notes), titles only; page numbers are the PDF's (JL typed one into the ScalingGlucose v1118 SI Word file, 261122)
+    if bool(PROFILE_CONFIG.get("supplement_contents", False)):
+        tops = [str(e.value) for e in supplement_events if e.kind == "heading" and str(e.value).strip()
+                and not LEGEND_HEADING.match(str(e.value))]
+        tops = [t for t in tops if t.lower().startswith("supplementary note")] or tops
+        if tops:
+            add_text(supp_doc, "Contents", size=11, bold=True)
+            for t in tops:
+                add_text(supp_doc, t, size=11)
     supp_doc.add_page_break()
     add_events(supp_doc, supplement_events, include_displays=True, compact=True, number_displays=True,
                appendix_letters=True,

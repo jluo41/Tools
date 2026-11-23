@@ -1,5 +1,6 @@
-"""venue_jama.py: the JAMA Internal Medicine layout: its title page, Key Points, abstract and supplement (build_jama_internal_medicine).
-latex_room_to_docx.py runs this file inside its own namespace (_load_part), so the config and the Word helpers come from there."""
+"""venues/jama-internal-medicine/venue.py: the JAMA Internal Medicine layout: its title page, Key Points, abstract and supplement.
+latex_room_to_docx.py runs this file inside its own namespace (_load_part) when a profile's layout names this folder, so the
+config and the Word helpers come from there, and calls build_word (the venue contract, venues/README.md) in place of its own."""
 from __future__ import annotations
 
 import re
@@ -120,7 +121,7 @@ def add_jama_title_page(doc: Document, title: str, author: str, main_words: int,
     doc.add_page_break()
 
 
-def build_jama_internal_medicine(raw_master: str, evidence: dict[str, object]) -> tuple[Path, Path]:
+def build_word(raw_master: str, evidence: dict[str, object]) -> tuple[Path, Path]:
     """JAMA IM is a venue profile, not a paper-specific renderer."""
     title, author, key_points, abstract, main_text, supplement_text = jama_parts(raw_master)
     main_events, main_displays = parse_events(main_text)

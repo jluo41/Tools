@@ -574,7 +574,7 @@ def test_a_display_page_starts_at_the_top_by_default(paper, monkeypatch):
 
 def test_misq_profile_ships_with_the_latex_table():
     import tomllib
-    prof = tomllib.loads((ENGINE.parents[1] / "profiles" / "misq.toml").read_text())
+    prof = tomllib.loads((ENGINE.parents[1] / "venues" / "misq" / "profile.toml").read_text())
     assert prof["latex"]["spacing"] == "double" and prof["latex"]["appendix_newpage"] is False  # the limit counts appendices (guidelines read 2026-11-03)
     assert prof["latex"]["displays"] in ("inline", "end") and prof["venue_label"] == "MIS Quarterly"
 

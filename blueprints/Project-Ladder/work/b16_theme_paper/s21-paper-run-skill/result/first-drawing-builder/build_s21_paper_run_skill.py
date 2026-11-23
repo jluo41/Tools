@@ -248,7 +248,7 @@ FOLDERS = {
         "edit", "+ send, + bib", "Send and Build reference.bib are drawn only", "4"),
     "haipipe-paper-assemble/scripts/cover_letter.py": ("haipipe-paper-assemble/scripts/cover_letter.py", "edit",
         "reads the t31_cover-letter Task", "letters are t3N_ Tasks now", "4"),
-    "haipipe-paper-assemble/profiles/misq.toml": ("haipipe-paper-assemble/profiles/misq.toml", "keep ?",
+    "haipipe-paper-assemble/venues/misq/profile.toml": ("haipipe-paper-assemble/venues/misq/profile.toml", "keep ?",
         "or into venues/<venue>/kit/", "one home for a venue's rules (Q02 ?)", "3"),
     "haipipe-paper-draft/SKILL.md": ("haipipe-paper-draft/SKILL.md", "rewrite",
         "t0N_ names; reader contract; Requirement tab", "it still names S-<desk>-Main-N", "5"),
@@ -263,8 +263,8 @@ haipipe-paper/ref/run-naming.md haipipe-paper/ref/section-sessions.md haipipe-pa
 haipipe-paper/scripts/audit_page_compatibility.py haipipe-paper/scripts/create_section_sessions.py
 haipipe-paper/scripts/migrate_paper.py haipipe-paper/scripts/rename_tasks.py haipipe-paper/scripts/topics_paper.py
 haipipe-paper/scripts/version_paper.py
-haipipe-paper-assemble/SKILL.md haipipe-paper-assemble/profiles/jama-internal-medicine.toml
-haipipe-paper-assemble/profiles/misq.toml haipipe-paper-assemble/ref/build.py.wrapper
+haipipe-paper-assemble/SKILL.md haipipe-paper-assemble/venues/jama-internal-medicine/profile.toml
+haipipe-paper-assemble/venues/misq/profile.toml haipipe-paper-assemble/ref/build.py.wrapper
 haipipe-paper-assemble/ref/paper-build.toml.example haipipe-paper-assemble/scripts/build_delivery.py
 haipipe-paper-assemble/scripts/cover_letter.py haipipe-paper-assemble/scripts/latex_room_to_docx.py
 haipipe-paper-assemble/tests/run.sh haipipe-paper-assemble/tests/test_build_delivery.py

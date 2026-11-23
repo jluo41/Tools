@@ -46,7 +46,8 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0, only: tup
                         + _side_tabs("evV", [(h, since(None, h) or w) for h, w, _ in vtabs], [p for _, _, p in vtabs]) + VALUES_DIALOG + VALUES_JS,
                         word, waits)
             continue
-        tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir() and not er.is_check(x)), key=_num)
+        tasks = sorted((x for x in job.glob("t[0-9]*_*") if x.is_dir() and not er.is_check(x)
+                        and not (kind == "Displays" and retired(x))), key=_num)
         tiles, panels = [], []
         dp = display_plan() if kind == "Displays" else None
         paper_as = {r.get("display", ""): dp.title(r) for r in (dp.rows(board) if dp else [])}
@@ -106,17 +107,30 @@ def _evidence_kinds(board: Path, root: Path, kinds: tuple, n: int = 0, only: tup
 def _display_head(t: Path, label: str, head: str, words: str, dp=None, paper_as=None, plan_of=None) -> tuple:
     """(group, order, tab name, tab line) of one display Task: where it goes, and its tab's two lines (name; type · name)."""
     group, order, head = _display_place(t, label, head, dp, paper_as or {}, plan_of or {})
-    return group, order, head, _display_line(t, words)
+    face = t / f"{t.name}.md"
+    ks = dp.keys(face.read_text(encoding="utf-8", errors="ignore")) if dp and face.is_file() else []
+    row = next(((plan_of or {})[k] for k in ks if k in (plan_of or {})), None)
+    return group, order, head, _display_line(t, words, (row or {}).get("name", ""))
 
 
-GROUP_ORDER = ("main", "supplement", "method", "unplanned")
+def retired(task: Path) -> bool:
+    """A display Task the paper no longer prints: its face says `number: not printed` (or `retired`). Its folder and
+    passes stay on disk; the Displays lists leave it out (Pp-AgreeableRx 261121: an old Table D4 under Others, JL "what
+    is this??? is this the new one?? I am confused")."""
+    face = task / f"{task.name}.md"
+    text = face.read_text(encoding="utf-8", errors="ignore")[:3000] if face.is_file() else ""
+    return bool(re.search(r"(?mi)^(?:number|status):\s*(?:not printed|retired)\b", text))
+
+
+GROUP_ORDER = ("main", "supplement", "si", "method", "unplanned")
 
 
 def _display_groups(eid: str, groups: list, tiles: list, panels: list, planned=(), names=None) -> str:
     """The display tabs in their groups, Main, Appendix, Method, Others (JL 261102: candidates not in the plan, "a new
     section here as Others"), each by its plan order; `names` renames a group (a work Block has no Main text)."""
     sup = _supplement_word(list(planned) + [h for h, _w, _x in tiles])
-    name = {"main": "Main", "supplement": sup, "method": "Method", "unplanned": "Others", **(names or {})}
+    name = {"main": "Main", "supplement": sup, "si": "Supplementary Information", "method": "Method", "unplanned": "Others",
+            **(names or {})}   # si: a Nature journal's SI tables apart from its Extended Data (JL 261122)
     keyed = sorted(zip(groups, tiles, panels), key=lambda x: (GROUP_ORDER.index(x[0][0]), x[0][1]))
     return _grouped_tabs(eid, [(name[g], (h, w), b) for (g, _), (h, w, _), b in keyed])
 
@@ -131,7 +145,7 @@ def display_tabs(tasks: list, root: Path, eid: str = "evD", names: dict | None =
     plan is read: a paper Board's plan places its displays in _evidence_kinds. workbench focus_page.display_sections
     calls it: keep this signature and the ("", "") empty return, or tell the work side."""
     groups, tiles, panels, statuses = [], [], [], []
-    for t in tasks:
+    for t in (t for t in tasks if not retired(t)):
         label, status, body = evidence_body(t, root)
         words = re.sub(r"^t\d+_", "", t.name).replace("-", " ").replace("_", " ")
         words = re.sub(r"^(?:e?figure|e?table|values|cite)\d*\s*", "", words, flags=re.I)
@@ -181,7 +195,7 @@ def display_groups(board: Path, tasks: list) -> dict:
     paper_as = {r.get("display", ""): dp.title(r) for r in rows}
     plan_of = {r.get("display", ""): r for r in rows}
     out = {}
-    for t in tasks:
+    for t in (t for t in tasks if not retired(t)):
         face = t / f"{t.name}.md"
         label = _field(face.read_text(encoding="utf-8", errors="ignore"), "label") if face.is_file() else ""
         out[t] = _display_place(t, label, label, dp, paper_as, plan_of)[0]
@@ -222,15 +236,17 @@ DISPLAY_CSS = ("<style>.pb-thin .pb-item{padding:3px 9px;margin:0 0 1px}.pb-thin
 DISPLAY_TYPES = (("figure", "📈 Figure"), ("table", "📊 Table"))
 
 
-def _display_line(task: Path, slug: str) -> str:
-    """A Display tab's second line: its type, then its name. The name is the face's `name:` line, else the title after
-    "<label>," in its first line, else the folder's words; the type is the face's `type:` (or `kind:`) line, else what
-    its newest float.tex begins (a figure or a table environment)."""
+def _display_line(task: Path, slug: str, plan_name: str = "") -> str:
+    """A Display tab's second line: its type, then its name. The name is the face's `name:` line, else the display
+    plan's name for it, else the title after "<label>," in its first line, else the folder's words without the number
+    they began with (after a renumber the folder keeps its old number: t57_tablec3-icd-codes is Table C4); the type is
+    the face's `type:` (or `kind:`) line, else what its newest float.tex begins (a figure or a table environment)."""
     face = task / f"{task.name}.md"
     text = face.read_text(encoding="utf-8", errors="ignore") if face.is_file() else ""
     field = lambda k: (re.search(rf"^{k}:\s*(.+?)\s*$", text, re.M) or [None, ""])[1]
-    name = field("name")
+    name = field("name") or plan_name
     if not name:
+        slug = re.sub(r"^[a-z]?\d+[a-z]?\s+", "", slug, flags=re.I)   # "c3 icd codes": the old number goes
         m = re.match(r"#\s*[^,\n]*?\b(?:Display|e?Figure|e?Table)\s+\w+\s*[,:·]\s*(.+)", text.strip())
         name = m.group(1).strip() if m else _cap(slug)
     kind = (field("type") or field("kind")).lower()

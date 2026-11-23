@@ -20,7 +20,9 @@ receipt               build-manifest.json "portal": folder, uploads (slot, files
 ```
 
 List every slot the venue asks for, also the ones with no file yet, so a missing form shows as ⬜ instead of being
-forgotten. The slots come from `venues/<venue>/call.md` or the version's submission report (its `checklist.md`).
+forgotten.
+One manuscript slot only: the file the venue's call asks for (MISQ: the PDF), never a Word copy beside it
+(Pp-AgreeableRx 261122: "Manuscript (Word)" next to the PDF; JL: one manuscript only). The slots come from `venues/<venue>/call.md` or the version's submission report (its `checklist.md`).
 
 A file made AFTER the build (a venue ZIP from `npj-zip.sh` or `arxiv-zip.sh`) reaches the packet only through
 `build.py portal` (0.14.1), which rewrites the packet from the last manifest: it copies the newest file in and checks

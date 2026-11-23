@@ -113,6 +113,13 @@ title line, its sentences and job, and the question that leads to the next:
   → C1.P2: Could interpersonal dispositions help explain variation?
 ```
 
+A part line names its part: `- C1 · Introduction`. A bare `- C1`, `- C1 ·` or
+`- **C1**` still reads as part C1, with no title (261122). A Bullet that sits
+under no part line the reader understands is never addressed as C0: `page.py
+health` fails it with "part line needs a label". When a Page line with no
+`realizes:` tag follows a tagged one, health counts it as part of that Bullet.
+So the sync check names that text and asks you to tag it or add it to the Draft.
+
 In the workbench the Structure card opens from its folded `Structure` line and
 shows these entries (a division shows its title only); clicking them edits them
 as text: renaming or reordering a `C1.P1`

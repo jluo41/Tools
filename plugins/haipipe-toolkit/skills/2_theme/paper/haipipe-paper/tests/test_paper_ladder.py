@@ -89,6 +89,13 @@ class PaperLadderTest(unittest.TestCase):
         tasks = (v / "j11_writing_v0101_desk.md").read_text().split("## Tasks", 1)[1].split("## ", 1)[0]
         self.assertIn("1. t00_abstract · Abstract", tasks)
         self.assertIn("4. t31_cover-letter · Cover-letter".replace("Cover-letter", "Cover letter"), tasks)
+        order = (v / "j11_writing_v0101_desk.md").read_text().split("compile-order:start -->", 1)[1].split("<!--", 1)[0]
+        self.assertEqual(order, "\nmain:\n- t00_abstract\n- t01_introduction\nappendix:\n- t21_methods-detail\n")   # the
+        # one form build_delivery.read_order reads, seeded from the Tasks; a letter is not printed (LLMRecJamaAI 261122)
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            L.main(["version", str(self.board), "--desk", "other", "--date", "0102"])
+        self.assertIn("`next --from <version>", out.getvalue())   # a blank second version says how to start from one
         pages = (self.board / "board.md").read_text()
         self.assertIn("### J11 · j11_writing_v0101_desk", pages)
         self.assertIn("t21_methods-detail.md", pages)

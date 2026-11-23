@@ -145,7 +145,7 @@ class ExportMixin(ExportBibliographyMixin, ExportLatexMixin, ExportWordMixin, Ex
                 raise EvidenceSelectionError(
                     f"{d}: the selected DISPLAY Result has Page labels, but float.tex has no manuscript label"
                 )
-            kind = re.search(r"\\begin\{(table|figure|algorithm)", tex)
+            kind = re.search(r"\\begin\{(longtable|table|figure|algorithm)", tex)   # longtable: a table over pages (ScalingGlucose SI, JL 261121)
             cap, i = "", tex.find("\\caption{")
             if i >= 0:
                 k, depth = i + 9, 1
@@ -204,7 +204,8 @@ class ExportMixin(ExportBibliographyMixin, ExportLatexMixin, ExportWordMixin, Ex
                 if pm and re.match(r"(?:Extended Data|Supplementary) (?:Fig\.|Figure|Table) ", pm.group(1)):
                     legend_name = pm.group(1)
             has_output_asset = (
-                ((d / "assets" / "table-body.tex").is_file() or bool(inline_table))
+                True if kind and kind.group(1) == "longtable"      # the float.tex itself is the table, caption inside
+                else ((d / "assets" / "table-body.tex").is_file() or bool(inline_table))
                 if kind and kind.group(1) == "table"
                 else any((d / "assets" / asset).is_file()
                          for asset in ("figure.pdf", "figure.png", "figure.jpg"))
@@ -216,6 +217,7 @@ class ExportMixin(ExportBibliographyMixin, ExportLatexMixin, ExportWordMixin, Ex
             out.append((short,
                         {"dir": d, "label": lab.group(1) if lab else None,
                          "kind": ("table" if kind and kind.group(1) == "table"
+                                  else "longtable" if kind and kind.group(1) == "longtable"
                                   else "figure"),
                          "caption": cap, "note": note, "aliases": aliases,
                          # the unit's own width, from its float.tex (JL 261113: two figures on a 2-page LOI)

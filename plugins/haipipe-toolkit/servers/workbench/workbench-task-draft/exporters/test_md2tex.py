@@ -149,6 +149,11 @@ class ChapterSubsectionTests(unittest.TestCase):
         self.assertLess(tex.index("Prescribing variation"), tex.index("One."))
         self.assertLess(tex.index("Two."), tex.index("Clinical discretion"))
 
+    def test_a_chapter_named_like_its_section_is_no_subsection(self):
+        tex = self.build("- C1 · Literature Review\n- C2 · Clinical discretion\n- C3 · Gaps\n")
+        self.assertNotIn("\\subsection{Literature Review}", tex)
+        self.assertIn("\\subsection{Clinical discretion}", tex)
+
     def test_a_single_chapter_is_no_subsection(self):
         self.assertNotIn("\\subsection", self.build("- C1 · Introduction · eight paragraphs\n"))
 

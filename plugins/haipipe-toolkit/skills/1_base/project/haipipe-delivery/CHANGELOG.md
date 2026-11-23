@@ -1,6 +1,35 @@
 haipipe-delivery · Changelog
 ============================
 
+## 0.11.0 · 2026-11-22 · check_round.py and adopt-round
+
+- JL 261122 ("should we make the code to do this check? should we have the check.py in the skill?"), from Pp-AgreeableRx-Discrention and ScalingGlucose-Board-v2 the same night: new `scripts/check_round.py` (`word_round.py check <round>`, or `<rounds-dir> --all`), six rules, one ✅ or ❗ line each, exit code = the ❗ count; open-round, adopt-round, settle, refresh, submit and submitted end with it. Read-only on the live rounds: MISQ Round4-v1121 all ✅; AgreeableJama Round2-v1120 and LLMRec Round3-v1122 ❗ only on names (the rename given); LLMRec Round1, Round2 ❗ flat.
+- One name form (JL: "With version"): `N-<Name>-vMMDD-<kind>.docx`; the regex is unchanged and the check prints the rename.
+- New verb `adopt-round` (`scripts/round_adopt.py`): a flat folder becomes RoundN-vMMDD by moving, never deleting. On scratch copies of GlucoseScalingLaw/v1118 and LLMRec Round2-v1028 the check then passes except "clean/ lacks 2 .pdf" (never built). open-round's "make the first round by hand" now names adopt-round.
+- tests/test_word_round_folder.py: 2 more (20).
+
+## 0.10.1 · 2026-11-22 · push never writes into a round folder
+
+- Pp-AgreeableRx Report 261122 (JL: "why this doesn't follow the structure we want? It is so weird"): a new session followed the SKILL's push-first workflow and wrote a flat `Round3-v1122/` (an unnumbered .docx, a PDF at the top, no subfolders). `word_round.py push` now refuses a target inside any `RoundN-vMMDD/` and names open-round and refresh; `round-status` prints "❗ old layout" for a round with none of previous/ track/ clean/ submission/; SKILL.md "A round" leads with the round folder, and the single-file lane comes second. tests/test_word_round_folder.py (2 more).
+
+## 0.10.0 · 2026-11-22 · refresh: an unedited working file becomes the clean build
+
+- Pp-AgreeableRx Report 261122 22:55, topic 1: working file 3 (portal) still held old values after a portal rebuild; the hand fix (save to track/, copy clean/3 over it, track_on.py, markers by hand) made `settle 3` list the replacement as four untracked changes, because its baseline was the newest track/ copy, the old file. New verb `refresh <round> <N|all> --clean N=… [--version] [--config]`: refuses an open or edited file; places clean/, saves the old file to track/, makes the clean Word the working file with Track Changes on, refreshes submission/ with `--config`, writes every marker. `track/.placed-<n>.docx` (written by refresh and by settle's accept, removed by a later marked copy) is settle's baseline. A working file already holding clean/'s words is only recorded. On a scratch copy of Round4-v1121: refresh 3 recorded the hand copy and `settle 3 --dry-run` said "no changes since then" (it listed 5 untracked before); a changed portal build then replaced file 3 as v1122 in one command.
+- Pp-AgreeableRx 261122 (after verifying refresh on Round4-v1121): settle's dry run named the baseline `track/.placed-3.docx` as the marked copy it would write; now "marked copy: none needed" and "since: the clean Word placed at the top".
+- Topic 2: a portal-only change is now `refresh 3 --clean 3=… --config …`; markers are never written by hand.
+- ref/round-folder.md: the tree says the JL-agreed layout exactly (track/ diff PDFs against previous/, clean/ rebuilt each settle, submission/ slots 1 to 3), a "How to refresh" section, the baseline rule. tests/test_word_round_folder.py: 4 more (16).
+
+## 0.9.1 · 2026-11-22 · clean/ and submission/ follow the newest build
+
+- Pp-AgreeableRx-Discrention 261122 (JL: "for the clean and submission, they must be updated"): after a settle's rebuild, clean/ is refreshed for every file whose build changed (`--clean N=...` for each), not only the settled one, and `--config <paper-build.toml>` refreshes submission/ too; both markers are rewritten. submission/ equals the newest build until the person presses Submit; the new `submitted` verb freezes it (`submit` no longer does). tests: 12.
+
+## 0.9.0 · 2026-11-22 · a co-author round as one folder, and settle
+
+- Pp-AgreeableRx-Discrention Report 261122 (topics 1 and 2; JL: "this is what we want to have", "when I say settle, you ask me how to deal with the changes in the working file"): `RoundN-vMMDD/` holds the working Word files at the top (numbered 1, 2, 3, Track Changes on) and `previous/`, `track/`, `clean/`, `submission/`, each with one `last-update-YYYY-MM-DD HH.MM.txt` marker. New `scripts/word_round_folder.py` (`open-round`, `settle`, `submit`, `status`; `word_round.py` passes the verbs on) and `scripts/word_marks.py` (number the marks, accept the picked ones). `ref/round-folder.md`.
+- settle: refuses while Word holds the file; copies it marked into track/; lists every tracked change and comment with its author, plus untracked edits found by comparing words with the newest track/ copy; rebuilds into clean/; checks the draft against clean/; then asks keep, accept or each. accept is refused while a marked insertion's words are not in the drafts.
+- Run on scratch copies of the OneDrive Round3-v1112 and Round4-v1121: open-round made Round5-v1123 with previous/ and Track Changes on in all three (Round4's cover letter had it off); a sentence typed with Track Changes off was listed as untracked; keep left the file and the next settle started from the track/ copy with no change listed twice; submit numbered the 3 portal uploads by slot and refused a second submit.
+- tests/test_word_round_folder.py: 11 tests.
+
 ## 0.8.1 · 2026-11-04 · models, data and websites
 
 - A work Block's Findings ends with 📦 Delivery, tabs Models · Data · Website; lanes `model/`, `data/`, `web/` (JL 261104).

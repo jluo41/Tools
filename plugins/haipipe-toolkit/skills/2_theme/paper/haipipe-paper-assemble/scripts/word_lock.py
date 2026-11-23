@@ -42,3 +42,25 @@ def word_turn(wait: float = 900):
         if got:
             fcntl.flock(handle, fcntl.LOCK_UN)
         handle.close()
+
+
+OWN_FOLDERS = ("haipipe-preview", "haipipe-measure")   # the copies a build opens in Word's own container
+
+
+def word_in_use() -> bool:
+    """True when the person has a document open in Word: a build then never opens, prints or closes a file there
+    (Pp-AgreeableRx 261122: every build opened and closed windows in a Word open for 36 hours with shared OneDrive
+    files, stole focus and left a preview copy open). HAIPIPE_WORD_PREVIEW=word uses Word anyway."""
+    import os
+    import subprocess
+    if os.environ.get("HAIPIPE_WORD_PREVIEW") == "word":
+        return False
+    if subprocess.run(["pgrep", "-x", "Microsoft Word"], capture_output=True).returncode != 0:
+        return False             # not running: a build may start it, use it alone and quit it
+    try:                         # asked only while Word runs, so the question never launches it
+        r = subprocess.run(["osascript", "-e", 'with timeout of 10 seconds\ntell application "Microsoft Word" to '
+                            'get full name of documents\nend timeout'], capture_output=True, text=True, timeout=20)
+    except (OSError, subprocess.TimeoutExpired):
+        return True
+    names = [n.strip() for n in r.stdout.split(",") if n.strip()]
+    return r.returncode != 0 or any(not any(f in n for f in OWN_FOLDERS) for n in names)

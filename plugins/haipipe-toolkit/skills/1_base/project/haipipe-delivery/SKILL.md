@@ -3,7 +3,7 @@ name: haipipe-delivery
 description: "Owns the Block's delivery/ folder: where built output goes, the Delivery view, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs. Use to build a PDF, Word file or web page. Trigger: delivery, build the docx, sent, /haipipe-delivery, /haipipe-draft-delivery."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.8.1"
+  version: "0.11.0"
   last_updated: "2026-11-04"
   # version history: ./CHANGELOG.md
 ---
@@ -172,6 +172,19 @@ A round: send, render, read back
 A file we share goes round until a person says stop (b32 s41-D21, D23; JL 261019: "the render haved changed a
 while, and we need to read it again, and start another round of changing, and then send it back").
 
+**A co-author round starts with the round folder, always** (Pp-AgreeableRx 261122, JL: "why this doesn't follow the
+structure we want?": a new session followed push and wrote a flat Round3 with a PDF at the top). `RoundN-vMMDD/`
+holds the numbered working files at the top and `previous/`, `track/`, `clean/`, `submission/`; its verbs are
+`open-round --file N=<built.docx>` (a flat folder: `adopt-round`), `settle`, `refresh`, `submit`, `submitted`,
+`round-status`, and `check` (`scripts/check_round.py`, which every verb runs at its end) ([ref/round-folder.md](ref/round-folder.md)). `push` refuses any target inside a `RoundN-vMMDD/` folder, and
+`round-status` marks a round with none of the four subfolders "❗ old layout".
+
+```text
+open-round ─▶ co-authors edit the numbered files ─▶ settle N (asks keep, accept or each) ─▶ submit ─▶ submitted
+```
+
+The single-file lane below is for one shared file outside a round (a reading copy, a letter to one reader):
+
 ```text
 build ─▶ adopt (-v<N>) ─▶ render (pictures) ─▶ ✍ push, at a person's word ─▶ ⏳ they edit OneDrive
 pull: their copy as -v<N+1>, rendered, new comments listed, a `back` row ─▶ the next round's plan
@@ -182,8 +195,9 @@ pull: their copy as -v<N+1>, rendered, new comments listed, a `back` row ─▶ 
 2. **Never written over**: each state is `<name>-v<N>.docx` with its PDF; OneDrive holds one copy, the one people edit.
 3. **Render**: each version's pages go to `render/<name>-v<N>/p-<N>.png` beside the lane, the pictures a Section
    canvas shows as "the file today"; the same lane the Delivery view's 📱 Render lists.
-4. **Read back** (`pull`): only when OneDrive's copy matches no version; else it says nothing came back.
+4. **Read back** (`pull`): only when OneDrive's copy matches no version; else it says nothing came back. A paper file also gets its citation-order check, and `haipipe-paper-assemble/scripts/word_compare.py` says whether it matches the build.
 5. **Rows**: `push` adds a `draft` row, `pull` a `back` row; only a person writes `sent`.
+6. **Never into a round**: `push` writes one file outside any `RoundN-vMMDD/`; a round's files come only from its verbs above.
 
 
 A Page's Delivery Runs
@@ -221,6 +235,10 @@ haipipe-delivery/
 ├── ref/page-delivery.md
 ├── ref/gallery.md            the delivery gallery: every kind of delivery, the newest real one each (b35-s04)
 ├── scripts/word_round.py      a round: versions, render, push, read back
+├── scripts/word_round_folder.py  a round as one folder: open-round, settle, refresh, submit
+├── scripts/check_round.py     the round layout check; round_adopt.py: adopt-round
+├── scripts/word_marks.py      the marks in a working file, numbered; accept the picked ones
+├── ref/round-folder.md       the round folder layout and how to settle
 ├── ref/history/haipipe-draft-delivery-CHANGELOG.md
 └── agents/openai.yaml
 ```

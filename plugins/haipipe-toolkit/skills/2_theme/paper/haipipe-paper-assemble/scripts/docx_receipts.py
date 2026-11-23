@@ -129,7 +129,7 @@ def source_manifest() -> dict[str, object]:
     # 0.8.4 (JL 260928 "Why we have the sha256? remove that, waste my tokens"): the manifest lists
     # its inputs by path only; nothing ever read the 74 hashes it used to carry.
     files = [str(path.relative_to(ROOT)) for path in paths]
-    profile_path = PROFILE_ROOT / f"{PROFILE_NAME}.toml" if PROFILE_NAME else None
+    profile_path = PROFILE_ROOT / PROFILE_NAME / "profile.toml" if PROFILE_NAME else None
     return {
         "engine": "haipipe-paper-assemble/latex_room_to_docx-0.2.1",
         "builder": "haipipe-paper-assemble/scripts/latex_room_to_docx.py",

@@ -165,7 +165,7 @@ def _plan_and_drafts(
     from .plan_layout import to_canonical
     text = to_canonical(plan.read_text(encoding="utf-8"))  # a three-section plan reads as one
     blocks = list(iter_plan_bullets(text))
-    divisions = re.findall(r"(?m)^## C(\d+)\s*·\s*(.+?)\s*$", text)
+    divisions = re.findall(r"(?m)^## C(\d+)\b\s*(?:·\s*(.*?))?\s*$", text)
     paragraphs = re.findall(r"(?m)^### C\d+\.P\d+\s*·", text)
     evidence_rows = re.findall(r"(?m)^\s+Evidence:\s*\S.*$", text)
     outline_ok = bool(divisions and paragraphs and blocks) and len(evidence_rows) == len(blocks)
@@ -284,7 +284,7 @@ def _aims(face: str, plan: Path | None, expect_shape: bool) -> SetupCheck:
     alignment = "No initialized Shape requires division alignment."
     if plan is not None and plan.is_file():
         text = plan.read_text(encoding="utf-8")
-        divisions = {int(n) for n in re.findall(r"(?m)^## C(\d+)\s*·", text)}
+        divisions = {int(n) for n in re.findall(r"(?m)^## C(\d+)\b", text)}
         groups = {int(n) for n in re.findall(r"(?m)^### A(\d+)\s*·", body)}
         aligned = groups == divisions if expect_shape else groups.issubset(divisions)
         alignment = f"Aim groups {sorted(groups)} align with Shape divisions {sorted(divisions)}."

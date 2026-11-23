@@ -111,7 +111,7 @@ workbench-paper/ref/space-mapping.md     → retired                      it map
 haipipe-paper-venue/template.md          → ref/call-template.md         templates sit in ref/
 new: comments scripts/review_items.py · story ref/narrative.md · section ref/requirement.md · tests/test_paper_ladder.py
 rewritten: the SKILL.md of -paper, -workflow, workbench-paper, -story, -ideation, -venue, -section; run-cards.md
-open: venue/ out of skills/ ? · assemble profiles/ into venues/<venue>/kit/ ? (Q02)
+open: venue/ out of skills/ ? (Q02) · done 261122: assemble profiles/ into haipipe-paper-assemble/venues/<venue>/
 ```
 
 The drawing's table gives every row its what and its why; 16 files stay as they are.

@@ -105,7 +105,9 @@ def rows(board: Path) -> list[dict]:
     R, seen, out = rules(board), {}, []
     for r in table(face.read_text(encoding="utf-8").splitlines(), "Display"):
         kind = "table" if "table" in r.get("type", "").lower() else "figure"
-        where = "supplement" if re.match(r"\s*(supp|appendix|online|e\b)", r.get("where", ""), re.I) else "main"
+        w = r.get("where", "")              # si: the Supplementary Information, a document apart from Extended Data
+        where = ("si" if re.match(r"\s*(si\b|supplementary information)", w, re.I)   # (Nature journals print both;
+                 else "supplement" if re.match(r"\s*(supp|appendix|online|e\b)", w, re.I) else "main")   # JL 261122)
         cell = r.get("display", "").strip()
         if PRINTED.match(cell):                   # already the printed label (MISQ's Table B1, lettered by appendix)
             out.append({**r, "type": kind, "where": where, "as": cell})

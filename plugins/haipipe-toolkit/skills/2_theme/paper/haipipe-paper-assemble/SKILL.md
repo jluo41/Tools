@@ -2,7 +2,7 @@
 name: haipipe-paper-assemble
 description: "Builds the whole manuscript deterministically from the Sections' LaTeX and accepted bindings, regenerating delivery/ (DOCX, PDF, supplement). Use to assemble, export the paper or check whether a document is stale. Trigger: assemble, build Word, export the paper, /haipipe-paper-assemble."
 metadata:
-  version: "0.20.0"
+  version: "0.23.0"
   last_updated: "2026-11-13"
   summary: "Paper-level source-driven document assembly; page-level Word export remains a separate workbench."
 ---
@@ -187,7 +187,10 @@ The implementation has four separable parts:
 3. **Venue profile** — supplies output rules such as font, spacing, title-page
    fields, main-text word-count basis, table/figure placement, supplement
    packaging, and required checks. A venue profile never creates evidence or
-   rewrites claims.
+   rewrites claims. One folder per venue, `venues/<venue>/` (`profile.toml`, a
+   `venue.py` only for a Word shape no setting can say, its `.bst`, its test);
+   the contract is [venues/README.md](venues/README.md), and the shared scripts
+   never name a venue.
 4. **Renderer and validators** — emit DOCX/PDF and review snapshots, calculate
    the source manifest, and run structural plus rendered visual checks.
 
@@ -211,7 +214,7 @@ Three behaviors every build must have · The expect-fail procedure: [ref/build-b
 
 ## 🔝 The Word lane
 
-Word: every display at the top of a page · Tables must arrive in Word: [ref/word-lane.md](ref/word-lane.md)
+Word: every display at the top of a page · Tables must arrive in Word · Is the co-authors' Word the same as the build (`scripts/word_compare.py`): [ref/word-lane.md](ref/word-lane.md)
 
 ## 🗂 Stable Section identities and display unit folders
 
@@ -397,11 +400,30 @@ the manifest, about a minute, no Word app. Word, the cover letter, the portal an
 build left them, and `send` and `release` refuse until a full build runs. A plain `build.py` stays the full build, since
 co-authors get real Word (JL 261023).
 
+**The shared folder is a round.** `[publish] dir` names a round's `clean/` (`.../RoundN-vMMDD/clean`) and its `files`
+use the round's names (`N-<Name>-vMMDD-<kind>.pdf`); any other folder gets nothing and a ❗ line. The working files,
+track/, previous/ and submission/ are haipipe-delivery's round verbs (`adopt-round`, `open-round`, `refresh`,
+`check`): `haipipe-delivery/ref/round-folder.md`. `scripts/delivery_publish.py` holds the step.
+
 `delivery/build.py --word-draft` (0.18.0, JL 261104: "we can use method B, as long as the table is at the top of that
 page") is the working Word copy: Word prints it, but no page is measured. Each display floats to the top of the page its
 citing text reaches (`float_display_to_top`), so it may sit above that text, and a display too long for the page moves
 to the next page with its citing paragraph, which can leave white space. A display that needs a whole page keeps a page
 of its own. The shared folder stays as it was, and `send` and `release` refuse until a full build runs.
+
+**Before the first build of a new version** (JL 261122, the JAMA AI version of Paper-LLMRecPhy-Jama printed
+1,397 of 3,000 words because three Sections were never adopted):
+
+```text
+1 compile order   the face's block reads   main: / - t00_abstract / ... / appendix: / - t21_<title>
+                  (paper_ladder.py task writes each line; a numbered "1. t00_abstract" list is refused)
+2 citations       a version made from another is paper_ladder.py next --from <version> [--desk <desk>]: it
+                  carries draft/ whole, evidence/bibex/<task>.bib included (never `version` and hand copies)
+3 adopt           page.py adopt <Section> for each Section whose ## Content is still the placeholder,
+                  then export, then build; build.py check and the build name each such Section (❗, ⚠)
+4 subsections     Methods and Results print a \subsection per `- C<n> · <title>` of the draft's
+                  Structure Overview; a part named like its Section (`- C1 · Discussion`) prints none
+```
 
 The public operation is `assemble`:
 

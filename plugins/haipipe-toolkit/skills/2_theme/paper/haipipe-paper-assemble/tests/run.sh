@@ -4,4 +4,4 @@
 cd "$(dirname "$0")" || exit 1
 PY="${PYTHON:-$(cd ../../../../../../.. 2>/dev/null && pwd)/.venv/bin/python}"
 [ -x "$PY" ] || PY=python3
-exec "$PY" -m pytest -q -p no:cacheprovider --rootdir=. "$@" .
+exec "$PY" -m pytest -q -p no:cacheprovider --rootdir=. "$@" . ../venues

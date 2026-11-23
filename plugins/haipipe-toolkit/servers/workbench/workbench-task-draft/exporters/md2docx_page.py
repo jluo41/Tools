@@ -136,6 +136,10 @@ def chapter_titles(path, raw_page):
     if not m:
         return {}
     page = pathlib.Path(path)
+    # a part named like its Section (`- C1 · Discussion` under Discussion) opens the Section, so it prints no
+    # heading of its own; JAMA's Discussion starts untitled, then Limitations and Conclusions (JL 261122)
+    own = re.search(r"(?m)^# [^\n·]*·\s*(?:§\s*\d+(?:\.\d+)*\s*)?(.+?)\s*$", raw_page)
+    own = own.group(1).strip().lower() if own else ""
     name = "%s-draft-%s.md" % (page.stem, m.group(1))
     for draft in (page.parent / "draft" / name, page.parent / "draft" / "previous" / name):
         if draft.is_file():
@@ -144,7 +148,7 @@ def chapter_titles(path, raw_page):
             for key, title in re.findall(r"(?m)^- (C\d+) · (.+?)\s*$", text.split("\n### C", 1)[0]):
                 # C0 is the untitled opening; a `§5.1` prefix and a `· eight paragraphs` note are working words
                 title = re.sub(r"^\u00a7\s*\d+(?:\.\d+)*\s*", "", title).split(" · ")[0].strip()
-                if key != "C0" and title:
+                if key != "C0" and title and title.lower() != own:
                     found[key] = title
             return found if len(found) > 1 else {}     # one subsection under a section is no division
     return {}

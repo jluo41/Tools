@@ -148,11 +148,11 @@ def _load_part(name):
 
 
 def word_pdf(docx: Path, pdf: Path) -> bool:
-    if (sys.platform != "darwin" or not MSWORD.exists() or os.environ.get("HAIPIPE_WORD_PREVIEW") == "html"
-            or "PYTEST_CURRENT_TEST" in os.environ):   # a test never opens Word
-        return False
     sys.path.insert(0, str(ENGINE_DIR))
-    from word_lock import word_turn
+    from word_lock import word_in_use, word_turn   # a person's open Word is never used (261122)
+    if (sys.platform != "darwin" or not MSWORD.exists() or os.environ.get("HAIPIPE_WORD_PREVIEW") == "html"
+            or "PYTEST_CURRENT_TEST" in os.environ or word_in_use()):   # a test never opens Word
+        return False
     with word_turn() as turn:      # builds take turns in Word (b16.j02-s22)
         return turn and word_print(docx, pdf)
 
@@ -206,7 +206,6 @@ DEDUPE_EMBEDDED_FLOATS = True   # behavior A · tests flip this to prove the reg
 def rel(p): return (HERE / p).resolve()
 
 
-
 def _doc_parts(path: Path) -> dict:
     """The parts a co-author changes when they edit a Word file: its text and its comments. OneDrive and SharePoint
     rewrite a file's metadata after every upload (docProps, customXml, rels) but leave these as they were."""
@@ -218,42 +217,7 @@ def _doc_parts(path: Path) -> dict:
         return {}
 
 
-def publish(previous: dict) -> dict:
-    """[publish] (paper-build.toml): copy the delivered files to a shared folder after every build (JL 261023: "the
-    delivery will be rendered here ... we will keep rendering it"), e.g. a OneDrive or SharePoint folder the co-authors
-    open. `dir` is relative to the SPACE root (the folder with env.sh) or absolute; `files` maps an [outputs] key to
-    the name it gets there. The last copy delivered is kept in <delivery>/.published/; a shared copy whose text or
-    comments differ from it was edited by a co-author, so it is never overwritten: the new render is written beside it
-    as "<name> (new render)", one file replaced by each build, and the build says so. A copy OneDrive holds online
-    only (not downloaded) cannot be read, so it counts as changed too. Returns what was written."""
-    pub = CFG.get("publish")
-    if not isinstance(pub, dict) or not pub.get("dir"):
-        return {}
-    space = next((q for q in [HERE.resolve(), *HERE.resolve().parents] if (q / "env.sh").is_file()), HERE.resolve())
-    dest = Path(os.path.expanduser(pub["dir"]))
-    dest = dest if dest.is_absolute() else space / dest
-    if not dest.is_dir():
-        BUILD_WARNINGS.append(f"publish: folder not found, nothing copied: {pub['dir']}")
-        return {}
-    kept = HERE / ".published"
-    kept.mkdir(exist_ok=True)
-    done = {}
-    for key, name in (pub.get("files") or {}).items():
-        src = rel(OUT[key]) if OUT.get(key) else None
-        if src is None or not src.is_file():
-            BUILD_WARNINGS.append(f"publish: {key} was not built, {name} not copied")
-            continue
-        target, last = dest / name, kept / name
-        if target.exists() and not (last.is_file() and _doc_parts(target) == _doc_parts(last)):
-            target = dest / f"{Path(name).stem} (new render){Path(name).suffix}"   # one file, replaced each build
-            BUILD_WARNINGS.append(f"publish: {name} in the shared folder differs from the last render (edited there?); "
-                                  f"kept it, wrote {target.name}")
-        shutil.copyfile(src, target)
-        if target.name == name:
-            shutil.copyfile(src, last)
-            done[name] = {"from": OUT[key], "at": datetime.now().isoformat(timespec="seconds")}
-        print(f"published {key} -> {target.name}")
-    return done
+_load_part("delivery_publish.py")   # publish: [publish] copies into a round's clean/ only
 
 def unrooted(text):
     """A tool's printed output with the SPACE root (the folder with env.sh) cut off its paths, so the manifest
@@ -273,12 +237,16 @@ OUT = CFG["outputs"]
 #                                              register, never inside the reader's PDF/DOCX (JL 260908)
 #   [source]   preamble = "preamble.tex"       a paper-owned preamble file beside paper-build.toml, inlined
 #                                              into the generated master (packages, column types, unicode maps)
-#   [paper]    venue_profile = "jama-internal-medicine"  title-page center block, JAMA section boundaries,
-#                                              and the page's own \section*{Key Points}/\section*{Abstract} kept
+#   [paper]    venue_profile = "<venue>"       venues/<venue>/profile.toml: the desk's typography and layout
+# XeTeX writes each glyph's text: Times maps ";" and U+037E to one glyph, and copies gave U+037E (261122)
+ACTUALTEXT = "\\ifdefined\\XeTeXgenerateactualtext\\XeTeXgenerateactualtext=1 \\fi\n"
 DRAFT_INCLUDES_UNREADY = bool(CFG.get("evidence", {}).get("draft_includes_unready", False))
 VENUE_PROFILE = str(CFG["paper"].get("venue_profile", "")).lower()
-JAMA = VENUE_PROFILE == "jama-internal-medicine"
 PREAMBLE_FILE = rel(CFG["source"]["preamble"]) if CFG.get("source", {}).get("preamble") else None
+# [source] back_matter: a paper-owned .tex of Nature's closing sections (Acknowledgements, Author contributions, Competing
+# interests), printed AFTER the references as Nature Portfolio articles print them, in place of the Acknowledgments
+# placeholder before them (ScalingGlucose, JL 261121: "is this other examples do the same?")
+BACK_MATTER_FILE = rel(CFG["source"]["back_matter"]) if CFG.get("source", {}).get("back_matter") else None
 # 0.9.1 · a paper that owns its LaTeX, all opt-in (JL 260929, Paper-FairGlucose-preprint: npj + arXiv):
 #   [source]   head = "<file>"            the paper's own preamble, \documentclass and \title included,
 #                                         inlined in place of the engine's package head and title block
@@ -304,13 +272,13 @@ STORE = _source_file("store")
 DRAFT_CITATIONS = bool(CFG.get("evidence", {}).get("draft_citations", False))
 
 # ── venue profile · presentation only, never claims (0.7.0) ──────────────────
-# profiles/<name>.toml carries the desk's typography; [profile] in paper-build.toml
+# venues/<name>/profile.toml carries the desk's typography; [profile] in paper-build.toml
 # may override single keys. The [latex] table drives write_master(); the flat keys
-# drive scripts/latex_room_to_docx.py. Shipped: jama-internal-medicine, misq.
+# drive scripts/latex_room_to_docx.py. One folder per venue (venues/README.md, 261122).
 def load_profile(name: str) -> dict:
     prof = {}
     if name:
-        path = ENGINE_DIR.parent / "profiles" / f"{name}.toml"
+        path = ENGINE_DIR.parent / "venues" / name / "profile.toml"
         if not path.exists(): sys.exit(f"venue profile not found: {path}")
         prof = tomllib.loads(path.read_text(encoding="utf-8"))
     inline = CFG.get("profile", {})
@@ -322,10 +290,11 @@ def load_profile(name: str) -> dict:
                 prof[key] = value
     return prof
 PROFILE = load_profile(VENUE_PROFILE)
-# the LaTeX lane follows the profile's layout, as the Word lane does: a profile that reuses the JAMA manuscript
-# layout under another venue's name (lancet-public-health) gets its title-page block and section boundaries (261101)
-JAMA = JAMA or str(PROFILE.get("layout", "")).lower() == "jama-internal-medicine"
 _L = PROFILE.get("latex", {}) if isinstance(PROFILE.get("latex"), dict) else {}
+LATEX_TITLE_BLOCK = str(_L.get("title_block", "maketitle"))  # maketitle · center; these four: what a venue's Word layout reads (261122)
+LATEX_SECTION_HEADINGS = [str(x) for x in _L.get("section_headings", [])]   # \section{..} added where a page has none
+LATEX_ABSTRACT_AS_WRITTEN = bool(_L.get("abstract_as_written", False))  # keep the page's own \section*{Abstract}
+LATEX_SUPPLEMENT_FLOATS = [str(x) for x in _L.get("supplement_float_names", [])]  # ["eTable", "eFigure"]: restart after the references
 CITE_AFTER = str(PROFILE.get("cite_after_punctuation", ""))   # the marks a citation number follows; "" moves nothing
 LATEX_SPACING = str(_L.get("spacing", "onehalf"))            # single · onehalf · double
 LATEX_BIBSTYLE = str(_L.get("bibstyle", "apalike"))
@@ -433,7 +402,7 @@ def read_order():
             continue
         m = re.match(r"-\s*(S-[A-Za-z0-9-]+|t\d{2}_[a-z0-9-]+)\s*$", s)   # S-<desk>-… or a version's tNN_<title>
         if not m or lane is None:
-            raise RuntimeError(f"invalid compile-order entry: {s}")
+            raise RuntimeError(f"invalid compile-order entry: {s!r}; the block is lanes of items: main:, - t00_abstract, …, appendix:, - t21_…")
         pid = m.group(1)
         if pid in seen_ids:
             raise RuntimeError(f"duplicate compile-order Section: {pid}")
@@ -447,6 +416,7 @@ def read_order():
     return main, appx, source
 
 
+_load_part("delivery_words.py")     # stale_message, unadopted: are a printed Section's words current
 _load_part("delivery_displays.py")   # page_display_units, _page_result_display_unit, display_register, CITE_CMD
 
 
@@ -649,15 +619,6 @@ def stale_fragments(pages, accept=None):
     return out
 
 
-def stale_message(lines):
-    fix = ("re-export each Section through its LaTeX lane (page.py export <Section folder> --lane latex, "
-           "or Delivery > LaTeX rebuild); when a drop is intended, delivery/build.py --accept-dropped-keys "
-           "re-exports the stale Sections with md2tex's --accept-dropped-keys and then builds")
-    return "\n".join([f"❌ build stopped: {len(lines)} printed Section(s) would carry OLD words"]
-                     + [f"  {l}" for l in lines]
-                     + [f"  fix: {fix}", "  or build anyway: delivery/build.py --allow-stale (DRAFT, each listed as a G4 blocker)"])
-
-
 def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
     """Report mechanical checks without treating them as the human G4 gate.
 
@@ -681,6 +642,8 @@ def build_readiness(pages, unresolved=(), latex_rc=None, docx_rc=None):
     if STORE_READS:
         blockers.append("displays read from the paper store, not DISPLAY Results: %s"
                         % ", ".join("%s (%d)" % (k, len(v)) for k, v in STORE_READS.items()))
+    if any(unadopted(p["dir"], p["id"]) for p in pages if p.get("dir")):
+        blockers.append("a Section's Content was never adopted from its Draft (page.py adopt)")
     if STALE:
         blockers.append("stale fragments printed (--allow-stale): %d Section(s) carry old words" % len(STALE))
     if latex_rc != 0:
@@ -882,8 +845,8 @@ def place_fragment(p, dest_dir: Path, labels, unresolved):
         t = re.sub(rf"[ \t~]*((?:{cite})(?:[ \t~]*{cite})*)([{re.escape(CITE_AFTER)}])", r"\2\1", t)
     # JL 260915: an Abstract page that already opens its own abstract environment is kept as written,
     # so a block the desk prints right after the abstract (Diabetes Care's Article Highlights) can share the page
-    if is_abstract(p) and not JAMA and "\\begin{abstract}" not in t:
-        # the generic Word engine wants a real abstract environment; the JAMA renderer instead
+    if is_abstract(p) and not LATEX_ABSTRACT_AS_WRITTEN and "\\begin{abstract}" not in t:
+        # the generic Word engine wants a real abstract environment; a venue layout with abstract_as_written
         # parses the page's own \section*{Key Points} and \section*{Abstract} headings (0.6.1)
         body = re.sub(r"^%.*\n", "", t, flags=re.M)                       # generator comments
         body = re.sub(r"\\section\*?\{Abstract\}\s*", "", body)        # the heading
@@ -941,10 +904,12 @@ def write_paper_owned(main, appx):
                 and not (LATEX / f.name).exists():
             shutil.copy2(f, LATEX / f.name)
     gen = (f"% GENERATED by {ENGINE_TAG}\n"
-           "% The pages own the words. Edit a Section Page, then rebuild; never edit this file.\n")
+           "% The pages own the words. Edit a Section Page, then rebuild; never edit this file.\n" + ACTUALTEXT)
     head = HEAD_FILE.read_text(encoding="utf-8").rstrip() + "\n"
     opening = OPENING_FILE.read_text(encoding="utf-8").rstrip() if OPENING_FILE else "\\maketitle"
     bib = "\\bibliographystyle{%s}\n\\bibliography{reference}\n" % LATEX_BIBSTYLE
+    if BACK_MATTER_FILE:   # Nature's closing sections after the references (261121), as write_master does
+        bib += "% back matter after the references · " + BACK_MATTER_FILE.name + "\n" + BACK_MATTER_FILE.read_text(encoding="utf-8").rstrip() + "\n"
 
     def doc(preamble, start, body):
         return gen + preamble + "\n\\begin{document}\n" + start + "\n\n" + body + "\n\\end{document}\n"
@@ -992,18 +957,23 @@ def write_master(main, appx, status, ready_n, total_n):
         else "% a display alone on its page stays centred (float_page = center)"
     paper_preamble = ("% paper-owned preamble · " + PREAMBLE_FILE.name + "\n" + PREAMBLE_FILE.read_text(encoding="utf-8")) \
         if PREAMBLE_FILE and PREAMBLE_FILE.exists() else "% no paper preamble declared"
-    if JAMA:   # the JAMA Word renderer parses a title-page center block, not \maketitle
+    if LATEX_TITLE_BLOCK == "center":   # the venue's Word layout parses a title-page center block, not \maketitle
         # [paper] authors (LaTeX, lines split by \\) prints the byline; a blind copy leaves it unset
         byline = str(CFG["paper"].get("authors", "")).strip() or "[Authors blinded for review]"
         title_block = ("\\begin{document}\n\n\\begin{center}\n{\\Large\\bfseries " + title + "}\n\n\\vspace{1em}\n\n"
                        + byline + "\n\n\\vspace{0.5em}\n\\end{center}")
     else:
-        title_block = "\\title{" + title + "}\n\\author{}\n\\date{}\n\\begin{document}\n\\maketitle"
+        # [paper] authors, affiliations, corresponding: the byline under the title (ScalingGlucose 261121); unset, none
+        _pc = CFG["paper"]
+        _by = str(_pc.get("authors", "")).strip()
+        _aff = [str(x) for x in _pc.get("affiliations", [])] + ([str(_pc["corresponding"])] if _pc.get("corresponding") else [])
+        _author = (_by + ("\\\\[0.6em]" + "\\\\ ".join("{\\small " + x + "}" for x in _aff) if _aff else "")) if _by else ""   # \\small per line: a group across \\\\ breaks \\maketitle's tabular
+        title_block = "\\title{" + title + "}\n\\author{" + _author + "}\n\\date{}\n\\begin{document}\n\\maketitle"
         if LATEX_TITLE_PAGE == "separate":       # blind copy: the title alone on page 1
             title_block += "\n\\thispagestyle{empty}\n\\clearpage"
     head = rf"""% GENERATED by {ENGINE_TAG} on {stamp}
 % The pages own the words. Edit a Section Page, then rebuild; never edit this file.
-\documentclass[12pt]{{article}}
+{ACTUALTEXT}\documentclass[12pt]{{article}}
 \usepackage[letterpaper,margin=1in]{{geometry}}
 \usepackage{{fontspec}}
 \IfFontExistsTF{{TeX Gyre Termes}}{{\setmainfont{{TeX Gyre Termes}}}}{{\IfFontExistsTF{{Times New Roman}}{{\setmainfont{{Times New Roman}}}}{{}}}}
@@ -1043,10 +1013,10 @@ def write_master(main, appx, status, ready_n, total_n):
             if LATEX_ABSTRACT_PAGE: body.append(r"\clearpage")   # abstract (+ keywords) alone on its page
             body.append(""); continue
         if p.get("included", p["ready"]):
-            if JAMA:   # the JAMA Word renderer splits the body on these four headings
+            if LATEX_SECTION_HEADINGS:   # the venue's Word layout splits the body on these headings
                 kind = re.sub(r"^(\d+|[A-Z])-", "", p["id"].rsplit("-Main-", 1)[-1]).replace("-", " ")   # 0.7.5: drop the page index
                 frag_txt = (SEC / f"{p['id']}.tex").read_text(encoding="utf-8", errors="replace")
-                if kind in ("Introduction", "Methods", "Results", "Discussion") and not re.search(rf"\\section\{{{kind}\}}", frag_txt):
+                if kind in LATEX_SECTION_HEADINGS and not re.search(rf"\\section\{{{kind}\}}", frag_txt):
                     body.append(rf"\section{{{kind}}}")
             body.append(rf"\input{{sections/{p['id']}}}")
             body += [rf"\input{{displays/{f}/float}}" for f in floats]
@@ -1056,14 +1026,16 @@ def write_master(main, appx, status, ready_n, total_n):
     # 0.8.4 (JL 260928): the draft line below is process text in the deliverable; a blind copy (MISQ) carries
     # no acknowledgments at all, since funding and thanks would unblind it; they go in the separate title-page file.
     tail = (["\\section*{Acknowledgments}", "\\noindent\\textit{[Author contributions, funding, conflict of interest disclosures and acknowledgments to be added.]}", ""]
-            if LATEX_ACKNOWLEDGMENTS else [])
+            if LATEX_ACKNOWLEDGMENTS and not BACK_MATTER_FILE else [])
     tail += ["\\clearpage", "\\bibliographystyle{" + LATEX_BIBSTYLE + "}", "\\bibliography{reference}", ""]
+    if BACK_MATTER_FILE and LATEX_ACKNOWLEDGMENTS:   # Nature's order: the closing sections after the references
+        tail += ["% back matter after the references · " + BACK_MATTER_FILE.name, BACK_MATTER_FILE.read_text(encoding="utf-8").rstrip(), ""]
     if LATEX_DISPLAYS == "end":   # the main displays print here, after the references; the appendix floats stay in place
         tail += ["\\processdelayedfloats", "\\makeatletter\\efloat@restorefloats\\makeatother", ""]
     tail += ["\\clearpage", "\\appendix", ""]
-    if JAMA:   # JAMA supplements number their floats eTable 1… / eFigure 1…, restarting after the references
-        tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{eTable}\\renewcommand{\\thetable}{\\arabic{table}}",
-                 "\\setcounter{figure}{0}\\renewcommand{\\figurename}{eFigure}\\renewcommand{\\thefigure}{\\arabic{figure}}", ""]
+    if LATEX_SUPPLEMENT_FLOATS:   # supplement floats named eTable 1… / eFigure 1…, restarting after the references
+        tail += ["\\setcounter{table}{0}\\renewcommand{\\tablename}{%s}\\renewcommand{\\thetable}{\\arabic{table}}" % LATEX_SUPPLEMENT_FLOATS[0],
+                 "\\setcounter{figure}{0}\\renewcommand{\\figurename}{%s}\\renewcommand{\\thefigure}{\\arabic{figure}}" % LATEX_SUPPLEMENT_FLOATS[1], ""]
     elif APPENDIX_PER_LETTER:   # 0.8.2: Table B1, B2 … restart in every lettered appendix (MISQ convention)
         tail += ["\\counterwithin*{table}{section}\\renewcommand{\\thetable}{\\thesection\\arabic{table}}",
                  "\\counterwithin*{figure}{section}\\renewcommand{\\thefigure}{\\thesection\\arabic{figure}}", ""]
@@ -1183,7 +1155,7 @@ def declared_title(pages):
         if m:
             for line in m.group(1).splitlines():
                 if line.strip() and not line.lstrip().startswith(("<!--", ">", "(")):
-                    return line.strip()
+                    return re.sub(r"\s*<!--.*?-->", "", line).strip()   # a tagged title line (adopt, 261121)
     return None
 
 
@@ -1192,7 +1164,7 @@ def venue_findings(pages, page_count=None):
 
     haipipe-paper-venue's store carried a measured MISQ pack (abstract 120-160
     words, never past ~185, 4-7 sentences of unstructured prose, 40-50 pages)
-    while profiles/misq.toml was written from general knowledge; nothing in the
+    while the MISQ profile was written from general knowledge; nothing in the
     build read it, so a 168-word 11-sentence abstract passed every gate
     (JL 260908). Any profile that declares these keys now gets the same check.
     """
@@ -1293,9 +1265,9 @@ def build():
     documents = [(MASTER, "main_pdf")] + [
         (LATEX / f"{name}.tex", key) for name, key in (("supplement", "supplement_pdf"), ("combined", "combined_pdf"))
         if (LATEX / f"{name}.tex").exists() and OUT.get(key)]
-    # 0.12.3 · a bibliography style shipped with this skill (styles/<bibstyle>.bst, e.g. jama-ama) is copied in
-    shipped_bst = ENGINE_DIR.parent / "styles" / f"{LATEX_BIBSTYLE}.bst"
-    if shipped_bst.is_file():
+    # 0.12.3 · a bibliography style shipped in a venue folder (venues/<venue>/<bibstyle>.bst, e.g. jama-ama) is copied in
+    shipped_bst = next(iter(sorted((ENGINE_DIR.parent / "venues").glob(f"*/{LATEX_BIBSTYLE}.bst"))), None)
+    if shipped_bst:
         shutil.copy2(shipped_bst, LATEX / shipped_bst.name)
     rc, printed = None, {}
     for tex, key in documents:
@@ -1457,7 +1429,7 @@ def build():
     for p in pages:
         if not p["ready"]: print(f"  ⬜ {p['id']}: {'; '.join(p['reasons'])}")
     for p in pages:
-        for w in p.get("warnings", []): print(f"  ⚠ {p['id']}: {w}")
+        for w in p.get("warnings", []) + unadopted(p["dir"], p["id"]): print(f"  ⚠ {p['id']}: {w}")
     for w in BUILD_WARNINGS: print(f"  ⚠ document: {w}")
     for line in STALE: print(f"  ❗ {line}")
 
@@ -1679,8 +1651,9 @@ def check():
              for _lane, ids, group in (("main", main_ids, g_main), ("appendix", appx_ids, g_app))
              if group for pid in ids if (group / pid).is_dir()]
     stale = stale_fragments(pages)
-    for line in stale: print(f"  ❗ {line}")
-    return missing + len(stale)
+    words = [f"{p['id']}: {w}" for p in pages for w in unadopted(p["dir"], p["id"])]
+    for line in stale + words: print(f"  ❗ {line}")
+    return missing + len(stale) + len(words)
 
 
 def main(argv=None):

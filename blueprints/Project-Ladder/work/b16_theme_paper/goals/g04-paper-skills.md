@@ -68,7 +68,8 @@ D8. The Story writes `studio/sNN-story-<telling>/` (its face, its drawings) and 
     audience review are `haipipe-paper-story/ref/narrative.md`. The Ideation writes `s01-ideation/` and
     Questions with `group: ideation`, through `haipipe-ideation-*`. Neither writes a Page any more.
 D9. The venue: `haipipe-paper-venue` writes `venues/<venue>/call.md` + `kit/`; `template.md` → `ref/call-template.md`.
-    `venue/` (the bank, its own repo) and the assemble skill's `profiles/` stay where they are (JL's call, Q02).
+    `venue/` (the bank, its own repo) stays where it is (JL's call, Q02). The assemble skill's `profiles/` became
+    `haipipe-paper-assemble/venues/<venue>/` (profile.toml, venue.py, .bst, test), JL 261122.
 D10. Every skill touched bumps its version (minor) and adds a CHANGELOG entry naming Q05.
 
 

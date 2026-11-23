@@ -1021,10 +1021,10 @@ def iter_plan_bullets(plan_text: str):
                 break
             i += 1
             continue
-        division = re.match(r"^## (C\d+)\s*·\s*(.*)$", line)
+        division = re.match(r"^## (C\d+)\b\s*(?:·\s*(.*))?$", line)   # `## C1` with no title is still C1, never C0
         if division:
             cn, pn, sn = int(division.group(1)[1:]), -1, 0
-            division_title = division.group(2).strip()
+            division_title = (division.group(2) or "").strip()
             paragraph_title = ""
             i += 1
             continue

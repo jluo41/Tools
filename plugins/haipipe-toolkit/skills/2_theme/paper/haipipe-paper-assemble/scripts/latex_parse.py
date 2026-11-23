@@ -237,7 +237,7 @@ def citation_text(match: re.Match[str]) -> str:
     if not present:
         return ""
     if author_date_style():
-        return "(" + "; ".join(author_date_label(k) for k in present) + ")"
+        return "(" + author_date_group(present) + ")"   # LaTeX's own labels (bbl_labels.py)
     if superscript_citations():   # AMA (JAMA): superscript numbers, ranges joined, no brackets
         return "\x0e" + number_ranges([CITATION_NUMBERS[k] for k in present]) + "\x0f"
     return "[" + ",".join(str(CITATION_NUMBERS[k]) for k in present) + "]"
@@ -252,7 +252,7 @@ def narrative_citation_text(match: re.Match[str]) -> str:
     keys = [k.strip() for k in match.group(1).split(",") if k.strip() in BIB]
     for key in keys:
         CITATION_NUMBERS.setdefault(key, len(CITATION_NUMBERS) + 1)
-    return "; ".join("{} ({})".format(*author_date_label(k).rsplit(", ", 1)) for k in keys)
+    return "; ".join("{} ({})".format(*cite_label(k, narrative=True)) for k in keys)
 
 
 def superscript_citations() -> bool:
@@ -485,6 +485,7 @@ def find_asset(reference: str) -> Path | None:
 
 
 _load_part("latex_table.py")   # TABULAR_BEGIN, parse_table_rows, parse_table_spans, count_header_rows, math_scripts_raised
+_load_part("bbl_labels.py")   # bbl_cite_labels, cite_label, author_date_group: the labels master.bbl printed
 
 
 def display_note(value: str) -> str:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """portal_fill.py · write a send's portal fill page, the shipped generator of the submission Job (JL 261103).
 
-    portal_fill.py <submission Job> [--run <run dir>] [--started-by "<words>"] [--fields F] [--values F] [--out F]
+    portal_fill.py <submission Job> [--run <run dir>] [--started-by "<words>"] [--fields F] [--values F] [--out F] [--docx F]
 
 Joins three things and writes <Board>/delivery/<submission Job>/portal-fill.html, one card per portal field with its
 value, a Copy button, where the value comes from and its state:
@@ -180,6 +180,18 @@ def checked(v: dict, text: str, now: str, b: dict) -> tuple[list, list]:
     return bad, []
 
 
+URL_ASK = re.compile(r"\[[^\]]*\burl\b[^\]]*\]|\b(add|provide|give|insert)\b[^.]{0,30}\burl\b", re.I)
+ALT_PLAN = re.compile(r"\b(third|fourth|3rd|4th)\s+choice\b|\bchoice\s*[34]\b|\balternative (transparency )?plan\b", re.I)
+
+
+def url_unasked(text: str, ask: str) -> list:
+    """A transparency answer that picks an alternative plan, yet asks for a repository URL: the form wants a URL
+    only for materials deposited now (MISQ: its second choice), so none is due at submission (Pp-AgreeableRx 261122)."""
+    if ALT_PLAN.search(text + " " + ask) and URL_ASK.search(text + " " + ask):
+        return ["An alternative plan takes no URL at submission; the materials are deposited at acceptance."]
+    return []
+
+
 def row(f: dict, v: dict, b: dict) -> dict:
     """One field: its value, where it comes from, and its state."""
     now, text, source, path, statement, unbuilt = _s(f.get("now")), _s(v.get("value")), "", None, "", False
@@ -187,12 +199,16 @@ def row(f: dict, v: dict, b: dict) -> dict:
         t = _s(v["from_tex"])
         tex = b["delivery"] / t / "latex" / f"{t}.tex"
         words = plain(tex.read_text(encoding="utf-8")) if tex.is_file() else ""
+        head = _s(b["facts"].get("title")).rstrip(".")
+        if head and words.startswith(head):     # an Abstract whose first line is the title (ScalingGlucose 261123):
+            words = words[len(head):].lstrip(". ")   # the portal's abstract box takes the abstract only
         source = f"{b['writing']}/{t} (built {dt.datetime.fromtimestamp(tex.stat().st_mtime):%Y-%m-%d %H:%M})" if tex.is_file() \
             else f"{b['writing']}/{t}: not built"
         unbuilt = not tex.is_file() and not text
         statement = words if text else ""
         text = text or words
     bad, unsure = checked(v, text, now, b)
+    bad += url_unasked(text, _s(v.get("ask")))
     if v.get("file"):
         path = Path(os.path.normpath(b["delivery"] / _s(v["file"])))     # the writing Job may not be built yet
         source = f"delivery/{b['writing']}/{_s(v['file'])}"
@@ -354,7 +370,7 @@ while [ "$D" != "/" ]; do
 done
 [ -n "$TK" ] || {{ echo "haipipe-toolkit not found above $RUN_DIR" >&2; exit 2; }}
 PY="${{PY:-$(command -v python3)}}"
-exec "$PY" "$TK/skills/2_theme/paper/haipipe-paper/scripts/portal_fill.py" "$JOB_DIR" --run "$RUN_DIR" --started-by "${{1:-$(whoami)}}"
+exec "$PY" "$TK/skills/2_theme/paper/haipipe-paper/scripts/portal_fill.py" "$JOB_DIR" --run "$RUN_DIR" --started-by "${{1:-$(whoami)}}" --docx "$JOB_DIR/../delivery/$(basename "$JOB_DIR")/portal-fill.docx"
 """
 
 
@@ -563,6 +579,43 @@ def scaffold(board: Path, writing: str, mmdd: str, desk: str, venue: str = "") -
     return job, files
 
 
+def word(s: dict, out: Path) -> Path:
+    """The same cards as a Word document (JL 261123: the portal as round file 5 beside the manuscript, so co-authors
+    edit and comment on it in Word like the other files): one heading per portal step, one table row per field with
+    its label, its state, the value to paste or the file to upload, and what a person must decide."""
+    from docx import Document
+    from docx.shared import Pt
+    doc = Document()
+    doc.styles["Normal"].font.name, doc.styles["Normal"].font.size = "Times New Roman", Pt(10.5)
+    doc.add_heading(f"Submission portal values · {venue_name(s['job'])}", level=1)
+    doc.add_paragraph(summary(s))
+    step = None
+    table = None
+    for r in s["rows"]:
+        if r["step"] != step:
+            step = r["step"]
+            doc.add_heading(str(step), level=2)
+            table = doc.add_table(rows=1, cols=3)
+            table.style = "Table Grid"
+            for c, h in zip(table.rows[0].cells, ("Field", "State", "Value")):
+                c.text = h
+        cells = table.add_row().cells
+        cells[0].text = r["f"]["label"] + (" *" if r["f"].get("required") else "")
+        e = STATES.get(r["state"], ("", r["state"]))
+        cells[1].text = f"{e[0]} {e[1]}"
+        value = r["path"].name if r["path"] is not None else (r["text"] or "")
+        if r["ask"]:
+            value = (value + "\n" if value else "") + "🙋 " + r["ask"]
+        if r["v"].get("note"):
+            value += "\n(" + _s(r["v"]["note"]) + ")"
+        cells[2].text = value
+    doc.add_paragraph("* required by the portal. Nothing here is typed into the portal by an agent; a person pastes, "
+                      "ticks each declaration and presses Submit.")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    doc.save(out)
+    return out
+
+
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("job", type=Path, help="the submission Job folder, jNN_submission_v<MMDD>_<desk>/")
@@ -571,6 +624,7 @@ def main(argv=None) -> None:
     ap.add_argument("--fields", type=Path, help="read this portal-fields.yaml, not the newest walk's")
     ap.add_argument("--values", type=Path, help="read this portal-values.yaml, not the Job's")
     ap.add_argument("--out", type=Path, help="write the page here, not to delivery/<submission Job>/portal-fill.html")
+    ap.add_argument("--docx", type=Path, help="also write the cards as a Word document here (a round's portal file)")
     a = ap.parse_args(argv)
     started = dt.datetime.now().astimezone().isoformat(timespec="seconds")
     job = a.job.resolve()
@@ -578,6 +632,8 @@ def main(argv=None) -> None:
     out = a.out or job.parent / "delivery" / job.name / "portal-fill.html"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(page(s, out.parent.resolve()), encoding="utf-8")
+    if a.docx:
+        word(s, a.docx.resolve())
     if a.run:
         receipt(a.run.resolve(), s, started, a.started_by)
     print(headline(s))

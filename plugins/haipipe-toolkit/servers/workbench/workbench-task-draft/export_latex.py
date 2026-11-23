@@ -142,7 +142,12 @@ class ExportLatexMixin:
             for _position, short, u in sorted(ranked, reverse=True):
                 rel = os.path.relpath(u["dir"], out_dir).replace(os.sep, "/")
                 lab = "\\label{%s}\n" % u["label"] if u["label"] else ""
-                if (u["kind"] == "table"
+                if u["kind"] == "longtable":
+                    # a table longer than a page (JL 261121, the ScalingGlucose Supplementary Information): a
+                    # longtable cannot sit inside a table float, so its float.tex (caption, label, rows) prints
+                    # as it is, after the paragraph that first cites it
+                    block = "%% display unit: %s\n\\input{%s/float}" % (u["dir"].name, rel)
+                elif (u["kind"] == "table"
                         and (u["dir"] / "assets" / "table-body.tex").is_file()):
                     # Evidence units cite a precise point in the prose.  A
                     # regular top float can leap to the beginning of a later

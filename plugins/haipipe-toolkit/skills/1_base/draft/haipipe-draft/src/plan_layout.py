@@ -30,7 +30,8 @@ SECTION = re.compile(r"^## (\d+) · (Structure|Scratch|Draft)\b")
 SECTIONED = re.compile(r"(?m)^## \d+ · Structure\b")
 PARAGRAPH = re.compile(r"^### (C\d+\.P\d+)\b")
 DIVISION_HEAD = re.compile(r"^## (C\d+)\b\s*(?:·\s*(.*))?$")
-DIVISION_LINE = re.compile(r"^- (C\d+) · (.+)$")
+# a part line, `- C1 · title`; a bare `- C1`, `- C1 ·` or `- **C1**` is still part C1, with no title (AgreeableJama 261122)
+DIVISION_LINE = re.compile(r"^- \*{0,2}(C\d+)\*{0,2}(?:\s*·\s*(.*?))?\s*$")
 BULLET = re.compile(
     r"^(?P<prefix>- (?:\[[ xX]\]\s*)?(?:B|S)(?P<number>\d+[a-z]*)\s*·\s*)"
     r"(?P<tag>[Ss]\d+[a-z]*(?:\s*(?:-|–|to)\s*[Ss]\d+[a-z]*)?\s*·\s*)?(?P<text>.*)$"
@@ -106,7 +107,7 @@ def _title(heading: str) -> str:
 
 
 def division_titles(intro: list[str]) -> dict[str, str]:
-    return {m.group(1): m.group(2).strip() for line in intro if (m := DIVISION_LINE.match(line))}
+    return {m.group(1): (m.group(2) or "").strip() for line in intro if (m := DIVISION_LINE.match(line))}
 
 
 def to_canonical(text: str) -> str:
@@ -486,7 +487,7 @@ def write_scratch(text: str, target: str, notes: str, *, run: str, scope: str,
 # `- C<n>.P<m> · title`, and each entry's `→` lines. The workbench Structure
 # card shows the entries and edits them as text.
 
-OVERVIEW_ENTRY = re.compile(r"^- (C\d+(?:\.P\d+)?)\b")
+OVERVIEW_ENTRY = re.compile(r"^- \*{0,2}(C\d+(?:\.P\d+)?)\b")
 
 
 def _overview_span(body: list[str]):

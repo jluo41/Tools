@@ -44,3 +44,56 @@ The paper's own Word build (haipipe-paper-assemble) must print a table as its La
 | Date | Words | From | What changed |
 | --- | --- | --- | --- |
 | 11-18 | "how do you think the display of the word? it think it should be better?" (ED Table 5: data rows bold, "A N-α", panel title centred and plain, italic names upright) | JL via ScalingGlucose-Board | header only when 3 or fewer rows above the first `\midrule`; cell exponents raised; `\textbf`, `\textit` and `{l}` spans kept; `latex_table.py` and `docx_table.py` split out; `tests/test_table_cells.py` |
+
+## 🔍 Topic: Word round ▸ is the co-authors' Word the same as the build
+
+A Word file comes back from the co-authors; is it the same paper as the build, sentence by sentence, and are its
+reference numbers still in the order first cited? Rule and command: `haipipe-paper-assemble/ref/word-lane.md`
+§ Is the co-authors' Word file the same as the build (`scripts/word_compare.py`).
+
+| Date | Words | From | What changed |
+| --- | --- | --- | --- |
+| 11-22 | "is the co-authors' Word file the same as the build?" asked by JL 4 times in one session; `word_round.py pull` reports comments and versions, not sentence equality, and nothing compared a .docx with the LaTeX PDF (Report topic 2) | AgreeableJama-Board Report | `scripts/word_compare.py` adopted from the peer's word_vs_word.py, word_vs_pdf.py, pdf_vs_word.py; equations read, NFKC on both sides, superscripts found by pieces; `tests/test_word_compare.py` (7) |
+| 11-22 | the co-authors' Round 2 file numbers one reference 16 though it is first cited after 17 and 18; AMA requires order of first citation (Report topic 4) | AgreeableJama-Board Report | `word_compare.py --citations`; `word_round.py pull` prints it on every file that comes back; on Round 2 it prints "16 is first cited after 17, 18" |
+| 11-22 | "never cited in the main text ...: 23" for both files, though Methods cites 23 right after "(eAppendix 4 in Supplement 1)"; on the supplement 30 numbers "never cited" and 3 out of order | AgreeableJama-Board Report | cause: the R² filter read "1)" as a one-letter base; now a power only touches a one-letter word; the gap line says "not found ... by this tool"; a supplement is not checked for order; `tests/test_word_compare.py` (9) |
+
+State: fixed (both). Open: `--reverse` stays rough (pdftotext glues captions and cells to their neighbours).
+
+## 🗂 Topic: Word round ▸ one folder layout per round
+
+A co-author round is one folder, the same shape every round: the working Word files at the top, `previous/`,
+`track/`, `clean/`, `submission/`, each with one `last-update-YYYY-MM-DD HH.MM.txt` marker. Rule and steps:
+`haipipe-delivery/ref/round-folder.md` (`scripts/word_round_folder.py`).
+
+| Date | Words | From | What changed |
+| --- | --- | --- | --- |
+| 11-22 | rounds had loose, inconsistent files (Round1 "-draft.docx", Round2 "v4-tracked", Round3-v1112 holding v1114, Round4 three same-named files at top); JL designed the layout step by step, rejecting a changes/ log folder ("useless"), a separate diff/ folder and the name final/ | Pp-AgreeableRx-Discrention Report (topic 1) | `open-round` (last round's files into previous/, Track Changes on at the top), `submit` (portal uploads numbered by slot, then frozen), `round-status`; markers in every subfolder; `tests/test_word_round_folder.py` |
+| 11-22 | "JL agreed the layout below is the one to keep; please confirm the ref says it exactly" | Pp-AgreeableRx-Discrention Report | ref/round-folder.md tree rewritten to the agreed layout: track/ diff PDFs against previous/, clean/ rebuilt each settle, submission/ slots 1 to 3 (later perhaps 4 latex.zip) |
+
+State: fixed. Checked on scratch copies of the OneDrive Round3-v1112 and Round4-v1121 (Round5-v1123 opened,
+submitted, a second submit refused). Open: the portal document itself (the peer's Block-local `portal_doc.py`)
+is not lifted into a skill yet.
+
+## 🧹 Topic: Word round ▸ settle a round
+
+| Date | Words | From | What changed |
+| --- | --- | --- | --- |
+| 11-22 | "this is what we want to have": refuse while open in Word, copy to track/, list every change with its author (Track Changes off too), sync each to its source, rebuild clean/, check word for word | Pp-AgreeableRx-Discrention Report (topic 2) | `settle <N\|all>` in that order; untracked edits found by words against the newest track/ copy; settle writes no source itself, it lists where each change goes |
+| 11-22 | "when I say settle, you ask me how to deal with the changes in the working file" | Pp-AgreeableRx-Discrention, addendum | with no `--working`, settle asks and stops; `keep` (next settle starts from the track/ copy), `accept` (clean Word, refused while a marked insertion is not in the drafts), `each` (`--pick 1,3-5`, `scripts/word_marks.py`) |
+| 11-22 | "for the clean and submission, they must be updated" | Pp-AgreeableRx-Discrention | after the rebuild, clean/ is refreshed for every file whose build changed and `--config` refreshes submission/; submission/ follows the newest build until Submit, and the new `submitted` freezes it; test `test_settle_refreshes_every_rebuilt_clean_file_and_submission` |
+| 11-22 | working file 3 kept old portal values after a portal rebuild; the hand replacement then showed as four "untracked [?] say who made it" changes; a portal-only change took two reruns, hand copies and hand markers (Report 22:55, topics 1 and 2) | Pp-AgreeableRx-Discrention Report | new verb `refresh <round> N --clean N=… --config …`; settle's baseline is `track/.placed-<n>.docx`, the clean Word last placed; markers only by the tool; on scratch Round4-v1121 the 5 untracked lines became "no changes since then" |
+
+State: fixed. Checked on the scratch Round5-v1123: a sentence typed with Track Changes off was listed as
+untracked, keep left the file, and the next settle listed nothing twice. Open: writing the revise cards into
+each source is still the session's step (settle prints the list and where each change goes).
+
+## ✅ Topic: Word round ▸ the layout is checked by code
+
+| Date | Words | From | What changed |
+| --- | --- | --- | --- |
+| 11-22 | "why this doesn't follow the structure we want? It is so weird": push wrote a flat Round3-v1122 (no numbers, a PDF at the top, no subfolders) | JL via Pp-AgreeableRx-Discrention | `push` refuses any target in a RoundN-vMMDD/; `round-status` "❗ old layout"; SKILL.md "A round" leads with the round verbs |
+| 11-22 | "should we make the code to do this check? should we have the check.py in the skill?" | JL via Pp-AgreeableRx-Discrention | `scripts/check_round.py` (`word_round.py check`, `--all`): six rules, exit code = ❗ count; every round verb ends with it |
+| 11-22 | "I think you should have the folder like the submission, or track, or clean, or previous, you didn't find it?"; "why it is not followed? should we have the code to do this check?" (GlucoseScalingLaw/v1118 flat; `publish()` copied anywhere; open-round could not make a first round) | JL via ScalingGlucose-Board-v2 | `adopt-round` (`round_adopt.py`): a flat folder moved into RoundN-vMMDD, nothing deleted; `[publish]` copies only into a round's `clean/` (`delivery_publish.py`) |
+| 11-22 | "With version": one name form `N-<Name>-vMMDD-<kind>.docx` | JL via Pp-AgreeableRx-Discrention | regex unchanged; check_round prints the rename for any other name |
+
+State: fixed. Read-only on the live rounds: MISQ Round4-v1121 all ✅; AgreeableJama Round2-v1120 and LLMRec Round3-v1122 ❗ names only (rename given); LLMRec Round1, Round2 ❗ flat. Guards: `tests/test_word_round_folder.py` (20), `haipipe-paper-assemble/tests/test_delivery_publish.py`. Open: no paper_check row "shared folder in round shape" yet; the check runs from the round verbs and by hand.

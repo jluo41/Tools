@@ -2,7 +2,7 @@
 name: haipipe-paper
 description: "The router for the Paper family (manuscript and grant Boards): a paper Board, one version Job per send, one Task per Section. Use for paper setup, updating an older paper folder or the submission portal. Trigger: paper, paper Board, grant proposal, submission portal, writing lab, /haipipe-paper."
 metadata:
-  version: "1.40.0"
+  version: "1.40.1"
   last_updated: "2026-11-15"
   summary: "Paper owns the journey and composition; the shared Page owns each Paper Page's lifecycle and release."
 ---

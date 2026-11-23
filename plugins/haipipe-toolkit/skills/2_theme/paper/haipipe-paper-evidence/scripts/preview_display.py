@@ -47,7 +47,10 @@ def paper_master(unit: Path) -> Path | None:
     if own and (board / "delivery" / own / "latex" / "master.tex").is_file():
         return board / "delivery" / own / "latex" / "master.tex"
     built = sorted((board / "delivery").glob("j*_writing_*/latex/master.tex"), key=lambda m: m.parts[-3])
-    return built[-1] if built else None
+    # the version's own build, not a variant of it (_springer, _si: another template or the supplement alone,
+    # whose head may need a class file the preview cannot find; ScalingGlucose 261121)
+    plain = [m for m in built if re.fullmatch(r"j\d+_writing_v\d+_[a-z0-9-]+", m.parts[-3])]
+    return (plain or built)[-1] if built else None
 
 
 def earlier_versions(unit: Path) -> list[dict]:

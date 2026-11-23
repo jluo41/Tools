@@ -49,6 +49,9 @@ import sys
 from datetime import date
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from version_face import NARRATIVE_HEAD, narrative_row, order_add  # noqa: E402
+
 _PAGE_ENGINE = next(p for p in Path(__file__).resolve().parents if p.name == "skills") / "1_base" / "draft" / "haipipe-draft"
 sys.path.insert(0, str(_PAGE_ENGINE))
 from src.common import delivery_dir
@@ -229,25 +232,6 @@ def spaces(run, version):
             run.create[f"{version}/{d}/README.md"] = readme(d, "version")
 
 
-# a version's per-Section narrative (JL 261109: "not just the claims ... the narratives, the arc"): the workbench's
-# Story by Section reads it, haipipe-paper-story writes it; a new Section adds its row with placeholders
-NARRATIVE_HEAD = ("| Section | reader question | entry | ordered moves | must refuse | displays | exit |\n"
-                  "|---|---|---|---|---|---|---|\n")
-
-
-def narrative_row(face_text: str, stem: str) -> str:
-    """The version face with a placeholder row for `stem` in its ## Narrative table, when the table is there and has none."""
-    m = re.search(r"(?ms)^## Narrative[ \t]*\n(.*?)(?=^## |\Z)", face_text)
-    if m is None or re.search(rf"(?m)^\|\s*{re.escape(stem)}\s*\|", m.group(1)):
-        return face_text
-    rows = list(re.finditer(r"(?m)^\|.*\|[ \t]*$", m.group(1)))
-    if not rows or not re.match(r"\|\s*Section\s*\|", rows[0].group(0)):
-        return face_text
-    at = m.start(1) + rows[-1].end()
-    row = f"\n| {stem} | <what the reader asks here> | <what they hold coming in> | <a → b → c> | <what it must not say> | <displays> | <what they leave with> |"
-    return face_text[:at] + row + face_text[at:]
-
-
 def version(run, desk, mmdd, venue):
     b = run.board
     if not re.fullmatch(r"\d{4}", mmdd) or not re.fullmatch(r"[a-z0-9-]+", desk):
@@ -255,6 +239,8 @@ def version(run, desk, mmdd, venue):
     used = [int(VERSION.match(p.name).group(1)) for p in b.iterdir() if p.is_dir() and VERSION.match(p.name)]
     n = max([WRITING_FROM - 1] + [u for u in used if u >= WRITING_FROM]) + 1
     to = f"j{n:02d}_writing_v{mmdd}_{desk}"
+    if any(u >= WRITING_FROM for u in used):   # LLMRecJamaAI 261122: j13 started blank, its drafts and bibex/ copied by hand, three .bib files missed
+        print(f"note: {to} starts empty; a version from an earlier one is `next --from <version> [--desk {desk}]`")
     run.create[f"{to}/{to}.md"] = (
         f"# {to} · version {n - WRITING_FROM + 1} of the paper\n\nuse-case: Manuscript drafting\nsend: {to}\ndesk: {desk}\n"
         f"venue: {venue or '<venue>'}\nstate: drafting\ntells: studio/sNN-story-<telling>\nfrom: none (the first send)\n"
@@ -431,6 +417,7 @@ def task(run, ver, stem):
             body = tasks.group(1).rstrip("\n")
             vt = vt[:tasks.start(1)] + (body + "\n" if body.strip() else "\n") + f"{n}. {line}\n\n" + vt[tasks.end(1):]
         vt = narrative_row(vt, stem)                # its row in ## Narrative, for haipipe-paper-story to fill
+        vt = order_add(vt, stem, {0: "main", 1: "main", 2: "appendix"}.get(band, ""))   # and where the build prints it
         run.set(vface, vt)
     return f"{ver}/{stem} ({part})"
 

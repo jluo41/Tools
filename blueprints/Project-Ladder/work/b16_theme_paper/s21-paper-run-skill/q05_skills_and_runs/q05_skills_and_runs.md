@@ -49,8 +49,8 @@ builders, the paper and Page `run-cards.md`, the paper workbench (`paper_theme.p
 
 - The Board's and the version's Run names are real now (their cards' patterns); a Board or version Run is a
   `haipipe-run` folder, a Section's stays a Page engine ticket file, so the two shapes differ by level.
-- Two calls stay with JL: whether `venue/` (its own repo, 821 MB) moves out of `skills/`, and whether the
-  assemble skill's `profiles/` move into `venues/<venue>/kit/` (Q02).
+- One call stays with JL: whether `venue/` (its own repo, 821 MB) moves out of `skills/` (Q02). The other is
+  settled (JL 261122): the assemble skill's `profiles/` moved into `haipipe-paper-assemble/venues/<venue>/`.
 - The old paper-edit family installed at user level is outside this plan.
 
 ### 4 · Done (2026-10-07, goal g04)

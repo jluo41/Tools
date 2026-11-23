@@ -244,3 +244,33 @@ def test_part_headings_print_only_when_the_face_asks():
     first = next(i for i, l in enumerate(on) if l.startswith("#### C1.P1"))
     assert on.index("### §4.1 Data") < first < on.index("### §4.2 Fits")
     assert not any(l.startswith("### §4.") for l in off)
+
+
+def test_an_untagged_title_and_keywords_are_tagged_in_place_by_their_words(tmp_path):
+    """AgreeableRx t00_abstract 261121: adopt refused on an untagged `### Title` and `### Keywords`, and relayout
+    replaced those headings (the paper build reads `### Title`) and dropped the Value lines. Adopt now finds each by
+    its words, tags it in place, and the sentence edit elsewhere still lands."""
+    page = PAGE.replace("## Content\n", "## Content\n### Title\n\nThe title.\n\n").replace(
+        "## Aims", "### Keywords\n\nalpha, beta\n\n## Aims")
+    structure = ("### C1.P0 · Title · S0\n- B1 · S0 · [Title] the title\n\n" + STRUCTURE
+                 + "\n### C1.P9 · Keywords · S9\n- B1 · S9 · [Terms] the keywords\n")
+    sentences = ("### C1.P0 · Title · S0\n- B1 · S0 · The title.\n\n" + SENTENCES.replace("Beta two.", "Beta two, now.")
+                 + "\n### C1.P9 · Keywords · S9\n- B1 · S9 · alpha, beta\n")
+    folder = make(tmp_path, page=page, structure=structure, sentences=sentences)
+    report = run(folder)
+    assert not report["refused"] and report["written"]
+    text = (folder / "Q1-demo.md").read_text(encoding="utf-8")
+    assert "### Title\n\nThe title. <!-- realizes: C1.P0.B1 -->" in text
+    assert "### Keywords\n\nalpha, beta <!-- realizes: C1.P9.B1 -->" in text
+    assert "Beta two, now. <!-- realizes: C1.P1.B2 -->" in text and "> Value: E01-VALUE-a" in text
+
+
+def test_relayout_carries_each_sentences_value_lines(tmp_path):
+    """A relayout keeps the `>` lines under the same sentence; before, all of them were dropped (261121)."""
+    structure = STRUCTURE + "\n### C1.P3 · Third · S5\n- B1 · S5 · [Claim] state zeta\n"
+    sentences = SENTENCES + "\n### C1.P3 · Third · S5\n- B1 · S5 · Zeta six.\n"
+    folder = make(tmp_path, structure=structure, sentences=sentences)
+    report = run(folder, relayout=True)
+    text = (folder / "Q1-demo.md").read_text(encoding="utf-8")
+    assert "Alpha one. <!-- realizes: C1.P1.B1 -->\n> Value: E01-VALUE-a" in text
+    assert "> Citation: smith2020" in text and not report["notes"]

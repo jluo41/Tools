@@ -50,3 +50,42 @@ better?"). The parts: `scripts/latex_table.py` reads rows and cells, `scripts/do
 - **Panel titles**: `\multicolumn{n}{l}{...}` stays left-aligned (the mark `CELL_LEFT`); a `{c}` span is centered.
 
 Tests: `tests/test_table_cells.py`.
+
+## 🔍 Is the co-authors' Word file the same as the build? (261122)
+
+AgreeableJama-Board asked this four times in one session and nothing answered it: `word_round.py pull` reports
+comments and versions, not sentence equality. One command compares, by section:
+
+    python scripts/word_compare.py <theirs.docx> <build.docx>           sentences and table cells: same, changed, only in one
+    python scripts/word_compare.py <theirs.docx> <build.pdf> [--reverse] every Word sentence and cell looked up in the PDF
+    python scripts/word_compare.py <file.docx> --citations              only the citation-order check
+    ... --out report.md
+
+1. **When**: after every `pull`, and as the acceptance check of any change to a builder (the same text before and after).
+2. **Accepted view**: deleted text dropped, inserted text kept, equations (OMML) read as their text.
+3. **Folding**: NFKC on both sides (a PDF's U+037E is a semicolon), curly quotes and dashes plain; for the PDF, line breaks, hyphenation and punctuation folded away.
+4. **Three tries**: as written; digits ignored ("digits differ", usually a citation number); its pieces in order ("a mark placed elsewhere", a superscript the PDF prints apart).
+5. **Citation order**: numbered citations (superscript runs or `[n]`) from the first heading to References must run in the order first cited (AMA). A reference cited late is named with the higher numbers cited before it ("16 is first cited after 17, 18"); numbers it did not find cited in the text are listed as "not found ... by this tool", never as "never cited". Author affiliation marks and powers (R², a superscript touching a one-letter word) are not citations; a number after punctuation, as in "(eAppendix 4 in Supplement 1)²³", is. A supplement (its name or title lines say "supplement") reuses the main list's numbers, so its order is not checked and the report says so. `word_round.py pull` prints this check on every file that comes back.
+
+Limits: `--reverse` is rough, since pdftotext glues captions and table cells to their neighbours; a sentence the PDF
+splits across a float can come back "not found". The report reads files only and writes nothing but `--out`.
+
+## 🔖 Author-date citations read as the PDF prints them (261122)
+
+The Word copy takes each author-date label from `master.bbl`, the file BibTeX wrote with the venue's style
+(`scripts/bbl_labels.py`), so both copies cite the same way: "(Lu & Rui, 2018)" in parentheses, "Lu and Rui (2018)"
+in a sentence, and one name for one author's works with LaTeX's year letters, "(Centers for Medicare & Medicaid
+Services, 2026a, 2026b)". apacite and natbib labels are read; with no `.bbl` (a Word-only build) the label falls back
+to the `.bib` reading. Pp-AgreeableRx 261122: the Word file printed "Lu and Rui" and the same author twice with no
+year letters.
+
+A display placed after the one before it never crosses into the next Section or Appendix: it stops in front of that
+heading (`scripts/docx_held.py`, `place_held`).
+
+## 🖥 A build never uses the person's open Word (261122)
+
+A build prints a `.docx` to PDF and measures page tops in Microsoft Word only when Word is not running or holds no
+document of the person's (`word_lock.word_in_use`); otherwise displays follow their citing paragraphs and the
+preview comes from the HTML renderer, and the build says so. `HAIPIPE_WORD_PREVIEW=word` uses Word anyway.
+Pp-AgreeableRx 261122: every build opened, printed and closed windows in a Word open for 36 hours with shared OneDrive
+files, stole focus, and left a preview copy open.

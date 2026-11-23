@@ -120,6 +120,9 @@ become paragraph-level requirements.
 - [ ] Complete funding, conflicts of interest, author contributions, data
       sharing, code/materials sharing, ethics/IRB, consent, and registration
       statements as applicable.
+- [ ] A data or materials repository URL blocks Submit only when the venue's form asks for it under the option
+      chosen (MISQ: only Choice 2; Choices 3 and 4 take a plan, deposit at acceptance:
+      `venue/bank/1-QBv-desks/QBv1-misq/transparency.md`).
 - [ ] Disclose generative AI or automated tools used in manuscript preparation
       according to the venue's current policy; authors remain responsible for
       all content and citations.
