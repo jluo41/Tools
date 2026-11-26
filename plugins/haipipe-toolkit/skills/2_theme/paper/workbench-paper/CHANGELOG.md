@@ -4,6 +4,10 @@
   (Structure and the draft Task's Plan view, `draft_steps._plan_map`); one with a `reason:` line shows muted; a
   Section's tab in Structure reads "<N> paragraphs · <k> off".
 
+## 0.64.0 · 2026-11-21
+
+- Delivery items name their artifact (CONSTITUTION A01, JL 261121: "call it Paper-Latex, and Paper-Latex-Diff"): Paper-Latex, Paper-Latex-Diff, Paper-Word, Paper-Word-Tracked, Supplement-Latex, Supplement-Word, Combined-Latex, Cover-Letter, Portal; the list shows the full name. Test: `tests/test_delivery_item_names.py`.
+
 ## 0.62.0 · 2026-11-11 · Work retired; the Structure view redone
 
 - JL 261111: "the Work is no longer used". Work is off the rail at Block, Job and Task; old Work links open the same

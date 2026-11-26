@@ -75,7 +75,7 @@ def _tracked_word(vdir: Path) -> tuple:
     line = f"{short[1]} + {short[2]} changes by {short[3]}" if short else line             # changes by X -> …" → "v4 + 2 changes by X"
     web = head.parent / "onedrive.txt" if head else None             # the shared copy in Word online (JL 261111)
     web = web.read_text(encoding="utf-8").strip() if web and web.is_file() else ""
-    return ("The paper · Word, tracked", line or "the co-authors' Word file, our changes tracked", pdf, doc, web)
+    return ("Paper-Word-Tracked", line or "the co-authors' Word file, our changes tracked", pdf, doc, web)
 
 
 def _latex_diff(vdir: Path) -> tuple:
@@ -87,7 +87,7 @@ def _latex_diff(vdir: Path) -> tuple:
     heads = [h for h in vdir.parent.parent.glob("j[0-9]*_*review*/t[0-9]*_*latex_diff*/runs/*/result/headline.txt") if h.is_file()]
     head = max(heads, key=lambda x: x.stat().st_mtime, default=None)
     line = head.read_text(encoding="utf-8", errors="ignore").strip().splitlines()[0] if head else ""
-    return ("The paper · LaTeX diff", line or "what changed since the last round, in the venue's LaTeX", pdf, None)
+    return ("Paper-Latex-Diff", line or "what changed since the last round, in the venue's LaTeX", pdf, None)
 
 
 def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
@@ -114,21 +114,21 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
     running_now = build_running(vdir)
     word_how = lambda key, pdf: _tab_flag("word", man, pdf, running_now, by.get(key) == "stand-in")
     # JL 261102: "we should say the results here as well": every document the build makes, the letter too
-    pieces = [("The paper · LaTeX", _tab_flag("latex", man, f(out.get("pdf")), running_now), f(out.get("pdf")), None),
-              ("The paper · Word", word_how("main_docx", f(out.get("docx_pdf"))), f(out.get("docx_pdf")), f(out.get("docx"))),
+    pieces = [("Paper-Latex", _tab_flag("latex", man, f(out.get("pdf")), running_now), f(out.get("pdf")), None),
+              ("Paper-Word", word_how("main_docx", f(out.get("docx_pdf"))), f(out.get("docx_pdf")), f(out.get("docx"))),
               _latex_diff(vdir),
               _tracked_word(vdir),
-              ("The supplement · LaTeX", _tab_flag("latex", man, f(out.get("supplement")), running_now), f(out.get("supplement")), None),
-              ("The supplement · Word", word_how("supplement_docx", sup_pdf), sup_pdf, sup_docx),
-              ("The combined copy", "paper and supplement in one PDF", f(out.get("combined")), None),
-              ("The cover letter", _tab_flag("letter", man, f(letter.get("pdf")), running_now), f(letter.get("pdf")), f(letter.get("docx")))]
+              ("Supplement-Latex", _tab_flag("latex", man, f(out.get("supplement")), running_now), f(out.get("supplement")), None),
+              ("Supplement-Word", word_how("supplement_docx", sup_pdf), sup_pdf, sup_docx),
+              ("Combined-Latex", "paper and supplement in one PDF", f(out.get("combined")), None),
+              ("Cover-Letter", _tab_flag("letter", man, f(letter.get("pdf")), running_now), f(letter.get("pdf")), f(letter.get("docx")))]
     # JL 261102: "add the new tab for the submission portal": the send's submission Job (jNN_submission_…, its face
     # `for: <this version>`) writes delivery/<that Job>/portal-fill.html, every portal field with its value to paste
     for sj in sorted(vdir.parent.parent.glob("j[0-9]*_submission_*")):
         face = sj / f"{sj.name}.md"
         if face.is_file() and re.search(rf"(?m)^for:\s*{re.escape(vdir.name)}\s*$", face.read_text(encoding="utf-8", errors="ignore")):
             fill = vdir.parent / sj.name / "portal-fill.html"
-            pieces.append(("The submission portal", _tab_flag("portal", man, None, running_now), fill if fill.is_file() else None, None))
+            pieces.append(("Portal", _tab_flag("portal", man, None, running_now), fill if fill.is_file() else None, None))
     pieces = [_or_adopted(vdir, p) if p[0].endswith("· Word") else p for p in pieces]
     shown = {p.name for row in pieces for p in row[2:4] if p}
     word = vdir / "word"
@@ -139,7 +139,7 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
     if not pieces:
         return ""
     # the named tabs by heading, then the rest (earlier rounds) in their own order; a tab missing from TAB_GROUPS
-    # ("The combined copy" was, 261120) no longer breaks the page
+    # ("Combined-Latex" was, 261120) no longer breaks the page
     pieces = sorted((p for p in pieces if p[0] in TAB_GROUPS), key=lambda p: TAB_GROUP_ORDER.index(TAB_GROUPS[p[0]][0])) + \
         [p for p in pieces if p[0] not in TAB_GROUPS]
     earlier = sum(1 for p in pieces if p[0] in TAB_GROUPS)   # the named tabs come first; the rest fold under Earlier
@@ -175,16 +175,16 @@ def _paper_files(vdir: Path, root: Path, eid: str = "pp") -> str:
 TAB_GROUP_ORDER = ["LaTeX", "Word", "Submission"]
 
 
-TAB_GROUPS = {
-    "The paper · LaTeX": ("LaTeX", "The paper"),
-    "The paper · LaTeX diff": ("LaTeX", "Changes since the last round"),
-    "The supplement · LaTeX": ("LaTeX", "The supplement"),
-    "The combined copy": ("LaTeX", "Paper and supplement"),
-    "The paper · Word": ("Word", "The paper"),
-    "The paper · Word, tracked": ("Word", "Tracked changes"),
-    "The supplement · Word": ("Word", "The supplement"),
-    "The cover letter": ("Submission", "The cover letter"),
-    "The submission portal": ("Submission", "The portal"),
+TAB_GROUPS = {   # JL 261121: "call it Paper-Latex, and Paper-Latex-Diff"; every item names its artifact (CONSTITUTION A01)
+    "Paper-Latex": ("LaTeX", "Paper-Latex"),
+    "Paper-Latex-Diff": ("LaTeX", "Paper-Latex-Diff"),
+    "Supplement-Latex": ("LaTeX", "Supplement-Latex"),
+    "Combined-Latex": ("LaTeX", "Combined-Latex"),
+    "Paper-Word": ("Word", "Paper-Word"),
+    "Paper-Word-Tracked": ("Word", "Paper-Word-Tracked"),
+    "Supplement-Word": ("Word", "Supplement-Word"),
+    "Cover-Letter": ("Submission", "Cover-Letter"),
+    "Portal": ("Submission", "Portal"),
 }
 
 

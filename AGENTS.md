@@ -2,7 +2,7 @@
 
 ## The two systems
 
-Read `PRINCIPLE.md` first: it is how every plugin here is designed (a File System, a UI System, and the map between them).
+Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness with a Work side and a Define side, each a Folder System and a UI System: the Define Folder is skills/, servers/ and blueprints/, the Define UI is a blueprint Block's workbench page).
 
 ## Layout and scope
 

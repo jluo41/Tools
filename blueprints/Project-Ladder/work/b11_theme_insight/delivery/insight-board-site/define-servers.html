@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Server folders · Insight Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar" id="bar"></header>
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages"></nav>
+  <main class="main" id="main" data-page="define-servers.html">
+    <h2>Server folders</h2>
+    <p class="intro">Part of the Define Folder: the page code is folders too. It lives in the plugin, never in a Block, and
+      reads the Block folders each time a page opens to draw the Work UI.</p>
+    <h3 id="pc-modules">The insight pages</h3>
+    <div class="scroll"><table class="map">
+      <thead><tr><th scope="col">Module in servers/workbench-insight/</th><th scope="col">What it draws</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">insightboard.py</td><td>the routes: a focus page per folder, and the run page at <code>/_board/insight-run</code></td></tr>
+        <tr><td class="mono">insight_plan_c.py</td><td>reads the Board, Job, Task and Run folders into what the views draw; draws nothing itself</td></tr>
+        <tr><td class="mono">insight_focus_board.py</td><td>the Board's views: Findings, Questions, Data, Advice, Jobs</td></tr>
+        <tr><td class="mono">insight_focus_job.py</td><td>the Job's views: Findings, Changes, Progress, MindMap</td></tr>
+        <tr><td class="mono">insight_focus_task.py · _task_report.py</td><td>the Task's views: Answer, Changes, Method, MindMap</td></tr>
+        <tr><td class="mono">insight_focus_book.py</td><td>the Question Book, a release, a question</td></tr>
+        <tr><td class="mono">insight_view_task.py</td><td>a hard Run's page: its report, its tables, its receipt</td></tr>
+        <tr><td class="mono">insight_view_board.py</td><td>a data version's columns table: shapes and counts, never a row</td></tr>
+      </tbody>
+    </table></div>
+    <h3 id="pc-buttons">The buttons</h3>
+    <p class="intro">Every button is one card in <code>haipipe-insight-workflow/ref/run-cards.md</code>: its label, level and
+      space, the Run it names, its skill, agent and signer, and the prompt it copies. <code>run_cards.py --check</code>
+      checks every card against the scaffold's Run types; <code>cards_table.py</code> writes them all into
+      <code>workbench-insight/ref/workbench-table.md</code>.</p>
+    <h3 id="pc-frame">The shared frame</h3>
+    <p class="intro">The page around the views is shared by every theme, in <code>servers/workbench/page/</code>: the focus
+      page, the Folder view (<code>frame_folders.py</code>), the Session view (<code>frame_sessions.py</code>) and the marks.
+      A theme fills its hooks; insight's element map is still to fill.</p>
+    <footer class="foot">Read from <span class="mono">PRINCIPLE.md</span>, <span class="mono">haipipe-insight/ref/</span>, <span class="mono">haipipe-chat/ref/chat-contract.md</span>, <span class="mono">servers/workbench/ref/three-views.md</span> and <span class="mono">servers/workbench-insight/</span>. Names in angle brackets are placeholders.</footer>
+  </main>
+  <aside class="outline" id="outline" aria-label="On this page"></aside>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

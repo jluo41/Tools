@@ -1,3 +1,7 @@
+## 0.23.1 · 2026-11-23 · INFORMS "and" kept in the Word citations
+
+- TestToLearn-Board 261123 (Paper-TestToLearn-MS2026, INFORMS head): after 0.23.0 the Word file printed "(Chen Chan, 2024)" and "Paley van de Ven" in 20 two-author citations where the PDF reads "Chen and Chan 2024". informs2014.bst writes the label as `Chen \protect\BIBand{} Chan(2024)` and latex_to_text dropped the unknown macro. `bbl_labels.py` (natbib branch) now reads `\BIBand{}` as "and". tests/test_bbl_labels.py (1 more, 4).
+
 ## 0.23.0 · 2026-11-22 · Word cites as the PDF, and leaves the person's Word alone
 
 - Pp-AgreeableRx Report 261122, topic 3a: the Word file printed "Lu and Rui" where the PDF has "Lu & Rui", and "(Centers for Medicare & Medicaid Services, 2026; ... 2026)" where it has "2026a, 2026b". New `scripts/bbl_labels.py` (loaded by latex_parse.py) reads each label from master.bbl (apacite and natbib); `citation_text` and `narrative_citation_text` use it, and one author's works share one name with sorted year letters. Run on a scratch copy of Paper-AgreeablePrescriptionDiscretion: the Word file now reads "(Lu & Rui, 2018)" and "(Centers for Medicare & Medicaid Services, 2026a, 2026b)", as the PDF.

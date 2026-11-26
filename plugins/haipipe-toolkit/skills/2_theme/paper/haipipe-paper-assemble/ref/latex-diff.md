@@ -24,7 +24,7 @@ writes --out and its .tex beside it; never edits a room
 
 Keep the room that was sent: commit `delivery/` at each send, or copy `latex/` into the round's folder, because the
 next build overwrites it. The diff PDF goes to `delivery/<writing Job>/latex-diff/<paper>-latexdiff.pdf`; the paper
-workbench shows it as the tab "The paper · LaTeX diff" beside the Word tabs. When the revision lives somewhere other
+workbench shows it as the item "Paper-Latex-Diff" under LaTeX, beside "Paper-Latex" (workbench-paper CONSTITUTION A01). When the revision lives somewhere other
 than the Section pages (a Word round not yet adopted), a review Task builds the new room itself and runs this script
 on it; the script does not care where the new room came from.
 

@@ -389,6 +389,23 @@ T30  a Board Job pins three versions           fixed
 - **Still owed**: the theme's hook, once the shared Session view exists; a guard that every soft Run's `writes:`
   names real paths (the join depends on it).
 
+- **Also from**: the user, 261121: "What I want to have is. File Systems for skill folder structure, and block folder
+  structure, and chat folder structure? (I am not sure whether the chat should go to the block folder structure as
+  well) and UI Systems how the file system is mapped to the UI system so we will have the things like the File System
+  Structure." Then: "File System and UI System, we are just working on here."
+- **Answer so far (261121)**: `PRINCIPLE.md` (pulled 2500309c7) settles the frame: a plugin is a Folder System and a
+  UI System and the map between them; a Block holds `jNN` Jobs, `sNN` Studio topics and `cNN` Chats side by side. A
+  kept chat is `cNN_<slug>/` at its Block, kept as QAs (haipipe-chat, `ref/chat-contract.md`); the transcript stays in
+  `~/.claude/projects/<dir>/`; the Session view reads chats and passes alike (`servers/workbench/ref/three-views.md`).
+  The map page, `blueprints/Project-Ladder/work/b11_theme_insight/delivery/insight-board-site/` (a private
+  Artifact), follows it: views Overview · Folder System · UI System · The Map, one page per part. My first answer (a
+  digest only as a Run's `pass.md`) is replaced by the `cNN` contract. Found while mapping: no server code draws a
+  DataPrep Block, a prep version or a step.
+- **Still owed (261121)**, insight's part of three-views § 6 and § 8: the element map generated from
+  `insight_focus_*_views`; a test that every insight folder kind has a page part; 🧵 beside insight content items; a
+  check that every soft Run's `writes:` names real paths; pages for the DataPrep levels; the Board's Jobs view lists a
+  Job of three versions (T30).
+
 ## T22 · A new prep version copies the Runs' notebooks · fixed
 
 - **From**: Report, Insight-Use-Case, 261119, topic J: `prep --steps` made prep-v2 in the right order but copied

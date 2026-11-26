@@ -61,8 +61,9 @@ def bbl_cite_labels() -> dict[str, tuple[str, str, str]]:
         label = text[start:close]
         key, _ = _group(text, close)
         nm = re.match(r"\s*\{?(.*?)\}?\s*\(([^()]*)\)", label, re.S)
-        if nm:
-            who = re.sub(r"\s+", " ", latex_to_text(nm.group(1))).strip()
+        if nm:   # INFORMS (informs2014.bst) writes "and" as \protect\BIBand{}, which latex_to_text would drop
+            raw = re.sub(r"(?:\\protect\s*)?\\BIBand\s*\{\}", "and", nm.group(1))
+            who = re.sub(r"\s+", " ", latex_to_text(raw)).strip()
             _LABELS[key.replace("%", "").strip()] = (who, who, nm.group(2).strip())
     return _LABELS
 

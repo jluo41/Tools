@@ -1,0 +1,83 @@
+<title>Insight Systems Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+
+<header class="bar" id="bar"></header>
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages"></nav>
+  <main class="main" id="main" data-page="index.html">
+    <p class="eyebrow">how a plugin is designed</p>
+    <h1>A plugin is a harness for an agent's work</h1>
+    <p class="lede">It has two sides, and each side has a Folder System and a UI System. The Work side is what the agent
+      makes and a person reads. The Define side is the plugin itself: its skills, servers and blueprints, seen on the
+      workbench page of its blueprint Block.</p>
+    <h3 id="o-figure">Two sides, four parts</h3>
+    <div class="scroll">
+      <svg class="hero-fig" viewBox="0 0 960 366" role="img" aria-labelledby="hero-t">
+        <title id="hero-t">Work Folder and Work UI on top; Define Folder and Define UI below. Skills write the work folders, the page code draws the work pages, and the blueprint page shows the UI's definition.</title>
+        <text x="275" y="20" class="cap" text-anchor="middle">FOLDER SYSTEM</text>
+        <text x="765" y="20" class="cap" text-anchor="middle">UI SYSTEM</text>
+        <text x="16" y="112" class="cap">WORK</text>
+        <text x="16" y="294" class="cap">DEFINE</text>
+        <g class="tree-col b"><rect x="110" y="34" width="330" height="150" rx="10"/>
+          <text x="128" y="60" class="k">Block folders</text>
+          <rect x="128" y="72" width="294" height="30" rx="6" class="chip-j"/><text x="140" y="92" class="v sm">jNN  Job · the work</text>
+          <rect x="128" y="108" width="294" height="30" rx="6" class="chip-s"/><text x="140" y="128" class="v sm">sNN  Studio · a topic, drawn</text>
+          <rect x="128" y="144" width="294" height="30" rx="6" class="chip-c"/><text x="140" y="164" class="v sm">cNN  Chat · one session, as QAs</text></g>
+        <g class="tree-col b"><rect x="600" y="34" width="330" height="150" rx="10"/>
+          <text x="618" y="60" class="k">Pages</text>
+          <text x="618" y="88" class="v sm">each level's views</text>
+          <text x="618" y="112" class="v sm">Folder · Element · Session views</text>
+          <text x="618" y="136" class="v sm">marks ✅ ⬜ 🏃 ❗ 🙋 🧵</text>
+          <text x="618" y="160" class="v sm">nothing that is not on disk</text></g>
+        <g class="tree-col s"><rect x="110" y="226" width="330" height="128" rx="10"/>
+          <text x="128" y="250" class="k">Folders that define it</text>
+          <rect x="128" y="260" width="294" height="26" rx="6" class="chip-s"/><text x="140" y="278" class="v sm">skills/  what an agent knows</text>
+          <rect x="128" y="290" width="294" height="26" rx="6" class="chip-s"/><text x="140" y="308" class="v sm">servers/  the page code</text>
+          <rect x="128" y="320" width="294" height="26" rx="6" class="chip-s"/><text x="140" y="338" class="v sm">blueprints/  the plugin's Block</text></g>
+        <g class="tree-col s"><rect x="600" y="226" width="330" height="128" rx="10"/>
+          <text x="618" y="250" class="k">Blueprint page</text>
+          <text x="618" y="276" class="v sm">/wb blueprints/…/bNN_&lt;theme&gt;</text>
+          <text x="618" y="300" class="v sm">each level's views and buttons</text>
+          <text x="618" y="324" class="v sm">each linked to an example page</text></g>
+        <path class="ln s" d="M240 226 L 240 192"/><path class="tip s" d="M234 200 L240 190 L246 200"/>
+        <text x="252" y="214" class="lab">skills write</text>
+        <path class="ln s" d="M440 244 C 520 244, 560 210, 640 192"/><path class="tip s" d="M630 188 L641 192 L632 200"/>
+        <text x="470" y="226" class="lab">page code draws</text>
+        <path class="ln s" d="M440 334 L 592 334"/><path class="tip s" d="M584 328 L594 334 L584 340"/>
+        <text x="458" y="326" class="lab">shown on /wb</text>
+        <path class="ln b" d="M440 109 L 592 109"/><path class="tip b" d="M584 103 L594 109 L584 115"/>
+        <text x="452" y="100" class="lab">read each time a page opens</text>
+        <path class="ln k" d="M845 226 L 845 186"/>
+        <text x="856" y="212" class="lab">defines</text>
+      </svg>
+    </div>
+    <h3 id="o-principle">The principle</h3>
+    <ol class="principle">
+      <li><b>Work Folder.</b> Decide what folders the work is stored in: each Block's Jobs, Studio topics and Chats.</li>
+      <li><b>Work UI.</b> Decide how a page shows those folders. A page shows nothing that is not on disk.</li>
+      <li><b>Define Folder.</b> <code>skills/</code>, <code>servers/</code> and <code>blueprints/</code>: what an agent knows, the page code, and the plugin's own Block.</li>
+      <li><b>Define UI.</b> The blueprint Block's workbench page: each level's views and buttons, each linked to an example page.</li>
+      <li><b>The map.</b> Every work folder kind has a page part; every page part draws a work folder.</li>
+      <li><b>The rule.</b> A change lands everywhere at once: skill contract, page code, blueprint definition, and a test that it is drawn.</li>
+    </ol>
+    <h3 id="o-works">How it works</h3>
+    <ul class="plain">
+      <li><b>Using it.</b> The skills write the Work Folder, through their gates and checks. The page code reads those folders
+        each time a page opens, so the Work UI follows them and keeps no copy.</li>
+      <li><b>Changing it.</b> The change is worked in the blueprint Block and seen on its page; the skills and the page code change with it. Work already on disk is read by the new code, or carried over by a script.</li>
+    </ul>
+    <h3 id="o-start">Where to start</h3>
+    <div class="go">
+      <a class="go-card b" href="work-blocks.html"><b>Work</b><span>Block and chat folders, and the pages that show them.</span></a>
+      <a class="go-card s" href="define-blueprints.html"><b>Define</b><span>Skills, servers and the blueprint Block, and the page that shows the UI's definition.</span></a>
+      <a class="go-card c" href="map-three-views.html"><b>The Map</b><span>Folder, Element and Session views, and how each reaches the other two.</span></a>
+    </div>
+    <footer class="foot">Read from <span class="mono">PRINCIPLE.md</span>, <span class="mono">haipipe-insight/ref/</span>, <span class="mono">haipipe-chat/ref/chat-contract.md</span>, <span class="mono">servers/workbench/ref/three-views.md</span> and <span class="mono">servers/workbench-insight/</span>. Names in angle brackets are placeholders.</footer>
+  </main>
+  <aside class="outline" id="outline" aria-label="On this page"></aside>
+</div>
+<script src="app.js"></script>

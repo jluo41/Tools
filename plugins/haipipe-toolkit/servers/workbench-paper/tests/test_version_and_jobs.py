@@ -134,7 +134,7 @@ class VersionAndJobsTest(unittest.TestCase):
         res.mkdir(parents=True)
         (res / "headline.txt").write_text("Paper-X-v4.docx + 2 tracked changes by <author> -> Paper-X-v4-tracked.docx\n", encoding="utf-8")
         html = _paper_files(out, self.root)
-        self.assertIn("The paper · Word, tracked", html)
+        self.assertIn("Paper-Word-Tracked", html)
         self.assertIn("v4 + 2 changes by &lt;author&gt;", html)
         self.assertIn("word-tracked/Paper-X-v4-tracked.pdf", html)
         self.assertIn("word-tracked/Paper-X-v4-tracked.docx", html)

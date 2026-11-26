@@ -2,11 +2,13 @@
 name: workbench-paper
 description: "Reads the Paper theme workbench: a Board's focus Report, its shared supporting sections, and the version, evidence, submission and draft pages. Use to find which source record and skill owner a view maps to. Trigger: paper workbench, paper tab, version tab, Section tab, /workbench-paper."
 metadata:
-  version: "0.63.0"
-  last_updated: "2026-11-12"
+  version: "0.64.0"
+  last_updated: "2026-11-21"
 ---
 
 # /workbench-paper · the paper theme on the shared frame
+
+Read CONSTITUTION.md first; it wins over this file.
 
 **LOAD `/wb` (the workbench skill) FIRST.** It defines the common Workbench law: STORAGE, SURFACE, WRITER and BOUNDARY, and
 the frame every theme shares (`servers/workbench/`, `servers/workbench/README.md`). This skill is the paper's

@@ -57,6 +57,15 @@ def test_natbib_label_and_fallback(tmp_path):
     assert ns["cite_label"]("missing") == ("Someone", "1999")
 
 
+def test_informs_and_between_two_authors(tmp_path):
+    """INFORMS's bst writes "and" as \\protect\\BIBand{}; the Word copy printed "(Chen Chan, 2024)" (TestToLearn 261123)."""
+    bbl = ("\\begin{thebibliography}{2}\n\\bibitem[{Chen \\protect\\BIBand{} Chan(2024)}]{chen2024large}\nx\n"
+           "\\bibitem[{Paley \\protect\\BIBand{} van~de Ven(2023)}]{paley}\ny\n\\end{thebibliography}\n")
+    ns = _ns(tmp_path, bbl)
+    assert ns["cite_label"]("chen2024large") == ("Chen and Chan", "2024")
+    assert ns["cite_label"]("paley")[0].startswith("Paley and van")
+
+
 def test_a_build_leaves_a_word_in_use_alone(monkeypatch):
     import sys
     sys.path.insert(0, str(SCRIPTS))
