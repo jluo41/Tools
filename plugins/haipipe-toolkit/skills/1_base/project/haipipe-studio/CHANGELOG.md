@@ -2,6 +2,13 @@ haipipe-studio · Changelog
 ==========================
 
 
+## [unreleased] — 2026-11-26
+
+The topic contract is one file per topic: `ref/topic-contract.md` keeps what a topic is, its count and the list;
+the folder, transcripts, numbering (with s99, the Block's own Guide), face, look, builder, rounds, buttons and
+scripts each have their own `ref/topic-*.md`, and each kind of topic its own file: `ref/proposal-topic.md`,
+`ref/slide-draft-topic.md`, `ref/ui-preview-topic.md` (live views under Page, quick views under Effect). Words kept.
+
 ## [unreleased] — 2026-11-12
 
 The five-part drawing is every new topic's default (JL 261112: "this is not vivid, I want the vivid ones").
@@ -208,7 +215,7 @@ Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (
 
 - `ref/topic-contract.md` and SKILL.md: the topic folder holds its structured side, `mNN-<topic>.mindmap.md` with
   its `.excalidraw`, `.png` and (git-ignored) `.mindmap.html`, made and synced by haipipe-mindmap; never the topic's
-  main drawing. The workbench card switches Free and Structured (servers/workbench/page/frame.py).
+  main drawing. The workbench card switches Free and Structured (servers/workbench/page/block_index_page/frame.py).
 - `scripts/render_png.py`: reads a drawing as UTF-8 (Windows read it in its code page), and falls back to Windows'
   fonts (Arial Unicode or Microsoft YaHei, Segoe UI, Arial; Cascadia Mono or Consolas; Segoe UI Emoji) when the Mac
   and Linux font paths are missing. `canvas.py` (its read, its write, the measuring font) and `shrink_media.py`
@@ -237,7 +244,7 @@ Commands to the excalidraw kinds now go through the door: `/excalidraw <kind>` (
 
 - A Studio topic a person clicks open scrolls so its drawing sits in the middle of the window, and the drawing
   inside is fitted and centred once its frame has a real size (JL 261019: "How do you make it, when I click it, the
-  draw will in the center of the page"). `servers/workbench/page/frame.py` (STUDIO_JS: a clicked row scrolls to the
+  draw will in the center of the page"). `servers/workbench/page/block_index_page/frame.py` (STUDIO_JS: a clicked row scrolls to the
   centre; rows the page opens itself do not jump) and `servers/workbench/assets/xcal-boot.js` (the fit waits, at
   most 2 s, for the frame's size, then is made again). Checked in headless Chrome at 1440 x 900: the s02 drawing
   sits at 120 to 780 px, the whole story fitted at 17%.
@@ -538,7 +545,7 @@ came back as topics in the first `/wb update` dry runs. Where the work stands ca
 
 A frame that draws the workbench's screen is marked `canvas.ui_frame(frame)`, and `canvas.write` colours what
 is drawn in it with the workbench's own light colours (`canvas.UI`, `STAGE_UI`, `STATUS_UI`, read from
-`servers/workbench/page/frame.py`): gray panes behind white buttons, the open tab blue, a proposed button violet
+`servers/workbench/page/block_index_page/frame.py`): gray panes behind white buttons, the open tab blue, a proposed button violet
 dashed, stage pills, links, status words and count bars in their screen colours (JL 261012: "make the UI to
 be more colorful, like the same to what we see"). A pane moves behind what it holds. Red questions, green
 notes, arrows and every frame not marked stay as before. First used in b10 s02, s03, s05 to s08.

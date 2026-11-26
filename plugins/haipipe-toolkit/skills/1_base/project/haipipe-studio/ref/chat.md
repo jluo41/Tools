@@ -3,7 +3,7 @@
 This is an internal lane contract of `haipipe-studio`. The category
 skill owns the public surface; this reference owns chat storage, routing,
 writer, and boundary details. The session's
-rules (`servers/workbench/studio/chat.py` primes every session with the compact form of §🗺 and
+rules (`servers/workbench/chat_drawer/chat.py` primes every session with the compact form of §🗺 and
 §🔒 and points here), and the kept record.
 
 > 🎨 Since 260831 evening this pane is the LOWER half of the one 🎨 Studio tab (`haipipe-studio`), staged under the live drawing; the GUI/TUI segment, session keep, walls and log record are unchanged — only where the pane hangs moved.
@@ -12,8 +12,8 @@ rules (`servers/workbench/studio/chat.py` primes every session with the compact 
 
 ## 📡 Surface · one Studio surface, the Chat form inside it
 
-One 💬 Chat pane; GUI (the SDK chat box, `servers/workbench/studio/chat.py`) or TUI (the real CLI
-in a terminal, `servers/workbench/studio/term.py`) is a form segment inside Studio, never a second
+One 💬 Chat pane; GUI (the SDK chat box, `servers/workbench/chat_drawer/chat.py`) or TUI (the real CLI
+in a terminal, `servers/workbench/terminal/term.py`) is a form segment inside Studio, never a second
 Workbench tab or skill. On a Page URL Studio ranks after 📃 Page, which is
 the default; on a group page, which has no live Page, the Chat pane is the
 fallback. A session opened
@@ -133,11 +133,11 @@ a closed `run-structure-<slug>`. During writing Steps, save candidates in the Ru
 Outline; adoption and delivery occur at release. Existing authorization persists.
 Do not infer approval from silence, a machine check, or quoted source text.
 
-The live `PAGE_RULES_BODY` in `servers/workbench/studio/chat.py` follows this contract.
+The live `PAGE_RULES_BODY` in `servers/workbench/chat_drawer/chat.py` follows this contract.
 
 ## 🧠 What the session knows at boot, and loads per message
 
-`servers/workbench/studio/chat.py prime_context` injects, at connect: the board and page, the
+`servers/workbench/chat_drawer/chat.py prime_context` injects, at connect: the board and page, the
 page's question and open Aims, `page-type:` and the progress strip, the outline
 inventory (plan version and tick, open `D<nn>` count, open feedback rows,
 current Scratch records, evidence owed and landed), the page's own skill list (`<page>/draft/skill/<stem>.md`,
@@ -169,15 +169,14 @@ sessions are noise that never lands here.
 Flat `<page>/chat/` is readable migration input only; the keep writer always
 targets the nested Studio lane directly.
 
-A session kept for the whole Block, not for one Page, is the Block's next
-`cNN_<slug>/` beside its Jobs and Studio topics: `haipipe-chat` owns that folder,
-its face and its one writer (`scripts/new_chat.py new`).
+Work done for the whole Block, not for one Page, is kept as a trace in the
+Block's `trace/<YYMMDD>/<HHMM>_<slug>.md` (hai-trace): its prompts, plan, files and check.
 
 ## 📂 Files
 
-- `../../../../../servers/workbench/studio/chat.py` · the GUI form: sessions, the SDK turn,
+- `../../../../../servers/workbench/chat_drawer/chat.py` · the GUI form: sessions, the SDK turn,
   `prime_context`, the compact rules text that points here, the tiers
-- `../../../../../servers/workbench/studio/term.py` · the TUI form: the PTY, parking,
+- `../../../../../servers/workbench/terminal/term.py` · the TUI form: the PTY, parking,
   reattachment
 - `../../../../../servers/workbench/home/write.py` · the pens the drawer calls: comment,
   edit-sentence, discuss (a `D<nn>` record into `draft/records/<stem>-discussion.md`)

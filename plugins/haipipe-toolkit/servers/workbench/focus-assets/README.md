@@ -47,8 +47,8 @@ URL. Drawing and document links use the existing viewers. Mind maps render their
 Markdown live in read-only mode. A missing representation has no invented preview.
 
 Run the focused regression checks with the workspace Python and
-`PYTHONPATH=servers/_host python -m unittest discover -s servers/workbench/tests -p test_focus_page.py`
-from the plugin folder. Real page checks should cover both a work face with
+`PYTHONPATH=servers/_host python -m pytest -q servers/workbench/page`
+from the plugin folder (each page Task keeps its tests in its own `tests/`). Real page checks should cover both a work face with
 `spine:` / `close:` and a paper face without Takeaways.
 
 ## Existing Overview–Report view

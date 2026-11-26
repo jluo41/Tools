@@ -1,15 +1,15 @@
 # b17 theme alignment · proposal
 
-for: b17-s01:theme_work @ work_ladder · its form: `../../runs/r01_collect_theme_alignment/` · written 2026-10-31 18:58
+for: b17-s01:theme_work @ work_ladder · its form, answered 261031 (§ 8), removed 261125 · written 2026-10-31 18:58
 
 JL 261031: "I want you compare to others, like the theme_paper to update the theme_work as well".
 
 This file compares b17_theme_work with b16_theme_paper (the model), b11_theme_insight and b12_theme_design, and
-lightly with b10_project_workbench and b13 to b15, then proposes how b17 changes. It is a proposal only: nothing is
+lightly with b10_project_workbench (removed 261126) and b13 to b15, then proposes how b17 changes. It is a proposal only: nothing is
 created, renamed or moved until JL answers the form. Words used below:
 
 - **sNN**: a Studio topic, the folder `sNN-<topic>/` beside the Jobs or Tasks it serves; its face is `sNN-<topic>.md`.
-- **band**: the number range haipipe-studio gives a kind of topic (`ref/topic-contract.md` § Numbering): s01-s09
+- **band**: the number range haipipe-studio gives a kind of topic (`ref/topic-numbering.md`): s01-s09
   concepts, s11-s19 levels, s21-s29 runs and skills, s31-s39 Guide, s41-s49 Task procedures, s51-s59 server, s61-s69
   slide drafts.
 - **group**: a Studio view button; a topic's groups are its face's `**Tags:**` line; `_studio_groups.txt` keeps the
@@ -49,7 +49,7 @@ Everything else takes b16's name where b17 has the same kind of topic.
   j01 t01's r01, r04 to r07 (none decides a Studio group); b17 j03 t01 r01's answers (JL 261031, s51-D01 to D06);
   the cards of every b17 collection Run.
 - Live pages on 5623 (Studio, Report and Work of b10 to b17), read with curl.
-- Code: `servers/workbench/page/focus_page.py` (`read_face`, `home_section`, `render`, `studio_html`), `frame.py`
+- Code: `servers/workbench/page/block_index_page/focus_page.py` (`read_face`, `home_section`, `render`, `studio_html`), `frame.py`
   (`_note_facts`, `topic_label`, `studio_inventory`, `studio_group_order`), `haipipe-studio/scripts/new_topic.py`
   (`face_text`, `BANDS`, `LIMITS`), `haipipe-studio/SKILL.md` and `ref/topic-contract.md`, `haipipe-run/SKILL.md`,
   `2_theme/work/haipipe-work/SKILL.md`, `servers/workbench-work/guide/guide.yaml` and `guide/method.md`.
@@ -418,8 +418,8 @@ close: Every sNN is agreed and its Job has made its delivery: each skill piece r
 > (s21), the Guide (s31).
 >
 > Most answers here are a change to the work skills (`2_theme/work/haipipe-work`, `workbench-work`, the Task skills in
-> `1_base/task`) or to the base page (`servers/workbench/page/focus_page.py`, owned by design_b02_workbench), not a Task
-> Run. Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the stage pipelines a Task
+> `1_base/task`) or to the base page (`servers/workbench/page/block_index_page/focus_page.py`, owned by design_b02_workbench), not a Task
+> Run. Excluded: the ladder itself and what every Theme shares (b10_project_workbench (removed 261126)); the stage pipelines a Task
 > runs (haipipe-data, -nn, -end).
 
 `## Pipeline`, proposed:
@@ -515,7 +515,7 @@ Proposed outline, same length:
 2. **Goal**: the work pages on the focus page (j03's 3 × 3, s51 to s59) and the work skills (s01 by j01, s21 by
    j02, s31 by j04); no Questions.
 3. **Where**: topics beside their Jobs; forms in `runs/` and each Task's `runs/`; the base page
-   `servers/workbench/page/focus_page.py` (design_b02_workbench); `servers/workbench-work/`; `skills/2_theme/work/`.
+   `servers/workbench/page/block_index_page/focus_page.py` (design_b02_workbench); `servers/workbench-work/`; `skills/2_theme/work/`.
 4. **How**: decide in the sNN (Decided, Open), ask JL by a form (haipipe-interaction), make the delivery in its
    Job, render it out; never edit a generated file; never commit.
 
@@ -546,7 +546,7 @@ j03_work_workbench_pages/  t01 t02 t03       │ j03_work_workbench_pages/  t01 
 2. **s04's number**: 20 files outside b17 name `b17-s04`: haipipe-interaction's SKILL.md (its examples) and
    `collect.py`, `frame.py`, haipipe-ui, haipipe-studio, response-format, `haipipe-run/ref/run-types-by-space.md`,
    workbench-work, `guide.yaml`, b35, b32, b16's `paper_ui_cells.py`; and two forms carry `for: b17-s04` (j03 t01 r01,
-   answered; b17 `runs/r02_collect_interactions_page`, waiting). A new number would cut both forms from s04's card.
+   answered; b17 `runs/r02_collect_interactions_page`, dropped 261125). A new number would cut both forms from s04's card.
 3. **s51 to s59** (Q4 A): § 4.4.
 4. **The Skill group**: JL's choice on 261031.
 5. **Block UI, Job UI, Task UI**: as b16 (b16 runs r03, JL 261031: "make the UI in three levels").
@@ -606,8 +606,8 @@ the Skill group JL set on 261031, and the brief says a decided point is never as
 
 ## 8 · The form
 
-`runs/r01_collect_theme_alignment/question_collection.md`, built into `r01_collect_theme_alignment.html`; every
-option has its own preview page, written by `src/build_r01_theme_alignment_previews.py`.
+The form `runs/r01_collect_theme_alignment/` (with its preview pages and their builder) was answered 261031 21:25 and
+removed 261125; git history keeps it. JL's answers: Q1 A, Q2 A, Q3 A, Q4 A, each "my pick", with the note "I agree".
 
 ```text
 Q1 Studio groups      A Skill, Levels, Guide + three UI groups (pick) · B Skill, UI + three · C today's

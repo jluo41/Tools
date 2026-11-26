@@ -74,7 +74,7 @@ Checklist
 ### ② Explore
 
 - ✅ **E1 · Work Blocks named**: b16_theme_paper, b90_example_paper_results
-- ✅ **E2 · Discovery Blocks named**: b01_example_prior_work
+- ✅ **E2 · Discovery Blocks named**: b01_example_discovery
 - ⏳ **E3 · The Runs returned**: 1 of 3 Roadmap rows done
 
 ### ③ Evidence

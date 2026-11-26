@@ -10,7 +10,7 @@ metadata:
 
 # /haipipe-studio · the topics a Block owns
 
-Read [CONSTITUTION.md](CONSTITUTION.md) first; it wins over this file (JL's feedback, kept through /haistack).
+Read [CONSTITUTION.md](CONSTITUTION.md) first; it wins over this file (JL's feedback, kept through /hai-stack).
 Draw Design with the icon gallery: `scripts/icons.py` (phone, laptop, monitor, server, cylinder, cloud, shield, gate,
 person, hospital, document, cross, big_number, lock), seen in `ref/icons/icons.png`; `ref/icons/*.excalidrawlib` loads
 them into Excalidraw's library panel by hand. A new icon goes into icons.py, then `python icons.py --gallery`.
@@ -86,7 +86,7 @@ target, a region nobody edits by hand; a code piece is built by the Task that `r
 `delivery/deck/`. `python $S/render_delivery.py <sNN>` checks every piece, `--apply` writes the ones that differ.
 <!-- /render b35-s01 where-it-sits -->
 
-Read `ref/topic-contract.md` before adding a topic or writing a builder.
+Read `ref/topic-contract.md` (the list of the contract's files, one per topic) before adding a topic or writing a builder. A UI preview topic (`**Delivery type:** ui`) follows `ref/ui-preview-topic.md`.
 
 
 Two sides of a topic: its drawing and its mind map
@@ -328,7 +328,7 @@ python $S/new_topic.py session <block> sNN --title '<session>' [--ask …] [--su
    and follows `/excalidraw studio`'s "Redraw a topic with the principles". Existing topics keep their drawing
    until someone redraws them. This skill keeps the folder, the face and the sessions.
 1. **Face marks**: `**Stage:**` (explore · shaping · agreed · closed), `**Topic:**`, `**Feeds:** Q01` (an older face: `qNN_<topic>`),
-   `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-contract.md` § The face.
+   `sNN-DNN` decisions, a numbered Open list. A person moves the stage; see `ref/topic-face.md`.
 2. **Builder**: draws through `canvas.write`; never hand-edit its output, change the builder.
 3. **Marks kept**: what a person adds, edits or deletes survives a rebuild (the seed snapshot).
 4. **Round**: each working session or meeting is one `passes/pNN-<MMDD>/pass.md` inside the topic: Notes, Decided,
@@ -382,7 +382,7 @@ green  #2f9e44   a change we made, where we made it (✎ <date> …)    canvas.G
 5. **A screen in colour**: a frame that draws the workbench's screen wears the workbench's own light colours
    (JL 261012: "make the UI to be more colorful, like the same to what we see"). Mark it
    `canvas.ui_frame(frame)`; `canvas.write` then colours it by `colour_ui` from `canvas.UI`, the colours of
-   `servers/workbench/page/frame.py`: gray panes, white buttons, the open tab blue, a proposed one violet dashed,
+   `servers/workbench/page/block_index_page/frame.py`: gray panes, white buttons, the open tab blue, a proposed one violet dashed,
    stage pills in their own colours, links blue, a status word (answered, partial, open) its colour, a
    count bar blue. Red questions and green notes in it keep their colour; the rest of the drawing stays black.
 
@@ -471,7 +471,7 @@ row 2   ④ draft today, marked up      ⑤ section written out              eac
 5. **Who answers**: every red ask names a person; ④ and ⑤ close listing them.
 
 The frames one by one, the rules of ⑤, what went wrong on the way and the builders to copy from:
-`ref/topic-contract.md` § A proposal topic.
+`ref/proposal-topic.md`.
 
 
 Slide drafts
@@ -549,7 +549,12 @@ haipipe-studio/
 ├── SKILL.md
 ├── CHANGELOG.md
 ├── agents/openai.yaml
-├── ref/topic-contract.md      the folder, face, numbering, builders, sessions, buttons, a proposal topic
+├── ref/topic-contract.md      what a topic is, its count, and the list of the files below
+├── ref/topic-folder.md        the folder · ref/topic-face.md its face · ref/topic-numbering.md sNN bands, s99
+├── ref/topic-look.md          its look · ref/topic-builder.md a builder · ref/topic-transcripts.md transcripts
+├── ref/topic-rounds.md        rounds · ref/topic-buttons.md buttons · ref/topic-scripts.md scripts
+├── ref/proposal-topic.md      a proposal topic · ref/slide-draft-topic.md a slide draft (s61-s69)
+├── ref/ui-preview-topic.md    a UI preview topic: live views (Page), quick views (Effect), s99
 ├── ref/infer-topics.md        topics inferred from a Block's Jobs and Tasks (b10 s10)
 ├── ref/screen.md              the Page's Studio screen: drawing above, chat below
 ├── ref/chat.md · ref/draw.md  the screen's two lane contracts

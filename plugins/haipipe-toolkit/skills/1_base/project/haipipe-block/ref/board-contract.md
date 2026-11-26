@@ -10,7 +10,7 @@ Block. The Block's shape (its name, which folders it may hold) is `haipipe-proje
 <Project>/<theme folder>/bNN_<topic>/      work/ · discovery/ · cowork/ · paper/ · insight/ · design/ · labeling/
 ├── board.md                               the face (this contract)
 ├── sNN-<topic>/                    Idea Studio: topics shared by the whole Block (haipipe-studio)
-├── cNN_<slug>/                     a kept chat session, numbered in time order (haipipe-chat)
+├── trace/<YYMMDD>/<HHMM>_<slug>.md       one piece of work: its prompts, plan, files and check (hai-trace)
 ├── reports/qNN_<topic>/                   an older Block only: a Question's answer now sits in its topic (haipipe-report)
 ├── runs/run-<type>-<target>/              soft Runs only at a Block (haipipe-run)
 ├── delivery/                              what the Block hands on
@@ -86,7 +86,7 @@ A theme's own Block template sits over this one and keeps these fields: the work
 | Delivery | `delivery/` items | `delivery/` | Build the delivery → **haipipe-block** |
 
 A theme fills any Space with its own view (`servers/workbench-<theme>/<theme>_theme.py`);
-what it leaves out is the vanilla default above (`servers/workbench/page/frame.py` `vanilla`).
+what it leaves out is the vanilla default above (`servers/workbench/page/block_index_page/frame.py` `vanilla`).
 The Guide is each theme's.
 
 1. **Update the description** (`run-face-<bNN>`): edit the face's header fields and Topic;
@@ -118,6 +118,24 @@ The frame asks, in this order:
    the Block only for its screen.
 3. **A claim is cached** per Block and `board.md` version; editing the face re-asks.
 4. **A claim that fails** (raises) claims nothing; the Theme folder decides.
+
+## Example Blocks
+
+Each theme keeps one example Block: the Block every page of that theme is drawn from, so a page change
+shows on real files (haipipe-ui A08).
+
+1. **Made by the scripts only**: `new_board.py` (this skill), `new_job.py` (`haipipe-job`) and
+   `soft_run.py` (`haipipe-run`); nothing in it is typed by hand.
+2. **Every state**: Jobs in more than one band and many Jobs in one band, a Job with no Task, Tasks done,
+   running, waiting on you and planned, a check Run with an open round, traces, and Studio topics (a concept
+   with its drawing, a UI preview, `s99` its own Guide) made by `new_topic.py`.
+3. **No real work**: its Topic says it is the example; it holds no real code, data or findings.
+4. **Where**: work `blueprints/Project-Ladder/work/b01_example_work`; paper
+   `blueprints/Project-Ladder/paper/Paper-Example`.
+
+A UI preview topic's live views render this Block (`haipipe-studio` ref/ui-preview-topic.md).
+The Block whose pages are designed on an example names it on its face, `examples: work/b01_example_work`
+(paths from the Project folder, comma-separated); its Files pane then shows a Block Examples part.
 
 ## Scaffold
 

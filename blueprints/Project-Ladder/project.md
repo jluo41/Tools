@@ -6,7 +6,6 @@ One Project of `Tools/blueprints/` (JL 261028: blueprints holds Projects, as `ex
 
 ## Blocks
 
-- `work/b10_project_workbench`: Design questions about how a Project is built from its root down to one Run: the Themes (tasks, discoveries, cowork, papers, insights, designs), the Block → Job → Task → Run levels inside them, the Questions at Block level, how content crosses Themes, the checker that tests it all, and the workbench that shows it: the base frame (Block · Job · Task × six Spaces), each theme on it, and its Guide.
 - `work/b11_theme_insight`: Design questions about the insight Theme as one ladder: what an Insight Block, a DIKW level Job, a question Task and a dataset × partition Run each hold and show, how partitions and pooling appear, where a question's gates live, what each level delivers, and what becomes of the older register boards.
 - `work/b12_theme_design`: How the design theme sits on the Block → Job → Task → Run ladder and shows in its workbench: a design Board for one application, a Job for one goal done by one design method returning N designs, a Task for one design, and the Runs that commission, generate, verify and revise them; how an insight Block steers a design through one handoff; and which skill and workbench owns each part.
 - `work/b15_theme_labeling`: Design questions about the labeling Theme as one ladder: what a labeling Block, a dataset × label Job, a step Task and an operation Run each hold and show, how the Building and Scanning sides and their human gates map onto the six Spaces, and where the schema and the frozen handoff live.
@@ -19,6 +18,6 @@ The theme examples, each the placeholder its theme Block embeds as Block UI · J
 - `labeling/b02_labeling_walkthrough`: a labeling Block, one dataset × label Job and its step Tasks.
 - `insight/Insight-Example` with `insight/InsightQuestionBook-Example`: an insight Board (one dataset, two data versions) and the questions it runs.
 - `design/Design-Example`: a design Block, three Jobs (goal × method × inputs) and their idea, design and review Tasks.
-- `discovery/b01_example_prior_work`: a discovery Block, an inquiry Job and its Paper Runs.
-- `cowork/b01_example_data_request`: a cowork Block, its people and three lines of work.
+- `discovery/b01_example_discovery`: a discovery Block, an inquiry Job and its Paper Runs.
+- `cowork/b01_example_cowork`: a cowork Block, its people and three lines of work.
 - `work/b90_example_paper_results`: a work Block, its Jobs, Tasks and Runs.

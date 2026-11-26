@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s11 Overview · Goal on top</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--bg:#f4f4f2;--paper:#fff;--accent:#1f5fbf;--soft:#eef3fb}
+@media (prefers-color-scheme:dark){:root{--line:#3a3a37;--muted:#a3a39c;--ink:#e8e8e6;--bg:#1b1b19;--paper:#161719;--accent:#8ab4ff;--soft:#1f2633}}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:980px;margin:22px auto;padding:0 18px}
+h2.band{display:flex;align-items:center;gap:10px;font-size:18px;margin:0 0 10px}h2.band:after{content:"";flex:1;border-top:1px solid var(--line)}
+details.fold{border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+details.fold>summary{cursor:pointer;padding:10px 14px;font-weight:600;list-style:none}
+details.fold>summary::before{content:"▸ ";color:var(--muted)}details.fold[open]>summary::before{content:"▾ "}
+.in{padding:4px 16px 16px}
+.views{display:flex;gap:6px;margin:0 0 12px}
+.views button{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:3px 12px;font-size:12.5px;font-family:inherit;cursor:pointer}
+.views button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.tabs{display:grid;grid-template-columns:170px 1fr;gap:0 18px}
+.tabs .left{display:flex;flex-direction:column;gap:2px;border-right:1px solid var(--line);padding-right:10px}
+.tabs .left button{text-align:left;border:0;background:none;color:var(--ink);padding:6px 9px;border-radius:7px;font-size:13.5px;font-family:inherit;cursor:pointer}
+.tabs .left button[aria-pressed=true]{background:var(--soft);color:var(--accent);font-weight:600}
+.big{font-size:16px;margin:2px 0 6px}
+dl{display:grid;grid-template-columns:110px 1fr;gap:6px 16px;margin:0}dt{color:var(--muted)}dd{margin:0}
+.tree{margin:0;padding:0;list-style:none}.tree li{margin:2px 0}.tree ul{list-style:none;margin:2px 0 6px 18px;padding:0;border-left:1px solid var(--line)}
+.tree ul li{padding-left:10px}.tree .g{font-weight:600}.tree small,.ws small{color:var(--muted)}
+.ws{display:grid;grid-template-columns:150px 1fr;gap:4px 16px}
+.lead{border-left:3px solid var(--accent);padding:2px 0 2px 12px;margin:0 0 14px;font-size:15.5px}
+[hidden]{display:none!important}
+</style></head><body><main>
+<!-- one Overview fold over b01_example_work j11, top-view-left-tab-right-content -->
+<h2 class=band>🧭 Overview</h2>
+<details class=fold open><summary>j11 · Core checks</summary><div class=in><p class=lead>the checks a CSV must pass: its columns, its value ranges, its missing values, and the reports that show them</p><div class=tabs><div class=left><button type=button data-show="ov-0" aria-pressed="true">Requirements</button><button type=button data-show="ov-1" aria-pressed="false">Topics</button><button type=button data-show="ov-2" aria-pressed="false">Work Structure</button></div><div><div id="ov-0"><dl><dt>Close</dt><dd>every check runs on the example file and both reports show its results</dd></dl></div><div id="ov-1" hidden><ul class=tree><li class=g>j11 · Core checks<ul><li class=g>Task Group 1<ul><li>t01 · Task 01 name</li><li>t02 · Task 02 name</li><li>t03 · Task 03 name</li></ul></li><li class=g>Task Group 2<ul><li>t11 · Task 11 name</li><li>t12 · Task 12 name</li></ul></li></ul></li></ul></div><div id="ov-2" hidden><div class=ws><b>t01 · Task 01 name</b><span>each column is the name and type the file says</span><b>t02 · Task 02 name</b><span>each number inside its allowed range</span><b>t03 · Task 03 name</b><span>each empty cell found and counted</span><b>t11 · Task 11 name</b><span>the results as plain text</span><b>t12 · Task 12 name</b><span>the results as one HTML page</span></div></div></div></div></div></details>
+</main><script>
+document.addEventListener('click',function(e){var b=e.target.closest('button[data-show]');if(!b)return;
+var box=b.parentElement;box.querySelectorAll('button[data-show]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');
+var p=document.getElementById(x.dataset.show);if(p)p.hidden=x!==b;});});
+</script></body></html>

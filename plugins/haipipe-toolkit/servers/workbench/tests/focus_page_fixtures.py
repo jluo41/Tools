@@ -45,3 +45,29 @@ class FocusPageCase(unittest.TestCase):
             (result / 'display.yaml').write_text('question: Does it differ by region?\n')
             (result / 'headline.txt').write_text('It differs little.\n')
         return task
+
+
+# A work page draws its views as bands on one page (view_bands.py, JL 261124): read one band, or the bands' names.
+_BAND_AT = '<section class="work-section-group view-band" id="band-'
+
+
+def band(page: str, key: str) -> str:
+    """The band of view `key` (overview, standing, findings, delivery, ...), up to the next band or the card's end."""
+    start = page.find(_BAND_AT + key + '"')
+    if start == -1:
+        return ''
+    ends = [i for i in (page.find(_BAND_AT, start + 1), page.find('</section><footer>', start)) if i != -1]
+    return page[start:min(ends)] if ends else page[start:]
+
+
+def band_names(page: str) -> list:
+    """The bands' names in order, as the view buttons named them before."""
+    import re
+    return [n.split(' ', 1)[-1] for n in re.findall(r'view-band" id="band-[^"]+" data-view="[^"]+"><h2>([^<]+)</h2>', page)]
+
+
+def view_names(page: str) -> list:
+    """The view buttons' names in order (Main, then the views that are not bands)."""
+    import re
+    bar = re.search(r'<nav class="section-views".*?</nav>', page, re.S)
+    return re.findall(r'<a [^>]*>([^<]+)</a>', bar.group(0)) if bar else []

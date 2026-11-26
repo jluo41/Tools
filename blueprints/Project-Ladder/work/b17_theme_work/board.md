@@ -3,23 +3,26 @@
 board-kind: task-block
 package: plugins/haipipe-toolkit
 theme: work
+examples: work/b01_example_work, cowork/b01_example_cowork, discovery/b01_example_discovery
+bands: j0N Earlier design · j1N Workbench
+ui-project: blueprints/Project-Ladder
 ui-block: blueprints/Project-Ladder/work/b90_example_paper_results
 ui-block: blueprints/Project-Ladder/work/b16_theme_paper
-ui-block: blueprints/Project-Ladder/cowork/b01_example_data_request
-ui-block: blueprints/Project-Ladder/discovery/b01_example_prior_work
+ui-block: blueprints/Project-Ladder/cowork/b01_example_cowork
+ui-block: blueprints/Project-Ladder/discovery/b01_example_discovery
 ui-job: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates
-ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment
-ui-job: blueprints/Project-Ladder/cowork/b01_example_data_request/j00_people
-ui-job: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry
+ui-job: blueprints/Project-Ladder/cowork/b01_example_cowork/j02_review_board_amendment
+ui-job: blueprints/Project-Ladder/cowork/b01_example_cowork/j00_people
+ui-job: blueprints/Project-Ladder/discovery/b01_example_discovery/j01_policy_effect_inquiry
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j01_example_source/t01_example_source
 ui-task: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables
-ui-task: blueprints/Project-Ladder/cowork/b01_example_data_request/j02_review_board_amendment/t01_data_use_plan
-ui-task: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work
+ui-task: blueprints/Project-Ladder/cowork/b01_example_cowork/j02_review_board_amendment/t01_data_use_plan
+ui-task: blueprints/Project-Ladder/discovery/b01_example_discovery/j01_policy_effect_inquiry/t01_policy_prior_work
 ui-task: blueprints/Project-Ladder/paper/Paper-Example/j12_writing_v0215_desk/t03_results
 ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r01_example_main
 ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t03_value_tables/runs/r02_build_tables
-ui-run: blueprints/Project-Ladder/discovery/b01_example_prior_work/j01_policy_effect_inquiry/t01_policy_prior_work/runs/r01_example2024_policy
+ui-run: blueprints/Project-Ladder/discovery/b01_example_discovery/j01_policy_effect_inquiry/t01_policy_prior_work/runs/r01_example2024_policy
 ui-run: blueprints/Project-Ladder/paper/Paper-Example/j01_evidence_display/t02_table1-example/runs/r01_draw_table1
 ui-run: blueprints/Project-Ladder/work/b90_example_paper_results/j02_example_estimates/t01_example_main/runs/r02_collect_example_rounding
 shared-blueprint: b01_haipipe-toolkit
@@ -46,8 +49,12 @@ Most answers here are a change to the work skills (`2_theme/work/` (being set up
 server, or b03's shared builder, not a Task Run. A Question may have no work entries; its report
 links the changed files and the drawings.
 
-Excluded: the ladder itself and what every Theme shares (b10_project_workbench); the stage pipelines a
+Excluded: the ladder itself and what every Theme shares (b10_project_workbench (removed 261126)); the stage pipelines a
 Task runs (haipipe-data, -nn, -end).
+
+## Renumbered
+
+- 261126: s07-job-page-view is s11-work-job-preview, s08-cowork-block-view is s12-cowork-job-preview, s09-discovery-block-view is s13-discovery-job-preview; the s1N band holds the Job UI Previews, one per theme.
 
 ## Pipeline
 

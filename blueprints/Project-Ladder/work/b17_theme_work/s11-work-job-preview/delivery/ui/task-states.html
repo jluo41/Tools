@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s11 Task states</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--bg:#f4f4f2;--paper:#fff}
+@media (prefers-color-scheme:dark){:root{--line:#3a3a37;--muted:#a3a39c;--ink:#e8e8e6;--bg:#1b1b19;--paper:#161719}}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.wrap{display:flex;gap:20px;height:100%;box-sizing:border-box;padding:16px}
+iframe{flex:1;min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--paper)}
+.legend{width:290px;flex:none;font-size:12.5px}.legend h2{font-size:13px;margin:4px 0 10px}
+.legend ul{list-style:none;margin:0;padding:0}.legend li{display:flex;gap:9px;align-items:flex-start;margin:0 0 11px}
+.legend svg{width:14px;height:14px;flex:none;margin-top:2px}.legend b{font-weight:600}
+.legend i{display:inline-block;width:6px;height:6px;border-radius:50%;margin:6px 4px 0;flex:none}
+@media (max-width:760px){.wrap{flex-direction:column}.legend{width:auto}iframe{min-height:70vh}}
+html,body{height:100%}.wrap{padding:0}iframe{width:100%;height:100%;border:0}
+</style></head><body><div class="wrap">
+<!-- the Topic rows page, one Task per state, its Tasks band alone (JL 261126: "you just need to keep the tasks band") -->
+<iframe src="job-view-topics.html?demo=effects&focus=none&only=tasks" title="Task states"></iframe>
+</div></body></html>

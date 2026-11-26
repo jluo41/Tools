@@ -13,8 +13,8 @@ theme      example (in Project-Ladder/)              ui lines  pages aligned    
 insight    insight/Insight-Example                   yes       yes                  yes (b11 j01)   yes     r01, r02 done (6 of 10 pass);
            + insight/InsightQuestionBook-Example                                                                     r02 fixes done, r03 not run
 design     design/Design-Example (3 Jobs)            yes       HALF (stopped)       not redrawn     no      none
-discovery  discovery/b01_example_prior_work          yes       yes (work shape)     yes (b14 j01)   no      none
-cowork     cowork/b01_example_data_request           yes       yes (work shape)     yes (b13 j01)   yes     r01 done (Block passes); r01 fixes
+discovery  discovery/b01_example_discovery          yes       yes (work shape)     yes (b14 j01)   no      none
+cowork     cowork/b01_example_cowork           yes       yes (work shape)     yes (b13 j01)   yes     r01 done (Block passes); r01 fixes
                                                                                                             done; r02 not run
 ```
 
@@ -59,7 +59,7 @@ Next, in order
         - a Task only for a document written in rounds
    3. Group each theme's Studio like paper's: `_studio_groups.txt` with Structure, Levels, Run and Skill, Guide,
       Block UI, Job UI, Task UI, and each topic face's **Tags:** line.
-3. **Shared hooks still asked for** (servers/workbench/page/focus_page.py):
+3. **Shared hooks still asked for** (servers/workbench/page/block_index_page/focus_page.py):
    - **Insight's Question Book:**
      - `work_process` uses `prototype_process(folder, root, level, view)`
      - `prototype_lead(...)` sits above Status and Findings

@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s11 Job view, topic rows</title>
+<style>
+:root{--line:#e3e3e6;--muted:#8a8a86;--ink:#1c1c1c;--accent:#1864ab;--soft:#e7f5ff;--bg:#fff;--you:#b35c00;--pick:#fed7aa;--pickline:#c2410c}
+@media (prefers-color-scheme:dark){:root{--line:#2c2e33;--muted:#8e8e8a;--ink:#e8e8e6;--accent:#91caff;--soft:#253749;--bg:#161719;--you:#ffb36b;--pick:#4a2e17;--pickline:#ffb36b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:960px;margin:auto;padding:20px 24px}
+.demo{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 18px;font-size:12px;color:var(--muted)}
+.demo button{border:1px dashed var(--line);background:none;color:var(--muted);border-radius:999px;padding:2px 10px;font:inherit;cursor:pointer}
+.demo button[aria-pressed=true]{border-style:solid;color:var(--ink)}
+h1{font-size:22px;margin:0 0 14px;display:flex;align-items:baseline;gap:14px}h1 span{font-size:18px;color:var(--muted);font-weight:600}
+h1 span::before{content:'';display:inline-block;width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5;margin-right:8px;vertical-align:middle}
+.row {
+  --fade-start:0px;
+  --fade-end:0px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  margin:0 -2px 6px;
+  padding:2px;
+  overflow:auto hidden;
+  overscroll-behavior-x:contain;
+  scrollbar-width:none;
+  scroll-padding-inline:2px;
+}
+.row::-webkit-scrollbar{display:none}
+.row.scrollable {
+  cursor:grab;
+  mask-image:linear-gradient(to right, transparent, #000 var(--fade-start),
+    #000 calc(100% - var(--fade-end)), transparent);
+}
+.row.can-scroll-start{--fade-start:10px}
+.row.can-scroll-end{--fade-end:14px}
+.row.dragging{cursor:grabbing}
+.row.scrollable button{cursor:inherit;user-select:none;-webkit-user-select:none}
+.row button{flex:none;border:1px solid var(--line);background:none;color:inherit;border-radius:8px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.row button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.row button.old{opacity:.55}.row button.old:hover,.row button.old[aria-pressed=true]{opacity:1}
+.row.topics{gap:16px}
+.row.topics button {
+  border:0;
+  border-bottom:2px solid transparent;
+  border-radius:0;
+  padding:2px 0 3px;
+  font-size:13.5px;
+  font-weight:600;
+  color:var(--muted);
+}
+.row.topics button[aria-pressed=true]{background:none;color:var(--ink);border-bottom-color:var(--accent)}
+.topic-code{color:var(--muted);font-size:12px;font-weight:400}
+.row.tasks{margin-bottom:14px}
+@media (pointer:coarse){.row button{min-height:44px}}
+.you{color:var(--you);font-size:11.5px;margin-left:3px}
+/* the real page's own parts (focus.css h2, focus_styles_bands BAND_CSS and .job-row), copied so the preview matches */
+:root{--paper:var(--bg);--wash:#f1f3f5}@media (prefers-color-scheme:dark){:root{--wash:#25262b}}
+h2{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:600;margin:22px 0 10px}h2:first-child{margin-top:6px}
+h2::after{content:'';flex:1;border-top:1px solid var(--line)}
+.band-sec{margin:0 0 8px}
+.band-sec>summary{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;list-style:none;cursor:pointer;font-size:15px;font-weight:600;border:1px solid var(--line);border-radius:8px;background:var(--paper);padding:8px 14px}
+.band-sec>summary::-webkit-details-marker{display:none}
+.band-sec>summary::before{content:"▸";flex:none;width:12px;color:var(--muted);font-size:12px}.band-sec[open]>summary::before{content:"▾"}
+.band-sec .bar{flex:0 0 120px;height:5px;border-radius:3px;background:var(--wash);overflow:hidden}
+.band-sec .bar i{display:block;height:100%;background:#2b8a3e}.band-sec .bar i.part{background:#e8590c}
+.ai-star{font-weight:400;color:var(--muted);font-size:14px}
+.band-jobs{padding:6px 0 4px 14px}
+.goal{font-size:16px;line-height:1.5;margin:4px 0 8px}
+.req{display:grid;grid-template-columns:90px 1fr;gap:10px;font-size:13px}.req b{font-weight:400;color:var(--accent)}
+.map{display:flex;align-items:center;gap:28px;padding:8px 0}.map .node{border:1px solid var(--ink);border-radius:6px;padding:6px 12px;font-weight:600;font-size:13px}
+.map .kids{display:flex;flex-direction:column;gap:6px}.map .kids .node{border-color:var(--line)}
+.job-row{border-bottom:1px solid var(--line)}.job-row:last-child{border-bottom:0}
+.job-row>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;padding:7px 15px 7px 2px;font-size:14px}
+.job-row>summary::-webkit-details-marker{display:none}
+.job-row>summary::before{content:"▸";flex:none;width:12px;color:var(--muted);font-size:11px}.job-row[open]>summary::before{content:"▾"}
+.job-row b{flex:1;min-width:0;font-weight:600}
+.rows{padding:0 15px 6px 22px}.rr{display:grid;grid-template-columns:22px 1fr auto;gap:10px;align-items:center;padding:5px 0;border-top:1px solid var(--line);font-size:13.5px}
+.rr:first-child{border-top:0}.rr small{color:var(--muted);font-size:12px}
+.none{font-size:13px;color:var(--muted);margin:0}
+[hidden]{display:none!important}
+.si{display:inline-grid;place-items:center;width:14px;height:14px;flex:none}.si svg{width:14px;height:14px;display:block}
+/* the s06 trace effects (files-trace-effects.html), by mark: not yet fades, running sweeps, done pops once, void struck,
+   waits for you pings; a group bar with running or waiting work inside carries the pinging dot */
+.fx-plan>summary b,.rr.fx-plan>span:nth-child(2){color:var(--muted)}
+.fx-new>summary b,.rr.fx-new>span:nth-child(2){color:var(--muted);font-style:italic;animation:fx-fade 2.6s ease-in-out infinite}
+.fx-new>summary b:before,.rr.fx-new>span:nth-child(2):before{content:"+ ";font-style:normal}
+@keyframes fx-fade{50%{opacity:.45}}
+.fx-edit>summary,.rr.fx-edit{background:linear-gradient(90deg,transparent,rgba(47,111,214,.10),transparent);background-size:200% 100%;animation:fx-shine 2.4s ease-in-out infinite}
+@keyframes fx-shine{0%{background-position:150% 0}100%{background-position:-50% 0}}
+.fx-edit .si{animation:fx-breathe 1.8s ease-in-out infinite}
+@keyframes fx-breathe{50%{filter:drop-shadow(0 0 4px rgba(47,111,214,.8));transform:scale(1.15)}}
+.fx-done .si{animation:fx-pop .7s cubic-bezier(.3,1.6,.5,1) 1}
+@keyframes fx-pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
+.fx-void>summary b,.rr.fx-void>span:nth-child(2){text-decoration:line-through;opacity:.55}
+.fx-you .si{border-radius:50%;animation:fx-ping 1.8s ease-out infinite}
+@keyframes fx-ping{0%{box-shadow:0 0 0 0 rgba(217,138,18,.55)}100%{box-shadow:0 0 0 6px rgba(217,138,18,0)}}
+.live-dot{display:inline-block;vertical-align:middle;width:6px;height:6px;border-radius:50%;flex:none;margin-left:6px;animation:fx-ping-b 1.8s ease-out infinite}
+.live-dot.edit{background:#2f6fd6}.live-dot.you{background:#d98a12;animation-name:fx-ping}
+@keyframes fx-ping-b{0%{box-shadow:0 0 0 0 rgba(47,111,214,.55)}100%{box-shadow:0 0 0 6px rgba(47,111,214,0)}}
+@media (prefers-reduced-motion:reduce){[class*=fx-] *,[class*=fx-],.live-dot{animation:none!important}}
+.only-tasks .demo,.only-tasks h1,.only-tasks #rows{display:none}.only-tasks #body{margin-top:0}
+.focus{outline:2px solid #e03131;outline-offset:6px;border-radius:6px}#rows.focus{margin-bottom:16px}#body.focus{margin-top:16px}
+</style></head><body><main>
+<div class="demo">preview only:<button data-demo="many" aria-pressed="false">MANY · 3 topics, 8 Jobs in one, 14 Tasks</button><button data-demo="few" aria-pressed="true">FEW · b17 today</button></div>
+<h1>b17_theme_work <span>💼 Jobs</span></h1>
+<div id="rows">
+  <div class="row topics" data-row="job-topic" role="group" aria-label="Job topics"></div>
+  <div class="row" data-row="job" role="group" aria-label="Jobs"></div>
+  <div class="row topics" data-row="task-topic" role="group" aria-label="Task topics"></div>
+  <div class="row tasks" data-row="task" role="group" aria-label="Tasks" hidden></div>
+</div>
+<div id="body"></div>
+</main>
+<script src="job-view-topics-data.js"></script>
+<script src="job-view-topics-el.js"></script>
+<script>
+// the part this preview is about, outlined red (JL 261126): Topic rows its rows, Job Main (?focus=main) the Main under them
+const Q = new URLSearchParams(location.search);
+// ?only=tasks (Effect › Task states): the Tasks band alone, no title, rows, Overview or Findings
+const ONLY_TASKS = Q.get('only') === 'tasks';
+if (ONLY_TASKS) document.body.classList.add('only-tasks');
+if (Q.get('focus') !== 'none') document.getElementById(Q.get('focus') === 'main' ? 'body' : 'rows').classList.add('focus');
+// The first three rows select the Job and its view. Opening a Task topic adds the Task row.
+const NAMES = ['Read the brief', 'Plan the page', 'Draw the views', 'Build the frame', 'Wire the marks', 'Check on 5623', 'Fix what fails', 'Write the ref', 'Hand over', 'Review A', 'Review B', 'Read aloud', 'Last check', 'Sign off'];
+const tasks = n => Array.from({length: n}, (_, i) => [`t${String(i + 1).padStart(2, '0')}`, NAMES[i], i === 2 ? 2 : 0]);
+const MANY = {
+ topics: [['1', 'Workbench'], ['2', 'Paper'], ['0', 'Earlier design']],
+ ttopics: {0: 'Build', 1: 'Check'},
+ jobs: [...Array.from({length: 8}, (_, i) => [`j1${i + 1}`, `Job ${i + 1}`, tasks(i === 0 ? 14 : 4)]),
+  ['j21', 'Draft', tasks(5)], ['j22', 'Figures', tasks(3)], ['j01', 'Work ladder contract', tasks(2)], ['j02', 'Workbench work skill', tasks(2)]]};
+// FEW is read from b17's folders by job-view-topics-data.py (names, rounds, marks, summaries, dates); nothing typed here
+const FEW = window.FEW;
+const rows = Object.fromEntries([...document.querySelectorAll('#rows [data-row]')].map(row => [row.dataset.row, row]));
+const lastTasks = new Map();
+// EFFECTS (?demo=effects, the Effects tab): one Task per state, each opened, so every effect shows at once
+const EFFECTS = {
+ topics: [['1', 'Workbench']], ttopics: {},
+ taskTopicNames: {j11: {0: 'One Task per state'}},
+ jobs: [['j11', 'Effects', [['t01', 'Done'], ['t02', 'Running'], ['t03', 'Waits for you'], ['t04', 'Not run yet'],
+   ['t05', 'New Task'], ['t06', 'Done, with a new Run'], ['t07', 'Void']], 'Each state once.', '']],
+ rounds: {
+  'j11/t01': [['✅', 'first round', 'p01 · 11-26', 'Done: pops in once.']],
+  'j11/t02': [['🏃', 'second round', 'p02 · 11-26', 'Running: a light sweeps across, the mark breathes.'], ['✅', 'first round', 'p01 · 11-25', '']],
+  'j11/t03': [['🙋', 'second round', 'p02 · 11-26', 'Waits for you: the ring pings.'], ['✅', 'first round', 'p01 · 11-25', '']],
+  'j11/t04': [['⬜', 'run-check', 'r01', 'Not run yet: grey, still.']],
+  'j11/t05': [['🆕', 'run-check', 'r01', 'New: a plus, grey italic, fading.']],
+  'j11/t06': [['🆕', 'third round', 'p03 · 11-26', 'A new Run under a done Task.'], ['✅', 'second round', 'p02 · 11-25', ''], ['✅', 'first round', 'p01 · 11-24', '']],
+  'j11/t07': [['❗', 'first round', 'p01 · 11-24', 'Void: struck through.']]}};
+let D = Q.get('demo') === 'effects' ? EFFECTS : FEW, topic = '1', job = 'j11', view = 'main';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const btn = (attr, on, label, old, extra = '') => `<button type="button" ${attr} aria-pressed="${on}" class="${old ? 'old' : ''}">${label}${extra}</button>`;
+const topicLabel = (name, code) => `${esc(name)} <span class="topic-code">· ${code}</span>`;
+const taskKey = decade => `${D === MANY ? 'many' : 'few'}/${job}/${decade}`;
+
+function updateScrollEdges(row) {
+  const limit = row.scrollWidth - row.clientWidth;
+  row.classList.toggle('scrollable', limit > 1);
+  row.classList.toggle('can-scroll-start', row.scrollLeft > 1);
+  row.classList.toggle('can-scroll-end', limit - row.scrollLeft > 1);
+}
+
+function revealChoice(row, button) {
+  const bounds = row.getBoundingClientRect();
+  const choice = button.getBoundingClientRect();
+  if (choice.left < bounds.left + 2) row.scrollLeft += choice.left - bounds.left - 12;
+  else if (choice.right > bounds.right - 2) row.scrollLeft += choice.right - bounds.right + 16;
+}
+
+function updateRow(row, html) {
+  const previous = row.querySelector('[aria-pressed="true"]')?.textContent;
+  const offset = row.scrollLeft;
+  row.innerHTML = html;
+  row.scrollLeft = offset;
+  const selected = row.querySelector('[aria-pressed="true"]');
+  if (selected && selected.textContent !== previous) revealChoice(row, selected);
+  updateScrollEdges(row);
+}
+
+function enableMouseDrag(row) {
+  let drag = null;
+  let suppressClick = false;
+
+  function endDrag(event) {
+    if (drag?.id !== event.pointerId) return;
+    drag = null;
+    row.classList.remove('dragging');
+  }
+
+  row.addEventListener('pointerdown', event => {
+    suppressClick = false;
+    if (event.pointerType !== 'mouse' || event.button !== 0 || row.scrollWidth <= row.clientWidth) return;
+    drag = {id: event.pointerId, x: event.clientX, offset: row.scrollLeft, active: false};
+  });
+  row.addEventListener('pointermove', event => {
+    if (drag?.id !== event.pointerId) return;
+    if (!(event.buttons & 1)) {
+      endDrag(event);
+      return;
+    }
+    const distance = event.clientX - drag.x;
+    if (!drag.active) {
+      if (Math.abs(distance) < 6) return;
+      drag.active = true;
+      suppressClick = true;
+      row.setPointerCapture(event.pointerId);
+      row.classList.add('dragging');
+    }
+    row.scrollLeft = drag.offset - distance;
+    event.preventDefault();
+  });
+  row.addEventListener('pointerup', endDrag);
+  row.addEventListener('pointercancel', endDrag);
+  row.addEventListener('lostpointercapture', endDrag);
+  row.addEventListener('pointerleave', event => {
+    if (!drag?.active) endDrag(event);
+  });
+  row.addEventListener('click', event => {
+    if (suppressClick && event.detail !== 0) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    suppressClick = false;
+  }, true);
+}
+
+function draw() {
+ const top = Math.max(...D.topics.map(t => +t[0]));
+ const J = D.jobs.find(j => j[0] === job), T = J[2];
+ const tdec = [...new Set(T.map(t => t[0][1]))];
+ const name = t => `${t[0]} · ${esc(t[1])}`;
+ const t = T.find(x => x[0] === view);
+ const taskTopic = t?.[0][1];
+ updateRow(rows['job-topic'], D.topics.map(([d, n]) =>
+  btn(`data-topic="${d}"`, d === topic, topicLabel(n, `j${d}N`), +d < top)).join(''));
+ updateRow(rows.job, D.jobs.filter(j => j[0][1] === topic).map(j =>
+  btn(`data-job="${j[0]}"`, j[0] === job, name(j))).join(''));
+ updateRow(rows['task-topic'], btn('data-view="main"', !t, 'Main') + tdec.map(d => {
+  const title = D.taskTopicNames?.[job]?.[d] ?? D.ttopics[d] ?? 'Tasks';
+  return btn(`data-ttopic="${d}"`, d === taskTopic, topicLabel(title, `t${d}N`));
+ }).join(''));
+ rows.task.hidden = !t;
+ if (t) {
+  updateRow(rows.task, T.filter(item => item[0][1] === taskTopic).map(item =>
+   btn(`data-view="${item[0]}"`, item[0] === view, name(item), false)).join(''));
+ } else {
+  rows.task.replaceChildren();
+ }
+
+ // the picked view's content, in one box with its open dot (Main: the Job's page; a Task: its page)
+ const ROUNDS = D.rounds || {};
+// a mark is the Files pane's own state mark (side_pane/files_tree/file_icons.py STATE_MARKS: the same shapes, colors and
+ // 12px box; JL 261126: "use the same system as we used in the folder panel"): done the green check, running the
+ // half-filled ring (Files: editing), not yet the dashed ring (Files: planned); waits for you and void, which the Files
+ // pane has no need of, drawn in the same style
+ const SI = {
+  '✅': ['done', '<circle cx="6" cy="6" r="5" fill="#2f9e5b"/><path d="M3.6 6.2l1.6 1.6 3.2-3.3" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>'],
+  '🏃': ['running', '<circle cx="6" cy="6" r="4.5" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><path d="M6 1.5a4.5 4.5 0 0 1 0 9z" fill="#2f6fd6"/>'],
+  '⬜': ['not yet', '<circle cx="6" cy="6" r="4.5" fill="none" stroke="#9a9a94" stroke-width="1.4" stroke-dasharray="2 1.6"/>'],
+  '🙋': ['waits for you', '<circle cx="6" cy="6" r="4.5" fill="none" stroke="#d98a12" stroke-width="1.5"/><circle cx="6" cy="6" r="2" fill="#d98a12"/>'],
+  '🆕': ['new', '<circle cx="6" cy="6" r="4.5" fill="none" stroke="#9a9a94" stroke-width="1.4" stroke-dasharray="2 1.6"/><path d="M6 3.9v4.2M3.9 6h4.2" stroke="#9a9a94" stroke-width="1.3" stroke-linecap="round"/>'],
+  '❗': ['void', '<circle cx="6" cy="6" r="5" fill="#d6453d"/><path d="M4.2 4.2l3.6 3.6M7.8 4.2l-3.6 3.6" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/>'],
+ };
+ const icon = m => { const k = [...(m || '⬜')][0], x = SI[k] || SI[(m || '').trim()];
+  return x ? `<span class=si role="img" aria-label="${x[0]}" title="${x[0]}"><svg viewBox="0 0 12 12">${x[1]}</svg></span>` : esc(m || ''); };
+ 
+ const rounds = x => ROUNDS[`${job}/${x[0]}`] || (D === MANY ? [['✅', 'first check round', 'p01 · 11-25', '']] : []);
+ const mark = x => (rounds(x).find(r => r[0] !== '🆕') || rounds(x)[0])?.[0] || '⬜';   // a new Run leaves its Task's mark; a Task with only new Runs is new
+ // the real page's parts (JL 261125 22:10: "make your design align with them"; "I want it out of the box"):
+ // a numbered band whose box is its bar only, ☆ on it; what it holds sits under the box, never inside
+ const FX = {'🆕': 'fx-new', '⬜': 'fx-plan', '🏃': 'fx-edit', '✅': 'fx-done', '❗': 'fx-void', '🙋': 'fx-you'};
+ const fx = m => FX[[...(m || '⬜')][0]] || '';
+ const row = (mk, title, small, hover) => `<div class="rr ${fx(mk)}" title="${esc(hover)}"><span class=mk>${icon(mk)}</span><span>${esc(title)}</span><small>${esc(small)}</small></div>`;
+ const band = (n, title, inner, o, share) => `<details class=band-sec${o ? ' open' : ''}><summary><span class=bt>${n} · ${title}</span>`
+   + (share == null ? '' : `<span class=bar><i class="${share < 100 ? 'part' : ''}" style="width:${share}%"></i></span>`)
+   + `<span class=ai-star title="AI readability: not read yet">☆</span></summary><div class=band-jobs>${inner}</div></details>`;
+ // a Task: a row with its name and its newest round's mark; opened, its rounds under it, no box
+ // a group bar with work running or waiting inside: the s06 folder's pinging dot (blue running, amber waits for you)
+ const groupDot = ts => { const ms = ts.map(x => fx(mark(x)));
+  return ms.includes('fx-edit') ? '<i class="live-dot edit" title="running inside"></i>' : ms.includes('fx-you') ? '<i class="live-dot you" title="waits for you inside"></i>' : ''; };
+ const taskRow = (x, o) => `<details class="job-row ${fx(mark(x))}"${o ? ' open' : ''}><summary><b>${name(x)}</b>${icon(mark(x))}</summary>`
+   + `<div class=rows>${rounds(x).map(r => row(r[0], r[1], r[2], r[3])).join('')}</div></details>`;
+ const overview = `<h2>🧭 Overview</h2>`
+   + band(1, '🎯 Goal', J[3] ? `<p class=goal>${esc(J[3])}</p>` : '', false)
+   + band(2, '📋 Requirements', J[4] ? `<div class=req><b>Close</b><span>${esc(J[4])}</span></div>` : '', false)
+   + band(3, '🧠 MindMap', `<div class=map><span class=node>${esc(J[0])} · ${esc(J[1])}</span><span class=kids>${T.map(x => `<span class=node>${esc(x[2] || x[0])}</span>`).join('')}</span></div>`, false);
+ document.getElementById('body').innerHTML = !t
+  ? (ONLY_TASKS ? '' : overview) + `<h2>📊 Tasks</h2>` + tdec.map((d, i) => band(i + 1, '🧱 ' + esc(D.taskTopicNames?.[job]?.[d] ?? 'Tasks') + groupDot(T.filter(x => x[0][1] === d)),
+      T.filter(x => x[0][1] === d).map(x => taskRow(x, D === EFFECTS)).join(''), true)).join('')   // one fold per Task group (JL 261125)
+    + (ONLY_TASKS ? '' : `<h2>🔎 Findings</h2><p class=none>No findings here.</p>`)
+  : `<h2>📊 Plan + Results</h2>` + band(1, '🧪 Runs', `<div class=rows>${rounds(t).map(r => row(r[0], r[1], r[2], r[3])).join('')}</div>`, true);
+}
+document.addEventListener('click', e => {
+ const b = e.target.closest('button'); if (!b) return;
+ const row = b.closest('[data-row]');
+ const oldDataset = D, oldTopic = topic, oldJob = job;
+ if (b.dataset.demo) {
+  D = b.dataset.demo === 'many' ? MANY : FEW;
+  topic = '1';
+  job = 'j11';
+  view = 'main';
+  document.querySelectorAll('[data-demo]').forEach(x => x.setAttribute('aria-pressed', x === b));
+ } else if (b.dataset.topic) {
+  topic = b.dataset.topic;
+  job = D.jobs.find(j => j[0][1] === topic)[0];
+  view = 'main';
+ } else if (b.dataset.job) {
+  job = b.dataset.job;
+  view = 'main';
+ } else if (b.dataset.ttopic) {
+  const decade = b.dataset.ttopic;
+  const jobTasks = D.jobs.find(j => j[0] === job)[2];
+  view = lastTasks.get(taskKey(decade)) ?? jobTasks.find(t => t[0][1] === decade)[0];
+ } else if (b.dataset.view) {
+  view = b.dataset.view;
+ } else {
+  return;
+ }
+ if (view !== 'main') lastTasks.set(taskKey(view[1]), view);
+ if (D !== oldDataset || topic !== oldTopic) rows.job.scrollLeft = 0;
+ if (D !== oldDataset || job !== oldJob) rows['task-topic'].scrollLeft = 0;
+ draw();
+ if (row) {
+  const [key, value] = Object.entries(b.dataset)[0];
+  [...row.querySelectorAll('button')].find(button => button.dataset[key] === value)?.focus({preventScroll:true});
+ }
+});
+draw();
+const resizeObserver = new ResizeObserver(entries => entries.forEach(({target}) => updateScrollEdges(target)));
+Object.values(rows).forEach(row => {
+  enableMouseDrag(row);
+  row.addEventListener('scroll', () => updateScrollEdges(row), {passive:true});
+  resizeObserver.observe(row);
+});
+</script>
+</body></html>

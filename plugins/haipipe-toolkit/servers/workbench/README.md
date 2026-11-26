@@ -17,6 +17,52 @@ Studio's `xcal.py` and `excalidraw_proxy.py`. A family owns *which* drawing
 and *where* it lives; Studio owns how a scene is opened, minted and saved.
 Guide embeds the same canvas in its isolated viewing mode and never saves.
 
+## Folders
+
+One folder per Task of the b17 work Block (`blueprints/Project-Ladder/work/b17_theme_work`): a file's
+folder names the Task that owns it. Every code folder is listed in `_host/host_registry.py` `BASE_GROUPS`,
+so a module is `live.<module>` wherever it sits; the Draft Task's module folders are `TASK_GROUPS`.
+
+| Folder | Job · Task | What it draws |
+|---|---|---|
+| `page/block_index_page/` | j11 · t01 | the Block as the one index page: Main, view buttons, bands, folds |
+| `page/job_task_views/` | j11 · t02 | a Job's views on the Block page: Main and one per Task |
+| `page/element_marks/` | j11 · t03 | each element's info, comments and 🙋 marks; the 🙋 tray |
+| `page/parts_and_map/` | j11 · t04 | shared page parts, themes, page rules; with `ref/` and `assets/` |
+| `home/` | j11 · t05 | the SPACE Home and Project pages |
+| `side_pane/files_tree/` | j12 · t01 | the Files tree in the side pane, its scope and traces |
+| `side_pane/rail_sections/` | j12 · t02 | the rail sections opened in the side pane |
+| `studio/tabs/` | j13 · t01 | Studio read like Main: a page's topics, each a fold |
+| `guide/` | j13 · t02 | the Guide pages |
+| `studio/canvas/` | j13 · t04 | the Excalidraw canvas, linked drawings, ✨ Draw it and ✨ deck |
+| `chat_drawer/` | j15 · t01 | the chat drawer: the Claude session, its context, rules and transcript |
+| `terminal/` | j15 · t02 | the terminal in a page |
+| `workbench-task-draft/page_shell/` | j14 · t01 | the Draft Task page: its tabs and Steps view |
+| `workbench-task-draft/plan_outline/` | j14 · t02 | the Plan step: outline, plan cards, feedback, scratch |
+| `workbench-task-draft/evidence_steps/` | j14 · t03 | the Evidence step: items, cite cards, displays, values |
+| `workbench-task-draft/revise_steps/` | j14 · t04 | the Revise step: cards, notes, history, rubric |
+| `workbench-task-draft/run_views/` | j14 · t05 | the Runs tab: Runs, cards, receipts, results |
+| `workbench-task-draft/delivery_export/` | j14 · t06 | Delivery and the exports, with `exporters/` |
+| `workbench-task-draft/reader/` | j14 · t07 | the standalone Page server and the reader look |
+
+`focus-assets/` (the page's one css and js) is shared: the shell is j11 t01's, the 🙋 tray j11 t03's,
+the side pane j12 t01's.
+
+A Task's tests sit in its folder's own `tests/` (`page/job_task_views/tests/`), beside the code they
+check; a `tests/` folder is not a live folder. `tests/` here keeps only `focus_page_fixtures.py`, the
+shared fixtures, which a test finds from any depth. Run one Task's tests with
+`cd servers && PYTHONPATH=_host python -m pytest -q workbench/page/job_task_views/tests`, or all of
+them with `workbench`.
+
+A focus page takes `mark=<part>[,<part>]` (a class, or `jsub=main` for `[data-jsub="main"]`): `focus-assets/focus.js`
+outlines those parts in red, so a UI preview's live views of one page differ only in what they mark.
+
+A focus page is built once into a file and served from it (`page/block_index_page/page_cache.py`):
+the build records every file and folder the page reads, and the next open checks their modified times,
+the loaded code's and the date, building again only when one changed (a repeat open of a large Block:
+0.9 s to 0.03 s). Built pages are kept in `~/.cache/haipipe/pages/`; `PAGE_CACHE=0` turns it off. A
+page that runs a command other than `git log` is never kept.
+
 ## Topics
 
 - [ref/focus-views.md](ref/focus-views.md): focus page views, Around the Work, Files, UI examples, Delivery storage
@@ -59,12 +105,12 @@ name       and its        and its output     name
 
 ## References
 
-- [Workbench design principle](../../../../blueprints/Project-Ladder/work/b10_project_workbench/board.md)
+- Workbench design principle (b10, removed 261126)
 - [Paper Workbench implementation](../workbench-paper/paper.py)
 - [Paper workflow contract](../../skills/2_theme/paper/haipipe-paper-workflow/SKILL.md)
 - [Paper Story contract](../../skills/2_theme/paper/haipipe-paper-story/SKILL.md)
 - [Paper Workbench contract](../../skills/2_theme/paper/workbench-paper/SKILL.md)
 - [Paper design studio](../../../../blueprints/Project-Ladder/work/b16_theme_paper/s01-paper-tree-concept/s01-paper-tree-concept.excalidraw)
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
-- [Insight design studio](../../../../blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw)
+- [Insight design studio](../workbench-insight/studio/insight-workbench-design.excalidraw)
 - [Studio contract](../../skills/1_base/project/haipipe-studio/ref/screen.md)

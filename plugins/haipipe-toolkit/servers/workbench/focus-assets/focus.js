@@ -2,7 +2,17 @@
   document.querySelectorAll('[data-rail-menu]').forEach(menu => {
     const drawer = document.getElementById(menu.getAttribute('aria-controls'));
     if (!drawer) return;
+    const panel = drawer.querySelector('iframe[data-drawer-src]');
+    panel?.addEventListener('load', () => {
+      panel.contentDocument?.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !e.defaultPrevented && !panel.contentDocument.querySelector('dialog[open]')) {
+          e.preventDefault();
+          drawer.close();
+        }
+      });
+    });
     menu.addEventListener('click', () => {
+      if (panel && !panel.hasAttribute('src')) panel.src = panel.dataset.drawerSrc;
       drawer.showModal();
       menu.setAttribute('aria-expanded', 'true');
       document.body.classList.add('section-drawer-open');
@@ -18,10 +28,131 @@
       menu.setAttribute('aria-expanded', 'false');
       document.body.classList.remove('section-drawer-open');
     });
-    window.matchMedia('(max-width:600px)').addEventListener('change', e => {
-      if (!e.matches && drawer.open) drawer.close();
-    });
+    if (menu.classList.contains('rail-tab')) {
+      window.matchMedia('(max-width:600px)').addEventListener('change', e => {
+        if (!e.matches && drawer.open) drawer.close();
+      });
+    }
   });
+  // The side pane: the right rail's sections behind the round button. A pick opens that section in the pane,
+  // a right split on a wide screen (the page narrows beside it) and a drawer on a phone. The pane has no header:
+  // the same button switches it and its menu's last row closes it (on a phone, a tap outside the drawer too).
+  // The open section and the dragged width carry to the next page.
+  (() => {
+    const ball = document.querySelector('.files-ball[aria-controls="side-menu"]');
+    const menu = document.getElementById('side-menu');
+    const pane = document.getElementById('files-drawer');
+    if (!ball || !menu || !pane) return;
+    const frame = pane.querySelector('iframe'), shut = menu.querySelector('[data-side-close]');
+    const narrow = window.matchMedia('(max-width:600px)');
+    const store = (s, k, v) => { try { v === undefined ? s.removeItem(k) : s.setItem(k, v); } catch (e) {} };
+    const recall = (s, k) => { try { return s.getItem(k); } catch (e) { return null; } };
+    // the section word beside the title (Report ▾) is the sections menu; the ball is Files alone (JL 261125: "when I
+    // click this, I can choose different things, like Studio, things to know"; "keep [the ball] to be just the file")
+    const pick = document.querySelector('.h1-pick'), filesItem = menu.querySelector('[data-side-key="files"]');
+    let from = ball;
+    const hideMenu = () => { menu.hidden = true; ball.setAttribute('aria-expanded', 'false'); pick?.setAttribute('aria-expanded', 'false'); };
+    const showMenu = (anchor = ball) => {      // under the word, or to the left of the ball, kept on screen
+      from = anchor;
+      shut.hidden = !pane.open;
+      if (filesItem) filesItem.hidden = anchor === pick;
+      menu.hidden = false;
+      const r = anchor.getBoundingClientRect(), h = menu.offsetHeight;
+      if (anchor === pick) {
+        menu.style.right = 'auto';
+        menu.style.left = Math.max(8, Math.min(r.left, innerWidth - menu.offsetWidth - 8)) + 'px';
+        menu.style.top = Math.min(r.bottom + 6, innerHeight - h - 8) + 'px';
+      } else {
+        menu.style.left = 'auto';
+        menu.style.right = (innerWidth - r.left + 8) + 'px';
+        menu.style.top = Math.max(8, Math.min(r.top + r.height / 2 - h / 2, innerHeight - h - 8)) + 'px';
+      }
+      anchor.setAttribute('aria-expanded', 'true');
+      (menu.querySelector('[data-side-key].on:not([hidden])') || menu.querySelector('[data-side-key]:not([hidden])'))?.focus();
+    };
+    const open = item => {
+      menu.querySelectorAll('[data-side-key]').forEach(b => b.classList.toggle('on', b === item));
+      if (frame.getAttribute('src') !== item.dataset.sideSrc) frame.src = item.dataset.sideSrc;
+      if (!pane.open) {
+        if (narrow.matches) { pane.showModal(); document.body.classList.add('section-drawer-open'); }
+        else { pane.show(); document.body.classList.add('files-split'); }
+      }
+      store(sessionStorage, 'wb:side', item.dataset.sideKey);
+    };
+    ball.addEventListener('click', () => {
+      if (!filesItem || !pick) return menu.hidden ? showMenu() : hideMenu();
+      hideMenu();
+      if (pane.open && filesItem.classList.contains('on')) pane.close(); else open(filesItem);
+    });
+    pick?.addEventListener('click', () => (menu.hidden || from !== pick ? showMenu(pick) : hideMenu()));
+    menu.addEventListener('click', e => {
+      if (e.target.closest('[data-side-close]')) { hideMenu(); pane.close(); return; }
+      const it = e.target.closest('[data-side-key]'); if (!it) return;
+      hideMenu();
+      if (it === filesItem) return open(it);
+      // a section opens in the main page; the side pane holds Files only (JL 261125: "Now I want in the right panel. we
+      // will just show the files")
+      const to = new URL(it.dataset.sideSrc, location.href); to.searchParams.delete('panel');
+      location.href = to.pathname + to.search;
+    });
+    menu.addEventListener('keydown', e => {
+      const all = [...menu.querySelectorAll('[role=menuitem]:not([hidden])')], i = all.indexOf(document.activeElement);
+      if (e.key === 'Escape') { hideMenu(); from.focus(); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); all[(i + (e.key === 'ArrowDown' ? 1 : all.length - 1)) % all.length]?.focus(); }
+    });
+    document.addEventListener('click', e => { if (!menu.hidden && !menu.contains(e.target) && !e.target.closest('.files-ball, .h1-pick')) hideMenu(); });
+    document.addEventListener('keydown', e => {   // Esc closes the menu wherever focus is, and only the menu
+      if (e.key === 'Escape' && !menu.hidden && !e.defaultPrevented) { e.preventDefault(); hideMenu(); from.focus(); }
+    });
+    pane.addEventListener('close', () => {
+      hideMenu();
+      document.body.classList.remove('files-split', 'section-drawer-open');
+      store(sessionStorage, 'wb:side');
+    });
+    frame.addEventListener('load', () => {
+      frame.contentDocument?.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && !e.defaultPrevented && !frame.contentDocument.querySelector('dialog[open]')) { e.preventDefault(); pane.close(); }
+      });
+    });
+    // a right-click on an element folds the Files pane to its folder and the code it owns (element_info.py)
+    addEventListener('wb:show-files', e => {
+      if (!pane.open && filesItem) open(filesItem);
+      const go = () => frame.contentWindow?.__scopeFocus?.(e.detail);
+      if (frame.contentDocument?.readyState === 'complete' && frame.contentWindow?.__scopeFocus) go();
+      else frame.addEventListener('load', go, { once: true });
+    });
+    narrow.addEventListener('change', e => { if (e.matches && document.body.classList.contains('files-split')) pane.close(); });
+    pane.addEventListener('click', e => {       // the phone drawer is modal: a tap on its backdrop closes it
+      if (e.target !== pane || !pane.matches(':modal')) return;
+      const r = pane.getBoundingClientRect();
+      if (e.clientX < r.left || e.clientX > r.right || e.clientY < r.top || e.clientY > r.bottom) pane.close();
+    });
+    const width = w => document.documentElement.style.setProperty('--files-w', w + 'px');
+    const saved = +recall(localStorage, 'wb:files-w');
+    if (saved) width(saved);
+    const grip = pane.querySelector('.files-grip');
+    grip?.addEventListener('pointerdown', e => {
+      e.preventDefault();
+      grip.setPointerCapture(e.pointerId);
+      document.body.classList.add('files-dragging');
+      let last = 0;
+      const move = ev => { last = Math.round(Math.min(Math.max(innerWidth - ev.clientX, 260), innerWidth * 0.7)); width(last); };
+      grip.addEventListener('pointermove', move);
+      grip.addEventListener('pointerup', () => {
+        grip.removeEventListener('pointermove', move);
+        document.body.classList.remove('files-dragging');
+        if (last) store(localStorage, 'wb:files-w', String(last));
+      }, { once: true });
+    });
+    const asked = new URLSearchParams(location.search);
+    if (asked.get('section') === 'files') {   // an old link to the Files page: the page, with Files beside it
+      asked.delete('section'); asked.delete('group');
+      history.replaceState(null, '', location.pathname + '?' + asked + location.hash);
+      const files = menu.querySelector('[data-side-key="files"]');
+      if (files) { open(files); return; }
+    }
+    if (filesItem && recall(sessionStorage, 'wb:side') === 'files' && !narrow.matches) open(filesItem);
+  })();
   const rails = [...document.querySelectorAll('.focus-rail')];
   function closeRails() { rails.forEach(rail => rail.classList.remove('is-open')); }
   rails.forEach(rail => {
@@ -51,16 +182,51 @@
   document.addEventListener('pointerdown', e => { if (!e.target.closest('.focus-rail')) closeRails(); });
   const dialog = document.querySelector('#focus-viewer');
   let opener = null;
+  const pop = (href, title) => {
+    dialog.querySelector('[data-viewer-title]').textContent = title;
+    dialog.querySelector('iframe').src = href;
+    dialog.querySelector('[data-viewer-go]').href = href;   // the pop-out's way to switch to the page
+    dialog.showModal();
+  };
+  window.__wbPop = pop;
+  // a page shown inside the side pane opens its files in the main page's viewer, full size, not in the pane
+  const host = (() => { try { return window.parent !== window && window.parent.__wbPop ? window.parent : null; } catch (e) { return null; } })();
   document.addEventListener('click', e => {
     const link = e.target.closest('a[data-pop]');
     if (!link || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
-    e.preventDefault(); opener = link; closeRails();
-    dialog.querySelector('[data-viewer-title]').textContent = link.dataset.pop;
-    dialog.querySelector('iframe').src = link.href;
-    dialog.querySelector('[data-viewer-go]').href = link.href;   // the pop-out's way to switch to the page
-    dialog.showModal();
+    e.preventDefault(); closeRails();
+    if (host && window.frameElement?.closest('#files-drawer')) { host.__wbPop(link.href, link.dataset.pop); return; }
+    opener = link;
+    pop(link.href, link.dataset.pop);
   });
   dialog.querySelector('[data-close]').addEventListener('click', () => dialog.close());
+  // One header line: the file's own tools (Open, Download, Line wrap) move up beside its name, and the preview's
+  // second row is hidden; Line wrap here drives the preview's own switch.
+  const viewerFrame = dialog.querySelector('iframe'), title = dialog.querySelector('[data-viewer-title]');
+  viewerFrame.addEventListener('load', () => {
+    dialog.querySelector('.viewer-tools')?.remove();
+    let doc; try { doc = viewerFrame.contentDocument; } catch (e) { return; }
+    const tools = doc?.querySelector('.preview-tools');
+    if (!tools) return;
+    const bar = document.createElement('span');
+    bar.className = 'viewer-tools';
+    tools.querySelectorAll('a').forEach(a => {
+      const b = document.createElement('a');
+      b.href = a.href; b.textContent = a.textContent.trim();
+      if (a.hasAttribute('download')) b.setAttribute('download', ''); else { b.target = '_blank'; b.rel = 'noopener'; }
+      bar.append(b);
+    });
+    const wrap = doc.getElementById('wrap-lines');
+    if (wrap) {
+      const label = document.createElement('label'), box = document.createElement('input');
+      box.type = 'checkbox'; box.checked = wrap.checked;
+      box.addEventListener('change', () => { wrap.checked = box.checked; });
+      label.append(box, ' Line wrap');
+      bar.append(label);
+    }
+    tools.hidden = true;
+    title.after(bar);
+  });
   dialog.addEventListener('close', () => { dialog.querySelector('iframe').removeAttribute('src'); opener?.focus(); });
   dialog.addEventListener('click', e => {
     if (e.target !== dialog) return;
@@ -213,4 +379,25 @@
       h.insertBefore(b, at);
     });
   });
+})();
+
+// A UI preview's live view names the part it is about (haipipe-studio ref/ui-preview-topic.md): `mark=jobs-rows`
+// (comma-separated: a class name, or `jsub=main` for [data-jsub="main"]) outlines the visible ones in red and
+// scrolls the first into view.
+(function () {
+  const sel = (new URLSearchParams(location.search).get('mark') || '').split(',').map(s => s.trim()).map(s =>
+    /^[\w-]+$/.test(s) ? '.' + s : (/^([\w-]+)=([\w-]+)$/.test(s) ? s.replace(/^([\w-]+)=([\w-]+)$/, '[data-$1="$2"]') : ''))
+    .filter(Boolean);
+  if (!sel.length) return;
+  const css = document.createElement('style');
+  css.textContent = '.preview-mark{outline:2px solid #e03131;outline-offset:4px;border-radius:6px}';
+  document.head.appendChild(css);
+  const draw = () => {
+    document.querySelectorAll('.preview-mark').forEach(el => el.classList.remove('preview-mark'));
+    const hits = sel.flatMap(q => [...document.querySelectorAll(q)]).filter(el => el.getClientRects().length);
+    hits.forEach(el => el.classList.add('preview-mark'));
+    return hits;
+  };
+  requestAnimationFrame(() => { const hits = draw(); if (hits[0]) hits[0].scrollIntoView({ block: 'center' }); });
+  document.addEventListener('click', () => setTimeout(draw, 60));   // a picked Job or Task shows its own part
 })();

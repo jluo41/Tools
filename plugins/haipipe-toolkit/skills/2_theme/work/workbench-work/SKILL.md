@@ -10,7 +10,7 @@ metadata:
 
 ## Current focus pages
 
-By default, open a work Block, Job or Task on the focus page (`servers/workbench/page/focus_page.py`,
+By default, open a work Block, Job or Task on the focus page (`servers/workbench/page/block_index_page/focus_page.py`,
 `work_frame.py`), its views Overview · Plan + Results · Findings · Delivery. These hold, each one
 b17 `s04-workbench-page-structure` Decided:
 
@@ -28,15 +28,17 @@ b17 `s04-workbench-page-structure` Decided:
 One thing shows once, in one look, under one name: a topic has the same name in Studio and
 Decisions, and Jobs are never listed twice.
 
+The work theme's example Block is `blueprints/Project-Ladder/work/b01_example_work`: every work page and UI preview is looked at on it (haipipe-ui A08).
+
 A theme-design Block (b17, `theme:` in its face) opens each of Block UI · Job UI · Task UI · Run UI with **🧩 Elements**
 (JL 261118): one left tab per part of a page at that level (path, view buttons, section bar, Job row, question card,
-tab, paragraph, Files ...), read from its `ui/<level>-elements.md` (`show:` selector, `view:`, `folder:`, `code:`, rules);
+tab, paragraph, Files ...), read from its `delivery/page-spec/<level>-elements.md` (`show:` selector, `view:`, `folder:`, `code:`, rules);
 the right side says what the part reads and which code draws it, then the example page live with that part outlined.
 One 🧩 Elements section per type of page at the level (Work, Blueprint, Collaboration, Inquiry Block; Draft Task ...),
 each its views as groups; a tab shows only that part, live and usable. Each tab carries marks
 (`elements.<level>.<type>.<view>.<part>`). The file is harvested from the real example pages, never typed by hand:
-`uv run --with beautifulsoup4 python servers/workbench/page/ui_elements_harvest.py <theme Block>` (notes kept);
-`servers/workbench/page/focus_ui_elements.py` draws it.
+`uv run --with beautifulsoup4 python servers/workbench/page/element_marks/ui_elements_harvest.py <theme Block>` (notes kept);
+`servers/workbench/page/parts_and_map/focus_ui_elements.py` draws it.
 
 ## Work Block and Blueprint Block
 
@@ -49,7 +51,7 @@ Both have Overview · Plan + Results · Findings · Delivery. Only a Blueprint w
 corresponding `ui-block:`, `ui-job:`, `ui-task:`, `ui-run:` examples adds Block UI · Job UI ·
 Task UI · Run UI. The ordinary Work example is `b90_example_paper_results`; the Blueprint
 example is `b17_theme_work`, both under `blueprints/Project-Ladder/work/` in Tools.
-The type/view matrices and `view-guide.json` in b17's `ui/` are the current comparison.
+The type/view matrices and `view-guide.json` in b17's `delivery/page-spec/` are the current comparison.
 
 **A Question Book is a work page in an insight folder.** The work theme also claims every Block whose `board.md`
 says `board-kind: prototype` (`servers/workbench-work/work_theme.py` `claims()`), wherever it sits. That Block is
@@ -66,6 +68,10 @@ Checklist, Timeline, Skills, Files. The right rail uses those same names and
 aggregates the current page and its descendants across views. Report combines
 results and work actions; there is no separate Work rail entry in this focus UI.
 
+On a Block, Files starts with its real folder expanded and remembers open subfolders
+when you switch views in the same tab. Open **Tools** below the block folder to browse
+**Skills** and **UI** together; either branch can stay open while you browse the other.
+
 Plan + Results shows actual Jobs/Tasks/Run states, one section per Job type; it
 does not replace those records with a generic Next Steps list. Findings reads, on a
 Block first 🗄️ Data (its stores, board.md `data:`), then 🔢 Values (tables.json, values.json;
@@ -74,14 +80,14 @@ drew maps; Studio topics are Around the Work's Studio, not Findings (JL 261111).
 
 A work Block's Overview draws 🗺️ Work map after Goal when it has two or more Runs (JL 261114): one coloured line per
 Job, one station per Run in time order, a shaded band per day; a click opens the Run's page in the pop-out
-(`servers/workbench/page/work_map.py`, the method of trace-canvas). A Block's own build can draw other entries with
+(`servers/workbench/page/job_task_views/work_map.py`, the method of trace-canvas). A Block's own build can draw other entries with
 the same `work_map.transit_svg` (b41 draws its decisions; a station without a page opens its card in the pop-out).
 
 A face may name its own sections instead (JL 261114): `## Review Content` replaces the Overview's Goal ·
 Requirements · MindMap, `## Plan + Results` adds sections after the Jobs, and `## Findings` replaces Data · Values ·
 Displays. Each `### <title>` is one
 numbered section; `embed: <path>` brings in a `.md` or an `.svg` drawing (an `.html` is never framed); `each: <glob>` makes one section per `.md`, titled by
-its `# ` line; a list item with sub-items shows as a card that opens (`Session:`/`Area:` chips, `Decided:`/`JL asked:`/`Built:` blocks), and a list of bold-time items is a timeline. Fixed Findings sections with nothing in them (Data, Values, Displays) are not drawn. `servers/workbench/page/work_sections.py` reads them; `/haipipe-work propose` writes them.
+its `# ` line; a list item with sub-items shows as a card that opens (`Session:`/`Area:` chips, `Decided:`/`JL asked:`/`Built:` blocks), and a list of bold-time items is a timeline. Fixed Findings sections with nothing in them (Data, Values, Displays) are not drawn. `servers/workbench/page/job_task_views/work_sections.py` reads them; `/haipipe-work propose` writes them.
 
 Every row and every piece of content can take your notes (JL 261116; `servers/workbench/ref/cards.md` §2): a Job, Task
 or Run row in Plan + Results shows its state mark, then 🙋 N (its waiting questions; the card is the form itself,
@@ -173,7 +179,7 @@ available. Preserve the existing host's authentication settings.
 | Check › Reports | Each report's answer status, evidence warnings and next action | Same snapshot; no second progress file |
 | Delivery › Reports | Each report whose `answer-status` is `answered`: its Opening and Answer word for word, its evidence and drawings | report Pages |
 
-Each Space has the shared Runs panel on the right (`servers/workbench/page/runs_panel.py`),
+Each Space has the shared Runs panel on the right (`servers/workbench/page/job_task_views/runs_panel.py`),
 folded at first as Insight's: its run types are this skill's `ref/workbench-table.md` rows
 for that Space, each with its agent, skill and a prompt to copy; Task's "Run a Task" lists
 every native Run with its status. Clicking a Question row (outside its links) selects it:
