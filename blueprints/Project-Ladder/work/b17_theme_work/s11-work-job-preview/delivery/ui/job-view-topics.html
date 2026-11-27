@@ -78,7 +78,7 @@ h2::after{content:'';flex:1;border-top:1px solid var(--line)}
 .none{font-size:13px;color:var(--muted);margin:0}
 [hidden]{display:none!important}
 .si{display:inline-grid;place-items:center;width:14px;height:14px;flex:none}.si svg{width:14px;height:14px;display:block}
-/* the s06 trace effects (files-trace-effects.html), by mark: not yet fades, running sweeps, done pops once, void struck,
+/* the s31 trace effects (files-trace-effects.html), by mark: not yet fades, running sweeps, done pops once, void struck,
    waits for you pings; a group bar with running or waiting work inside carries the pinging dot */
 .fx-plan>summary b,.rr.fx-plan>span:nth-child(2){color:var(--muted)}
 .fx-new>summary b,.rr.fx-new>span:nth-child(2){color:var(--muted);font-style:italic;animation:fx-fade 2.6s ease-in-out infinite}
@@ -273,7 +273,7 @@ function draw() {
    + (share == null ? '' : `<span class=bar><i class="${share < 100 ? 'part' : ''}" style="width:${share}%"></i></span>`)
    + `<span class=ai-star title="AI readability: not read yet">☆</span></summary><div class=band-jobs>${inner}</div></details>`;
  // a Task: a row with its name and its newest round's mark; opened, its rounds under it, no box
- // a group bar with work running or waiting inside: the s06 folder's pinging dot (blue running, amber waits for you)
+ // a group bar with work running or waiting inside: the s31 folder's pinging dot (blue running, amber waits for you)
  const groupDot = ts => { const ms = ts.map(x => fx(mark(x)));
   return ms.includes('fx-edit') ? '<i class="live-dot edit" title="running inside"></i>' : ms.includes('fx-you') ? '<i class="live-dot you" title="waits for you inside"></i>' : ''; };
  const taskRow = (x, o) => `<details class="job-row ${fx(mark(x))}"${o ? ' open' : ''}><summary><b>${name(x)}</b>${icon(mark(x))}</summary>`

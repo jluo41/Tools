@@ -16,4 +16,5 @@ The checks themselves and the reports that show their results; each check is its
 3. t03_missing_values · Task 03 name
 4. t11_text_report · Task 11 name
 5. t12_html_report · Task 12 name
+6. t13_range_figure · Task 13 name
 

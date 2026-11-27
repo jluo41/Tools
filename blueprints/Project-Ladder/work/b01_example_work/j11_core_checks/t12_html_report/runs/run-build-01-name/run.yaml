@@ -12,3 +12,6 @@ passes:
 - p01-1124
 writes: []
 feeds: []
+finds:
+- file: result/report.html
+  kind: report

@@ -247,20 +247,23 @@ def work_findings(folder: Path, root: Path) -> str:
     empty, why you still list them here"), and the rest renumber. Last, 🧠 Maps, only when the page or its
     Tasks' newest Runs drew maps (result/maps/); Studio topics are Around the Work's Studio, not Findings."""
     level = page_level(folder)
-    vals = task_values(folder, root) if level == "Task" else value_sections(folder, root)
-    disp = display_sections(folder, root)
+    # a Job: what its Runs name under finds:, a fold per kind (b17 trace 261127/0045); the older Values and Displays
+    # only for a kind no Run names
+    from live.run_finds import sections as finds_sections
+    finds = finds_sections(folder, root) if level == "Job" else []
+    named = {s[5] for s in finds}
+    vals = [] if "find-values" in named else task_values(folder, root) if level == "Task" else value_sections(folder, root)
+    disp = [] if "find-displays" in named else display_sections(folder, root)
     v_body = "".join(h for _, h, _ in vals)
     secs = ([("🔢 Values", vals[0][2], v_body, "", None, "find-values")] if v_body else []) \
         + ([("🖼️ Displays", disp[0][2], disp[0][1], "", None, "find-displays")] if disp else [])
+    secs = finds + secs                          # Values, Displays, Reports first, then any older fold
     if level == "Block":                         # where the data is first, before its numbers
         html, word = data_section(folder, root)
         if html:
             secs.insert(0, ("🗄️ Data", word, html, "", None, "find-data"))
     # then its maps, only when it has some: Data, then displays, then Maps
     secs += [(t, w, h, "") for t, h, w in map_sections(folder, root)]
-    if level == "Job":                           # what its Tasks' rounds found, a fold per Task group (b17 1145)
-        from live.round_findings import sections as round_sections
-        secs += round_sections(folder, root)
     # last, the generated Fn code its Tasks make, so a reader can open the code a Result came from
     secs += [(t, w, h, "", None, "find-fn") for t, h, w in fn_sections(folder, root)]
     if not secs:                                 # a Job's Main draws no empty Findings band (b17 trace 261126/1225)

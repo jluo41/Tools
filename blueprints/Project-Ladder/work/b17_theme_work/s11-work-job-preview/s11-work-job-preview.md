@@ -124,14 +124,44 @@ JL 261125 21:40, of the 🧾 Traces band copied in from the Job Main preview: "I
 the Traces band". Removed; a Job's Main is 📊 Plan + Results (its Tasks) and 🔎 Findings when something waits, nothing more.
 
 JL 261126 12:30, of 🧭 Overview's three folds (Goal, Requirements, MindMap): "merge the three fold into one fold",
-top-view-left-tab-right-content. Open: four quick views under Effect, one to pick. A Job with nothing found draws no
-🔎 Findings band (no "No findings here.").
+top-view-left-tab-right-content. A Job with nothing found draws no 🔎 Findings band (no "No findings here.").
+
+JL 261127 00:08, of the four Overview quick views: "I prefer to have this one", overview-top-views. A Job's 🧭 Overview
+is one fold, 1 · 📋 Brief (JL 261127 00:30; first the Job's name, which repeated its Job button), top views Goal · Requirements · MindMap, MindMap's left tabs Topics and Work
+Structure (`work_frame.overview`, `top_views`). Live under Page › job-overview; the quick view fades (old); the other
+three (left tabs, Brief and MindMap, Goal on top) removed 261127.
+
+JL 261127 00:40-00:45, of 🔎 Findings: "they are more like the values, the tables, the figures, the report". Findings
+is what a Job's Runs made, by type: a Run names its files in run.yaml `finds:` (value, display, report), and Findings
+draws 🔢 Values, 🖼️ Displays, 📄 Reports, a left tab per file of each Task's newest Run, its open dot opening the file
+where the Run wrote it; no findings/ folder (`run_finds.py`). The round folds per Task group are gone; rounds stay in
+📊 Tasks. Overview is the Job's aim and scope, Tasks its progress, Findings its outputs.
+
+JL 261127 12:08, of a Value's raw file: a finding names where it came from, `from:` (the raw files) and `how:` (its
+steps) in its `finds:` entry. Under the finding each raw file shows with its open dot and ✅ or ❗ (the raw file changed
+after the finding, or is gone), and the steps in a "How this table is made" fold, as the paper theme's Values link to
+their source Runs. A fold with one finding shows it full width (trace 261127/1215).
+
+JL 261127, after trying the inline Overview proposal: "我觉得这个做得挺好的。你能不能嵌到，比如说，呃我们那个内部呢？我看看什么样子。"
+The new Effect › Overview · interactive keeps the preview in this topic: Goal / Requirements / MindMap,
+Topics / Work Structure, Task inspection, and dots to expand Overview or hide its navigation. It is a separate
+proposal for comparison, not a replacement for Page › job-overview. The user approved the four-file integration
+plan with "Okay, go ahead." The related conversation and checks are in `../trace/261127/0850_overview_effect.md`.
+
+JL 261127, after reviewing the interactive Effect: "要不然现在你就直接 implement 一下吧，把它给弄到这个 page 里面去，我看看什么效果。"
+The user confirmed the eight-file implementation plan with "确认，按这份清单实现". Now live in Page › job-overview:
+one Brief fold, Goal / Requirements / MindMap, actual Task groups in Topics, recorded Task goals in Work Structure,
+local Task detail dialogs, and the expand/restore dot. Controls are scoped to each Job; inspecting a Task keeps
+the owning Block's title and route. Authored Review Content remains authoritative. The matching interactive
+Effect is faded and retained for comparison. Implementation: `job_task_views/job_overview.py`; checks and the
+request are recorded in `../trace/261127/0912_overview_live.md`.
 
 Files
 -----
 
 - Page: job-rows, job-overview, job-tasks, job-findings, one live page (b01_example_work's Jobs, j11 picked) with four marks: the rows, 🧭 Overview, 📊 Tasks, 🔎 Findings
 - `delivery/ui/task-states.html` (Effect › Task states): the Topic rows page (`?demo=effects`), one Task per state with its effect, a legend beside it
-- `delivery/ui/overview-top-views.html`, `overview-left-tabs.html`, `overview-brief-and-map.html`, `overview-goal-lead.html` (Effect): one Overview fold over j11, four layouts to pick from
+- `delivery/ui/overview-interactive.html` (Effect › Overview · interactive, faded): the accepted comparison; implemented in Page › job-overview by `job_overview.py`
+- `delivery/ui/overview-top-views.html` (Effect, faded): the Overview layout picked 261127, live in `work_frame.py`
 - `delivery/ui/job-view-topics.html`: the design, taken (20:50), live in `focus_jobs.py`; its four rows outlined red
 - `s11-work-job-preview.html`: the topic's Page; Studio lists its previews as left tabs

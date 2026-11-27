@@ -1,0 +1,18 @@
+run: run-draw-01-name
+kind: soft
+type: draw
+scope: null
+target: 01-name
+ticket: run-draw-01-name.md
+skill: null
+agent: null
+signs: null
+status: done
+passes:
+- p01-1126
+writes:
+- result/ranges.svg
+feeds: []
+finds:
+- file: result/ranges.svg
+  kind: display

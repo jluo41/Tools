@@ -1,0 +1,5 @@
+column,allowed min,allowed max,found min,found max
+age,0,120,3,97
+height_cm,40,250,51,203
+weight_kg,1,400,2.4,188
+visits,0,500,0,61

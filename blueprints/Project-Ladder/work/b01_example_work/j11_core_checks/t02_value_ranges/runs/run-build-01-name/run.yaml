@@ -12,3 +12,8 @@ passes:
 - p01-1125
 writes: []
 feeds: []
+finds:
+- file: result/ranges.csv
+  kind: value
+  from: [../../../t01_schema_check/runs/run-check-02-name/result/example.csv]
+  how: [read example.csv after the schema check passed, the smallest and largest value of each number column, each next to its allowed range]

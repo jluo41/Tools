@@ -1,0 +1,5 @@
+CSV check report · example.csv
+
+schema        date column reads as text in 2 rows
+value ranges  every number inside its allowed range
+missing       not run yet

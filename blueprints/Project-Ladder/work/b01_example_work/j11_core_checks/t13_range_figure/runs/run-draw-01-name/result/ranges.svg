@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="560" height="216" viewBox="0 0 560 216" font-family="-apple-system,sans-serif" font-size="12">
+<rect width="560" height="216" fill="#fff"/>
+<text x="12" y="22" font-weight="600">Value ranges: allowed (grey) and found (blue)</text>
+<text x="12" y="58">age</text>
+<rect x="110" y="44" width="430" height="18" rx="4" fill="#e6e6e3"/>
+<rect x="120.8" y="44" width="336.8" height="18" rx="4" fill="#1f5fbf"/>
+<text x="110" y="76" fill="#6b6b66">0</text>
+<text x="540" y="76" fill="#6b6b66" text-anchor="end">120</text>
+<text x="12" y="102">height_cm</text>
+<rect x="110" y="88" width="430" height="18" rx="4" fill="#e6e6e3"/>
+<rect x="132.5" y="88" width="311.2" height="18" rx="4" fill="#1f5fbf"/>
+<text x="110" y="120" fill="#6b6b66">40</text>
+<text x="540" y="120" fill="#6b6b66" text-anchor="end">250</text>
+<text x="12" y="146">weight_kg</text>
+<rect x="110" y="132" width="430" height="18" rx="4" fill="#e6e6e3"/>
+<rect x="111.5" y="132" width="200.0" height="18" rx="4" fill="#1f5fbf"/>
+<text x="110" y="164" fill="#6b6b66">1</text>
+<text x="540" y="164" fill="#6b6b66" text-anchor="end">400</text>
+<text x="12" y="190">visits</text>
+<rect x="110" y="176" width="430" height="18" rx="4" fill="#e6e6e3"/>
+<rect x="110.0" y="176" width="52.5" height="18" rx="4" fill="#1f5fbf"/>
+<text x="110" y="208" fill="#6b6b66">0</text>
+<text x="540" y="208" fill="#6b6b66" text-anchor="end">500</text>
+</svg>

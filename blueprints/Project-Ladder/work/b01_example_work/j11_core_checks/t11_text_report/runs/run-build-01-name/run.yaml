@@ -12,3 +12,6 @@ passes:
 - p01-1118
 writes: []
 feeds: []
+finds:
+- file: result/report.txt
+  kind: report

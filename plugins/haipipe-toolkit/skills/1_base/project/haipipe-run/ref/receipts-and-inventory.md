@@ -29,6 +29,28 @@ reads: [<task>/rNN_<run>]       # the Runs whose output it read (else an rNN_ na
 moved_from: []                  # only after haipipe-project update moved an older layout
 ```
 
+`finds:` names the files this Run made that a reader should see, each with its kind (b17 trace 261127/0045):
+
+```yaml
+finds:
+  - file: result/ranges.csv        # relative to the Run folder
+    kind: value                    # value (a table) · display (a figure) · report (a text or a page)
+    name: Value ranges             # optional; the tab's name, else the Task's
+    from: [../../../t01_schema_check/runs/run-check-02-name/result/example.csv]   # optional: the raw file(s) it was made from
+    how: [read example.csv, min and max of each number column]                   # optional: how it was made
+```
+
+A work Job's 🔎 Findings draws one fold per kind (🔢 Values, 🖼️ Displays, 📄 Reports) from each Task's newest Run
+that names a file, a left tab per file and the file on the right (one file takes the full width, no left tab); its
+open dot opens the file itself. Under it, each `from:` file (relative to the Run folder, like `file:`) shows with its
+own open dot and a mark: ✅ when the finding was made after the raw file last changed, ❗ when the raw file changed
+since (run it again) or is gone; the reason is the mark's hover (b17 trace 261127/1215). `how:` shows as a "How this
+table is made" fold. Freshness is by time, not by a copy: a work Run reads the raw file where it lies. To freeze a
+version, copy it into the Run's `result/` with a `SOURCE.txt` naming where it came from, as a paper Board does
+(workbench-paper `board_evidence.source_status`). The file stays
+where the Run wrote it: Findings is an index, never a copy. A file no Run names is not a finding; a hard Run's
+`result/tables.json` with no `finds:` still reads as a value.
+
 `role:` groups a Task's Runs in the workbench, in that order (JL 261020: "各司其职"). `scripts/run_roles.py`
 proposes it from the Run's name (first match: evidence, check, publish, figures, describe, fix, trial; else make)
 and writes it after `kind:`; a ticket generator imports its `propose()` so a new card has one.
