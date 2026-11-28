@@ -31,7 +31,7 @@ s11-work-job-preview's Topic rows was `delivery/ui/job-view-topics.html`, drawn 
 ## 5. Update
 - `servers/workbench/studio/tabs/studio_tabs.py` `page_items`: a `/_board/workbench?` button is a left tab
 - `s11-work-job-preview.html`: Topic rows and Job Main are live views over b01_example_work
-- `hai-studio/ref/ui-preview-topic.md`; `hai-block/ref/board-contract.md` § Example Blocks
+- `hai-studio/gallery/block-job-ui-preview/TYPE.md`; `hai-block/ref/board-contract.md` § Example Blocks
 - `scripts/ui_preview_check.py`
 Cases: ✅ s07 · ⬜ s99-guide-view (quick view only until the Guide is in the code) · ⬜ Paper-Example as a live view.
 

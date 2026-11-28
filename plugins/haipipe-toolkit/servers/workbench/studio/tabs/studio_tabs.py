@@ -86,7 +86,8 @@ def render(rows, root, group='', asks=()):
         tags = [tags] if isinstance(tags, str) else tags
         named = studio_bands(frame.topic_owner(topic) or topic.parent, root)   # the board's sNN bands win over tags
         decade = re.match(r"s(\d)\d", topic.name)
-        band = group or (named.get(decade.group(1)) if named and decade else None) \
+        key = '7' if '-studio-type-' in topic.name else decade.group(1) if decade else None   # types run on past s79
+        band = group or (named.get(key) if named and key else None) \
             or next((name for name in group_order if name in tags), None) or next(iter(tags), 'Other')
         if named and decade and band in named.values() and band not in group_order:
             group_order[:0] = list(dict.fromkeys(n for _, n in sorted(named.items()) if n not in group_order))

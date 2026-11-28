@@ -19,6 +19,7 @@ ROOT = next(p for p in HERE.parents if (p / "plugins/haipipe-toolkit").is_dir())
 NAME = HERE.name
 STUDIO = ROOT / "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts"
 sys.path.insert(0, str(STUDIO))
+sys.path.insert(0, str(STUDIO.parent / "gallery/block-structure/scripts"))   # the Block Structure type's own scripts
 import quick_draw as Q
 import icons
 import block_types_check
@@ -75,6 +76,7 @@ def manifest():
     kept = [v for v in data['views'] if v['name'] not in type_pages.VIEWS]
     at = next(i + 1 for i, v in enumerate(kept) if v['name'] == 'Structure')
     data['views'] = kept[:at] + views + kept[at:]
+    data['check_type'] = 'block-structure'                       # s05 follows the Block Structure type (s71)
     return json.dumps(data, ensure_ascii=False, indent=2) + '\n'
 
 
@@ -145,7 +147,7 @@ def document():
 
 
 def drawing():
-    """Resources feeds three knowledge bands; they can share optional practice."""
+    """Resource feeds three knowledge bands; they can share optional practice."""
     random.seed(5)
     els = []
 
@@ -158,16 +160,15 @@ def drawing():
 
     words('title', 40, 20, 'Knowledge: resources to understanding', 38, Q.TITLE)
     els += icons.document('band-resources', 490, 120, 'off', w=100, h=135)
-    words('resources-band', 630, 120, 'Resources · s0N', 32)
+    words('resources-band', 630, 120, 'Resource · s0N', 32)
     words('resources-topic', 630, 170, 's0N-〈source-selection〉', 25)
     words('resources-detail', 630, 215, 'Link · Version · Precise location', 23)
     words('resources-owner', 630, 255, 'Reference Related / Discovery originals', 23)
-    bands = [('concepts', 80, 'Concepts · s1N', 's1N-〈concept-question〉'),
-             ('methods', 530, 'Methods · s2N', 's2N-〈method-question〉'),
-             ('application', 1030, 'Connections and Applications · s3N', 's3N-〈application-question〉')]
+    bands = [('methods', 280, 'Method · s2N', 's2N-〈method-question〉'),
+             ('application', 880, 'Application · s3N', 's3N-〈application-question〉')]
     for key, x, label, topic in bands:
         els += icons.person('band-' + key, x, 440, 'off', s=0.8)
-        words('band-' + key + '-name', x + 105, 440, label.replace('Connections and Applications', 'Connections and\nApplications'), 25)
+        words('band-' + key + '-name', x + 105, 440, label, 25)
         words('band-' + key + '-topic', x + 105, 520, topic, 21)
         els += Q.arrow('resource-to-' + key, [(540, 285), (540, 350), (x + 40, 350), (x + 40, 420)])
         els += Q.arrow('band-' + key + '-practice', [(x + 50, 570), (x + 50, 650), (620, 740)], dashed=True)
@@ -178,11 +179,11 @@ def drawing():
     els += Q.arrow('practice-feedback', [(550, 850), (360, 850), (360, 570)])
     words('practice-feedback-name', 40, 790, 'Practice informs explanation', 25)
     els += icons.person('band-questions', 1450, 440, 'off', s=0.8)
-    words('band-questions-name', 1555, 440, 'Questions · s4N', 25)
+    words('band-questions-name', 1555, 440, 'Question · s4N', 25)
     words('band-questions-topic', 1555, 520, "s4N-〈learner's question〉", 21)
-    words('band-questions-detail', 1555, 560, 'The learner\'s own words;\nanswered from Resources', 21)
+    words('band-questions-detail', 1555, 560, 'The learner\'s own words;\nanswered from Resource', 21)
     els += Q.arrow('resource-to-questions', [(540, 285), (540, 350), (1490, 350), (1490, 420)])
-    words('band-scope', 40, 970, 'Resources comes first, the learner\'s Questions last; Bands add no folders.', 27)
+    words('band-scope', 40, 970, 'Resource comes first, the learner\'s Question last; Bands add no folders.', 27)
     return els
 
 
@@ -244,10 +245,10 @@ def check():
     sections = {n.text: n.children[0] for n in model.root.children}
     assert list(sections) == ['Folder', 'Job-Task', 'Studio']
     bands = sections['Studio'].children
-    assert [n.id for n in bands] == ['resources', 'concepts', 'methods', 'connections', 'questions']
-    assert [n.text for n in bands] == ['📚 Resources · s0N', '💡 Concepts · s1N',
-                                     '🧭 Methods · s2N', '🔗 Connections and Applications · s3N',
-                                     '🤔 Questions · s4N']
+    assert [n.id for n in bands] == ['resources', 'methods', 'applications', 'questions']
+    assert [n.text for n in bands] == ['📚 Resource · s0N',
+                                     '🧭 Method · s2N', '🎯 Application · s3N',
+                                     '🤔 Question · s4N']
     mt = shared().shared_mindmap().MT
     job_nodes = list(mt.walk(sections['Job-Task']))
     assert max(depth for _, _, depth, _ in job_nodes) == 4
@@ -258,10 +259,10 @@ def check():
     assert 'b11_theme_insight/delivery/structure/structure.css' in html
     definitions = (HERE.parent / 'delivery/page-spec/studio-bands-by-block-type.md').read_text()
     assert re.findall(r'^\| Knowledge \| ([^|]+) \|', definitions, re.M) == [
-        'Resources', 'Concepts', 'Methods', 'Connections and Applications', 'Questions']
+        'Resource', 'Method', 'Application', 'Question']
     example = ROOT / 'examples/Project-Ladder/knowledge/b18_a2ui_learning'
     face = (example / 'board.md').read_text()
-    assert 'bands: j0N 🃏 Interactive card · s0N 📚 Resources · s1N 💡 Concepts · s2N 🧭 Methods · s3N 🔗 Connections and Applications · s4N 🤔 Questions' in face
+    assert 'bands: j0N 🃏 Interactive card · s0N 📚 Resource · s1N 🧭 Method · s2N 🧭 Method · s3N 🎯 Application · s4N 🤔 Question' in face
     expected_topics = ['s01-official-sources', 's11-messages-components-data',
                        's21-tracing-interaction', 's22-chatbot-to-a2ui', 's31-use-cases-boundaries',
                        's41-agent-text-to-a2ui', 's42-who-writes-the-json']

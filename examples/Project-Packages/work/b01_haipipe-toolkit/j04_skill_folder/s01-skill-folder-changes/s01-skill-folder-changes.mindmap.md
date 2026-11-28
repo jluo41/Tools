@@ -36,7 +36,7 @@ built: from-topic .
   - s04-theme-shape: whether every theme folder has the … <!-- @other-topics/2 #c1526a -->
     s04-theme-shape: whether every theme folder has the same shape.
   - The work theme's skills are asked in … <!-- @other-topics/3 #f1dfa5 -->
-    The work theme's skills are asked in b17 (`../../../../../Project-Ladder/blueprint/b17_theme_work/s02-work-skills/`).
+    The work theme's skills are asked in b17 (`../../../../../Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/`).
   - Rebuild every drawing: `../_build/make.sh` <!-- @other-topics/4 #b96b6d -->
 - Open <!-- @open #cf9b77 -->
   - Agree its **For:** line and **Delivery type:** … <!-- @open/0 #09a2ba -->

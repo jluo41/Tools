@@ -30,14 +30,14 @@ plan:
     path: examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md
     what: Files lists Task states; the decisions name the deleted previews as removed
   - do: edit
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: a retired quick view fades, and once the design is settled it may be deleted
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1112_s11_quick_views.md
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/delivery/ui/ (task-states.html from job-view-effects.html; job-view-rows, job-view-path, job-view and job-main deleted)
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.html
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
 ---
 
 # s11 quick views

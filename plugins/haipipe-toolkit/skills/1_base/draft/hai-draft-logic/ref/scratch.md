@@ -61,6 +61,6 @@ new `run-scratch-<target>` (a second one the same day gets `-2`), never a reopen
 - `../../hai-draft-workflow/SKILL.md` · the Run list and the `scratch` Run Spec row
 - `../../hai-draft-workflow/ref/workflow-table.md` · the Spec × Space projection
 - `../../hai-draft/ref/page-run-families.md` · the RP identity grammar
-- `../../../workbench/workbench-task-draft/ref/run-space.md` · the card in Run Space
+- `../../../draft/workbench-task-draft/ref/run-space.md` · the card in Run Space
 - `../../../../../servers/workbench/workbench-task-draft/plan_outline/outline_scratch.py` · the allocation and Save/Finish doors
 - `../../../../../servers/workbench/workbench-task-draft/run_views/runs.py` · the presenter's Scratch card

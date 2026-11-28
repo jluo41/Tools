@@ -26,7 +26,7 @@ Part of hai-studio's topic contract (`ref/topic-contract.md`).
 3. **Its drawings**: the first `.excalidraw` is the one the Idea Studio opens across the row;
    more are links beside it. A topic with a builder opens view only; one drawn by hand edits
    in place.
-4. **Its structured side, its mind map**: every topic has `sNN-<topic>.mindmap.md` with the topic's own name (s01-work-ladder → s01-work-ladder.mindmap.md), its mind map, written with the face by `new_topic.py` from the face's labelled lines and
+4. **Its structured side, its mind map**: every topic has `sNN-<topic>.mindmap.md` with the topic's own name (s01-work-structure → s01-work-structure.mindmap.md), its mind map, written with the face by `new_topic.py` from the face's labelled lines and
    sections (hai-mindmap `from-topic`). It is not a canvas: the card's `Free | Structured` switch
    shows it as the draft's §1 Structure map, in HTML, edited in place (click and type, Enter for the
    next node, ＋ for a child, empty to take out, drag to move), each change written into the file. Edit

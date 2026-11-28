@@ -11,7 +11,7 @@ User: "OK，行，呃，我们尽量比较晚但不要搞得太复杂。而且�
 Questions: Can checks live beside skills and servers, stay small, reuse owning rules,
 and reject bad artifacts without scanning unrelated work after every edit?
 
-Implementation: plugin `checks/run.py --target 〈topic-or-Block〉`; shared path/result
+Implementation: `hai-studio/scripts/checks/run.py --target 〈topic-or-Block〉`; shared path/result
 helpers and separate Studio binding, generation and placeholder modules. The Skills
 views writer checks completed output. Check-view criteria remain in type elements.md;
 its freshness check does not execute the criteria or change Not verified marks.
@@ -19,7 +19,7 @@ No CI, watcher or service restart. Other writers and semantic/UI acceptance are 
 covered by this pilot. Validation and remaining findings are in b17's
 `trace/261127/1833_plugin_checks_pilot.md`.
 
-Guard: `checks/tests/` passed 29 tests; existing Skills/Check view suites passed 12.
+Guard: the checks tests (`hai-studio/tests/`) passed 29 tests; existing Skills/Check view suites passed 12.
 Eight Skills topics plus S76 passed scoped checks in 0.148 seconds. A fresh-context
 review reproduced and confirmed the fix for external symlink sources. The broader
 Block check correctly reports stale S01/S72 outputs, outside this implementation.
@@ -161,7 +161,7 @@ CoWork omits the Task level under its current contract. Skills remain a top view
 
 Implementation and guard: b17 `delivery/structure/build_organization.py`, the four topic manifests, and
 `delivery/structure/check_organization.py`. Original faces and canvases are retained. Validation is recorded in
-`trace/261127/structure_folder_organization.md`. The guard, actual browser checks and fresh-context review passed; the reviewer’s two missing-folder findings were corrected and added to the guard.
+`trace/261127/1021_structure_folder_organization.md`. The guard, actual browser checks and fresh-context review passed; the reviewer’s two missing-folder findings were corrected and added to the guard.
 
 
 ## Folder preserves existing storage (2026-11-27) · fixed
@@ -173,7 +173,7 @@ Answer: it reads existing names and parentage. Job topic / Task topic are groupi
 never new directories. Existing sNN folders are retained in place. The previous schematic Folder template
 is superseded; no work directories are renamed, scaffolded or migrated.
 Guard: `delivery/structure/check_organization.py` verifies every rendered path exists. Evidence:
-`trace/261127/folder_existing_only.md`.
+`trace/261127/1041_folder_existing_only.md`.
 
 
 ## Organization follows the Block type (2026-11-27) · fixed
@@ -189,7 +189,7 @@ Answer: Blueprint has Block Structure and Block UI Studio types. Job organizatio
 examples; general Work slots use Example 1 / Example 2. CoWork and Discovery use coordination and inquiry
 examples. These are illustrative organizations, not additional canonical Job types. Small role labels distinguish
 Job topics, Jobs, Task topics and Tasks. The old Owning level diagram is superseded. Folder inventory stays intact.
-Guard and evidence: b17 `delivery/structure/check_organization.py` and `trace/261127/organization_by_block_type.md`.
+Guard and evidence: b17 `delivery/structure/check_organization.py` and `trace/261127/1048_organization_by_block_type.md`.
 
 ## Explicit Job and Task kinds and names (2026-11-27) · fixed
 
@@ -293,7 +293,7 @@ Questions:
 Rule: shared Bands are independent of type definitions. Work Blocks (Blueprint) reference common types and define only
 theme-specific types. Actual Work Blocks show instances without a required Studio Type group. Task procedures
 and specific Block Guides remain usable content. Original type records are preserved in
-`examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/studio_type_scope.md`.
+`examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/2250_studio_type_scope.md`.
 
 Verification: shared registry and removal regression suites passed (12 tests); fresh-context agent scaffolded a theme-specific type and an ordinary Work topic, verified titles and actual rendered groups. The Tailscale Block page was opened after the coordinated reload: six retained types under Studio Type; s75/s77/s79 absent; S71 Studio requirement and S99 Guide opened successfully. The actual-content migrations in other themes remain their owning sessions' work.
 
@@ -305,13 +305,13 @@ User: “现在我们就 focus 在沃克主题。在沃克主题下面不是这�
 Questions: Which Bands are fixed for each type? Which Studio names depend on the work? Where does Knowledge Sources belong?
 
 Work, CoWork and Discovery have content Bands; Blueprint references its shared registry. Knowledge has Concepts,
-Methods, Connections and Applications, with a shared Knowledge Sources Studio whose records individual topics reference.
+Methods, Applications, with a shared Knowledge Sources Studio whose records individual topics reference.
 S01–S04 native mind maps and Structure/Draw bindings are this batch; S05 and source-record implementation belong
 to the Knowledge design chat. Definition changes do not migrate real work Blocks or create example work records.
 
 Verification: four native map checks and the contract/binding guard passed, including negative probes for a wrong Band and an unbracketed example. The actual Block page rendered all four maps and expanded Work, CoWork and Discovery branches; S01 Draw uses the same source. Baseline comparison preserves existing views and drawings.
 
-Still owed: S05/Knowledge Sources acceptance by its owner; mobile map usability (390px viewport clips the initially visible right branches); numeric Trace filename registration (the approved filename is currently excluded by the Files-pane selector). Keep this topic open. Record and exact file plan: `examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/studio_bands_by_block_type.md`.
+Still owed: S05/Knowledge Sources acceptance by its owner; mobile map usability (390px viewport clips the initially visible right branches); numeric Trace filename registration (the approved filename is currently excluded by the Files-pane selector). Keep this topic open. Record and exact file plan: `examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1705_studio_bands_by_block_type.md`.
 
 
 ## Structure Studio uses Folder Tree (2026-11-27) · open

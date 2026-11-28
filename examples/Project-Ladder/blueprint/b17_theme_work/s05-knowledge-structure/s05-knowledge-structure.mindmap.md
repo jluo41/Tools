@@ -43,23 +43,19 @@ written: yes
 - Studio <!-- studio -->
   - 〈Work Block (Knowledge)〉 <!-- studio-root -->
     Display order, not mandatory execution stages. Omit empty Bands and preserve existing IDs.
-    - 📚 Resources · s0N <!-- resources -->
-      Source-related topics belong directly in this first Band; no same-named Studio is required.
+    - 📚 Resource · s0N <!-- resources -->
+      Source-related topics belong directly in this first Band; no same-named Studio is required. Studio Type: s77 Resource.
       - s0N-〈source-selection〉 <!-- resource-topic -->
         Original link, version, precise location and related learning topics or practices. Reference the original Related or Discovery record.
-    - 💡 Concepts · s1N <!-- concepts -->
-      Explain what and why; name topics after concrete learning questions.
-      - s1N-〈concept-question〉 <!-- concept-topic -->
-        Meaning, mechanism, example and counterexample.
-    - 🧭 Methods · s2N <!-- methods -->
-      Explain how, why that method works, and its conditions.
+    - 🧭 Method · s2N <!-- methods -->
+      Explain what a thing is and how it works as numbered steps a learner can follow. Studio Type: s78 Method.
       - s2N-〈method-question〉 <!-- method-topic -->
-        Derivation or procedure, linked to relevant practice results.
-    - 🔗 Connections and Applications · s3N <!-- connections -->
-      Connect knowledge to other concepts, practical choices and limits.
+        Where you start, numbered steps, Try explaining; linked to relevant practice results.
+    - 🎯 Application · s3N <!-- applications -->
+      Use the methods on a real decision: practical choices and limits. Studio Type: s79 Application.
       - s3N-〈application-question〉 <!-- connection-topic -->
         Several topics can support one practice Job and cite the same sources.
-    - 🤔 Questions · s4N <!-- questions -->
-      Keep the questions that come up while learning; each gets its own topic.
+    - 🤔 Question · s4N <!-- questions -->
+      Keep the questions that come up while learning; each gets its own topic. Studio Type: s80 Question.
       - s4N-〈learner-question〉 <!-- question-topic -->
         The question as asked, its answer, and the concept or method topic it leads back to.

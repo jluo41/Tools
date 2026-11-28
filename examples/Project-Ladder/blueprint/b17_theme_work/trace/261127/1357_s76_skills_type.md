@@ -1,7 +1,7 @@
 ---
 title: s76 Skills type laid out as its instances
 date: 2026-11-27 13:57
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: 's76 · Studio Type: Skills shows the same top views (SKILL, Rules, Refs, Scripts) and left tabs as its instances; its right side is the requirement for that part, an instance''s right side the real skill file; an Instances view lines the skill topics up against it.'
 closed: true
 plan:
@@ -9,19 +9,19 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1357_s76_skills_type.md
   what: this trace's own record, written first
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
   what: the four views and their left tab, each with what, must, from, why
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/build_type_pages.py
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/build_type_pages.py
   what: writes each part's requirement page and the Instances table, as s72's does
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/delivery/ (skill, rules, refs, scripts, instances .html)
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/ (skill, rules, refs, scripts, instances .html)
   what: built requirement pages
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/studio-views.json
   what: views SKILL, Rules, Refs, Scripts, Instances
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
   what: Holds line names the four views
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work/studio-views.json (and s52, s53, s54)
@@ -31,10 +31,10 @@ plan:
   what: views SKILL, Rules, Refs, Scripts in place of one Skill view
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1357_s76_skills_type.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/delivery/requirements/ (4 pages, built)
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/ (4 pages, built)
 - examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery (studio-views.json, one face line each)
 - examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio, s61-skill-trace (studio-views.json, one face line each)
 ---

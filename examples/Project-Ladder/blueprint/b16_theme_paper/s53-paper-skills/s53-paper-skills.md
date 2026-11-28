@@ -1,4 +1,4 @@
-s53 · Skills: Paper
+s53 · Skill: Paper
 ===================
 view: findings
 

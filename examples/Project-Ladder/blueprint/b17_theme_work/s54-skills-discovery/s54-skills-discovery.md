@@ -1,4 +1,4 @@
-s54 · Skills: Discovery
+s54 · Skill: Discovery
 =======================
 view: overview
 emoji: 🔭
@@ -38,8 +38,9 @@ Checklist
 - — CONSTITUTION.md: no skill here has one
 - ✅ ref/ · hai-discovery, hai-discovery-inquiry, workbench-discovery
 - ✅ scripts/ · hai-discovery
-- ✅ 〈folder〉/ · feedback/, fn/, tests/
+- ✅ 〈folder〉/ · _parts/academic-researcher/, _parts/comm-lit-review/, _parts/research-lit/, feedback/, fn/, tests/
 - ✅ 〈file〉 · CHANGELOG.md, PREFERENCES.md
+- ✅ Evaluation · every skill, measured live
 - — Draw: the topic has no drawing
 
 

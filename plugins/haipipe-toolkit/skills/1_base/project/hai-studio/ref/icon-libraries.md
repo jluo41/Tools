@@ -36,6 +36,7 @@ each file as downloaded, in `ref/icons/libraries/`:
 | `stick-figures-collaboration.excalidrawlib` | people working together: Ideation, Presentation, Conversation | freepik |
 
 `ref/icons/stick-figures.excalidrawlib` (single people, Youri Tjang) was kept earlier and reads the same way.
+`ref/icons/own-icons.excalidrawlib` holds our own icons (`icons.py --gallery` writes it), to drag in by hand.
 
 ## Add a library
 

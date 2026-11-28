@@ -8,6 +8,8 @@ An sNN's `delivery/` holds the agreed version: `deck/` (its slides, which stay t
       - from: skill/first-principle.md                  # a text piece: written between two markers in its target
         to: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
         block: first-principle
+      - file: elements.md                               # a file piece: one file of the topic, copied whole
+        to: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/elements.md
       - code: "new_topic.py writes the For: line"        # a code piece: built by a Task, never copied
         by: j01_studio_delivery_type/t02_new_topic_for_line
       - from: paper/s03-results.md                      # a Theme piece: the Theme's skill renders it
@@ -60,6 +62,17 @@ def state(topic: Path, piece: dict) -> tuple[str, str]:
         return "code", f"built by {piece.get('by', 'a Task')}"
     if "rendered_by" in piece:                       # a Theme piece: the Theme's own skill builds it
         return "theme", f"rendered by {piece['rendered_by']}"
+    if "file" in piece:                              # a file piece: the target is the topic's file, whole
+        src = topic / piece["file"]
+        if not src.is_file():
+            return "no source", f"{piece['file']} is missing"
+        root = root_for(topic, piece["to"].split("/")[0])
+        if root is None:
+            return "not placed", f"{piece['to']} not found"
+        target = root / piece["to"]
+        if not target.is_file():
+            return "differs", piece["to"]
+        return ("same" if target.read_bytes() == src.read_bytes() else "differs"), piece["to"]
     src = topic / "delivery" / piece["from"]
     if not src.is_file():
         return "no source", f"delivery/{piece['from']} is missing"
@@ -78,7 +91,12 @@ def render(topic: Path, apply: bool = False) -> list[tuple[dict, str, str]]:
     out = []
     for piece in pieces(topic):
         st, words = state(topic, piece)
-        if st == "differs" and apply:
+        if st == "differs" and apply and "file" in piece:
+            target = root_for(topic, piece["to"].split("/")[0]) / piece["to"]
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes((topic / piece["file"]).read_bytes())
+            st = "rendered"
+        elif st == "differs" and apply:
             root = root_for(topic, piece["to"])
             target = root / piece["to"]
             text = target.read_text(encoding="utf-8")
@@ -102,7 +120,7 @@ def main(argv: list[str]) -> int:
         print(f"{topic.name}: no delivery/render.yaml")
         return 1
     for piece, st, words in rows:
-        print(f"{st:10} {piece.get('block') or piece.get('code') or piece.get('from')}  ({words})")
+        print(f"{st:10} {piece.get('block') or piece.get('code') or piece.get('file') or piece.get('from')}  ({words})")
     return 0 if all(st in ("same", "rendered", "code", "theme") for _, st, _ in rows) else 1
 
 

@@ -1,7 +1,7 @@
 ---
 title: examples/ is examples/; the theme Blocks move to Project-Ladder/blueprint/
 date: 2026-11-27 12:18
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: The top folder of Projects is examples/, and the five theme Blocks that plan the tools sit in examples/Project-Ladder/blueprint/, apart from the example Blocks; every path, link, glob and old address follows.
 closed: true
 plan:

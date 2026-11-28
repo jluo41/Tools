@@ -84,7 +84,7 @@ cardinality. A Space Cell binds the owner/worker skill and interaction:
 
 For the corresponding file/folder placement, use the canonical **Workflow ×
 Space Specification** in
-`workbench-task-draft/ref/space-mapping.md`. It is the physical
+`workbench-task-draft/ref/classic/space-mapping.md`. It is the physical
 projection of this normalized table: each cell records `mode · schema · path`.
 In the Page workbench, the user-facing word is `Space`; the normalized schema
 continues to use `workspace_id` and `Workspace Cell` as stable internal terms.

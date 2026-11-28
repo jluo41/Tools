@@ -181,7 +181,7 @@ Block's `trace/<YYMMDD>/<HHMM>_<slug>.md` (hai-trace): its prompts, plan, files 
 - `../../../../../servers/workbench/home/write.py` · the pens the drawer calls: comment,
   edit-sentence, discuss (a `D<nn>` record into `draft/records/<stem>-discussion.md`)
 - `../../../../../servers/_host/serve.py` · `/_board/chat`, `/_board/chat-keep`
-- `../../../workbench/workbench-task-draft/ref/record-shape.md` · the `D<nn>` and log record
+- `../../../draft/workbench-task-draft/ref/record-shape.md` · the `D<nn>` and log record
   grammar the chat writes
 - `../../../draft/hai-draft-writing/ref/sentence.md` · the lanes under a sentence
 - `../../../workbench/hai-workbench/ref/roster.md` · the `chat/` lane row

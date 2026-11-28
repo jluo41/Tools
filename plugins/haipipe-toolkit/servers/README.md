@@ -29,7 +29,7 @@ servers/
 ## Two words, two things
 
 A **skill** named `workbench-<x>` is the contract: what the lane holds
-on disk and who writes it (`skills/1_base/workbench/workbench-task-draft` says what
+on disk and who writes it (`skills/1_base/draft/workbench-task-draft` says what
 `outline/`, `runs/`, `results/` and `delivery/` hold). A **workbench** folder
 named `workbench-<x>` is that contract's served face, where a person works on
 it in the browser. Same name on both sides, except the Studio contract, which
@@ -37,7 +37,7 @@ every workbench reuses and so is served from `workbench/`:
 
 | skill (`skills/`) | workbench (`servers/`) |
 |---|---|
-| `1_base/workbench/workbench-task-draft` (Outline · Run Space · Delivery · Folder) | `workbench/workbench-task-draft/` (the base's Task level) |
+| `1_base/draft/workbench-task-draft` (Outline · Run Space · Delivery · Folder) | `workbench/workbench-task-draft/` (the base's Task level) |
 | `1_base/project/hai-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench/` |
 | `3_theme/design/workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
 | `3_theme/paper/workbench-paper` | `workbench-paper/` |

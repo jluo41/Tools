@@ -33,7 +33,7 @@ plan:
   path: examples/Project-Ladder/blueprint/b11_theme_insight/board.md
   what: tree, Renumbered
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
   what: b11's three rows
 changed:
 - examples/Project-Ladder/blueprint/b11_theme_insight/trace/261126/1135_align_job_previews.md

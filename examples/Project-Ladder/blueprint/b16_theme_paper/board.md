@@ -187,7 +187,7 @@ resources:
 
 ## Renumbered (261127)
 
-Studio bands follow the Studio Type topics (b17 s70-s79); each title starts with its band's name.
+Studio bands follow the Studio Type topics (b17 s71 onward); each title starts with its band's name.
 
 ```text
 s14-idea-job-preview   → s11-idea-job-preview    👀 Block Job UI Preview, under s01 Idea

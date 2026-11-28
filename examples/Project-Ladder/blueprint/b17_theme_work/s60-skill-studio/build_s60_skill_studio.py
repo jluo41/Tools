@@ -1,6 +1,7 @@
 """s60 · Skills: Studio: s60-skill-studio.excalidraw, drawn by this builder as pictures (hai-studio CONSTITUTION A04).
 
-The logic of hai-studio: a Studio Type and a topic of it are the same screen, top and left; the type's right side
+The logic of hai-studio: a blueprint Block designs a Studio Type and delivers it into the skill;
+a Studio Type and a topic of it are the same screen, top and left; the type's right side
 is a list of what must be shown, the topic's right side is the real thing. Below, the path of one topic, each stop a
 picture. The big number is read on every build: how many topics of this Block follow the type they name.
 
@@ -68,7 +69,7 @@ def build():
     kind, (px, py, pw, ph) = screen("kind", 640, 200, OR, SEM["start"][0], ["〈skill〉", "Draw", "Check"],
                                     ["SKILL.md", "CONSTITUTION.md", "ref/", "scripts/", "〈folder〉/"])
     els += text("kind_h", 640, 138, "Studio Type", 36, OR) + kind
-    els += text("kind_p", 870, 152, "s76 · elements.md", 18, INK)
+    els += text("kind_p", 870, 152, "types/skills/elements.md", 18, INK)
     for i in range(4):                                         # a list of what must be shown: boxes not ticked yet
         els += [_el("rectangle", f"must_b{i}", px + 30, py + 34 + i * 54, 26, 26, OR, WHITE, strokeWidth=2)]
         els += line(f"must_l{i}", [(px + 72, py + 47 + i * 54), (px + pw - 40 - (i % 2) * 70, py + 47 + i * 54)], OR, 4)
@@ -89,12 +90,17 @@ def build():
     els += text("names_t", 1460, 516, "names its type", 20, OR, "center")
     els += fp.sticky("only", 1460, 418, 250, 96, "only the right\nside differs", 22, -0.05)
 
-    # the skill: the machine behind both
+    # where a type comes from: a blueprint Block designs it, the skill keeps it
+    els += [e for e in item("clipboard", "bp", 60, 560, h=150, lib="icons") if e["type"] != "text"]   # its own caption off
+    els += text("bp_t", 115, 722, "blueprint Block", 24, OR, "center")
+    els += text("bp_s", 115, 756, "designs the type", 17, INK, "center")
+    els += arrow("deliver", [(200, 640), (360, 640)], OR, width=5)
+    els += text("deliver_t", 280, 600, "delivers", 20, OR, "center")
     els += fp.gear("skill", 440, 640, 56)
     els += text("skill_t", 440, 712, "hai-studio", 30, PU, "center")
-    els += text("skill_s", 440, 754, "the rules of every topic", 17, INK, "center")
+    els += text("skill_s", 440, 754, "keeps every type: types/", 17, INK, "center")
     els += arrow("skill_kind", [(510, 610), (640, 540)], PU, width=3)
-    els += text("skill_kind_t", 560, 596, "how a type\nis written", 16, PU)
+    els += text("skill_kind_t", 590, 596, "types/skills/", 16, PU)
 
     # the path of one topic, each stop a picture
     y = 900
@@ -112,8 +118,9 @@ def build():
         els += text(f"p_n{i}", cx, y + 86, name, 24, INK, "center")
     for i, (a, b, c) in enumerate(((230, 420, OR), (620, 830, NAVY), (1120, 1300, OR), (1500, 1680, GR), (1870, 2080, GR))):
         els += arrow(f"p_a{i}", [(a, y), (b, y)], c, width=5)
-    els += text("p_none", 520, y + 122, "none? write the type first", 16, RE, "center")
-    els += text("p_cmd1", 980, y + 122, "type_follow.py new", 16, PU, "center")
+    els += text("p_where", 520, y + 122, "in hai-studio: types/", 16, PU, "center")
+    els += text("p_none", 520, y + 146, "none? design it in a blueprint Block", 16, RE, "center")
+    els += text("p_cmd1", 980, y + 122, "type_follow.py new skills <topic>", 16, PU, "center")
     els += text("p_cmd2", 1770, y + 122, "type_follow.py check", 16, PU, "center")
     els += fp.sticky("fix", 1590, y + 210, 230, 84, "differs?\nfix, check again", 18, 0.05, fp.RED, RE)
     els += arrow("fix_back", [(1700, y + 150), (1700, y + 185), (1420, y + 185), (1420, y + 150)], RE, width=3)

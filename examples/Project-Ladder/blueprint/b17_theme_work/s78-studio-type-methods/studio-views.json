@@ -1,0 +1,48 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Where you start",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/page--where-you-start.html"
+        },
+        {
+          "name": "〈n〉. 〈step〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/page--n-step.html"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/page--try-explaining.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/draw--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/map--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-methods/delivery/requirements/slides--topic-title.html"
+        }
+      ]
+    }
+  ]
+}

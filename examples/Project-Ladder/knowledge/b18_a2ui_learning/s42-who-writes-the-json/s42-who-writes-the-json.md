@@ -1,9 +1,9 @@
-s42 · Questions: Who Writes the JSON?
-========================================
+s42 · Question: Who Writes the JSON?
+====================================
 view: overview
 emoji: 🔄
 
-**Tags:** Questions
+**Tags:** Question
 
 **Stage:** explore
 

@@ -54,7 +54,7 @@ plan:
   path: plugins/haipipe-toolkit/skills/3_theme/design/workbench-design/ref/legacy/older-page.md
   what: s03 drawing path to its archive home
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
   what: design's two Job UI Previews in the table, as insight's
 - do: edit
   path: plugins/haipipe-toolkit/skills/3_theme/design/workbench-design/ref/topics.md

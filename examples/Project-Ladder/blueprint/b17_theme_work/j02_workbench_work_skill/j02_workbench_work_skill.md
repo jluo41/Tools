@@ -22,7 +22,7 @@ The screens are not made here: j03's cells design them and design_b02_workbench 
 Reshaped 261031 from j02_work_skill_homes ("Make s02's delivery"), whose two Tasks wrote hai-work's skill-homes
 table and handed b04 a move list. That question is not the focus any more (JL 261031: "I have no idea, this should not
 be the things we want to focus"), so t01_skill_homes_table and t02_move_list_b04 went to `_old/`, unrun; the topic as
-it was is in `../s02-work-skills/result/skill-homes-261031/`.
+it was is in `../s02-blueprint-structure/result/skill-homes-261031/`.
 
 ## Tasks
 

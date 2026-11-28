@@ -11,7 +11,28 @@ the type      the same           the same           what this part must show
 a topic       the same           the same           the real thing
 ```
 
-No list of types is kept in this skill. Each kind of Block has its own set; open the band to see them.
+## Where a type lives
+
+```text
+a blueprint Block's Studio Type band      sNN-studio-type-<name>/elements.md     designed, discussed, shown
+          │ types_deliver.py
+          ▼
+this skill                                 gallery/<name>/elements.md               kept; found by name in any SPACE
+          ▲
+a topic                                    "check_type": "<name>"                 names it
+```
+
+1. **Designed in a blueprint Block.** The type topic shows the type as its topics will look, with the requirement
+   on the right; it is where the type is changed.
+2. **Kept in this skill, in its gallery folder.** `types_deliver.py` copies each type's `elements.md` to
+   `gallery/<name>/`; the type topic's `delivery/render.yaml` records it. `ls gallery/` lists every type. Never
+   edit a kept `elements.md`. Beside it the folder holds what is written here: `TYPE.md` (how a topic of the type
+   is built), `scripts/` and `tests/` (what writes and checks one), `example.md` (a real topic and its picture).
+3. **Named by a topic.** The name is the type topic's folder name after `sNN-studio-type-`, so renumbering a type
+   topic changes nothing for its topics.
+4. **Which copy is read.** In a SPACE that holds the blueprint, the type topic; anywhere else, the kept copy.
+   `types_deliver.py --check` fails when the two differ, when a kept type has no blueprint, and when two blueprints
+   deliver one name.
 
 ## The four questions
 
@@ -31,8 +52,6 @@ Answer them in order; the answers are the type.
 `elements.md` in the type topic. One `## ` heading per top button, one `### ` heading per left tab under it.
 
 ```text
-instances: 〈selector of the topics of this type〉
-
 ## 〈top button〉
 what:  〈what it is, one sentence〉
 why:   〈why a reader needs it〉
@@ -56,9 +75,23 @@ check: 〈how a person or a script verifies it〉
 | `must:` and its `- ` lines | the "Must show" list; a Check criterion each |
 | `> ` lines | the Pattern tree on the requirement page: folders and files as a tree, `# ` after a name for a note |
 | `check:` | the Check button's "how to verify" line |
+| `  | words` after a name on a `> ` line | that tree line's hover |
+| `build:` (before the first `## `) | the hai-studio scripts that build a topic of the type, run by `type_follow.py follow <topic>` |
 | `when:` | the part is there only in that case (`when: the skill has a ref/`); without it every topic must have the part |
 | `skills:` on a `## ` | skill folders whose `SKILL.md` become that button's real left tabs |
-| `instances:` | where the type's topics are found on the Block page |
+| `base:` | before the first `## `: a SPACE-relative folder whose `elements.md` this type starts from; its buttons come first, the type's own tabs go before the base's |
+
+## A base type
+
+Types that share parts write them once in a base type, a folder with an `elements.md` and no topic:
+`base-types/learning/` holds Page's last tab Try explaining, and Draw, Map and Slides. A type names it on a
+`base:` line and writes only its own parts; a part it writes again replaces the base's.
+
+```text
+base-types/learning   Page › Try explaining · Draw · Map · Slides
+   ▲ base:
+a learning type       Page › its own tabs, then Try explaining
+```
 
 ## After writing it
 
@@ -66,17 +99,20 @@ check: 〈how a person or a script verifies it〉
 type_requirements.py <type topic>            the requirement pages and the type's own studio-views.json
 type_requirements.py <type topic> --check    exit 1 when a page is stale
 placeholder_check.py examples                no bare slot name
+types_deliver.py                             the type kept in this skill, under its name
 ```
 
 ## A topic of the type
 
 ```text
-type_follow.py new <type topic> <topic>        the type's buttons and tabs, each still showing its requirement
+type_follow.py new <type name> <topic>         the type's buttons and tabs, each still showing its requirement
+type_follow.py follow <topic> [...]            build it as the type says, rebuild its Check view, then check
 type_follow.py check <Block or topic> [...]    what differs from the type; exit 1 on any ❗
 ```
 
-1. **Start it from the type.** `new` writes the topic's `studio-views.json` from the type's own and names the type
-   (`check_type`). The topic reads as its type does from the first minute. A type whose topics a script writes
+1. **Start it from the type.** `new` writes the topic's `studio-views.json` from the type and names it
+   (`"check_type": "<name>"`). Where only the kept copy is there, the requirement pages are written into the
+   topic's own `delivery/requirements/`. The topic reads as its type does from the first minute. A type whose topics a script writes
    (Skills topics, `skills_views.py`) uses that script instead.
 2. **Replace each part with the real thing.** A part that still points into the type reads `⬜ still shows the
    requirement`; a name still in 〈 〉 reads `⬜ not settled`. Neither fails: the topic follows, it is not finished.
@@ -85,4 +121,4 @@ type_follow.py check <Block or topic> [...]    what differs from the type; exit 
    list, and on a wrong order. A name the type writes in 〈 〉 stands for zero or more real names.
 4. **The Check button** (`check_views.py <topic>`) lists the type's criteria with how to verify each, and claims no
    result (`ref/check-view.md`).
-5. `python plugins/haipipe-toolkit/checks/run.py --target <topic>` runs the follow check with the others.
+5. `python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/checks/run.py --target <topic>` runs the follow check with the others.

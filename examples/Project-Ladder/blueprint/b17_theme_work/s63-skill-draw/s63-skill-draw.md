@@ -1,4 +1,4 @@
-s63 · Skills: Draw
+s63 · Skill: Draw
 ==================
 view: overview
 emoji: 🖌️
@@ -30,3 +30,5 @@ Checklist
 - ✅ scripts/ · hai-draw
 - ✅ 〈folder〉/ · agents/, gallery/draft/, gallery/ideation/, gallery/job/, gallery/read/, gallery/report/, gallery/slide/, gallery/story/, gallery/task/, gallery/workflow/, tests/
 - ✅ 〈file〉 · CHANGELOG.md
+- ✅ Evaluation · every skill, measured live
+- — Draw: the topic has no drawing

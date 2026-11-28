@@ -2,7 +2,8 @@
 
 Each image is taken from the official A2UI project, whose site documentation and README live in
 https://github.com/a2ui-project/a2ui under the Apache License 2.0. The diagrams on a2ui.org are drawn by the site's
-own page code, so each was captured from its rendered page (only that figure) and reduced in size; nothing was redrawn.
+own page code, so each was captured from its rendered page (only that figure) at twice its screen size and never
+reduced, so its text stays readable when zoomed; nothing was redrawn. resource-6.png is the README image at 1300 px wide.
 
 | Image | Resource | Source |
 |---|---|---|

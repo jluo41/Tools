@@ -1,7 +1,7 @@
 ---
 title: 's76: skills on top, a skill''s files on the left, a folder as folds'
 date: 2026-11-27 14:05
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: A Skills topic shows its skills as the top buttons and the picked skill's SKILL, Rules, ref and scripts as left tabs; a tab that is a folder shows one fold per file on the right, read live; s76 shows the same top and left with the requirement on the right.
 closed: true
 plan:
@@ -18,10 +18,10 @@ plan:
   path: plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_folder_folds.py
   what: folds, empty folder, path outside the SPACE
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
   what: top 〈skill〉, left SKILL, Rules, ref, scripts, each with its requirement
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/ (delivery/requirements, studio-views.json, face)
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/ (delivery/requirements, studio-views.json, face)
   what: rebuilt; Holds line
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace (studio-views.json, face)
@@ -31,9 +31,9 @@ changed:
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/folder_folds.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_views.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_folder_folds.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/ (delivery/requirements rebuilt, studio-views.json, face)
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/ (delivery/requirements rebuilt, studio-views.json, face)
 - examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace (studio-views.json, one face line each)
 ---
 

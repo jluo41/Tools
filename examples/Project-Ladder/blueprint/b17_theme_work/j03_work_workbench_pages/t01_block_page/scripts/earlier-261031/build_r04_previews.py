@@ -31,7 +31,7 @@ FOCUS_CSS = TOOLS / "plugins/haipipe-toolkit/servers/workbench/focus-assets/focu
 UP = "../../../../"                                              # from the Run folder up to b17_theme_work
 
 # b17's twelve sNN, in the order frame.studio_inventory reads them: the Block's own, then each Task's
-TOPIC_DIRS = ["s01-work-ladder", "s02-work-skills", "s04-workbench-page-structure",
+TOPIC_DIRS = ["s01-work-structure", "s02-blueprint-structure", "s04-discovery-structure",
               "j03_work_workbench_pages/t01_block_page/s51-block-ui-report",
               "j03_work_workbench_pages/t01_block_page/s52-block-ui-work",
               "j03_work_workbench_pages/t01_block_page/s53-block-ui-studio",

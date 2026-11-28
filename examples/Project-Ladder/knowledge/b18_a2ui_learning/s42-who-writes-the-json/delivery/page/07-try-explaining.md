@@ -1,3 +1,8 @@
 # Try explaining
 
-Take one line of the Express block, such as `$/return/pax = 2`, and find where it ends up in the three JSON messages.
+**Follow one line to the screen.**
+
+- 🔍 Take `$/return/pax = 2` from the Express block.
+- 🔢 Find it in `updateDataModel`.
+- 🔗 Find the FlightCard bound to `/return/pax` in `updateComponents`.
+- 📱 Say what the card shows.

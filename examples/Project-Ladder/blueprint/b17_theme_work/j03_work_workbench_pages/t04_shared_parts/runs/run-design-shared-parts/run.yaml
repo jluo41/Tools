@@ -11,10 +11,10 @@ signs: null
 status: queued
 passes: []
 writes:
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/frame/
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/interactions/
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/delivery/
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/related/
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/timeline/
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/delivery/ui/files/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/frame/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/interactions/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/delivery/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/related/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/timeline/
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/ui/files/
 feeds: []

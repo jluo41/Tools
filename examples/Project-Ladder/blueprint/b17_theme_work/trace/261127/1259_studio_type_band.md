@@ -1,7 +1,7 @@
 ---
 title: 'Studio Type band: one topic per Studio type, the one list'
 date: 2026-11-27 12:59
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: Each Studio type is its own topic in b17's s8N Studio Type band (s80-s89, last digit = the band it defines); the Studio page, the s02 tree, new_topic.py and the title check read the band names from them.
 closed: true
 plan:

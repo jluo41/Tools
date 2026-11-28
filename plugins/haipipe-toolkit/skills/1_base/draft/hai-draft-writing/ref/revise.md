@@ -211,6 +211,6 @@ outline_revise.py`, POST `/_board/draft` with `action: revise` (rows) or
 - `../../hai-draft-workflow/SKILL.md` · the Run list and the `revise` row
 - `../../hai-draft-workflow/ref/writing-step-template.md` · the `#### Track changes` block the ledger reuses
 - `../../hai-draft-workflow/ref/post-run-analysis.md` · the pattern review this Run is not
-- `../../../workbench/workbench-task-draft/ref/run-space.md` · the Revise card
+- `../../../draft/workbench-task-draft/ref/run-space.md` · the Revise card
 - `../../hai-draft/cli/wdiff.py` · the word diff
 - `../../../../../servers/workbench/workbench-task-draft/run_views/runs.py` · the presenter: `rp-revise-*` cards and the Decision line

@@ -1,9 +1,9 @@
-s21 · Methods: Tracing a User Interaction
-==========================
+s21 · Method: Tracing a User Interaction
+========================================
 view: overview
 emoji: 👆
 
-**Tags:** Methods
+**Tags:** Method
 
 **Stage:** explore
 

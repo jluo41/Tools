@@ -75,7 +75,7 @@ agree. Selection and inspection do not execute a Run or rewrite work records.
 | Create or edit Block, Job, Task or Run records | `hai-block`, `hai-job`, `hai-task`, `hai-run` |
 | Studio topics, bindings and drawings | `hai-studio` and the applicable drawing skill |
 | Theme-specific page content | The corresponding `workbench-cowork`, `workbench-discovery`, `workbench-paper`, `workbench-insight`, `workbench-design` or `workbench-labeling` skill |
-| Draft material, evidence, document delivery or a Page's Runs | [workbench-task-draft](../workbench-task-draft/SKILL.md) and the writer it names |
+| Draft material, evidence, document delivery or a Page's Runs | [workbench-task-draft](../../draft/workbench-task-draft/SKILL.md) and the writer it names |
 
 For Work record alignment, load `hai-work/ref/update.md`. Its commands are
 agent procedures; do not substitute an unrelated CLI command that changes folders
@@ -100,10 +100,10 @@ A folder does not require a separate callable skill or a new top-level tab.
   binding. Result existence and a successful export do not grant acceptance.
 
 The Page workspace's Draft, Evidence and Delivery content is governed by
-[workbench-task-draft](../workbench-task-draft/SKILL.md). Its
-[Run contract](../workbench-task-draft/ref/run-space.md),
-[delivery contract](../workbench-task-draft/ref/delivery.md) and
-[folder contract](../workbench-task-draft/ref/folder.md) own those details. Studio
+[workbench-task-draft](../../draft/workbench-task-draft/SKILL.md). Its
+[Run contract](../../draft/workbench-task-draft/ref/run-space.md),
+[delivery contract](../../draft/workbench-task-draft/ref/delivery.md) and
+[folder contract](../../draft/workbench-task-draft/ref/folder.md) own those details. Studio
 owns its drawing and conversation material. Domain surfaces retain their theme
 contracts and writers. Do not duplicate these storage grammars here.
 

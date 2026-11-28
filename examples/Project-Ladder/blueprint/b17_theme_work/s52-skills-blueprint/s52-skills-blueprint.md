@@ -1,4 +1,4 @@
-s52 · Skills: Blueprint
+s52 · Skill: Blueprint
 =======================
 view: overview
 emoji: 📐
@@ -40,6 +40,7 @@ Checklist
 - ✅ scripts/ · hai-ui, hai-block, hai-project, hai-stack
 - ✅ 〈folder〉/ · constitution/, agents/, tests/, feedback/, fn/, cli/
 - ✅ 〈file〉 · CHANGELOG.md, README.md
+- ✅ Evaluation · every skill, measured live
 - — Draw: the topic has no drawing
 
 

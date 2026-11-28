@@ -54,7 +54,7 @@ The neutral spine is `skills/1_base/project/hai-run/SKILL.md`; its
 profiles, and its references define identity/history and receipt/inventory
 rules. Workflow agents, domain owners, workers and presenters use these rules.
 Page evidence wiring is
-owned by `skills/1_base/workbench/workbench-task-draft/`.
+owned by `skills/1_base/draft/workbench-task-draft/`.
 
 
 Commands

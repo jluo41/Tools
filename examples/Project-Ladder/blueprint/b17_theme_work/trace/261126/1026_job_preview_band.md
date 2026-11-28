@@ -24,7 +24,7 @@ plan:
     path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-numbering.md
     what: s11-s19 are Job UI Previews, one per theme (work, cowork, discovery)
   - do: edit
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: the Kinds table names s11, s12, s13 as the work, cowork and discovery Job UI Previews
   - do: edit
     path: examples/
@@ -36,7 +36,7 @@ changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/ (from s09-discovery-block-view/, Job view first)
   - examples/Project-Ladder/blueprint/b17_theme_work/board.md (## Renumbered)
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-numbering.md
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md (Kinds, the s1N Job UI Previews)
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md (Kinds, the s1N Job UI Previews)
   - 58 files with the full old names, 64 in b17 with a bare s07 (traces' work lists and words); trace file names kept
 ---
 
@@ -51,7 +51,7 @@ changed:
 ## Check
 
 - No file outside references/ still names s07-job-page-view, s08-cowork-block-view or s09-discovery-block-view.
-- A bare s07 in b17 meant this topic except where it named b03's s07 (q01_work_ladder.md, build_s01_work_ladder.py, two option pages and a mock): those five were put back, the tracked ones only where my replacement was their only change.
+- A bare s07 in b17 meant this topic except where it named b03's s07 (q01_work_ladder.md, build_s01_work_structure.py, two option pages and a mock): those five were put back, the tracked ones only where my replacement was their only change.
 - 5623 restarted: b17's Studio lists s11-work-job-preview (Page, Effect, Draw, Delivery), s13-cowork-job-preview (Page with the Job first), s14-discovery-job-preview (Page with the Job first), no traceback.
 - ui_preview_check.py: s11, s12, s13 pass. folder_icons_check.py: the 3 problems left are the b10 merge traces of another session.
 

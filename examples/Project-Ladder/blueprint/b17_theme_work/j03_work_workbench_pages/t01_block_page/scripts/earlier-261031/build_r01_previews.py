@@ -32,7 +32,7 @@ CAPTIONS = {"MindMap": "How it is built, as a map: its parts, and what each must
 
 # b17's three deliveries (board.md ## Deliveries; each topic's delivery/render.yaml names its pieces)
 DELIVERIES = [
-    {"id": "s01", "name": "Work ladder", "type": "skill", "topic": "s01-work-ladder", "job": "j01_work_ladder_contract",
+    {"id": "s01", "name": "Work ladder", "type": "skill", "topic": "s01-work-structure", "job": "j01_work_ladder_contract",
      "stage": "⬜ explore", "deck": "slides/idea-01-rungs-one-shape.png",
      "pieces": ["deck/", "ladder-section", "work-scaffold", "demo-block"],
      "goes": "hai-work SKILL.md › The work ladder",
@@ -42,7 +42,7 @@ DELIVERIES = [
                '└─ jNN_&lt;job&gt;/          goal · close · its Tasks\n'
                '   └─ tNN_&lt;task&gt;/      face · scripts/ · runs/\n'
                '      └─ rNN_&lt;run&gt;/    ticket · run.yaml · result/</pre></div>')},
-    {"id": "s02", "name": "Skill homes", "type": "skill", "topic": "s02-work-skills", "job": "j02_work_skill_homes",
+    {"id": "s02", "name": "Skill homes", "type": "skill", "topic": "s02-blueprint-structure", "job": "j02_work_skill_homes",
      "stage": "⬜ explore", "deck": "slides/idea-01-which-skills-move.png",
      "pieces": ["deck/", "skill-homes-table", "move-list"],
      "goes": "hai-work SKILL.md › Skills of the work theme; the move list to b04",
@@ -50,7 +50,7 @@ DELIVERIES = [
                '<table><tr><th>skill folder</th><th>home, proposed</th></tr>'
                '<tr><td>hai-task</td><td>1_base/task (Q04)</td></tr><tr><td>8_stata</td><td>2_work/work</td></tr>'
                '<tr><td>9_agent</td><td>2_work/work</td></tr><tr><td>1_data</td><td>1_base/task</td></tr></table></div>')},
-    {"id": "s04", "name": "Work pages", "type": "ui", "topic": "s04-workbench-page-structure",
+    {"id": "s04", "name": "Work pages", "type": "ui", "topic": "s04-discovery-structure",
      "job": "j03_work_workbench_pages", "stage": "⏳ shaping", "deck": "slides/idea-01-what-is-a-block.png",
      "pieces": ["deck/", "block-page", "job-task-pages", "element-picks"],
      "goes": "servers/workbench/page/block_index_page/focus_page.py, built by design_b02_workbench",
@@ -210,7 +210,7 @@ def mindmap(mark: bool = False) -> str:
     items = "".join(f'<li><span class="pill{"" if state == "proposed" else " grey"}">{esc(state)}</span>{esc(ask)}'
                     + (f"<p>{esc(answer)}</p>" if answer else "") + "</li>" for state, ask, answer in QUESTIONS)
     return (f'<div class="map{diff(mark)}"><b>To find out</b><ul>{items}</ul>'
-            '<b>Interface</b><ul><li><span class="pill">s04-workbench-page-structure</span>Workbench page structure</li>'
+            '<b>Interface</b><ul><li><span class="pill">s04-discovery-structure</span>Workbench page structure</li>'
             '</ul></div>')
 
 
@@ -258,7 +258,7 @@ def previews() -> dict:
     out["q3-b"] = page("Q3 B", f'<div class="dv-one">{head(S01)}{deck(S01, mark=True)}{thing(S01)}{goes(S01)}</div>',
                        **one)
     out["q3-c"] = page("Q3 C", f'<div class="dv-one">{head(S01)}{thing(S01)}{goes(S01)}'
-                               '<p class="dv-goes diff">its deck: Studio › s01-work-ladder</p></div>', **one)
+                               '<p class="dv-goes diff">its deck: Studio › s01-work-structure</p></div>', **one)
     # Q4 · before a delivery is made (none of b17's is)
     lines = "".join(f'<div class="dv-line"><b>{esc(d["id"])} · {esc(d["name"])}</b><span class="dv-type">'
                     f'{esc(d["type"])}</span><span class="mut">not made yet · {esc(d["job"])}</span></div>'

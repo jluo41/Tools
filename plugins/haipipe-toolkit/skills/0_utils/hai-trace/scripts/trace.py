@@ -146,6 +146,10 @@ def main(argv=None) -> int:
     else:
         faces = sorted(root.glob(a.glob))
         bad = [(f, b) for f in faces for b in problems(f)]
+        # a file beside the traces whose name has no time: the Files pane and this check would never see it
+        loose = sorted(f for f in root.glob("examples/**/trace/[0-9]*/*.md") if not re.match(r"\d{4}_", f.name))
+        bad += [(f, "its name has no HHMM_ prefix (trace.py new names a trace for the time of its first prompt)")
+                for f in loose]
         for f, b in bad:
             print(f"❗ {rel(f, root)}: {b}")
         print(f"{'❗' if bad else '✅'} traces: {len(faces)} files, {len(bad)} problems")

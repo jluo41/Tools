@@ -56,6 +56,9 @@ def page_type(theme: str, level: str, folder: Path, root: Path, data: dict) -> s
     every theme, not only work (JL 261109: "this should be used for all the cases ... include the labeling, design and
     insight")."""
     name = folder.name
+    if (level == 'Block' and theme in WORK_SHAPE | {'vanilla'} and folder.parent.name in WORK_BLOCK_TYPES
+            and page_module(theme, folder, root)[1] != 'prototype_'):
+        return WORK_BLOCK_TYPES[folder.parent.name]           # a work-family Block: its type is its Project folder
     if page_module(theme, folder, root)[1] == 'prototype_':
         return {'Block': 'Question Book', 'Job': 'Question Book release'}.get(level, '')
     if theme in WORK_SHAPE:
@@ -64,9 +67,8 @@ def page_type(theme: str, level: str, folder: Path, root: Path, data: dict) -> s
             text = face.read_text(encoding='utf-8', errors='ignore') if face and inside(face, root) else ''
             if theme == 'work' and (re.search(r'(?m)^theme:\s*\S', text) or any(data.get('ui', {}).values())):
                 return '📐 Work Block (Blueprint)'
-            by_folder = WORK_BLOCK_TYPES.get(folder.parent.name)       # the Project folder the Block sits in
-            return by_folder or {'work': '🧩 Work Block (Work)', 'discovery': '🔎 Work Block (Discovery)',
-                                 'cowork': '🤝 Work Block (CoWork)'}.get(theme, '')
+            return {'work': '🧩 Work Block (Work)', 'discovery': '🔎 Work Block (Discovery)',
+                    'cowork': '🤝 Work Block (CoWork)'}.get(theme, '')
         if level == 'Job':
             return {'work': '🧩 Job', 'discovery': '🔎 Inquiry Job',
                     'cowork': '👥 People' if name == 'j00_people' else '🤝 Collaboration Job'}.get(theme, '')

@@ -6,15 +6,16 @@
 
 ## Short answer
 
-In between. The model still writes text, but in a fixed format, A2UI Express, between `<a2ui>` and `</a2ui>` tags.
-The Agent SDK's compiler, running on your agent's server, parses that block, checks it against the catalog and emits
-the JSON messages. It is not free prose guessed into JSON afterwards. The model may also write the wire JSON
-directly; Express is shorter.
+**In between: the model writes text in a fixed format; your server turns it into JSON.**
+
+- 💬 **The model:** writes text, plus a block between `<a2ui>` and `</a2ui>` in A2UI Express.
+- ⚙️ **The Agent SDK's compiler, on your server:** parses the block, checks it against the catalog, emits the JSON messages.
+- 🚫 **Not guessing:** it is not free prose turned into JSON afterwards.
+- 🧩 **Also possible:** the model writes the JSON directly; Express is shorter.
 
 ## What the model writes
 
-The skill the SDK generates teaches the model the grammar and the catalog's components. For the flight request it
-streams:
+**The skill taught it the grammar; for the flight request it streams this:**
 
 ```text
 <a2ui>
@@ -30,21 +31,25 @@ root = Card(Column([
 </a2ui>
 ```
 
-Lines starting with `$/` set values in the data model; `root = ...` is the component tree.
+- 🔢 Lines starting with `$/` set values in the data model.
+- 🧱 `root = ...` is the component tree: a Card, a Column, two FlightCards, a Button.
+- 🔗 `passengers=$/outbound/pax` binds a card to a value instead of copying the number.
 
 ## What the compiler does
 
-It parses the block, rejects a component or property the catalog does not allow, gives every component an ID and
-splits the result into messages: `createSurface`, then `updateComponents` for the layout and `updateDataModel` for the
-values.
+**Four jobs, as the tokens arrive.**
 
+1. 🔀 Split the chat text from the `<a2ui>` block.
+2. 🧩 Parse each statement once it is complete.
+3. 🛡️ Check it against the catalog; reject a component or property the catalog does not allow.
+4. 🏷️ Give every component an ID and split the result into messages: 🆕 `createSurface`, 🧱 `updateComponents`, 🔢 `updateDataModel`.
 
 ## The three JSON messages, in full
 
-These are the official v1.0 messages for the flight example, from the "Messages on the wire" section of the A2UI
+📄 These are the official v1.0 messages for the flight example, from the "Messages on the wire" section of the A2UI
 overview (Resource 2; Apache-2.0). Component IDs are chosen by the compiler; these are for readability.
 
-**Surface creation**, `createSurface`:
+🆕 **Surface creation**, `createSurface`:
 
 ```json
 {
@@ -56,7 +61,7 @@ overview (Resource 2; Apache-2.0). Component IDs are chosen by the compiler; the
 }
 ```
 
-**Layout**, `updateComponents`: each component names its children by ID, starting from `root`; prices and passenger
+🧱 **Layout**, `updateComponents`: each component names its children by ID, starting from `root`; prices and passenger
 counts are paths into the data model (`{"@path": "/return/pax"}`).
 
 ```json
@@ -110,7 +115,7 @@ counts are paths into the data model (`{"@path": "/return/pax"}`).
 }
 ```
 
-**Values**, `updateDataModel`: the numbers the paths point to.
+🔢 **Values**, `updateDataModel`: the numbers the paths point to.
 
 ```json
 {
@@ -128,8 +133,18 @@ counts are paths into the data model (`{"@path": "/return/pax"}`).
 
 ## What the client receives
 
-Only the JSON messages. The renderer never sees Express; it builds the surface from the messages and the data model.
+**Only the JSON messages.**
+
+- 📥 The renderer gets `createSurface`, `updateComponents`, `updateDataModel`, and the chat text.
+- 🙈 It never sees Express.
+- 📱 It builds the surface from the messages and keeps the data model live.
 
 ## Try explaining
 
-Take one line of the Express block, such as `$/return/pax = 2`, and find where it ends up in the three JSON messages.
+**Follow one line to the screen.**
+
+- 🔍 Take `$/return/pax = 2` from the Express block.
+- 🔢 Find it in `updateDataModel`.
+- 🔗 Find the FlightCard bound to `/return/pax` in `updateComponents`.
+- 📱 Say what the card shows.
+

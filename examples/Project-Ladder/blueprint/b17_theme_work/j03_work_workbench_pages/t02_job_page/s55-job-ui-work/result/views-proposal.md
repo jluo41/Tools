@@ -178,7 +178,7 @@ Caption: "What it must hand over, ticked from the disk." (today's `VIEW_WORDS["d
 - **s58 · Task UI: Work** (`t03_task_page/s58-task-ui-work/`): a Task's Runs in full (each card, its passes, Ask the
   agent); a Run line here opens that Run there.
 - **s57 · Task UI: Report**: reading a Task's newest result in full.
-- **b17-s04** (`s04-workbench-page-structure/`): the page parts every work page shares (path, title-&-section,
+- **b17-s04** (`s04-discovery-structure/`): the page parts every work page shares (path, title-&-section,
   view-button-list, goal-line, view-caption, both rails) and the right rail's sections: Interactions (the inbox),
   Delivery, Timeline, Files.
 - **hai-interaction**: the forms themselves, `collect.py bundle` (Answer all) and the applied flags.

@@ -53,7 +53,7 @@ is drawn because this Book has no execution Task contract.
 This type's structure Studio has Structure, Draw and Skills on top. Each Structure entry includes its real example; the named example entry embeds the live Block. Shared left tabs
 select entries within a view; one entry fills the content width. Skills stays in this Studio.
 
-Studio Band names and order are read from b17's s71–s79 definitions through its shared builder. Empty Bands on a real Block remain omitted by the shared page.
+Studio Band names and order are read from b17's Studio Type definitions (s71 onward) through its shared builder. Empty Bands on a real Block remain omitted by the shared page.
 
 ## Sources
 

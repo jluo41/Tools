@@ -1,4 +1,4 @@
-s53 · Skills: CoWork
+s53 · Skill: CoWork
 ====================
 view: overview
 emoji: 🤝
@@ -40,6 +40,7 @@ Checklist
 - ✅ scripts/ · hai-cowork
 - — 〈folder〉/: no skill here has another folder
 - ✅ 〈file〉 · CHANGELOG.md
+- ✅ Evaluation · every skill, measured live
 - — Draw: the topic has no drawing
 
 

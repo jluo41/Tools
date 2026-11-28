@@ -41,6 +41,7 @@ import job_drawing as jd  # noqa: E402   the page readers: section(), concept(),
 import job_results as jr  # noqa: E402   measured wrapping (Chinese a character at a time), read(), title_of()
 sys.path.insert(0, str(HERE))
 from draw import INK, KEY, RED, Drawing  # noqa: E402
+from task_icons import MARKER, circled, number_badge, run_icon, task_icon, video_checked  # noqa: E402,F401
 
 try:
     import yaml
@@ -111,15 +112,6 @@ def point_why(item: str) -> dict:
         return {"point": plain(m.group(1)).rstrip(".:"), "why": plain(m.group(2))}
     sens = sentences(item)
     return {"point": sens[0].rstrip(".") if sens else plain(item), "why": " ".join(sens[1:])}
-
-
-def video_checked(state: str) -> bool:
-    """A source checked against its video: the state says the video (or its claims) was checked, and nothing in it is
-    still pending; "paper sections checked … video review pending" is not (b12 t07 r05, 261012)."""
-    s = str(state).lower()
-    if re.search(r"not checked|unchecked|pending|not yet", s):
-        return False
-    return bool(re.search(r"checked against the video|\b(video|claims?)\b[^;]*\bchecked\b", s))
 
 
 def run_result(folder: Path, rid: str):
@@ -767,6 +759,7 @@ def idea_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, asse
     key = str(cfg.get("reading") or idea.get("question") or task["question"] or task["title"])
     y = heading(d, folder.name, f"{folder.parent.name} · {len(task['runs'])} {noun}" +
                 ("" if noun == "Runs" else f" · {done} checked against the video"), key, width)
+    task_icon(d, f, runs, noun)                                    # vivid first: the sources, lit
     work = noun == "Runs"
     det = steps_items(idea.get("details") or task["details"], [])
     vids = [f"{jr.mark(r['state'])} {r['rid']}" if work else            # a Run by its folder name (JL 261019); a
@@ -1031,25 +1024,12 @@ def work_rows(run: dict, w: dict, assets: Path, big: bool = False) -> list:
 
 PAGE_W, NOTE_W = 1500, 2300                                     # a transcript page's width; a note's, wide so short
 LONG_PDF = 4                                                    # past this many pages, only the pages with passages
-MARKER = "#ffe86e"                                              # read_paper's HIGHLIGHT, the yellow on the pages
 
 
 def excerpt_number(ex_id: str, k: int) -> int:
     """An excerpt's number: E3 is 3; any other id, its place in reading order."""
     m = re.fullmatch(r"E(\d+)", str(ex_id))
     return int(m.group(1)) if m else k
-
-
-def circled(n: int) -> str:
-    return chr(0x2460 + n - 1) if 1 <= n <= 20 else f"({n})"
-
-
-def number_badge(d: Drawing, x: float, y: float, n: int, size: float = 66) -> None:
-    """A passage's number in a circle of the highlight's own yellow, drawn beside the passage and beside its note
-    (JL 261012: "for the index, why not with 1, 2, 3, 4, with the circles"), so no arrow has to cross between them."""
-    d.el("ellipse", x, y, size, size, strokeColor=INK, strokeWidth=2.5, backgroundColor=MARKER, fillStyle="solid")
-    s, fs = str(n), 36
-    d.text(x + (size - Drawing.measure(s, fs) - 4) / 2, y + (size - fs * 1.25) / 2, s, fs)
 
 
 def read_of(run: dict, assets: Path):
@@ -1297,6 +1277,7 @@ def source_frame(d: Drawing, run: dict, w: dict, assets: Path, stairs: bool = Tr
     if work:
         sub = f"🧪 {run['rid']} · {jr.mark(run['state'])} {run['state']}"
     y = heading(d, name, sub, str(w.get("says") or run["summary"] or f"❓ no summary for {run['rid']}"), width)
+    run_icon(d, f, run)                                            # vivid first: its screen or server
     checks = [f"❓ {c}" for c in w.get("check") or []] or \
         [f"❓ {c.strip().strip('- ').rstrip('.')}" for c in re.split(r";\s+(?![^()]*\))|\s+-\s+(?=[A-Z])", run["check"])
          if c.strip().strip('- ')]                                     # the page's "- " list: one check per line

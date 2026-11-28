@@ -100,5 +100,6 @@
         }
       ]
     }
-  ]
+  ],
+  "check_type": "block-structure"
 }

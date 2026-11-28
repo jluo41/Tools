@@ -27,18 +27,18 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t03_task_page/t03_task_page.md
   what: '''went to _old/'' becomes ''removed 261125'''
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.ideas.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.ideas.md
   what: '''went to _old/'' becomes ''removed 261125'''
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.slides.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.slides.json
   what: '''went to _old/'' becomes ''removed 261125'''
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261125/2141_delete_old_reports.md
 - examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/j03_work_workbench_pages.md
 - examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t03_task_page/t03_task_page.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.ideas.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.slides.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.slides.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.ideas.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.slides.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.slides.html
 ---
 
 # delete b17 _old

@@ -12,10 +12,10 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
   what: two views, placeholder tabs; pages rebuilt
 - do: add
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/block_types_pages.py
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts/block_types_pages.py
   what: an instance's type pages and its two views, from types.md
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Job types and Task types views; delivery/types/ pages built
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py
@@ -29,8 +29,8 @@ plan:
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1413_job_task_types_views.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/block_types_pages.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts/block_types_pages.py
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_types.py

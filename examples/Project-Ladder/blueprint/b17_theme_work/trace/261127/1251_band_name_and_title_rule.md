@@ -1,7 +1,7 @@
 ---
 title: Block Job UI Preview band; titles named by their band, in the skill
 date: 2026-11-27 12:51
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: The s1N band reads Block Job UI Preview, as its topics' titles do; hai-studio writes and checks the rule that a topic's title starts with its band's name.
 closed: true
 plan:

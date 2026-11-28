@@ -55,7 +55,7 @@ Checklist
 - 🙋 Page-Job · job-findings: should a page of this Block type have it?
 - — Page-Task: this Block type has no Task level
 - ✅ Job types
-- 🙋 Job types · pinned list: this Block type pins no `types.md` yet
+- 🙋 Job types · group types: no file says which Job group is of which type
 - — Task types: this Block type has no Task level
-- ❗ QuickHtml
+- ✅ QuickHtml
 - ✅ Draw

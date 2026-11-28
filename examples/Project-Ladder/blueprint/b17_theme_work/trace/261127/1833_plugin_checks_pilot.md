@@ -54,7 +54,7 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
   what: Bind existing Skills rule to executable acceptance.
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_views.py
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py
   what: Validate generated outputs before reporting success; preserve check_type.
 - do: edit
   path: plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
@@ -76,7 +76,7 @@ changed:
 - plugins/haipipe-toolkit/README.md
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_views.py
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py
 - plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
 ---
 
@@ -111,7 +111,7 @@ The user instructed implementation after the scoped, modular proposal. This pilo
 
 The broader registered Block scope returned exit 1 in 0.156 seconds. These current source/output mismatches are not fixed by this pilot; other sessions own those artifacts:
 
-- FAIL [generated] examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html: out of date; regenerate this topic with check_views.py
+- FAIL [generated] examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html: out of date; regenerate this topic with check_views.py
 - FAIL [generated] examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/requirements/page-job--job-rows.html: out of date; regenerate this topic with type_requirements.py
 - FAIL [generated] examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/requirements/page-job--job-overview.html: out of date; regenerate this topic with type_requirements.py
 - FAIL [generated] examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/requirements/page-job--job-tasks.html: out of date; regenerate this topic with type_requirements.py

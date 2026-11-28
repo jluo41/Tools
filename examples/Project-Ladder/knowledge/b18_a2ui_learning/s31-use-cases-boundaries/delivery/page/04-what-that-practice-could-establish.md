@@ -1,7 +1,10 @@
 # What that practice could establish
 
-- Known input messages produce the expected interface.
-- A particular explicit action carries the expected value.
-- The addressed interface reflects the tested update.
+**What it would show, and what it would not.**
 
-It would not establish general model reliability, production readiness, or the learner's understanding. A learner should separately explain the mechanism and a counterexample.
+- ✅ Known messages produce the expected interface.
+- ✅ An explicit action carries the expected value.
+- ✅ The addressed interface shows the tested update.
+- ❌ Not: that a model is reliable in general.
+- ❌ Not: that it is ready for production.
+- ❌ Not: that the learner understood; that needs its own explanation and a counterexample.

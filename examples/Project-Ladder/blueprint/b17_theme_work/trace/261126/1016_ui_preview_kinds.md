@@ -9,7 +9,7 @@ plan:
     path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1016_ui_preview_kinds.md
     what: this trace's own record, written first
   - do: edit
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: a Kinds section (Job, Cowork, Discovery, each with its example Block) and the face's UI preview line
   - do: edit
     path: examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md
@@ -25,7 +25,7 @@ plan:
     what: the examples line adds cowork/b01_example_cowork and discovery/b01_example_discovery
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1016_ui_preview_kinds.md
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md (a Kinds section)
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md (a Kinds section)
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md (UI preview, Job)
   - examples/Project-Ladder/blueprint/b17_theme_work/s99-guide-view/s99-guide-view.md (UI preview, Guide)
   - examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/

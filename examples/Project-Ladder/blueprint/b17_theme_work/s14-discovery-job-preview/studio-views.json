@@ -9,13 +9,11 @@
         },
         {
           "name": "job-overview",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/job-overview.html",
-          "old": true
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fdiscovery%2Fb01_example_discovery&layout=focus&section=jobs&group=j01&mark=view=overview"
         },
         {
           "name": "job-tasks",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/job-tasks.html",
-          "old": true
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fdiscovery%2Fb01_example_discovery&layout=focus&section=jobs&group=j01&mark=view=standing"
         },
         {
           "name": "job-findings",
@@ -33,18 +31,15 @@
         },
         {
           "name": "task-overview",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/task-overview.html",
-          "old": true
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fdiscovery%2Fb01_example_discovery&layout=focus&section=jobs&group=j01&task=t01&mark=view=overview"
         },
         {
           "name": "task-runs",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/task-runs.html",
-          "old": true
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fdiscovery%2Fb01_example_discovery&layout=focus&section=jobs&group=j01&task=t01&mark=view=standing"
         },
         {
           "name": "task-findings",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/task-findings.html",
-          "old": true
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fdiscovery%2Fb01_example_discovery&layout=focus&section=jobs&group=j01&task=t01&mark=view=findings"
         }
       ]
     },
@@ -52,11 +47,11 @@
       "name": "Job types",
       "items": [
         {
-          "name": "Group · j0N",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/job-group-0.html"
+          "name": "Inquiry",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/job-type-inquiry.html"
         },
         {
-          "name": "Type · no type",
+          "name": "no type",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/job-type-none.html"
         }
       ]
@@ -65,11 +60,15 @@
       "name": "Task types",
       "items": [
         {
-          "name": "Group · t0N",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/task-group-0.html"
+          "name": "topic-summary",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/task-type-topic-summary.html"
         },
         {
-          "name": "Type · no type",
+          "name": "source-map",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/task-type-source-map.html"
+        },
+        {
+          "name": "no type",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/types/task-type-none.html"
         }
       ]
@@ -78,9 +77,8 @@
       "name": "QuickHtml",
       "items": [
         {
-          "name": "〈quick page〉",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
-          "old": true
+          "name": "Inquiry to papers",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s14-discovery-job-preview/delivery/ui/inquiry-to-papers.html"
         }
       ]
     },
@@ -169,6 +167,6 @@
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_type": "block-job-ui-preview",
   "check_layout": "elements"
 }

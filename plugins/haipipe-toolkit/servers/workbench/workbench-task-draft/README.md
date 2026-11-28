@@ -1,4 +1,4 @@
-Manual: skills/1_base/workbench/workbench-task-draft/ (the skill an agent loads for this screen).
+Manual: skills/1_base/draft/workbench-task-draft/ (the skill an agent loads for this screen).
 
 The draft Task type: everything a Task with `task-type: draft` shows. `task_draft.py` is its layout
 (the frame's Spaces for a draft Task); the other modules are the Page views it embeds, `assets/` their

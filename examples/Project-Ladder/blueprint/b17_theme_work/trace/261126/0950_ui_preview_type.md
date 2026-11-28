@@ -12,7 +12,7 @@ plan:
     path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-contract.md
     what: a one-line pointer to ref/ui-preview-topic.md where its section was; and in Numbering a row for s99, the Block's own Guide, one per Block, always last
   - do: add
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: the UI preview topic type in its own ref; its folder, Page (live views) and Effect (quick views), when a quick view fades, the example Block, s99, its check
   - do: edit
     path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
@@ -38,7 +38,7 @@ plan:
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/0950_ui_preview_type.md
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-contract.md
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
   - plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/CONSTITUTION.md
   - plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/constitution/A08-preview-on-example-block.md
@@ -61,7 +61,7 @@ changed:
 - ui_preview_check.py runs: 84 UI preview topics under examples/, 83 problems; only s11-work-job-preview passes. Most older topics have no page at all; s31-files-pane and b11's s11 have pages with only quick views; s99-guide-view owes its live view until the Guide section is in the code. No other topic edited.
 - folder_icons_check.py: this trace passes; the one problem left is 2147_ui_means_one_thing (b10 removed by another session).
 - 5623 serves s99-guide-view.html and delivery/ui/guide.html (200); b17's Studio page lists s99-guide-view.
-- The UI preview type moved into its own ref, hai-studio/ref/ui-preview-topic.md (57 lines); topic-contract.md keeps a one-line pointer and the s99 row; SKILL.md, A08, its report and board-contract.md point at the new ref; no link to the old section is left (grep).
+- The UI preview type moved into its own ref, hai-studio/gallery/block-job-ui-preview/TYPE.md (57 lines); topic-contract.md keeps a one-line pointer and the s99 row; SKILL.md, A08, its report and board-contract.md point at the new ref; no link to the old section is left (grep).
 - The trace's front matter loads with yaml.safe_load.
 
 ## Summary

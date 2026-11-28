@@ -51,6 +51,32 @@
           "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/deck/s31-use-cases-boundaries.slides.html"
         }
       ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Page",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Map",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Slides",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/check.html",
+          "fragment": "check-3"
+        }
+      ]
     }
-  ]
+  ],
+  "check_type": "applications"
 }

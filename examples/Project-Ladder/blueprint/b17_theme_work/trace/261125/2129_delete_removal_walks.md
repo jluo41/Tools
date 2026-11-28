@@ -30,27 +30,27 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/runs/r02_collect_interactions_page
   what: its option-q* previews (1.7 MB of PNG) and ticket page; question_collection.md and run.yaml stay
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/result/theme-alignment-proposal.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/result/theme-alignment-proposal.md
   what: its four answers (Q1 to Q4, all A, with JL's note) written in; its form and builder named as removed, in git history
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
   what: its two lines pointing at the form point at the proposal's answers
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
   what: its two citations of the form cite the proposal's answers
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261125/2129_delete_removal_walks.md
 - examples/Project-Ladder/blueprint/b17_theme_work/runs/answer_all.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/result/theme-alignment-proposal.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/result/theme-alignment-proposal.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/runs/r02_collect_interactions_page
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/build_s04_workbench_page_structure.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.mindmap.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.mindmap.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.mindmap.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.mindmap.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/build_s04_discovery_structure.py
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.mindmap.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.mindmap.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.mindmap.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.mindmap.html
 - examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t04_shared_parts/t04_shared_parts.md
 ---
 

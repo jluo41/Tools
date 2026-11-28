@@ -46,15 +46,15 @@
       "name": "Job types",
       "items": [
         {
-          "name": "Group · 🧰 Workbench",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-group-1.html"
+          "name": "Tool area",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-group-type-tool-area.html"
         },
         {
-          "name": "Group · 🗄️ Earlier design",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-group-0.html"
+          "name": "Job type 1",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-type-job-type-1.html"
         },
         {
-          "name": "Type · no type",
+          "name": "no type",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-type-none.html"
         }
       ]
@@ -63,19 +63,19 @@
       "name": "Task types",
       "items": [
         {
-          "name": "Group · Pane components",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-group-0.html"
+          "name": "Parts of one page",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-group-type-parts-of-one-page.html"
         },
         {
-          "name": "Type · tool",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-tool.html"
-        },
-        {
-          "name": "Type · ui",
+          "name": "ui",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-ui.html"
         },
         {
-          "name": "Type · no type",
+          "name": "tool",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-tool.html"
+        },
+        {
+          "name": "no type",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-none.html"
         }
       ]
@@ -84,9 +84,8 @@
       "name": "QuickHtml",
       "items": [
         {
-          "name": "〈quick page〉",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
-          "old": true
+          "name": "Job row · what it builds",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/ui/job-row-builds.html"
         }
       ]
     },
@@ -95,8 +94,7 @@
       "items": [
         {
           "name": "Draw",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/draw.html",
-          "old": true
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/s12-blueprint-job-preview.excalidraw"
         }
       ]
     },
@@ -176,6 +174,6 @@
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_type": "block-job-ui-preview",
   "check_layout": "elements"
 }

@@ -20,21 +20,26 @@ import icons
 import topic_slides
 
 TOPICS = {
-    's01-official-sources': ('Resources', 'Official Sources and Versions'),
-    's11-messages-components-data': ('Concepts', 'Messages, Components and Data'),
-    's21-tracing-interaction': ('Methods', 'Tracing a User Interaction'),
-    's22-chatbot-to-a2ui': ('Methods', 'From a Text Chatbot to A2UI, Step by Step'),
-    's31-use-cases-boundaries': ('Connections and Applications', 'Use Cases and Boundaries'),
-    's41-agent-text-to-a2ui': ('Questions', 'If My Agent Only Returns Text, What Changes?'),
-    's42-who-writes-the-json': ('Questions', 'Who Writes the JSON?'),
+    's01-official-sources': ('Resource', 'Official Sources and Versions'),
+    's11-messages-components-data': ('Method', 'Messages, Components and Data'),
+    's21-tracing-interaction': ('Method', 'Tracing a User Interaction'),
+    's22-chatbot-to-a2ui': ('Method', 'From a Text Chatbot to A2UI, Step by Step'),
+    's31-use-cases-boundaries': ('Application', 'Use Cases and Boundaries'),
+    's41-agent-text-to-a2ui': ('Question', 'If My Agent Only Returns Text, What Changes?'),
+    's42-who-writes-the-json': ('Question', 'Who Writes the JSON?'),
 }
+# each Band is one Studio Type (hai-knowledge A07), kept in the Work Blueprint b17 beside s05 Block Structure: Knowledge
+TYPES_HOME = ROOT / 'examples/Project-Ladder/blueprint/b17_theme_work'
+TYPES = {'Resource': 's77-studio-type-resources', 'Method': 's78-studio-type-methods',
+         'Application': 's79-studio-type-applications', 'Question': 's80-studio-type-questions'}
+TYPE_NAMES = {'Resource': 'resources', 'Method': 'methods', 'Application': 'applications', 'Question': 'questions'}
 TOPIC_IMAGES = {'s01-official-sources': (1, 2, 3, 4, 5, 6), 's11-messages-components-data': (1, 3), 's41-agent-text-to-a2ui': (1,), 's22-chatbot-to-a2ui': (5,)}
 
 
 # the six source records of s01-official-sources/delivery/learning.md, drawn as cards (name, page, what to read, used by)
 RESOURCES = [
     ('Resource 1 · Architecture', 'Overview: How A2UI Works', 'Step-by-step generation,\nrender on the client,\nhandle user actions', 's11, s21',
-     'Berlin to San Francisco: the agent sends cards,\n+ changes passengers locally, Confirm sends action'),
+     'Berlin to San Francisco: the agent sends cards;\ntapping + changes passengers locally'),
     ('Resource 2 · Messages', 'Messages', 'createSurface, updateComponents,\nupdateDataModel, deleteSurface', 's11',
      'The same flight screen as three JSON messages:\ncreate the surface, lay out, fill the values'),
     ('Resource 3 · Data binding', 'Data Model and Data Binding', 'Path references,\nreactive binding', 's11, s21',
@@ -46,6 +51,9 @@ RESOURCES = [
     ('Resource 6 · Repository', 'Official A2UI repository', 'README: Architecture, When to use;\npin a release before running', 's31, j01',
      'Cards, forms, lists: what A2UI draws\nwith native widgets on every platform'),
 ]
+# the passenger count as each of Resources 1 to 4 shows it
+TRACE = ['on the phone: 1, then + makes 2', 'in the JSON: "@path": "/outbound/pax"',
+         'one value, bound to the card', 'in the action: outboundPax: 2']
 ASSETS = HERE / 's01-official-sources/assets'
 
 
@@ -65,6 +73,31 @@ def image_files():
                               'dataURL': 'data:image/png;base64,' + base64.b64encode((ASSETS / f'resource-{i}.png').read_bytes()).decode()}
             for i in range(1, 7)}
 
+
+def shrink(parts, x0, y0, s):
+    """Scale an icon's elements about (x0, y0), so a full-size icon fits beside a label."""
+    for el in parts:
+        el['x'] = x0 + (el['x'] - x0) * s
+        el['y'] = y0 + (el['y'] - y0) * s
+        el['width'] *= s
+        el['height'] *= s
+        if 'points' in el:
+            el['points'] = [[px * s, py * s] for px, py in el['points']]
+    return parts
+
+
+def actor(eid, kind, x, y):
+    """One actor's picture, about 90 high, its top-left at (x, y): person, phone, server, cloud (an LLM API), doc."""
+    if kind == 'person':
+        return shrink(icons.person(eid, x, y, 'off'), x, y, 0.55)
+    if kind == 'phone':
+        return shrink(icons.phone(eid, x, y, 'off'), x, y, 0.65)
+    if kind == 'server':
+        return icons.server(eid, x, y, 'off', w=80, h=88)
+    if kind == 'cloud':
+        return shrink(icons.cloud(eid, x, y + 10, 'off'), x, y + 10, 0.5) + Q.text(eid + '-llm', x + 47, y + 35, 'LLM', 18, Q.ON)
+    return icons.document(eid, x, y, 'off', w=62, h=80)
+
 def drawing(slug):
     random.seed(slug)
     els = []
@@ -80,35 +113,35 @@ def drawing(slug):
 
     words('title', 35, 25, TOPICS[slug][1], 35, Q.TITLE)
     if slug.startswith('s01'):
-        def card(i, x, y):
+        NEW = '#047857'
+        # a reading trail, not a grid: six stops along one path, each with its official picture
+        stops = [  # (index, picture's top-left x, y, fit width, fit height, tilt)
+            (0, 150, 250, 330, 470, -0.03), (1, 600, 150, 250, 330, 0.035), (2, 950, 210, 430, 300, -0.02),
+            (3, 1500, 150, 380, 250, 0.03), (4, 1330, 650, 260, 360, -0.035), (5, 720, 720, 430, 280, 0.025)]
+        centres = [(x + image_size(i, bw, bh)[0] / 2, y + image_size(i, bw, bh)[1] / 2) for i, x, y, bw, bh, _ in stops]
+        # the trail first, so every picture sits on top of it: start, the six stops in reading order, the sign
+        trail = [(110, 330), centres[0], centres[1], centres[2], centres[3], (1930, 330), (1930, 600), centres[4], centres[5],
+                 (420, 1020)]
+        els.extend(Q.arrow('trail', trail, color='#94a3b8', width=3, dashed=True))
+        for i, x, y, bw, bh, tilt in stops:
             name, page, read, supports, vivid = RESOURCES[i]
-            key = f'r{i + 1}'
-            els.extend(Q.box(key, x, y, 440, 520, '', 'plain'))
-            words(key + '-name', x + 18, y + 12, name, 23, Q.TITLE)
-            words(key + '-page', x + 18, y + 46, page, 18, Q.BODY)
-            w, h = image_size(i, 404, 330)
-            els.append(Q._el('image', key + '-img', x + 18 + (404 - w) / 2, y + 80, w, h, 'transparent',
-                             fileId=f'resource-{i + 1}', status='saved', scale=[1, 1], roundness=None))
-            words(key + '-vivid', x + 18, y + 422, vivid, 18, Q.ON)
-            words(key + '-use', x + 18, y + 488, 'Supports ' + supports, 18, '#047857')
-        els += icons.document('docs', 35, 85, 'off', w=55, h=70)
-        words('docs-label', 105, 105, 'Official docs · Resources 1–4', 28)
-        for i in range(4):
-            card(i, 35 + i * 465, 175)
-        els += icons.laptop('code', 15, 730, 'off')
-        words('code-label', 205, 755, 'Sample + code · Resources 5–6', 28)
-        for i in (4, 5):
-            card(i, 35 + (i - 4) * 465, 850)
-        arrow('docs-route', [(1625, 700), (1625, 900), (1440, 960)])
-        arrow('code-route', [(940, 1100), (1060, 1040)])
-        els += Q.diamond('version', 1060, 900, 360, 180, '', 'decision')
-        words('version-label', 1140, 960, 'Same version?\nv1.0 throughout', 25)
-        arrow('reading', [(1240, 1085), (1240, 1160)])
-        els += icons.person('learner', 1130, 1170, 'off', s=.8)
-        words('explanation', 1255, 1180, 'Explain one claim\nName its Resource', 26)
-        words('question', 1060, 1330, 'Which section of which\nResource supports the claim?', 26, '#b45309')
-        words('foot', 35, 1400, 'Images: official A2UI docs and README, Apache-2.0 (assets/SOURCES.md) · v1.0 examples · '
-                                'Pin code before execution', 20)
+            w, h = image_size(i, bw, bh)
+            els.append(Q._el('image', f'r{i + 1}-img', x, y, w, h, 'transparent', fileId=f'resource-{i + 1}',
+                             status='saved', scale=[1, 1], roundness=None, angle=tilt))
+            els.extend(Q.dot(f'r{i + 1}-pin', x + w / 2, y - 8, 9, 'warn'))
+            words(f'r{i + 1}-name', x, y - 52, name, 22, Q.TITLE)
+            words(f'r{i + 1}-vivid', x, y + h + 18, vivid, 16, Q.ON)
+            if i < 4:
+                words(f'r{i + 1}-trace', x, y + h + 62, '✈️ ' + TRACE[i], 16, NEW)
+        els += actor('learner', 'person', 40, 200)
+        words('ask', 20, 120, '"What is A2UI,\nand which version?"', 19, Q.ON)
+        words('docs-band', 1000, 80, 'Read the docs: Resources 1 to 4', 20, Q.BODY)
+        words('code-band', 1060, 1085, 'Then run it: Resources 5 and 6', 20, Q.BODY)
+        # the version sign at the end of the trail
+        els.extend(Q.box('sign', 200, 930, 300, 90, 'v1.0 here\n(docs also show v0.9.1)', 'decision', 19))
+        words('pin', 200, 1035, '📌 pin the code and the packages together;\nnever mix a v0.9 path with a v1.0 message', 18, NEW)
+        words('question', 700, 1160, 'Which version do the six Resources follow,\nand what must you pin before running code?', 24, '#b45309')
+        words('foot', 35, 1260, 'Images: official A2UI docs and README, Apache-2.0 (assets/SOURCES.md)', 17, Q.BODY)
     elif slug.startswith('s11'):
         def image(i, x, y, box_w, box_h):
             w, h = image_size(i - 1, box_w, box_h)
@@ -247,141 +280,169 @@ def drawing(slug):
         words('img-caption', 1500, 105 + h, 'Resource 5: Travel A2UI,\neach part with its real path', 17, Q.BODY)
         # today
         words('today-head', 35, 95, 'Your chatbot today', 24, Q.TITLE)
-        els.extend(Q.box('today-prompt', 35, 135, 230, 70, 'instructions + tools', 'plain', 18))
-        arrow('today-1', [(270, 170), (320, 170)])
-        els.extend(Q.box('today-model', 325, 135, 120, 70, 'Model', 'agent', 20))
-        arrow('today-2', [(450, 170), (500, 170)])
-        els.extend(Q.box('today-text', 505, 135, 230, 70, 'chat text', 'plain', 18))
-        arrow('today-3', [(740, 170), (790, 170)])
-        words('today-app', 800, 152, 'app: a chat bubble', 19, Q.BODY)
-        # the six steps
-        words('steps-head', 35, 250, 'Add six steps (green); the rest stays', 24, Q.TITLE)
-        els.extend(Q.box('server', 35, 290, 1010, 330, '', 'plain', dashed=True))
-        words('server-name', 50, 297, 'On your server', 18, Q.BODY)
-        els.extend(Q.box('client', 1075, 290, 400, 330, '', 'plain', dashed=True))
-        words('client-name', 1090, 297, 'In your app', 18, Q.BODY)
-        steps = [('s1', 50, '1 Catalog', 'Basic Catalog\n(Text, Column, Button…)\nor your catalog.json'),
-                 ('s2', 250, '2 Skill', 'SkillGenerator\nwrites skills/*.md,\nadded to the prompt'),
-                 ('model', 450, 'Model', 'your model,\nunchanged; writes\ntext + <a2ui>'),
-                 ('s3', 650, '3 Compile', 'A2uiGenerator,\nopen_stream:\ncheck, then JSON'),
-                 ('s4', 850, '4 Send', 'your channel, or\na2ui-a2a, a2ui-adk,\nAG-UI, MCP'),
-                 ('s5', 1090, '5 Render', '@a2ui/react, @a2ui/lit,\na2ui_flutter,\nSwiftUI, Compose')]
-        for key, x, name, tools in steps:
-            els.extend(Q.box(key, x, 335, 180, 70, name, 'agent' if key == 'model' else 'end', 21))
-            words(key + '-tools', x + 5, 420, tools, 16, Q.ON if key == 'model' else NEW)
-        for a, b in (('s1', 's2'), ('s2', 'model'), ('model', 's3'), ('s3', 's4')):
-            xa = dict((k, x) for k, x, *_ in steps)[a] + 180
-            arrow(a + '-' + b, [(xa + 2, 370), (xa + 18, 370)])
-        arrow('s4-s5', [(1032, 370), (1088, 370)])
-        els += icons.phone('app', 1300, 410, 'off')
-        arrow('action', [(1335, 545), (1335, 590), (610, 590), (610, 410)], True)
-        words('action-label', 700, 596, '6 Actions: a tap sends action to the agent', 18, NEW)
-        # the packages
-        words('pkg-head', 35, 660, 'The A2UI packages', 24, Q.TITLE)
-        words('pkg', 35, 700, 'Agent SDK (steps 2, 3): Python a2ui-agent-sdk · TypeScript @a2ui/agent · Dart a2ui_agent\n'
-              'Renderer SDK (step 5): @a2ui/react · @a2ui/lit · @a2ui/angular · a2ui_flutter · SwiftUI · Compose\n'
-              'Core SDK: a2ui-core · @a2ui/web_core · a2ui_core, used inside both; you rarely call it', 18, Q.ON)
-        words('question', 35, 820, 'Which steps does your chatbot already have, and which three packages would you add?', 24, '#b45309')
+        els += actor('today-prompt', 'doc', 45, 135)
+        words('today-prompt-l', 120, 150, 'instructions\n+ tools', 17, Q.BODY)
+        arrow('today-1', [(230, 175), (275, 175)])
+        els += actor('today-model', 'cloud', 285, 135)
+        words('today-model-l', 290, 225, 'Model (LLM API)', 17, Q.BODY)
+        arrow('today-2', [(430, 175), (475, 175)])
+        els.extend(Q.box('today-text', 485, 145, 190, 60, 'chat text', 'plain', 18))
+        arrow('today-3', [(680, 175), (725, 175)])
+        els += actor('today-app', 'phone', 735, 130)
+        words('today-app-l', 805, 160, 'a chat bubble', 17, Q.BODY)
+        # the six steps: a picture each, the tool under it, green when new
+        words('steps-head', 35, 285, 'Add six steps (green); the rest stays', 24, Q.TITLE)
+        els.extend(Q.box('server', 35, 325, 1040, 400, '', 'plain', dashed=True))
+        words('server-name', 50, 332, 'Your server (endpoint)', 18, Q.BODY)
+        els.extend(Q.box('client', 1100, 325, 375, 400, '', 'plain', dashed=True))
+        words('client-name', 1115, 332, 'Your app', 18, Q.BODY)
+        steps = [('s1', 70, 'doc', '1 Catalog', 'Basic Catalog, or\nyour catalog.json', NEW),
+                 ('s2', 275, 'doc', '2 Skill', 'SkillGenerator\nwrites skills/*.md\ninto the prompt', NEW),
+                 ('model', 470, 'cloud', 'Model (LLM API)', 'the same model,\nnow also writes\n<a2ui>', Q.ON),
+                 ('s3', 690, 'server', '3 Compile', 'A2uiGenerator,\nopen_stream:\ncheck, then JSON', NEW),
+                 ('s4', 890, None, '4 Send', 'your channel, or\na2ui-a2a, a2ui-adk,\nAG-UI, MCP', NEW),
+                 ('s5', 1130, 'phone', '5 Render', '@a2ui/react, @a2ui/lit,\na2ui_flutter,\nSwiftUI, Compose', NEW)]
+        trace = {'s1': 'FlightCard is\nin the catalog', 's2': 'FlightCard(..., \npassengers)', 'model': 'FlightCard("UA 901",\npassengers=2)',
+                 's3': '"return":\n{"pax": 2}', 's4': 'sent over\nSSE', 's5': 'UA 901 ·\n2 passengers'}
+        where = {'s1': 'catalogs/…/catalog.json', 's2': 'scripts/build_skills.py', 'model': 'brain/',
+                 's3': 'brain/catalog.py', 's4': 'server-sent events', 's5': 'renderers/react/'}
+        for key, x, kind, name, tools, color in steps:
+            words(key + '-trace', x - 10, 570, '✈️ ' + trace[key], 15, NEW)
+            words(key + '-where', x - 10, 620, where[key], 14, Q.BODY)
+            if kind:
+                els.extend(actor(key, kind, x, 370))
+            else:
+                els.extend(Q.arrow(key, [(x, 415), (x + 140, 415)], color=NEW, width=4))
+            words(key + '-name', x - 10, 470, name, 20, color)
+            words(key + '-tools', x - 10, 505, tools, 16, color)
+        for a, b in ((150, 260), (360, 460), (630, 680), (790, 880), (1040, 1120)):
+            arrow(f'step-{a}', [(a, 415), (b, 415)])
+        els += actor('tapper', 'person', 1330, 360)
+        words('tapper-l', 1385, 470, 'User', 18, Q.BODY)
+        arrow('action', [(1350, 515), (1350, 700), (645, 700), (645, 445), (605, 430)])
+        els[-1]['strokeColor'] = NEW
+        words('action-l', 700, 675, '6 Actions: Confirm sends action {returnPax: 2} back', 17, NEW)
+        # the packages, one line each
+        words('pkg-head', 35, 760, 'The A2UI packages', 24, Q.TITLE)
+        words('pkg-1', 35, 800, 'Agent SDK (steps 2, 3): a2ui-agent-sdk · @a2ui/agent · a2ui_agent', 18, Q.ON)
+        words('pkg-2', 35, 830, 'Renderer SDK (step 5): @a2ui/react · @a2ui/lit · @a2ui/angular · a2ui_flutter', 18, Q.ON)
+        words('pkg-3', 35, 860, 'Core SDK, used inside both: a2ui-core · @a2ui/web_core · a2ui_core', 18, Q.ON)
+        words('trace', 35, 905, '✈️ "Book BER to SFO" → skill-taught model → <a2ui> → JSON → two flight cards on the phone', 19, NEW)
+        words('question', 35, 955, 'Which steps does your chatbot already have, and which packages would you add (one server, two React)?', 24, '#b45309')
     elif slug.startswith('s41'):
-        def image(i, x, y, box_w, box_h):
-            w, h = image_size(i - 1, box_w, box_h)
-            els.append(Q._el('image', f'img-{i}', x, y, w, h, 'transparent', fileId=f'resource-{i}', status='saved',
-                             scale=[1, 1], roundness=None))
         NEW = '#047857'
-        # before: a prompt, the model, one text answer
-        words('before-head', 35, 95, 'Before: the model returns text', 28, Q.TITLE)
-        els.extend(Q.box('before-prompt', 35, 145, 250, 110, 'Your prompt\n+ your tools', 'plain', 20))
-        arrow('before-1', [(290, 200), (340, 200)])
-        els.extend(Q.box('before-model', 345, 160, 130, 80, 'Model', 'agent', 22))
-        arrow('before-2', [(480, 200), (530, 200)])
-        els.extend(Q.box('before-text', 535, 150, 330, 100, '"Here are two direct\nflights, LH 454 and UA 901"', 'plain', 19))
-        words('before-note', 535, 265, 'The app shows a chat bubble. Nothing to tap.', 19, Q.BODY)
-        # after: two things are added (green); the rest stays
-        words('after-head', 35, 340, 'After: green is new; everything else stays', 28, Q.TITLE)
-        els.extend(Q.box('after-prompt', 35, 395, 250, 250, '', 'plain'))
-        words('prompt-head', 50, 405, 'Your prompt', 21, Q.TITLE)
-        words('prompt-old', 50, 440, '• your instructions\n• your tools\n  (searchFlights)', 18, Q.ON)
-        els.extend(Q.box('skill', 50, 535, 220, 95, '', 'end'))
-        words('skill-text', 62, 543, '+ A2UI skill\nmade by the SDK\nfrom catalog.json', 18, NEW)
-        arrow('after-1', [(290, 520), (340, 520)])
-        els.extend(Q.box('after-model', 345, 480, 130, 80, 'Model', 'agent', 22))
-        arrow('after-2', [(480, 520), (530, 520)])
-        els.extend(Q.box('output', 535, 395, 330, 250, '', 'plain'))
-        words('output-head', 550, 405, 'What the model writes', 21, Q.TITLE)
-        words('output-text', 550, 440, 'Text, as before:\n"Here are two direct flights"', 18, Q.ON)
-        els.extend(Q.box('express', 550, 505, 300, 125, '', 'end'))
-        words('express-text', 562, 512, '+ <a2ui>\n  root = Card(Column([\n    FlightCard(...), Button(...)]))\n  </a2ui>', 16, NEW)
-        # the two parts go two ways
-        arrow('text-way', [(700, 650), (700, 690), (415, 690), (415, 738)])
-        words('text-way-label', 430, 700, 'text: sent as before', 18, Q.BODY)
-        arrow('a2ui-way', [(860, 570), (905, 570), (905, 745)])
-        els.extend(Q.box('compiler', 735, 750, 330, 110, '', 'end'))
-        words('compiler-text', 750, 758, '+ SDK compiler, on your server\nchecks it against catalog.json,\nturns it into JSON messages', 17, NEW)
-        arrow('json-way', [(730, 805), (520, 805)])
-        words('json-label', 540, 772, 'JSON', 18, NEW)
-        els += icons.phone('app', 380, 745, 'off')
-        words('app-text', 35, 755, 'The app shows\nthe chat text\nand, under it,\nflight cards\nto tap', 19, Q.ON)
-        image(1, 1110, 95, 330, 640)
-        words('img-caption', 1110, 750, 'Resource 1: the official pipeline.\nPurple is your code; the teal\ndashed boxes are the A2UI SDK.', 18, Q.BODY)
-        words('question', 35, 930, 'The model still writes text. Who turns the <a2ui> part into JSON?', 26, '#b45309')
+        w, h = image_size(0, 330, 640)
+        els.append(Q._el('image', 'img-1', 1130, 95, w, h, 'transparent', fileId='resource-1', status='saved',
+                         scale=[1, 1], roundness=None))
+        words('img-caption', 1130, 105 + h, 'Resource 1: purple is your code;\nthe teal dashed boxes are the A2UI SDK', 17, Q.BODY)
+        # before: prompt, model, one sentence, a chat bubble
+        words('before-head', 35, 95, 'Before: the model answers in text', 26, Q.TITLE)
+        els += actor('before-prompt', 'doc', 50, 140)
+        words('before-prompt-l', 30, 230, 'your prompt\n+ tools', 17, Q.BODY)
+        arrow('before-1', [(125, 180), (175, 180)])
+        els += actor('before-model', 'cloud', 185, 140)
+        words('before-model-l', 190, 230, 'Model (LLM API)', 17, Q.BODY)
+        arrow('before-2', [(330, 180), (380, 180)])
+        els.extend(Q.box('before-text', 390, 140, 360, 80, '"Here are two direct flights,\nLH 454 and UA 901"', 'plain', 19))
+        arrow('before-3', [(755, 180), (820, 180)])
+        els += actor('before-app', 'phone', 830, 135)
+        words('before-app-l', 900, 165, 'Your app: a chat bubble,\nnothing to tap', 17, Q.BODY)
+        # after: the same chain, with three green additions
+        words('after-head', 35, 320, 'After: green is new; everything else stays', 26, Q.TITLE)
+        els += actor('after-prompt', 'doc', 50, 370)
+        words('after-prompt-l', 30, 460, 'your prompt\n+ tools', 17, Q.BODY)
+        words('skill', 30, 505, '+ A2UI skill,\nmade by the SDK\nfrom catalog.json', 17, NEW)
+        arrow('after-1', [(125, 410), (175, 410)])
+        els += actor('after-model', 'cloud', 185, 370)
+        words('after-model-l', 190, 460, 'Model (LLM API)', 17, Q.BODY)
+        arrow('after-2', [(330, 410), (380, 410)])
+        words('out-text', 395, 365, '"Here are two direct flights"', 19, Q.ON)
+        els.extend(Q.box('express', 390, 400, 360, 110, '', 'end'))
+        words('express-text', 405, 410, '+ <a2ui>\n  FlightCard(flightNumber="LH 454", ...)\n  Button(Text("Confirm booking"))\n</a2ui>', 16, NEW)
+        arrow('to-sdk', [(755, 455), (830, 455)])
+        els += actor('sdk', 'server', 840, 410)
+        words('sdk-l', 935, 415, '+ SDK compiler\non your server\n(endpoint):\nchecks, writes JSON', 17, NEW)
+        arrow('json', [(880, 505), (880, 600), (525, 600), (525, 640)])
+        words('json-l', 600, 572, 'JSON messages', 17, NEW)
+        arrow('text-way', [(395, 392), (330, 392), (330, 690), (470, 690)])
+        words('text-way-l', 260, 700, 'text, as before', 17, Q.BODY)
+        els += actor('after-app', 'phone', 485, 645)
+        words('after-app-l', 560, 650, 'Your app: the chat text, and', 18, Q.ON)
+        words('after-app-new', 560, 675, '+ a renderer draws a surface:\n  a card "LH 454" to tap', 18, NEW)
+        words('trace', 35, 790, '✈️ LH 454 moves: in the sentence before, in a card you can tap after', 20, NEW)
+        words('question', 35, 850, 'Name the green parts your chatbot needs: which are on the server, which in the app?', 25, '#b45309')
     elif slug.startswith('s42'):
         NEW, RED = '#047857', '#b91c1c'
-        # 1. what the model streams: chat text, then the <a2ui> block (official flight example, Resource 1)
-        words('model-head', 35, 95, '1. The model streams text + an <a2ui> block', 24, Q.TITLE)
-        els.extend(Q.box('answer', 35, 135, 540, 400, '', 'plain'))
-        words('answer-text', 52, 147, '"Here are direct flights. Adjust the passengers below:"', 16, Q.ON)
-        els.extend(Q.box('express', 50, 180, 510, 340, '', 'end'))
-        words('express-code', 62, 190, '<a2ui>\n$/outbound/pax = 1\n$/outbound/price = 455\n$/return/pax = 2\n$/return/price = 970\n'
-              'root = Card(Column([\n  FlightCard(flightNumber="LH 454", origin="BER",\n    destination="SFO", price=$/outbound/price,\n'
-              '    passengers=$/outbound/pax),\n  FlightCard(flightNumber="UA 901", ...),\n  Button(Text("Confirm booking"),\n'
-              '    action=Event("confirm_booking", {...}))\n]))\n</a2ui>', 15, NEW)
-        arrow('to-sdk', [(580, 330), (625, 330)])
+        # 1. the model writes the <a2ui> block (the official flight example)
+        els += actor('model', 'cloud', 35, 90)
+        words('model-head', 185, 100, '1. The model (LLM API) streams\ntext + an <a2ui> block', 22, Q.TITLE)
+        els.extend(Q.box('express', 35, 185, 560, 350, '', 'plain'))
+        lines = ['"Here are direct flights. Adjust the passengers below:"', '<a2ui>', '$/outbound/pax = 1',
+                 '$/outbound/price = 455', '$/return/pax = 2', '$/return/price = 970', 'root = Card(Column([',
+                 '  FlightCard(flightNumber="LH 454", passengers=$/outbound/pax, ...),',
+                 '  FlightCard(flightNumber="UA 901", passengers=$/return/pax, ...),',
+                 '  Button(Text("Confirm booking"), action=Event("confirm_booking"))', ']))', '</a2ui>']
+        for n, line in enumerate(lines):
+            traced = 'return/pax' in line
+            words(f'line-{n}', 52, 197 + n * 27, line, 16, NEW if traced else Q.ON)
+        arrow('to-sdk', [(600, 360), (650, 360)])
         # 2. the Agent SDK on your server
-        words('sdk-head', 630, 95, '2. The Agent SDK, on your server', 24, Q.TITLE)
-        els.extend(Q.box('sdk', 630, 135, 330, 400, '', 'end'))
-        words('sdk-steps', 648, 150, 'As the tokens arrive:\n\n① split chat text from\n    the <a2ui> block\n② parse each statement\n'
-              '    when it is complete\n③ check it against\n    catalog.json and the surface\n④ give components IDs,\n'
-              '    split into messages', 18, NEW)
-        arrow('bad', [(795, 540), (795, 590), (300, 590), (300, 540)], True)
-        words('bad-label', 330, 597, '❗ invalid: not sent; returned to the model to fix', 18, RED)
-        arrow('to-json', [(965, 330), (1005, 330)])
-        # 3. the JSON messages that leave the server (Resource 2, "Messages on the wire")
-        words('json-head', 1010, 95, '3. JSON messages to the app', 24, Q.TITLE)
-        msgs = [('createSurface', '"surfaceId": "flight-booking-surface",\n"catalogId": ".../travel/v1/catalog.json"'),
-                ('updateComponents', '{"id": "flight_return",\n "component": "FlightCard", "flightNumber": "UA 901",\n'
-                                     ' "passengers": {"@path": "/return/pax"}}  ...'),
-                ('updateDataModel', '"value": {"outbound": {"pax": 1, "price": 455},\n          "return":   {"pax": 2, "price": 970}}')]
-        y = 135
-        for n, (name, body) in enumerate(msgs):
-            hgt = 95 if n != 1 else 120
-            els.extend(Q.box(f'msg-{n}', 1010, y, 470, hgt, '', 'decision'))
-            words(f'msg-{n}-name', 1025, y + 8, name, 19, Q.ON)
-            words(f'msg-{n}-body', 1025, y + 36, body, 14, Q.BODY)
-            y += hgt + 15
-        # 4. the app: chat text and the cards
-        arrow('to-app', [(1245, 485), (1245, 640), (1110, 640)])
-        arrow('text-to-app', [(90, 545), (90, 720), (945, 720)])
-        words('text-label', 110, 690, 'chat text, sent as before', 17, Q.BODY)
-        els += icons.phone('app', 960, 640, 'off')
-        words('app-text', 1100, 660, '4. The renderer draws:\nthe chat text, two flight cards\n(LH 454: 1 passenger,\n UA 901: 2 passengers)\nand Confirm booking', 18, Q.ON)
-        # the answer to the topic's question, traced in green
-        els.extend(Q.box('trace', 35, 790, 860, 70, '', 'end'))
-        words('trace-text', 50, 800, '$/return/pax = 2  →  updateDataModel "return": {"pax": 2}  →\n'
-              'FlightCard UA 901, bound to /return/pax, shows 2 passengers', 18, NEW)
-        words('source', 35, 880, 'Example and messages from the official overview (Resources 1 and 2)', 17, Q.BODY)
-        words('question', 35, 925, 'Which step would reject FlightCard(seat="12A") if the catalog has no seat?', 24, '#b45309')
+        els += actor('sdk', 'server', 665, 185)
+        words('sdk-head', 760, 190, '2. The Agent SDK,\non your server (endpoint)', 22, Q.TITLE)
+        for n, step in enumerate(['① split the chat text from <a2ui>', '② parse each statement as it ends',
+                                  '③ check it against catalog.json', '④ give IDs, split into messages']):
+            words(f'sdk-{n}', 665, 300 + n * 34, step, 18, NEW)
+        arrow('bad', [(760, 450), (760, 575), (300, 575), (300, 540)])
+        els[-1]['strokeColor'] = RED
+        words('bad-l', 330, 583, '❗ invalid: not sent; back to the model to fix', 17, RED)
+        arrow('to-json', [(965, 360), (1010, 360)])
+        # 3. the JSON messages that leave the server
+        words('json-head', 1015, 100, '3. JSON messages to the app', 22, Q.TITLE)
+        msgs = [('createSurface', '"surfaceId": "flight-booking-surface"', Q.BODY),
+                ('updateComponents', '"flight_return": FlightCard,\n"passengers": {"@path": "/return/pax"}', NEW),
+                ('updateDataModel', '"return": {"pax": 2, "price": 970}', NEW)]
+        for n, (name, body, color) in enumerate(msgs):
+            y = 145 + n * 130
+            els.extend(Q.box(f'msg-{n}', 1015, y, 430, 110, '', 'decision'))
+            words(f'msg-{n}-name', 1030, y + 10, name, 19, Q.ON)
+            words(f'msg-{n}-body', 1030, y + 45, body, 15, color)
+        arrow('to-app', [(1230, 540), (1230, 660), (1130, 660)])
+        # 4. the app
+        els += actor('app', 'phone', 1050, 620)
+        words('app-l', 1240, 680, '4. The renderer draws\nUA 901 · 2 passengers', 19, NEW)
+        words('trace', 35, 660, '✈️ $/return/pax = 2  →  "return": {"pax": 2}  →  the UA 901 card shows 2', 20, NEW)
+        words('source', 35, 705, 'Example and messages from the official overview (Resources 1 and 2)', 17, Q.BODY)
+        words('question', 35, 760, 'Which step would reject FlightCard(seat="12A") if the catalog has no seat?', 24, '#b45309')
     else:
-        els += icons.person('choice', 490, 135, 'off', s=.8)
-        words('choice-label', 330, 80, 'Does the task change the controls?', 30)
-        arrow('dynamic', [(490, 295), (270, 415)])
-        arrow('fixed', [(590, 295), (820, 415)])
-        els += icons.phone('dynamic-ui', 180, 430, 'off')
-        words('dynamic-label', 65, 660, 'Dynamic surface\nCatalog-constrained', 29)
-        els += icons.document('fixed-ui', 795, 440, 'off', w=95, h=130)
-        words('fixed-label', 700, 660, 'Fixed form\nStable sequence', 29)
-        words('yes', 255, 340, 'Often', 26)
-        words('no', 755, 340, 'Rarely', 26)
-        words('question', 35, 820, 'A fixed-message test checks behavior, not general model reliability.', 25, '#b45309')
+        NEW, RED = '#047857', '#b91c1c'
+        els.extend(Q.diamond('decide', 470, 85, 460, 150, '', 'decision'))
+        words('decide-l', 545, 135, 'Does the request change\nwhat the screen should show?', 21, Q.ON)
+        # yes: a travel assistant
+        arrow('yes', [(560, 235), (300, 300)])
+        words('yes-l', 330, 245, 'yes, often', 19, NEW)
+        els += actor('traveller', 'person', 60, 300)
+        words('ask', 120, 300, '"BER to SFO today,\n2 back on Oct 19"', 18, Q.ON)
+        words('user-l', 60, 400, 'User', 17, Q.BODY)
+        arrow('ask-agent', [(215, 375), (240, 375), (240, 440)])
+        els += actor('agent', 'cloud', 175, 440)
+        words('agent-l', 160, 530, 'Agent (LLM API):\nwrites FlightCard(..., passengers=2)', 16, NEW)
+        arrow('agent-app', [(310, 470), (340, 470), (340, 420)])
+        els += actor('travel-app', 'phone', 310, 320)
+        words('travel-l', 375, 320, 'Travel assistant: A2UI\nbuilds two flight cards\nfor this request', 18, NEW)
+        words('travel-v', 375, 400, '✈️ UA 901 · passengers 2', 18, NEW)
+        # no: a sign-up form
+        arrow('no', [(840, 235), (1060, 300)])
+        words('no-l', 970, 245, 'no, rarely', 19, Q.BODY)
+        els += actor('form', 'doc', 980, 320)
+        words('form-l', 1060, 320, 'Sign-up form: the same\nfields every time;\nordinary app UI is simpler', 18, Q.BODY)
+        # the boundaries either way
+        words('bound-head', 60, 600, 'Boundaries, whichever you choose', 22, Q.TITLE)
+        els += icons.shield('catalog', 60, 645, 'off', s=0.6)
+        words('bound-1', 130, 650, '⚠️ the agent asks for a component the app lacks\n→ the catalog rejects it', 18, RED)
+        els += icons.lock('auth', 700, 655)
+        words('bound-2', 770, 650, '⚠️ a card that looks right triggers a payment\n→ your app checks the action', 18, RED)
+        words('source', 60, 750, 'When to use A2UI: Resource 6 · a design judgement, not an A2UI rule', 17, Q.BODY)
+        words('question', 60, 800, 'Sign-up form or travel assistant: which one gets A2UI, and why?', 25, '#b45309')
     for e in els:
         if e['type'] == 'text':
             e['fontFamily'] = 6
@@ -416,7 +477,10 @@ def page_tabs(topic):
     for view in views['views']:
         if view['name'] == 'Page':
             view['items'] = items
-    views_path.write_text(json.dumps(views, indent=2, ensure_ascii=False) + '\n')
+    views['check_type'] = TYPE_NAMES[TOPICS[topic.name][0]]       # by name, so a renumbered type topic still resolves
+    from check_views import build as check_build
+    for path, text in check_build(topic, views, ROOT).items():
+        path.write_text(text)
 
 
 def merger(slug):
@@ -459,7 +523,10 @@ def build():
 
 def check():
     assert (HERE / '_studio_groups.txt').read_text().splitlines() == list(dict.fromkeys(v[0] for v in TOPICS.values()))
-    assert {p.name for p in HERE.glob('s[0-9][0-9]-*')} == set(TOPICS)
+    assert {p.name for p in HERE.glob('s[0-9][0-9]-*')} == set(TOPICS), 'Studio Types live in the Blueprint, not here'
+    import type_follow
+    for band, slug in TYPES.items():
+        assert (TYPES_HOME / slug / 'elements.md').is_file(), slug
     assert [p.name for p in HERE.glob('j[0-9][0-9]_*')] == ['j01_interactive_card'], 'Only the one optional practice Job'
     for slug, (band, title) in TOPICS.items():
         topic = HERE / slug
@@ -468,8 +535,12 @@ def check():
         notes = (topic / 'delivery/learning.md').read_text()
         assert len(notes.split()) > 150 and '## Try explaining' in notes
         assert not re.search('[\u4e00-\u9fff]', face + notes)
-        views = json.loads((topic / 'studio-views.json').read_text())['views']
-        assert [v['name'] for v in views] == ['Page', 'Draw', 'Map', 'Slides']
+        data = json.loads((topic / 'studio-views.json').read_text())
+        assert data['check_type'] == TYPE_NAMES[band], slug
+        bad, _ = type_follow.problems(topic, ROOT)
+        assert not bad, (slug, bad)
+        views = data['views']
+        assert [v['name'] for v in views] == ['Page', 'Draw', 'Map', 'Slides', 'Check']
         for view in views:
             for row in view['items']:
                 assert (ROOT / row['path']).is_file(), row
@@ -487,7 +558,7 @@ def check():
                 assert (ROOT / path).is_file(), link
             elif not link.startswith(('https://', 'http://', '#')):
                 assert (topic / 'delivery' / link.split('#')[0]).resolve().is_file(), link
-    print('A2UI: four real English Studio topics, ordered Bands, bound content and drawing/deck files checked')
+    print('A2UI: English Studio topics, one Studio Type per Band, each topic follows its type, drawing/deck files checked')
 
 
 if __name__ == '__main__':

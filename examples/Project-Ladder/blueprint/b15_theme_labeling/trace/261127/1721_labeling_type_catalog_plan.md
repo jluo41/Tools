@@ -91,13 +91,13 @@ changed:
 请核对并在你已有授权范围内对齐本主题的 Block Structure Studios；不要复制 Paper 的业务结构。共同来源：
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md A06/A07；
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md 与 studio-views.json；
-- b17 s01-work-ladder 的实例。
+- b17 s01-work-structure 的实例。
 一个真实 Block type 对应一个 Block Structure Studio 实例，s01/s02 等都遵循这一个 Studio Type。
 
 必须核对：
 1. Structure 里的 Folder / Job-Task / Studio 是否齐全：Folder 是带〈变量〉的命名规则；Job-Task 分组与类型分开；Studio 写清该实际 Block 的 Band 名称、编号和主题组织。不能拿 Blueprint 的 Band 当作实际 Block 的全部设计，也不能只有几个主题示例。
 2. 每个实例有 types.md，分 Job group type / Job type / Task group type / Task type，并说明 for 与 holds、真实源字段和技能所有者；不存在的层级明确说明，不为通过检查发明类型。
-3. Job types / Task types 由清单生成。复用 hai-studio/scripts/block_types_pages.py；不要只换标题或只验证自己硬编码的按钮列表。缺少所有 types.md 时不能把“0 types / 0 problems”当作通过。
+3. Job types / Task types 由清单生成。复用 hai-studio/gallery/block-structure/scripts/block_types_pages.py；不要只换标题或只验证自己硬编码的按钮列表。缺少所有 types.md 时不能把“0 types / 0 problems”当作通过。
 4. Draw、Skills 和真实示例按共享类型绑定；主题仍保留本会话用户明确批准的简单折叠 mindmap和人工画布。已有简化决定如与共享定义冲突，明确记录并按最新用户授权处理，别悄悄来回切换。
 5. Skills 指向实际 owning skill；同步当前技能规则及其生成源，执行页面与 fresh-context 验收。不要改研究记录来伪造示例或把设计完成说成执行 harness 已完成。
 6. 共用 registry/readers；不改其他主题、不另写 renderer、不重启5623。先在本会话 Trace 列具体文件，遵循本会话授权和 AGENTS；本通知不代替新增文件审批。

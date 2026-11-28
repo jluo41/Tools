@@ -2,6 +2,7 @@
 
 renamed-from: b01_example_prior_work
 board-kind: discovery-block
+workbench: work
 spine: What earlier work found about <a policy> and <an outcome>; three made-up papers read as numbered Runs, their Evidence Bib handed to the Paper-Example.
 close: Every Task Page is checked and every placeholder Paper Run has a truthful terminal state.
 

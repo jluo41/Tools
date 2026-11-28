@@ -162,7 +162,7 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1900_type_examples_check.md
   what: "NEW: record approved file plan before edits; then checks, browser evidence and remaining gaps."
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html
   what: Refresh inherited S71 criteria under the prior approved Check-pilot file scope.
 changed:
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/requirement_examples.py
@@ -217,7 +217,7 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/check.html
 - plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1900_type_examples_check.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html
 ---
 
 # Studio Type examples and element checks
@@ -284,7 +284,7 @@ Files before edits:
 - `plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/type-examples.md`: synchronize source, generation, guard or correction record
 - `plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md`: synchronize source, generation, guard or correction record
 - `plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md`: synchronize source, generation, guard or correction record
-- `examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html`: synchronize source, generation, guard or correction record
+- `examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html`: synchronize source, generation, guard or correction record
 - `examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1900_type_examples_check.md`: synchronize source, generation, guard or correction record
 
 User correction: remove the standalone S71 Examples top view; keep inline examples only.

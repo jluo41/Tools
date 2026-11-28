@@ -589,3 +589,18 @@ class GalleryScanTest(unittest.TestCase):
             self.assertIn("a deck, and a new skill", md)          # the newest Tools one with a For: line
             self.assertNotIn("private words", md)                # another SPACE never shows its face's words
             self.assertIn("| Block | 3 |", md)
+
+
+def test_a_topic_that_names_a_studio_type_is_no_slide_draft(tmp_path):
+    """s6N is the slide band in a Work Block and the Skill band in a blueprint Block: the named type decides."""
+    import json
+    import sys
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+    import canvas
+    topic = tmp_path / "s60-skill-studio"
+    topic.mkdir()
+    drawing = topic / "s60-skill-studio.excalidraw"
+    assert canvas.is_slide_draft(drawing)                                  # no views file: its number decides
+    (topic / "studio-views.json").write_text(json.dumps({"check_type": "skills", "views": []}))
+    assert not canvas.is_slide_draft(drawing)
+    assert not canvas.is_slide_draft(tmp_path / "s51-x" / "s51-x.excalidraw")

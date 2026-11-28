@@ -7,7 +7,7 @@ by run type (names only, never their content; no Board or Section names are draw
 since they are the proposal: each skill's job and level, and each run type's level (Block · Job · Task,
 from Q01). Open points are red.
 
-Draws with b04's studio helpers (as b17's s02-work-skills does) through b03's canvas.write, so a
+Draws with b04's studio helpers (as b17's s02-blueprint-structure does) through b03's canvas.write, so a
 person's marks survive a rebuild. What changed is written in green beside it, dated (CHANGES; JL 261007: "add the
 short green comments to where we made the changes").
 

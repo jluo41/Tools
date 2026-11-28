@@ -111,8 +111,16 @@ def apply_palette(els):
 
 
 def is_slide_draft(out):
-    """A slide draft (s61-s69) keeps its slide colours (JL 261007: "but for the slide draft, maybe not")."""
-    return bool(__import__("re").match(r"^s6\d\b|^s6\d-", Path(out).stem))
+    """A slide draft (s61-s69) keeps its slide colours (JL 261007: "but for the slide draft, maybe not"). A topic
+    that names a Studio Type is that type, whatever its number: in a blueprint Block s6N is the Skill band."""
+    out = Path(out)
+    if not __import__("re").match(r"^s6\d\b|^s6\d-", out.stem):
+        return False
+    try:
+        views = __import__("json").loads((out.parent / "studio-views.json").read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return True
+    return not (isinstance(views, dict) and views.get("check_type"))
 
 
 # A text element's width is where Excalidraw stops drawing it: a width guessed for English (0.55 of the size a

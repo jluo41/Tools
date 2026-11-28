@@ -4,20 +4,36 @@
       "name": "Page",
       "items": [
         {
-          "name": "Follow one round trip",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/01-follow-one-round-trip.md"
+          "name": "Where you start",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/01-where-you-start.md"
         },
         {
-          "name": "An observation sheet",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/02-an-observation-sheet.md"
+          "name": "1. Locate the surface",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/02-1-locate-the-surface.md"
         },
         {
-          "name": "Compare two debugging routes",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/03-compare-two-debugging-routes.md"
+          "name": "2. Change the count",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/03-2-change-the-count.md"
+        },
+        {
+          "name": "3. Confirm the choice",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/04-3-confirm-the-choice.md"
+        },
+        {
+          "name": "4. Separate response from assumption",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/05-4-separate-response-from-assumption.md"
+        },
+        {
+          "name": "5. Record what you observe",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/06-5-record-what-you-observe.md"
+        },
+        {
+          "name": "6. Trace the boundaries, not the screen",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/07-6-trace-the-boundaries-not-the-screen.md"
         },
         {
           "name": "Try explaining",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/04-try-explaining.md"
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/08-try-explaining.md"
         }
       ]
     },
@@ -47,6 +63,32 @@
           "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/deck/s21-tracing-interaction.slides.html"
         }
       ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Page",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Map",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Slides",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/check.html",
+          "fragment": "check-3"
+        }
+      ]
     }
-  ]
+  ],
+  "check_type": "methods"
 }

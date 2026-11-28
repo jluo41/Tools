@@ -54,6 +54,7 @@ Task runs (hai-data, -nn, -end).
 
 ## Renumbered
 
+- 261127: the Studio Type topics run s71 to s80 with no gaps, Work first (s71 to s76; Skills s76 is s75, Theme Guide s78 is s76), then the Knowledge Band types s77 Resources, s78 Methods, s79 Applications, s80 Questions; a `sNN-studio-type-*` topic is in Studio Type whatever its decade.
 - 261127: Knowledge is Block type 5 in every band: s05 Block Structure, s15 Job UI Preview (new), s63-skills-knowledge is s55-skills-knowledge.
 - 261127: s60 Studio and s61 Trace are Skills topics too, one skill each; s6N continues the Skills band of s5N.
 - 261127: the Studio Type topics are s71-s79 in band order (were s70-s79; each names its band on its band: line); Slide Draft has no type topic.
@@ -72,10 +73,10 @@ chat section -> Related question -> hai-report -> skill, workbench or builder ch
 
 ## Structure Studios
 
-- [s01 · Work Block Structure](s01-work-ladder/s01-work-ladder.md)
-- [s02 · Work Block (Blueprint) Structure](s02-work-skills/s02-work-skills.md)
-- [s03 · CoWork Block Structure](s03-q01-work-ladder/s03-q01-work-ladder.md)
-- [s04 · Discovery Block Structure](s04-workbench-page-structure/s04-workbench-page-structure.md)
+- [s01 · Work Block Structure](s01-work-structure/s01-work-structure.md)
+- [s02 · Work Block (Blueprint) Structure](s02-blueprint-structure/s02-blueprint-structure.md)
+- [s03 · CoWork Block Structure](s03-cowork-structure/s03-cowork-structure.md)
+- [s04 · Discovery Block Structure](s04-discovery-structure/s04-discovery-structure.md)
 - [s05 · Block Structure: Knowledge](s05-knowledge-structure/s05-knowledge-structure.md)
 
 Each structure topic has Structure / Draw / Examples / Skills. Structure contains Folder, Job-Task, and Studio. Draw shows the corresponding structural models. S11–S13 remain responsible for UI design.
@@ -84,15 +85,15 @@ The topic directories retain their existing paths. Original faces and the previo
 
 ## Skills Studios
 
-- [s51 · Skills: Work](s51-skills-work/s51-skills-work.md)
-- [s52 · Skills: Blueprint](s52-skills-blueprint/s52-skills-blueprint.md)
-- [s53 · Skills: CoWork](s53-skills-cowork/s53-skills-cowork.md)
-- [s54 · Skills: Discovery](s54-skills-discovery/s54-skills-discovery.md)
-- [s55 · Skills: Knowledge](s55-skills-knowledge/s55-skills-knowledge.md)
-- [s60 · Skills: Studio](s60-skill-studio/s60-skill-studio.md)
-- [s61 · Skills: Trace](s61-skill-trace/s61-skill-trace.md)
-- [s62 · Skills: Project](s62-skills-ladder/s62-skills-ladder.md)
-- [s63 · Skills: Draw](s63-skill-draw/s63-skill-draw.md)
+- [s51 · Skill: Work](s51-skills-work/s51-skills-work.md)
+- [s52 · Skill: Blueprint](s52-skills-blueprint/s52-skills-blueprint.md)
+- [s53 · Skill: CoWork](s53-skills-cowork/s53-skills-cowork.md)
+- [s54 · Skill: Discovery](s54-skills-discovery/s54-skills-discovery.md)
+- [s55 · Skill: Knowledge](s55-skills-knowledge/s55-skills-knowledge.md)
+- [s60 · Skill: Studio](s60-skill-studio/s60-skill-studio.md)
+- [s61 · Skill: Trace](s61-skill-trace/s61-skill-trace.md)
+- [s62 · Skill: Project](s62-skills-project/s62-skills-project.md)
+- [s63 · Skill: Draw](s63-skill-draw/s63-skill-draw.md)
 
 Each topic reads its actual skills. Shared level contracts can be referenced by
 several work kinds through the same source files.
@@ -112,7 +113,7 @@ questions:
   acceptance: Answered when every level names its folder and its six Spaces' content,
     drawn in studio/.
   work: []
-  report: s03-q01-work-ladder/s03-q01-work-ladder.md
+  report: s03-cowork-structure/s03-cowork-structure.md
 - id: Q02
   title: Where do Plan, Build, Execute and Report show?
   question: 'How do a Task''s four phases appear in the six Spaces: Description, Work

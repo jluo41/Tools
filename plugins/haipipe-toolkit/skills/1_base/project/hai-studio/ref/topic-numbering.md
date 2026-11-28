@@ -17,13 +17,16 @@ and order; their own `bands:` lines do not rename the shared groups. Empty bands
 | s31–s39 | UI Plugin | Shared page components |
 | s41–s49 | Task Procedure | Task methods owned by their Task types and skills |
 | s51–s69 | Skills | Skills used by the Block and its shared mechanisms |
-| s71–s79 | Studio Type | Shared type requirements or theme-specific type definitions |
+| s71 onward | Studio Type | Shared type requirements or theme-specific type definitions |
 | s81–s89 | Theme Guide | The theme's way of working |
 | s99 | Guide | Guidance for the particular Block |
 
 A Band is a group, a Studio Type defines content, and a Studio topic holds an actual instance. These are distinct.
-The shared type definitions are s71 Block Structure, s72 Block Job UI Preview, s73 Report, s74 UI Plugin,
-s76 Skills and s78 Theme Guide. Their numbers are identifiers, not a requirement to fill every slot.
+A theme may bind each of its Bands to exactly one Studio Type, so the Band names the type (Knowledge does: hai-knowledge A07).
+The type definitions are numbered in one run from s71, with no gaps, continuing past s79 (s80, s81 … up to s98)
+when there are more than nine: s71 Block Structure, s72 Block Job UI Preview, s73 Report, s74 UI Plugin, s75 Skills,
+s76 Theme Guide, then Knowledge's Band types s77 Resources, s78 Methods, s79 Applications, s80 Questions
+(hai-knowledge A07). A topic named `sNN-studio-type-*` is in the Studio Type band whatever its decade. Their numbers are identifiers, not a requirement to fill every slot.
 A type's `band:` field states where its instances belong; it does not define the group's name.
 
 A Blueprint references a shared type rather than copying its definition. It authors its own type only when the

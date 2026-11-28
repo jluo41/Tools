@@ -24,7 +24,7 @@ def problems(block: Path) -> list[str]:
         if not face.is_file():
             continue
         nn = int(topic.name[1:3])
-        name = band_name(block, nn)
+        name = band_name(block, 70 if "-studio-type-" in topic.name else nn)   # type topics run on past s79
         rel = topic.relative_to(SPACE)
         if not name:
             out.append(f"❗ {rel}: s{nn // 10}N has no configured band name")

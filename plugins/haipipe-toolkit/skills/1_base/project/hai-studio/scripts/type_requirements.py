@@ -29,9 +29,14 @@ dd{margin:0}ol{margin:0;padding-left:20px}li{margin:3px 0}
 code{font-size:13px;background:var(--soft);padding:0 4px;border-radius:4px;overflow-wrap:anywhere}
 dd{overflow-wrap:anywhere}
 @media (max-width:400px){body dl{grid-template-columns:minmax(0,1fr);gap:2px 0}body dt{padding-top:10px}body dt:first-child{padding-top:0}}
-.tree,.tree ul{list-style:none;padding:0;margin:0}.tree ul{margin:2px 0 2px 9px;padding-left:14px;border-left:1px solid var(--line)}
-.tree li{margin:3px 0;white-space:nowrap}.tree summary{cursor:pointer;width:fit-content}.tree .leaf{padding-left:15px}
-.tree svg,.tree .ico{margin-right:5px}.tree .ico{color:var(--muted)}.tree small{margin-left:10px;color:var(--muted);font-size:11.5px}
+.tree,.tree ul{list-style:none;padding:0;margin:0}.tree ul{margin:6px 0 8px 13px;padding-left:23px;border-left:1px solid var(--line)}
+.tree li{position:relative;margin:4px 0;white-space:nowrap}.tree ul>li:before{content:'';position:absolute;left:-23px;top:13px;width:23px;border-top:1px solid var(--line)}
+.tree summary{cursor:pointer;width:fit-content}.tree .leaf{padding-left:15px}.tree>li>details>summary{color:var(--root);font-weight:600}
+.tree svg,.tree .ico{margin-right:5px}.tree small{margin-left:12px;color:var(--muted);font-size:11px;font-weight:400}
+.tree{--root:#176353;--l-jg:#7048e8;--l-jn:#1971c2;--l-tg:#2b8a3e;--l-tn:#c2410c}
+.lvl[data-level=job-group]{color:var(--l-jg);font-weight:600}.lvl[data-level=job-name]{color:var(--l-jn)}
+.lvl[data-level=task-group]{color:var(--l-tg);font-weight:600}.lvl[data-level=task-name]{color:var(--l-tn)}
+@media (prefers-color-scheme:dark){.tree{--root:#a4ddc4;--l-jg:#b197fc;--l-jn:#74c0fc;--l-tg:#8ce99a;--l-tn:#ffa94d}}
 dd:has(>.tree){overflow-x:auto;overflow-wrap:normal;padding-bottom:4px}"""
 
 
@@ -43,13 +48,19 @@ def words(text: str) -> str:
     return re.sub(r"`([^`]+)`", r"<code>\1</code>", html.escape(text))
 
 
+LEVELS = {"Job group": "job-group", "Job name": "job-name", "Task group": "task-group", "Task name": "task-name"}
+
+
 def tree(lines: list[str]) -> str:
-    """The pattern to follow, drawn as the Files pane draws a folder: the one folder drawing, a file's icon by its
-    type, ◇ for a level that is no folder or file. Two spaces of indent are one level."""
+    """The pattern to follow, drawn as an instance draws its tree (one look, so a type needs no separate example): the
+    Files pane's folder drawing and file icons, ◇ for a level that is no folder or file, the connector lines, and for
+    a row whose note names a level (Job group, Job name, Task group, Task name) that level's colour. Two spaces of
+    indent are one level; `  # note` is a small word after the name, `  | words` the line's hover."""
     from live import ui_parts
     from live.file_icons import DEFAULT_ICON, FILE_ICONS, FILE_MARKS
 
     def row(text: str) -> str:
+        text = text.partition("  | ")[0]
         name, _, note = text.partition("  # ")
         suffix = Path(name).suffix.lower()
         if name.endswith("/"):
@@ -60,13 +71,22 @@ def tree(lines: list[str]) -> str:
             icon = '<span class="ico">◇</span>'
         return icon + html.escape(name) + (f"<small>{html.escape(note.strip())}</small>" if note else "")
 
+    def level_of(text: str) -> str:
+        return LEVELS.get(text.partition("  | ")[0].partition("  # ")[2].strip(), "")
+
+    def hover(text: str) -> str:
+        why = text.partition("  | ")[2].strip()
+        return f' title="{html.escape(why, quote=True)}"' if why else ""
+
     def level(i: int, depth: int) -> tuple[str, int]:
         out = ""
         while i < len(rows) and rows[i][0] == depth:
             kids, j = level(i + 1, depth + 1)
             text = row(rows[i][1])
-            out += (f"<li><details open><summary>{text}</summary><ul>{kids}</ul></details></li>" if kids
-                    else f'<li><span class="leaf">{text}</span></li>')
+            lvl = level_of(rows[i][1])
+            why = hover(rows[i][1])
+            out += (f'<li><details open><summary class="lvl" data-level="{lvl}"{why}>{text}</summary><ul>{kids}</ul></details></li>'
+                    if kids else f'<li><span class="leaf lvl" data-level="{lvl}"{why}>{text}</span></li>')
             i = j
         return out, i
 
@@ -96,6 +116,8 @@ def build(topic: Path) -> dict[Path, str]:
     bootstrap()
     from live.studio_types import elements_of
     els, out, views = elements_of(topic), {}, []
+    if not els:
+        raise ValueError(f"{topic.name} is no Studio Type: it has no elements.md")
     rel = topic.resolve().relative_to(SPACE).as_posix()
     for view in [e for e in els if e["tab"] is None]:
         tabs = [e for e in els if e["view"] == view["name"] and e["tab"] is not None]

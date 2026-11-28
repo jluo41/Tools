@@ -78,7 +78,7 @@ This type's structure Studio has Structure, Draw and Skills on top. Each Structu
 Several entries in a view use the shared left tabs; one entry uses the full content width.
 Skills is a view in this Studio. It does not introduce another Studio per skill.
 
-Studio Band names and order are read from b17's s71–s79 definitions through its shared builder. Empty Bands on a real Block remain omitted by the shared page.
+Studio Band names and order are read from b17's Studio Type definitions (s71 onward) through its shared builder. Empty Bands on a real Block remain omitted by the shared page.
 
 ## Sources
 

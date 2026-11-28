@@ -1,9 +1,9 @@
-s11 · Concepts: Messages, Components and Data
-=============================
+s11 · Method: Messages, Components and Data
+===========================================
 view: overview
 emoji: 🧩
 
-**Tags:** Concepts
+**Tags:** Method
 
 **Stage:** explore
 

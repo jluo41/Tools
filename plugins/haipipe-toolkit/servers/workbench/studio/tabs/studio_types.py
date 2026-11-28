@@ -21,6 +21,40 @@ def studio_types(root: Path) -> dict:
     return {row["band"][1]: (row["emoji"], row["name"], row.get("holds", "")) for row in rows}
 
 
+KEPT = Path(__file__).resolve().parents[4] / "skills/1_base/project/hai-studio/gallery"   # the delivered types
+
+
+def _inside(file: Path, root: Path) -> bool:
+    """A file that is there and, links followed, still inside the SPACE."""
+    return file.is_file() and file.resolve().is_relative_to(root)
+
+
+def type_name(topic) -> str:
+    """A type topic's name: `s75-studio-type-skills` is `skills`."""
+    return re.sub(r"^s\d\d-studio-type-", "", Path(topic).name)
+
+
+def type_home(named, root) -> Path | None:
+    """The folder that holds the named type's elements.md, or None. A blueprint Block designs a type and delivers it
+    into hai-studio (gallery/<name>/); a topic names its type by that name. In a SPACE that holds the blueprint the
+    type topic itself is read, so a change shows before it is delivered; anywhere else the delivered copy is. A
+    SPACE-relative type topic path is still read, as before."""
+    if not isinstance(named, str) or not named.strip() or Path(named).is_absolute():
+        return None
+    root = Path(root).resolve()
+    if "/" in named.strip("/"):
+        path = (root / named).resolve()
+        return path if path.is_relative_to(root) and _inside(path / "elements.md", root) else None
+    if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", named):
+        return None
+    for pattern in ("*/blueprint/*/", "*/*/blueprint/*/"):
+        for path in sorted(root.glob(pattern + "s[0-9][0-9]-studio-type-" + named)):
+            if _inside(path / "elements.md", root):
+                return path
+    kept = KEPT / named
+    return kept if (kept / "elements.md").is_file() else None
+
+
 def is_blueprint(block: Path) -> bool:
     """A Block that plans a tool: it sits in a Project's `blueprint/` folder."""
     return Path(block).parent.name == "blueprint"
@@ -38,9 +72,11 @@ def is_blueprint(block: Path) -> bool:
 #   `> ` lines             the pattern to follow there, as a tree: two spaces a level, `name/` a folder, names that are
 #                          not fixed in 〈 〉, `  # note` a small word after the name
 #   skills:    on a view: the skill folders (SPACE-relative, comma-separated) whose SKILL.md are its real left tabs
+#   build:     (a default) the hai-studio scripts, comma-separated, that build an instance's pages from its own files
+#              (`type_follow.py follow <topic>` runs them in order)
 #   when:      the part is there only in this case (a skill that has a `ref/`); without the line every topic has it
-#   instances: (a default)  the selector of the type's instance topics, where the same buttons and tabs are found
-FIELDS = ("mark", "page", "query", "file", "fragment", "show", "text", "from", "what", "why", "check", "instances", "skills", "when")
+#   instances: (a default, no longer needed: a type's instances are the topics that name it, named_by)  a selector of instance topics, where the same buttons and tabs are found
+FIELDS = ("mark", "page", "query", "file", "fragment", "show", "text", "from", "what", "why", "check", "instances", "skills", "when", "base", "build")
 
 
 def elements_of(topic: Path) -> list[dict]:
@@ -67,6 +103,33 @@ def elements_of(topic: Path) -> list[dict]:
             cur["must"].append(line[2:].strip())
         elif cur is not None and re.match(r"^> ?\s*\S", line):
             cur["pattern"].append(line[1:].removeprefix(" ").rstrip())
+    return _with_base(Path(topic), base, out) if base.get("base") else out
+
+
+def _with_base(topic: Path, own_fields: dict, own: list[dict]) -> list[dict]:
+    """A type that names a `base:` (a SPACE-relative folder holding an elements.md) starts from the base's parts: the
+    base's buttons in its order, each with the type's own tabs first and then the base's (Try explaining stays last);
+    a part the type writes again replaces the base's; buttons only the type has follow. The type's file-level lines
+    (instances:) apply to the base's parts too."""
+    space = next((p for p in topic.resolve().parents if (p / "plugins" / "haipipe-toolkit").is_dir()), topic.parent)
+    base_dir = (space / own_fields["base"]).resolve()
+    if base_dir == topic.resolve() or not (base_dir / "elements.md").is_file():
+        return own
+    fields = {k: v for k, v in own_fields.items() if k != "base"}
+    inherited = [dict(el, **fields) for el in elements_of(base_dir)]
+    def key(el):
+        return (el["view"], el["tab"])
+    mine = {key(el): el for el in own}
+    out = []
+    views = list(dict.fromkeys([el["view"] for el in inherited] + [el["view"] for el in own]))
+    for view in views:
+        head = next((el for el in inherited if key(el) == (view, None)), None)
+        if (view, None) in mine:                              # the type's own lines win; the base fills the rest
+            head = dict(head or {}, **{k: v for k, v in mine[(view, None)].items() if v not in ("", [], None)})
+        if head is not None:
+            out.append(head)
+        out += [el for el in own if el["view"] == view and el["tab"] is not None]
+        out += [el for el in inherited if el["view"] == view and el["tab"] is not None and key(el) not in mine]
     return out
 
 
@@ -105,15 +168,30 @@ def element_view(topic: Path, root: Path) -> list:
     return items
 
 
+def named_by(type_topic: Path) -> list[str]:
+    """The topics of the type's own Block that name it (`check_type`, by name or by path): its instances there."""
+    import json
+    type_topic, out = Path(type_topic), []
+    for views in sorted(type_topic.parent.glob("s[0-9][0-9]-*/studio-views.json")):
+        try:
+            named = str(json.loads(views.read_text(encoding="utf-8")).get("check_type") or "")
+        except (OSError, ValueError, AttributeError):
+            continue
+        if views.parent != type_topic and named.rstrip("/").split("/")[-1] in (type_topic.name, type_name(type_topic)):
+            out.append(views.parent.name)
+    return out
+
+
 def element_about(root: Path) -> list[dict]:
     """What a right-click says about a type's element, wherever it shows: {css, text, name, type, what, why, from}.
     A Jobs page row is found by its mark; a top button or a left tab by its name, in the type topic and in its
     instances, a tab only inside its own view (Folder under Structure is not Folder under Examples)."""
     out, home = [], Path(root) / HOME
-    for topic in sorted(home.glob("s7[0-9]-studio-type-*/")):
+    for topic in sorted(home.glob("s[7-9][0-9]-studio-type-*/")):
         face = topic / f"{topic.name}.md"
         kind = re.search(r"(?m)^name:\s*(.+?)\s*$", face.read_text(encoding="utf-8", errors="ignore")) if face.is_file() else None
         views = type_views(topic)
+        named = named_by(topic)                              # its instances: the topics that name it
         for el in elements_of(topic):
             words = {"name": el["name"], "type": kind.group(1) if kind else "", "what": el.get("what", ""),
                      "why": el.get("why", ""), "from": el.get("from", "")}
@@ -122,7 +200,8 @@ def element_about(root: Path) -> list[dict]:
                 out.append(dict(words, css=css, text=el.get("text") or (el["name"] if el.get("show") else "")))
             if el.get("view") not in views:
                 continue
-            here = [f'article[id="{topic.name}"]'] + ([el["instances"]] if el.get("instances") else [])
+            here = [f'article[id="{topic.name}"]'] + [f'article[id="{n}"]' for n in named] + \
+                ([el["instances"]] if el.get("instances") else [])     # an older type still lists them itself
             if el.get("tab") is None:                        # a top button, in the type and its instances
                 part = "[data-studio-view]"
             else:                                            # a left tab, inside its own view

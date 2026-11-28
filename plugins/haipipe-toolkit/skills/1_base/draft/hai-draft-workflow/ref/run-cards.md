@@ -250,7 +250,7 @@ displays values`) or the Delivery views (`preview artifacts checks`) where the
 button shows, so each view lists only its own runs (JL 260927). In Delivery the
 format tab (Web, LaTeX, Word, Slides) picks the builds of that format and fills
 `{target}`. Under each button, `🧩 SKILL`, `🤖 AGENT` and `✍️ SIGNS` agree with its row of
-`workbench-task-draft/ref/workbench-table.md` (`table-workbench --check --cards`); a
+`workbench-task-draft/ref/classic/workbench-table.md` (`table-workbench --check --cards`); a
 card's first `🧩 SKILL` is every button's, and `🧩 SKILL <button label>: a` names one
 button's own (2026-10-03: one skill per button; a writing skill a run also needs is
 loaded by that skill). `💬 PROMPT` is the text a

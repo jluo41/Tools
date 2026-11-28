@@ -1,6 +1,6 @@
 """Generate a Studio Check view from its owning type, without claiming execution.
 
-A topic opts in with check_type (SPACE-relative type topic) in studio-views.json.
+A topic opts in with check_type (its type's name, or a SPACE-relative type topic) in studio-views.json.
 The type's elements.md is the only criteria source. --check detects stale generated
 UI; it does not execute or certify the checks described in that UI.
 """
@@ -17,14 +17,14 @@ from type_requirements import SPACE, CSS, words
 
 
 def owned(root: Path, value: str) -> Path:
-    if not isinstance(value, str) or not value or Path(value).is_absolute():
-        raise ValueError('check_type must be a SPACE-relative type topic')
-    path = (root / value).resolve()
-    if not path.is_relative_to(root.resolve()):
-        raise ValueError('check_type leaves the SPACE')
-    if not (path / 'elements.md').is_file() or not (path / 'elements.md').resolve().is_relative_to(root.resolve()):
-        raise ValueError('check_type has no contained elements.md')
-    return path
+    """The folder of the type a topic names: by name (`skills`), or by a SPACE-relative type topic path."""
+    from host_paths import bootstrap
+    bootstrap()
+    from live.studio_types import type_home
+    home = type_home(value, root)
+    if home is None:
+        raise ValueError(f'check_type {value!r} names no Studio Type with an elements.md')
+    return home
 
 
 def criteria(type_topic: Path) -> list[dict]:

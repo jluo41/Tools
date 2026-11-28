@@ -342,7 +342,7 @@ def from_topic(topic: Path) -> MT.MindMap:
 
 
 def mnn_name(topic: Path) -> str:
-    """s01-work-ladder → s01-work-ladder.mindmap.md: the mind map takes its topic's own name, its kind in the ending,
+    """s01-work-structure → s01-work-structure.mindmap.md: the mind map takes its topic's own name, its kind in the ending,
     as the page (.md) and the drawing (.excalidraw) do (JL 261026; it was m01-work-ladder.mindmap.md)."""
     if not TOPIC.match(Path(topic).name):
         raise ValueError(f"{Path(topic).name}: a Studio topic is named sNN-<topic>")

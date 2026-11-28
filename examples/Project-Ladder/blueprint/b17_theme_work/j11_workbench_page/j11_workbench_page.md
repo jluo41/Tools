@@ -10,7 +10,7 @@ The page framework every theme's workbench stands on: how a Block is the one ind
 
 A Task here never closes while its folder lives. Each Task keeps one standing Run, `runs/run-check-<folder>`, and each round is one dated pass of it: run the Task's ## Checks, fix what fails inside the folder, and write the results in the pass. A trace that changes the folder names the Task in `work:`.
 
-Studio: s04-workbench-page-structure (the page shape), s11-work-job-preview (Job and Task views, t02).
+Studio: s04-discovery-structure (the page shape), s11-work-job-preview (Job and Task views, t02).
 
 Code: `plugins/haipipe-toolkit/servers/workbench/`; each Task's face lists the files it owns, and a test sits with the file it tests.
 

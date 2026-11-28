@@ -4,20 +4,28 @@
       "name": "Page",
       "items": [
         {
-          "name": "Three things to distinguish",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/01-three-things-to-distinguish.md"
+          "name": "Where you start",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/01-where-you-start.md"
         },
         {
-          "name": "A small thought experiment",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/02-a-small-thought-experiment.md"
+          "name": "1. Find the surface the message changes",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/02-1-find-the-surface-the-message-changes.md"
         },
         {
-          "name": "Compare two explanations",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/03-compare-two-explanations.md"
+          "name": "2. Read the components and the catalog",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/03-2-read-the-components-and-the-catalog.md"
+        },
+        {
+          "name": "3. Follow the value through the data model",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/04-3-follow-the-value-through-the-data-model.md"
+        },
+        {
+          "name": "4. Test your explanation",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/05-4-test-your-explanation.md"
         },
         {
           "name": "Try explaining",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/04-try-explaining.md"
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/06-try-explaining.md"
         }
       ]
     },
@@ -47,6 +55,32 @@
           "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/deck/s11-messages-components-data.slides.html"
         }
       ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Page",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Map",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Slides",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/check.html",
+          "fragment": "check-3"
+        }
+      ]
     }
-  ]
+  ],
+  "check_type": "methods"
 }

@@ -45,3 +45,20 @@ def test_knowledge_block_names_its_type_and_use_case():
     html = focus_page.render(frame.themes()["work"], ROOT, B18, "studio")
     identity = html.split('class="job-identity"', 1)[1].split("</dl>", 1)[0]
     assert "📚 Work Block (Knowledge)" in identity and "🎓 Learn new concepts" in identity
+
+
+def test_each_work_block_type_reads_from_its_folder():
+    """A work-family Block's type is its Project folder, whichever theme draws its page; UI example config on a
+    work/ Block does not make it a Blueprint."""
+    from live.focus_base import read_face
+    from live.focus_identity import page_identity_html
+    ladder = ROOT / "examples/Project-Ladder"
+    for rel, want in (("work/b01_example_work", "🧩 Work Block (Work)"),
+                      ("blueprint/b17_theme_work", "📐 Work Block (Blueprint)"),
+                      ("cowork/b01_example_cowork", "🤝 Work Block (CoWork)"),
+                      ("discovery/b01_example_discovery", "🔎 Work Block (Discovery)"),
+                      ("knowledge/b18_a2ui_learning", "📚 Work Block (Knowledge)")):
+        block = ladder / rel
+        theme = theme_of(block, ROOT)
+        theme = theme if theme in frame.themes() else "vanilla"   # cowork and discovery draw on the plain page
+        assert want in page_identity_html(theme, block, ROOT, read_face(block, ROOT)), rel

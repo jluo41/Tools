@@ -1,9 +1,8 @@
 """Draft Task content in the common Report frame.
 
-Text, the five drafting steps, Runs, MindMap and Status share one Report surface.
-Each step retains draft_steps' editors, prompts and sign actions, under Review
-Content. draft_context supplies the standard Around the Work sections. Legacy
-Work URLs still select the same step; all writes use the existing handlers.
+Re-exports only: the views (1 · Draft, 2 · Plan, 3 · Evidence, 4 · Display) are built in focus_draft_steps.py;
+draft_context.py scopes a view for the shared frame, whose side pane holds Studio, Interactions and the rest.
+Legacy Work URLs still select the same step; all writes use the existing handlers.
 """
 from __future__ import annotations
 

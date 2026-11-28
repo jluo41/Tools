@@ -20,19 +20,19 @@ use: A possible A2UI group is 〈Interactive card〉 using j0N. A simple practic
 field: job-type: on the Job face; shared definitions are owned by Work.
 
 ### code
-ref: ../s01-work-ladder/types.md | Job type | code
+ref: ../s01-work-structure/types.md | Job type | code
 for: Reference the Work code Job type definition.
 holds: Follow the referenced Work code content requirements.
 use: A proposed Job 〈Build an interactive card〉 connects messages, components, data and actions into a runnable artifact.
 
 ### check
-ref: ../s01-work-ladder/types.md | Job type | check
+ref: ../s01-work-structure/types.md | Job type | check
 for: Reference the Work check Job type definition.
 holds: Follow the referenced Work check content requirements.
 use: Use a separate 〈Check interaction behavior〉 Job only when validation is an independent delivery; small checks stay with code.
 
 ### doc
-ref: ../s01-work-ladder/types.md | Job type | doc
+ref: ../s01-work-structure/types.md | Job type | doc
 for: Reference the Work doc Job type definition.
 holds: Follow the referenced Work doc content requirements.
 use: Use for independently delivered reusable documentation. A Studio explanation does not automatically become a doc Job; match Task execution contracts first.
@@ -41,13 +41,13 @@ use: Use for independently delivered reusable documentation. A Studio explanatio
 named: Job face bands: associates a concrete group with a tNN range.
 
 ### Make
-ref: ../s01-work-ladder/types.md | Task group type | Make
+ref: ../s01-work-structure/types.md | Task group type | Make
 for: Reference the Work Make Task group type definition.
 holds: Follow the referenced Work Make content requirements.
 use: A proposed group 〈Interaction implementation〉 uses t0N. Only independent execution units become Tasks.
 
 ### Show
-ref: ../s01-work-ladder/types.md | Task group type | Show
+ref: ../s01-work-structure/types.md | Task group type | Show
 for: Reference the Work Show Task group type definition.
 holds: Follow the referenced Work Show content requirements.
 use: Use a group such as 〈Result presentation〉 with t1N only when there is a separate presentation task; it is not a mandatory phase.
@@ -56,13 +56,13 @@ use: Use a group such as 〈Result presentation〉 with t1N only when there is a
 field: task-type: must additionally resolve through hai-task/ref/types.md before execution.
 
 ### code
-ref: ../s01-work-ladder/types.md | Task type | code
+ref: ../s01-work-structure/types.md | Task type | code
 for: Reference the Work code Task type definition.
 holds: Follow the referenced Work code content requirements.
 use: A possible Task is 〈Run fixed input messages〉. Work defines the structure, but hai-task/ref/types.md has no code route; resolve its execution owner first.
 
 ### display
-ref: ../s01-work-ladder/types.md | Task type | display
+ref: ../s01-work-structure/types.md | Task type | display
 for: Reference the Work display Task type definition.
 holds: Follow the referenced Work display content requirements.
 use: Use only for results that meet hai-task-for-display, which expects display-safe aggregate tables; an A2UI live renderer is not that Task type.

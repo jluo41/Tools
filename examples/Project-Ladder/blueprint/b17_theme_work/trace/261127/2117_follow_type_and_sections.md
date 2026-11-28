@@ -26,7 +26,7 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
   what: the two rules; also ref/studio-type.md, ref/studio-section.md, CONSTITUTION.md A10 A11, CHANGELOG.md, tests
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
   what: 'when: lines on the conditional parts'
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/2117_follow_type_and_sections.md
@@ -36,7 +36,7 @@ changed:
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/md_sections.py
 - plugins/haipipe-toolkit/servers/workbench/page/parts_and_map/page_reader.py
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
 ---
 
 # A topic follows its type; one Markdown file reads as section tabs

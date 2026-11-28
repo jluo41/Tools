@@ -5,7 +5,7 @@ close: b17-s04's six pieces are agreed screen drafts in its `delivery/ui/`, and 
 task-type: ui
 
 Part of j03 · Work workbench pages. It makes b17-s04's delivery
-(`../../s04-workbench-page-structure/delivery/render.yaml`: frame, interactions, delivery, related, timeline, files),
+(`../../s04-discovery-structure/delivery/render.yaml`: frame, interactions, delivery, related, timeline, files),
 the column every level shares beside the nine cells of t01 to t03; it holds no sNN of its own. Its Run, in `runs/`:
 
 - `run-design-shared-parts`: soft, agent work, one pass each: the six screen drafts in s04's `delivery/ui/`

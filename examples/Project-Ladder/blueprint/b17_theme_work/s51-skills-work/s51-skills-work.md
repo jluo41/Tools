@@ -1,4 +1,4 @@
-s51 · Skills: Work
+s51 · Skill: Work
 ==================
 view: overview
 emoji: 🛠️
@@ -9,7 +9,7 @@ emoji: 🛠️
 
 **Delivery type:** skill
 
-**Covers:** hai-work, workbench-work, hai-job, hai-task, hai-run: each skill's whole folder, read live
+**Covers:** hai-work, hai-job, hai-task, hai-run: each skill's whole folder, read live
 
 **Excluded:** the Block's folder and organization (s0N Block Structure); how its pages look (s1N Block Job UI Preview)
 
@@ -33,13 +33,14 @@ s51-skills-work/
 Checklist
 ---------
 
-- ✅ 〈skill〉 · hai-work, workbench-work, hai-job, hai-task, hai-run
+- ✅ 〈skill〉 · hai-work, hai-job, hai-task, hai-run
 - ✅ SKILL.md · the first tab of every skill
 - — CONSTITUTION.md: no skill here has one
-- ✅ ref/ · hai-work, workbench-work, hai-job, hai-task, hai-run
+- ✅ ref/ · hai-work, hai-job, hai-task, hai-run
 - ✅ scripts/ · hai-job, hai-task, hai-run
 - ✅ 〈folder〉/ · agents/, tests/, feedback/, fn/
 - ✅ 〈file〉 · CHANGELOG.md, PREFERENCES.md
+- ✅ Evaluation · every skill, measured live
 - — Draw: the topic has no drawing
 
 

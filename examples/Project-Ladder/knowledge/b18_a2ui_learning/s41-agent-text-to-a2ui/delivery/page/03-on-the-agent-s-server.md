@@ -1,11 +1,9 @@
 # On the agent's server
 
-1. **A component catalog.** `catalog.json` lists the components and functions the app allows. It is the guardrail:
-   the agent cannot use a component the app lacks.
-2. **A skill for the model.** The Agent SDK turns the catalog into prompt instructions and grammar rules; your agent
-   adds them to the model's prompt.
-3. **A compiler.** The model's interface output goes to the SDK's compiler, which checks it against the catalog.
-4. **A transport.** The checked messages (`updateComponents`, `updateDataModel`) travel over AG-UI, A2A, MCP or a
-   WebSocket.
+**Four things are added; your agent code stays.**
 
-Your agent code and model calls stay; the official diagram marks them "Outside the SDK".
+- 📋 **A catalog:** `catalog.json` lists the components the app allows; the agent cannot use one the app lacks.
+- 🧠 **A skill:** the Agent SDK turns the catalog into prompt instructions and grammar rules, added to the model's prompt.
+- ✅ **A compiler:** the model's interface output goes to the SDK, which checks it against the catalog.
+- 📤 **A transport:** the checked messages (`updateComponents`, `updateDataModel`) go over AG-UI, A2A, MCP or a WebSocket.
+- ♻️ **Unchanged:** your agent code and model calls; the official diagram marks them "Outside the SDK".

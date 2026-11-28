@@ -1,9 +1,9 @@
-s41 · Questions: If My Agent Only Returns Text, What Changes?
-========================================
+s41 · Question: If My Agent Only Returns Text, What Changes?
+============================================================
 view: overview
 emoji: 🔧
 
-**Tags:** Questions
+**Tags:** Question
 
 **Stage:** explore
 

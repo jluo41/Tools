@@ -52,8 +52,9 @@ class SharedBandsTest(unittest.TestCase):
         self.assertEqual(new_topic.studio_types(home), {d: n for d, (_, n, _) in page.items()})
         self.assertEqual(module.BLUEPRINT_BANDS,
                          tuple((f"{e} {n}".strip(), f"s{d}N", h) for d, (e, n, h) in page.items()))
-        for number in (75, 77, 79):
-            self.assertFalse(list(home.glob(f"s{number}-studio-type-*")))
-        for number in (71, 72, 73, 74, 76, 78):
-            self.assertEqual(len(list(home.glob(f"s{number}-studio-type-*"))), 1)
+        # the type topics run s71 to s80 in one run, no gaps: Work's six, then Knowledge's four band types
+        numbers = sorted(int(p.name[1:3]) for p in home.glob("s[7-9][0-9]-studio-type-*"))
+        self.assertEqual(numbers, list(range(71, 81)))
+        for retired in ("task-procedure", "studio-type", "slide-draft", "guide"):
+            self.assertFalse(list(home.glob(f"s[7-9][0-9]-studio-type-{retired}")))
         self.assertTrue((home / "s99-guide-view/s99-guide-view.md").is_file())

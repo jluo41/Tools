@@ -75,5 +75,5 @@ changed it (SKILL.md, A round); Design screens keep their own render in the Desi
 - `../../../draft/hai-draft/cli/page.py` (`export`) · `../../../draft/hai-draft/src/page_export.py` · the command and the ticket writer
 - `../../../../../servers/workbench/workbench-task-draft/delivery_export/export.py` · `exporters/` · the LaTeX and Word writers
 - `../../../../../servers/workbench/workbench-task-draft/delivery_export/delivery.py` · the Delivery Space checks and `FIXED_RUNS`
-- `../../../workbench/workbench-task-draft/ref/delivery.md` · the Delivery Space
+- `../../../draft/workbench-task-draft/ref/delivery.md` · the Delivery Space
 - `../../../../3_theme/paper/hai-paper-assemble/SKILL.md` · paper-level assembly, a different Run

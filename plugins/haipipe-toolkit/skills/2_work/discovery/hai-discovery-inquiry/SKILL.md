@@ -218,7 +218,7 @@ limits. A consumer never treats a legacy source index as a Result receipt.
 - `../hai-discovery/scripts/paper_runs.py` — deterministic gate.
 - `../../../1_base/draft/hai-draft-workflow/SKILL.md` — the only
   Page lifecycle and phase router.
-- `../../../1_base/workbench/workbench-task-draft/SKILL.md` — Outline and
+- `../../../1_base/draft/workbench-task-draft/SKILL.md` — Outline and
   Evidence Workspace owner.
-- `../../../1_base/workbench/workbench-task-draft/ref/evidence/citations.md`
+- `../../../1_base/draft/workbench-task-draft/ref/evidence/citations.md`
   — CITE verification and derived Bib authority.

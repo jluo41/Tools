@@ -14,7 +14,7 @@ view: overview
 
 **Why:** what should a person read on an insight Block's page to understand how its work is done?
 
-**Topic:** The Insight theme guide explains how its three Block kinds cooperate and how to read their work. It references [Theme Guide](../../b17_theme_work/s78-studio-type-theme-guide/s78-studio-type-theme-guide.md). The s99 directory, sources, proposals and editable drawings stay in place. Band classification and Studio Type are separate; automatic explicit type binding depends on the shared reader.
+**Topic:** The Insight theme guide explains how its three Block kinds cooperate and how to read their work. It references [Theme Guide](../../b17_theme_work/s76-studio-type-theme-guide/s76-studio-type-theme-guide.md). The s99 directory, sources, proposals and editable drawings stay in place. Band classification and Studio Type are separate; automatic explicit type binding depends on the shared reader.
 
 **Feeds:** none
 

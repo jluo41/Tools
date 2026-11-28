@@ -1,7 +1,7 @@
 ---
 title: 'Skills Studio: Project title'
 date: 2026-11-27 17:01
-topic: s62-skills-ladder
+topic: s62-skills-project
 aim: 'Rename s62 to Skills: Project and synchronize current references using the approved seven-file plan.'
 closed: true
 plan:
@@ -9,7 +9,7 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1701_skills_project_title.md
   what: this trace's own record, written first
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/s62-skills-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/s62-skills-project.md
   what: 'Rename the topic or its current references to Skills: Project.'
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/board.md
@@ -18,22 +18,22 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/s52-skills-blueprint.md
   what: 'Rename the topic or its current references to Skills: Project.'
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
   what: 'Rename the topic or its current references to Skills: Project.'
 - do: edit
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
   what: 'Rename the topic or its current references to Skills: Project.'
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/skills-topic.md
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/TYPE.md
   what: 'Rename the topic or its current references to Skills: Project.'
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1701_skills_project_title.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/s62-skills-ladder.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/s62-skills-project.md
 - examples/Project-Ladder/blueprint/b17_theme_work/board.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/s52-skills-blueprint.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/skills-topic.md
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/TYPE.md
 ---
 
 # Skills Studio: Project title

@@ -190,7 +190,7 @@ For an older Page, the caller supplies the unit directory. For a Page DISPLAY Re
 address. A View uses the View-owned path in the shared output contract. A non-Page Paper workflow
 supplies its unit path through its Paper adapter. Renderers never choose a paper root or create a
 second unit copy. Page citations and the human `accepted:` decision belong to
-`1_base/workbench/workbench-task-draft/ref/evidence/displays.md`.
+`1_base/draft/workbench-task-draft/ref/evidence/displays.md`.
 
 **A bare input (a CSV or JSON, no Task, Page or paper): the unit lands next to it**, at
 `<input folder>/display/Display<n>-<slug>/` (`n` the next free number, the slug what the display shows), the same

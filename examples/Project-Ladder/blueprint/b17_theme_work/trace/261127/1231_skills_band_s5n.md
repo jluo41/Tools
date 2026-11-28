@@ -1,7 +1,7 @@
 ---
 title: 'Studio bands: s5N Skills, s7N Side pane, s2N Report'
 date: 2026-11-27 12:31
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: A blueprint Block's Studio has a Skills band (s51-s54, one per Block type, each showing its live skills); Side pane moves to s7N so s3N stays the theme Guide; s2N is kept for Report; the skill's numbering table says the same.
 closed: true
 plan:

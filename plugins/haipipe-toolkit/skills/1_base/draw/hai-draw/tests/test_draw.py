@@ -218,3 +218,30 @@ def test_a_frame_needs_icons_or_a_picture_and_icons_keep_their_colours():
     els = json.loads(out.read_text())["elements"]
     icon = [e for e in els if (e.get("customData") or {}).get("icon")]
     assert icon and any(e["strokeColor"].lower() != "#1e1e1e" for e in icon)
+
+
+def test_a_whole_drawing_is_measured_for_what_a_reader_sees_first():
+    """V: boxes of words against picture shapes, the longest block of text, a big number; frames or none."""
+    from check import check, is_vivid, report, vivid
+
+    def box(i, words):
+        return [{"id": f"b{i}", "type": "rectangle", "x": i * 300, "y": 0, "width": 240, "height": 90},
+                {"id": f"t{i}", "type": "text", "x": i * 300 + 20, "y": 30, "width": 120, "height": 24, "fontSize": 20, "text": words}]
+
+    boxes = [e for i in range(6) for e in box(i, "a step")]                              # a row of text boxes
+    picture = [{"id": "img", "type": "image", "x": 0, "y": 200, "width": 900, "height": 500}]
+    lines = vivid(boxes + picture)                                                       # one screenshot does not save it
+    assert lines[0].startswith("❌ 6 boxes of words beside 1 picture shapes")
+    assert lines[2].startswith("🔶 no big number")
+    icons = [{"id": f"i{i}", "type": "ellipse", "x": i * 100, "y": 400, "width": 60, "height": 60} for i in range(8)]
+    number = [{"id": "n", "type": "text", "x": 0, "y": 600, "width": 200, "height": 80, "fontSize": 64, "text": "18 of 18"}]
+    lines = vivid(boxes + icons + number)
+    assert lines[0].startswith("✅ 6 boxes of words beside 8 picture shapes")
+    assert lines[2] == "✅ a big number: 18 of 18"
+    wall = [{"id": "w", "type": "text", "x": 0, "y": 0, "width": 900, "height": 300, "fontSize": 20, "text": "word " * 40}]
+    assert vivid(icons + wall)[1].startswith("❌ longest block of text 40 words")
+    out = Path(tempfile.mkdtemp()) / "s01-x.excalidraw"
+    out.write_text(json.dumps({"elements": boxes + picture}))
+    assert not is_vivid(out)
+    out.write_text(json.dumps({"elements": boxes + icons + number}))
+    assert is_vivid(out) and any(line.startswith("  V ✅") for line in report(check(out)).split("\n"))

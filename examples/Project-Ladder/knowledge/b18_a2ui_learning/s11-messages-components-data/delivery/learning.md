@@ -1,33 +1,74 @@
 # Messages, Components and Data
 
-## Three things to distinguish
+## Where you start
 
-**A message changes a surface.** `createSurface` establishes it, `updateComponents` supplies component definitions, `updateDataModel` changes values, and `deleteSurface` removes it. A surface identifies the interface being updated. [Resource 2](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)
+**One flight card, read with four questions.**
 
-**A component describes a piece of the interface.** IDs connect components into a hierarchy. The client resolves permitted component types through its catalog and renders native widgets. The app supplies that catalog; the agent composes within it. [Resource 1](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)
+- ✈️ The card shows a flight and a passenger count of 1.
+- 🧱 Where the count sits is the card's **structure**.
+- 🔢 The count itself, 1, is a **value** in the data model.
+- 👆 Raising it to 2 changes the value; the card stays the same card.
 
-**The data model holds values.** A binding references a path instead of embedding a fixed value in a component. A value change can therefore update the bound presentation without replacing the whole component description. [Resource 3](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)
+| Ask | 🔍 Look at |
+|---|---|
+| 🆕 Which interface changes? | the surface ID |
+| 🧱 Which widget, and where? | component IDs and their children |
+| 🔢 Which value is shown? | the data path and its value |
+| 📋 Which widgets are allowed? | the app's catalog |
+
+⚠️ A worked example to reason with, not a captured Run.
+
+## 1. Find the surface the message changes
+
+**Every message names one surface, and does one thing to it.**
+
+- 🆕 `createSurface`: opens the surface (`"flight-booking-surface"`)
+- 🧱 `updateComponents`: lays out what is on it (Card › Column › FlightCard, Button)
+- 🔢 `updateDataModel`: fills in the values (`/outbound/pax = 1`)
+- 🗑️ `deleteSurface`: removes it
+
+🔍 **Look for:** the `surfaceId` at the top of each message ([Resource 2](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md))
+
+✅ **You know it when:** you can say which surface a message changes, and how.
+
+## 2. Read the components and the catalog
+
+**Components are the pieces; the catalog says which pieces exist.**
+
+- 🧱 Each component has an ID and names its children by ID, starting from `root`.
+- 📋 The app owns the catalog; the agent can only compose from it.
+- 📱 The renderer turns each component into a native widget.
+
+🔍 **Look for:** `"component": "FlightCard"` and its `children` list ([Resource 1](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md))
+
+✅ **You know it when:** you can draw the tree `root` › Column › FlightCard from the message.
+
+## 3. Follow the value through the data model
+
+**A component points at a path; the value lives in the data model.**
+
+- 🔗 `passengers: {"@path": "/outbound/pax"}` is a binding, not a number.
+- 🔢 The number is in the data model: `/outbound/pax = 1`.
+- 🔄 Change the value, and every widget bound to that path updates; the component is not sent again.
 
 ![Resource 3 · Data binding: one value, bound to a heading and an editable field](../../s01-official-sources/assets/resource-3.png)
 
-## A small thought experiment
+🔍 **Look for:** "Kyoto, Japan" stored once and shown in two places ([Resource 3](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md))
 
-Imagine a trip card with a passenger count. The card's component definition establishes where the count appears. The data model holds the count itself. Increasing it from one to two changes the value; it need not change the card's identity.
+✅ **You know it when:** you can say what changes, and what does not, when pax goes from 1 to 2.
 
-This is a conceptual example, not a captured Run or a complete protocol payload.
+## 4. Test your explanation
 
-| Question | Look at |
-|---|---|
-| Which interface changes? | Surface ID |
-| Which widget and position? | Component IDs and relationships |
-| Which value is displayed? | Data path and current value |
-| Which widgets are allowed? | The application's catalog |
+**Two explanations of the same card; only one predicts an update.**
 
-## Compare two explanations
-
-- **Layout-only explanation:** “The agent sends a card.” This misses where its changing values live.
-- **Structure-and-data explanation:** “The renderer resolves the card structure and its bound values.” This predicts why an existing card can update.
+- ❌ "The agent sends a card." It misses where the changing values live.
+- ✅ "The renderer joins the card's structure with its bound values." It predicts why an existing card can update in place.
 
 ## Try explaining
 
-Sketch a label showing a selected destination. Change only the selected value. Point to the part of the sketch that changes and the part that stays the same. Then explain how removing the whole surface differs from changing a value.
+**Sketch it, change one value, point.**
+
+- ✏️ Sketch a label that shows a chosen destination.
+- 🔄 Change only the chosen value.
+- 👉 Point to the part that changes and the part that stays.
+- 🗑️ Then explain how removing the whole surface differs from changing a value.

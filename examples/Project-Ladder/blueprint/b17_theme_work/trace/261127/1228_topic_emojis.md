@@ -15,13 +15,13 @@ plan:
   path: plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_studio_bands.py
   what: 'a topic''s emoji: line shows on its fold'
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
   what: 'emoji: 🛠️ (and s02 📐, s03 🤝, s04 🔭, s11 🛠️, s12 🤝, s13 🔭, s14 📐, s31 🗂️, s32 🧵, s99 📖 in their faces)'
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1228_topic_emojis.md
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_studio_bands.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
 ---
 
 # Each Studio topic its own emoji

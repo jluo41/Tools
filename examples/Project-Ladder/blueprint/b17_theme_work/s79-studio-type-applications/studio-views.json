@@ -1,0 +1,56 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "A decision to explore",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/page--a-decision-to-explore.html"
+        },
+        {
+          "name": "Connect the topics",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/page--connect-the-topics.html"
+        },
+        {
+          "name": "A bounded practice proposal",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/page--a-bounded-practice-proposal.html"
+        },
+        {
+          "name": "What that practice could establish",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/page--what-that-practice-could-establish.html"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/page--try-explaining.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/draw--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/map--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s79-studio-type-applications/delivery/requirements/slides--topic-title.html"
+        }
+      ]
+    }
+  ]
+}

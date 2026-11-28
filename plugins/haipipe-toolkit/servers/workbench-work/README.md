@@ -208,16 +208,16 @@ draws the Workbench Table (the skill's `ref/workbench-table.md`, checked by `tab
 and opens the **Workbench design** drawing; Related Paper shows `related/papers.md`
 (checked by `table-papers --online`), each `group` one method card.
 
-[task-workbench-design.excalidraw](../../../../examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw)
+[task-workbench-design.excalidraw](../../../../examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw)
 is generated; never edit it by hand. Its frames are "Spaces, runs and skills"
 (drawn from the Workbench Table), "The workbench" and "Where things live".
 Change the generator or the table, then regenerate:
 
 ```sh
-.venv/bin/python Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.py
+.venv/bin/python Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.py
 ```
 
 A Block's question map was generated the same way until 261031; the question map is retired (JL 261031, b35 r02 Q2: "Just delete them"): the Report's MindMap draws each Question with its answer, and `question_map.py` writes nothing now.
 
 On a Studio-enabled host, open
-`/_excalidraw/?board=Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.
+`/_excalidraw/?board=Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.

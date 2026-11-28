@@ -92,7 +92,7 @@ def draw():
     sticky(r2 + 50, 200, 430, "3_theme/labeling: q03 moved the\nsubjective-label plugin in.", "done")
     held = sorted(d.name for d in (TK / "skills/2_work/work").iterdir() if d.is_dir())
     sticky(r2 + 50, 320, 430, "2_work/work now holds:\n" + ", ".join(held or ["nothing"]) +
-                              "\nthe rest: b17 Q04 (b17 s02-work-skills)", "done" if held else "open")
+                              "\nthe rest: b17 Q04 (b17 s02-blueprint-structure)", "done" if held else "open")
 
     # 2 · subjective-label -> toolkit
     y = max(b1, b2) + 120

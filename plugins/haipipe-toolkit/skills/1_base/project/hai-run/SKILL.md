@@ -149,7 +149,7 @@ for each call. Ordinary shell commands do not automatically become Runs.
 | Scaffold/read receipts, report status, count, or audit | [Receipts and inventory](ref/receipts-and-inventory.md) |
 | Compose multiple Runs or maintain a shared frontier | [Workflow](ref/workflow.md) and its [runtime contract](ref/workflow-runtime.md) |
 | How one Run's page looks, the same in every theme | `examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/run-views.md` (design), `hai-ui` (rules); this skill owns only the records it reads |
-| Present Runs in a Page | [Run presenter](../../workbench/workbench-task-draft/ref/run-space.md) |
+| Present Runs in a Page | [Run presenter](../../draft/workbench-task-draft/ref/run-space.md) |
 
 ## What earns a Run
 

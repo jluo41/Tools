@@ -25,6 +25,7 @@ import sys
 
 HERE = Path(__file__).resolve().parent
 BLOCK = HERE.parent
+TYPE = HERE.name.split("-studio-type-", 1)[-1]             # the name hai-studio/gallery keeps this type under
 ROOT = BLOCK.parents[3]                                    # the SPACE (…/examples/Project-Ladder/blueprint/<block>)
 SCRIPTS = ROOT / "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts"
 sys.path.insert(0, str(SCRIPTS))
@@ -47,7 +48,8 @@ INSTANCES = {                                              # instance topic -> i
 NO_TASK = {"s13-cowork-job-preview"}                       # a Block type with no Task level: the view stays, its right side says why
 # the parts a live page really has (probed on 5623, 261127): a CoWork or Discovery page draws no Overview, Tasks or
 # Findings band, so those tabs are left out there; whether such a page should have them is not decided (🙋)
-ROWS_ONLY = {"s13-cowork-job-preview", "s14-discovery-job-preview"}
+ROWS_ONLY = {"s13-cowork-job-preview"}                    # its example pages draw the rows only
+NOT_DRAWN = {"s14-discovery-job-preview": {"job-findings"}}   # a view its example page leaves out: nothing to show yet
 JOB_TABS = (("job-rows", "jobs-rows,job-ttopics,job-subs"), ("job-overview", "view=overview"),
             ("job-tasks", "view=standing"), ("job-findings", "view=findings"))
 TASK_TABS = (("task-rows", "job-ttopics,job-subs"), ("task-overview", "view=overview"),
@@ -103,7 +105,7 @@ def type_views() -> str:
     views += [{"name": "QuickHtml", "items": [{"name": f"〈quick page {n}〉", "path": rel("quickhtml")} for n in (1, 2)]},   # a tab per proposal
               one("Draw", "draw")]
     data = json.loads((HERE / "studio-views.json").read_text())
-    data.update(views=views, check_type=HERE.relative_to(ROOT).as_posix(), check_layout="elements")
+    data.update(views=views, check_type=TYPE, check_layout="elements")
     return json.dumps(data, ensure_ascii=False, indent=2) + "\n"
 
 
@@ -230,7 +232,7 @@ def instance_parts(topic: Path) -> tuple:
     def page_view(view, tabs, have, query, why):
         items = []
         for t, m in tabs:
-            if have and (topic.name not in ROWS_ONLY or t.endswith("-rows")):
+            if have and (topic.name not in ROWS_ONLY or t.endswith("-rows")) and t not in NOT_DRAWN.get(topic.name, ()):
                 items.append({"name": t, "url": live(query, m)})
             else:
                 items.append(rule(t, t))
@@ -276,7 +278,7 @@ def instance_parts(topic: Path) -> tuple:
 
 def instance_files(topic: Path) -> dict:
     """{path: text}: the instance's studio-views.json and its Check page, the Check view inherited from the type."""
-    data = {"views": instance_parts(topic)[0], "check_type": HERE.relative_to(ROOT).as_posix(), "check_layout": "elements"}
+    data = {"views": instance_parts(topic)[0], "check_type": TYPE, "check_layout": "elements"}
     return check_build(topic, data, ROOT)
 
 

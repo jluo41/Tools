@@ -1,7 +1,7 @@
 ---
 title: Structure rules and examples
 date: 2026-11-27 11:50
-topic: s01-work-ladder
+topic: s01-work-structure
 aim: Distinguish fixed names, variable naming slots and real examples; make this work visible in Trace.
 closed: true
 plan:
@@ -27,22 +27,22 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/discovery-organization.html
   what: Separate rules from concrete examples
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Route Structure and Examples separately
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/studio-views.json
   what: Route Structure and Examples separately
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/studio-views.json
   what: Route Structure and Examples separately
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/studio-views.json
   what: Route Structure and Examples separately
 - do: edit
   path: plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
   what: Record the naming rule and guard
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/organization_by_block_type.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1048_organization_by_block_type.md
   what: Retain history and link the registered trace
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1150_structure_rules_and_examples.md
@@ -52,12 +52,12 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/blueprint-organization.html
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/cowork-organization.html
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/discovery-organization.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/studio-views.json
 - plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
-- examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/organization_by_block_type.md
+- examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1048_organization_by_block_type.md
 ---
 
 # Structure rules and examples
@@ -81,7 +81,7 @@ Structure and Draw now show naming rules, with literal fixed names and angle-bra
 
 ## Registration repair
 
-This Trace was registered after the page edits, not before. The original request times are unavailable; 11:50 is registration time. The earlier record trace/261127/organization_by_block_type.md is retained. Its filename lacked the numeric prefix required by trace_view.traces(), and its metadata lacked aim/do/changed fields. Appending prose there could not make it appear in Trace. No shared server code was changed. Future work must use trace.py before implementation.
+This Trace was registered after the page edits, not before. The original request times are unavailable; 11:50 is registration time. The earlier record trace/261127/1048_organization_by_block_type.md is retained. Its filename lacked the numeric prefix required by trace_view.traces(), and its metadata lacked aim/do/changed fields. Appending prose there could not make it appear in Trace. No shared server code was changed. Future work must use trace.py before implementation.
 
 ## Contract decisions
 

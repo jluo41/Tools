@@ -16,10 +16,10 @@ sys.path.insert(0, str(ROOT / 'plugins/haipipe-toolkit/skills/1_base/project/hai
 import mmtree as MT
 
 TOPICS = {
-    'Work': 's01-work-ladder',
-    'Blueprint': 's02-work-skills',
-    'CoWork': 's03-q01-work-ladder',
-    'Discovery': 's04-workbench-page-structure',
+    'Work': 's01-work-structure',
+    'Blueprint': 's02-blueprint-structure',
+    'CoWork': 's03-cowork-structure',
+    'Discovery': 's04-discovery-structure',
 }
 
 

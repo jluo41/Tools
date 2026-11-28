@@ -39,9 +39,9 @@ ref/source-format.md           human source presentation
 ref/external-skill-map.md      ARIS pin, promoted adapters, and boundaries
 ref/external-capability-registry.md
                                 normalized external packets and family routing
-../../../1_base/workbench/workbench-task-draft/ref/item-table.md
+../../../1_base/draft/workbench-task-draft/ref/item-table.md
                                 typed Evidence Item and Run-lineage grammar
-../../../1_base/workbench/workbench-task-draft/ref/evidence/citations.md
+../../../1_base/draft/workbench-task-draft/ref/evidence/citations.md
                                 CITE authority and derived Bib aggregation
 ~~~
 

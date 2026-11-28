@@ -50,16 +50,16 @@ Checklist
 ---------
 
 - ✅ Page-Job · job-rows
-- 🙋 Page-Job · job-overview: should a page of this Block type have it?
-- 🙋 Page-Job · job-tasks: should a page of this Block type have it?
+- ✅ Page-Job · job-overview
+- ✅ Page-Job · job-tasks
 - 🙋 Page-Job · job-findings: should a page of this Block type have it?
 - ✅ Page-Task · task-rows
-- 🙋 Page-Task · task-overview: should a page of this Block type have it?
-- 🙋 Page-Task · task-runs: should a page of this Block type have it?
-- 🙋 Page-Task · task-findings: should a page of this Block type have it?
+- ✅ Page-Task · task-overview
+- ✅ Page-Task · task-runs
+- ✅ Page-Task · task-findings
 - ✅ Job types
-- 🙋 Job types · pinned list: this Block type pins no `types.md` yet
+- 🙋 Job types · group types: no file says which Job group is of which type
 - ✅ Task types
-- 🙋 Task types · pinned list: this Block type pins no `types.md` yet
-- ❗ QuickHtml
+- 🙋 Task types · group types: no file says which Task group is of which type
+- ✅ QuickHtml
 - ✅ Draw

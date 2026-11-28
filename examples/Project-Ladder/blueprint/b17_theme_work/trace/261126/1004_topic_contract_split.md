@@ -51,7 +51,7 @@ plan:
     path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CHANGELOG.md
     what: one entry for the split
   - do: edit
-    path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/result/theme-alignment-proposal.md
+    path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/result/theme-alignment-proposal.md
     what: its link to § Numbering points at ref/topic-numbering.md
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1004_topic_contract_split.md
@@ -59,7 +59,7 @@ changed:
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ (11 new files, topic-folder, topic-transcripts, topic-numbering, topic-face, topic-look, proposal-topic, slide-draft-topic, topic-builder, topic-rounds, topic-buttons, topic-scripts)
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md
   - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CHANGELOG.md
-  - examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/result/theme-alignment-proposal.md
+  - examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/result/theme-alignment-proposal.md
 ---
 
 # topic contract split

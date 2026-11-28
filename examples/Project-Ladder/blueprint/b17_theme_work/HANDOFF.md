@@ -9,13 +9,13 @@ The goal
 Make the work theme's B J T R ready: its Block → Job → Task → Run, each level as a FOLDER STRUCTURE on disk and as a WORKBENCH UI on screen.
 
 1. Folder structure: what a work Block, Job, Task and Run folder hold, written as the theme skill's contract and made by its scaffold (new Block / new Job / new Task / new Run), following the shared ladder decided in b03: each level a face .md, studio/ (Idea Studio), reports/ (Audience Report), its children (Work Details), runs/ with hard rNN_ and soft run-<type>-<target> Runs and a runs/README.md listing the run types (Runs), delivery/ (Delivery).
-2. Workbench UI: the work workbench shows the level tabs Guide · Block · Job ▾ · Task ▾, each level with the six Spaces Description · Idea Studio · Audience Report | Work Details | Runs · Delivery, each Space with its third row and the Run types panel, as drawn in b03 (s03 Block, s04 Job, s05 Task) and in your studio/s01-work-ladder.
+2. Workbench UI: the work workbench shows the level tabs Guide · Block · Job ▾ · Task ▾, each level with the six Spaces Description · Idea Studio · Audience Report | Work Details | Runs · Delivery, each Space with its third row and the Run types panel, as drawn in b03 (s03 Block, s04 Job, s05 Task) and in your studio/s01-work-structure.
 
 Note: the task theme is being renamed work (2_work/work/, servers/workbench-work) by another session right now: check its state before editing those folders.
 
 Where things are
 ----------------
-- Your Block: board.md (3 open questions with hypotheses), reports/, s01-work-ladder/ (every work row, Block to Run, proposed above today; drawn by b03's studio/_build/theme_ladder.py).
+- Your Block: board.md (3 open questions with hypotheses), reports/, s01-work-structure/ (every work row, Block to Run, proposed above today; drawn by b03's studio/_build/theme_ladder.py).
 - The shared ladder and its decisions: b10_project_workbench/s01-overall-tree-structure/ (removed 261126) (s01-overall-tree-structure.md, build_ladder_v4.py, level_views.py) and the s03/s04/s05 notes beside it. Models to follow: b11_theme_insight and b12_theme_design (a design Job = one goal × one method → N designs).
 - Your skills: Tools/plugins/haipipe-toolkit/skills/3_theme/the work Task skills (1_base/task/hai-task and its -for-<type> specialists; 2_work/work/ is being set up), work/workbench-work.
 - Your server: Tools/plugins/haipipe-toolkit/servers/workbench-work/ (its studio/ drawings move into your Block's studio, one topic each, the way b12 did on 261007: the servers hold code only).

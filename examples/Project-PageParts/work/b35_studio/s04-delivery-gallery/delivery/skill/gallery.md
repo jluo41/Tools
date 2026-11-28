@@ -24,7 +24,7 @@ An sNN names its main delivery type on its face, `**Delivery type:**`: 674 of 79
 
 | type | how many | the newest one |
 |---|---:|---|
-| skill | 52 | Tools Project-Ladder/blueprint/b17_theme_work/s02-work-skills/delivery |
+| skill | 52 | Tools Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/delivery |
 | ui | 58 | Tools Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t03_task_page/s59-task-ui-studio/delivery |
 | code | 69 | Physician Project-PhysicianAbsence-PatientCare/work/b63_CD_patient_during_absence/j01_C_data_PatientAbsence/s03-patient-year-outcomes/delivery |
 | draft | 144 | Physician Project-Personality-OpioidRx/paper/Paper-PersonalityPDMPMandate/s03-paper-dataflow/delivery |

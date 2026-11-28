@@ -137,14 +137,29 @@ belongs in a knowledge/ instance. Use
 to discuss Folder, Job-Task and Studio organization. An A2UI learning topic is
 an instance of content, not the place to redesign the whole Block type.
 
-Learning Studio Bands appear in this order: Resources, Concepts, Methods, Connections and Applications.
-Their number ranges are s0N, s1N, s2N and s3N. Keep existing identifiers; a
+Learning Studio Bands appear in this order: Resource, Method, Application, Question.
+Their number ranges are s0N, s1N and s2N (both Method), s3N and s4N; a concept is explained in Method, as the steps that read it. Keep existing identifiers; a
 numbered range is organization, not an extra directory. Omit empty Bands in
 actual Studio views. This order provides a resource-first learning entrance;
-it does not prescribe four mandatory execution stages. A Band is not a Studio Type.
+it does not prescribe four mandatory execution stages.
 
-Resources is a Band. Resource-related topics belong directly under it and take
-names for their actual questions. Do not require another Resources or Knowledge
+Each learning Band is one Studio Type, named in the singular like its Band: every topic in s2N follows the
+Method type, and so on. Only a Blueprint holds Studio Types: the four live in the Work Blueprint's Studio Type
+band, after the Work types and together; Block Structure: Knowledge names each Band's type in its Studio. A
+type's `instances:` lists the learning topics by exact ID. The face's `bands:` line names s1N and s2N both
+Method, so a concept topic numbered s1N keeps its ID. The four types start from hai-studio's learning base type
+(`base:`): Page, Draw, Map and Slides, and Try explaining as the last Page tab; each writes only its own Page tabs
+before it. Each topic names its type (`check_type`) and passes `type_follow.py check`.
+
+Read every source before describing it. Name it `Resource 〈n〉 · 〈source〉` and show one official
+picture of it, listed with its URL and license in the Resource topic's `assets/SOURCES.md`. Write
+code and messages as text, never as a screenshot. Draw who does what with one example carried
+through: a picture per actor, before and after or a timeline, new parts in green, one value traced
+(CONSTITUTION A08 to A10). Write each Page tab as one bold line, then one item per line, each with
+the emoji its meaning takes across the Block (A11).
+
+Resource is a Band. Resource-related topics belong directly under it and take
+names for their actual questions. Do not require another Resource or Knowledge
 Sources Studio, a separate Sources view, or one Studio per source. A source
 entry records its original URL, applicable version and exact chapter, page or
 time point, and links to the knowledge topics or practices it supports.
@@ -153,7 +168,7 @@ Studio members explicitly and show existing resource links before concept conten
 
 Keep source information with one owner. Reuse existing Related records for
 retained materials and source links, and Discovery for durable evidence analysis.
-When no such record exists, a Resources topic may hold the original link and its
+When no such record exists, a Resource topic may hold the original link and its
 reading location directly in its learning notes; other topics cite that entry.
 Do not create a second bibliography or an additional storage layer just to hold
 these links. Follow Related's allowed kinds and fields when creating its records: book or course
@@ -181,7 +196,7 @@ Block alone owns the page. Jobs, Tasks, Runs and Studio selections remain inside
 it. Reuse the top-view / left-tab / right-content controls and existing mindmap.
 
 A Band groups topics; a Studio Type defines content requirements; a Studio is
-an instance. Actual learning Blocks need no type-definition topics. A future
+an instance. Actual learning Blocks hold no type-definition topics. A future
 Knowledge Blueprint references shared types from Work and defines only content
 requirements demonstrated by learning cases. Read the shared studio-bands.json
 through hai-studio; do not copy its registry or invent parallel numbering.

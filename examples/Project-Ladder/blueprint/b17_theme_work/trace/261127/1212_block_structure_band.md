@@ -15,12 +15,12 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s05-q04-work-skills
   what: the topic folder (kept in git history)
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/b17-overview.mindmap.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/b17-overview.mindmap.md
   what: drop the link to s05
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1212_block_structure_band.md
 - examples/Project-Ladder/blueprint/b17_theme_work/board.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/b17-overview.mindmap.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/b17-overview.mindmap.md
 ---
 
 # s0N band is Block Structure; s05 removed

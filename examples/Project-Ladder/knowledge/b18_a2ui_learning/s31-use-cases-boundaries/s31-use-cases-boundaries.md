@@ -1,9 +1,9 @@
-s31 · Connections and Applications: Use Cases and Boundaries
-========================
+s31 · Application: Use Cases and Boundaries
+===========================================
 view: overview
 emoji: 🚧
 
-**Tags:** Connections and Applications
+**Tags:** Application
 
 **Stage:** explore
 

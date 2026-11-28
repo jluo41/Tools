@@ -1,9 +1,9 @@
 # The three JSON messages, in full
 
-These are the official v1.0 messages for the flight example, from the "Messages on the wire" section of the A2UI
+📄 These are the official v1.0 messages for the flight example, from the "Messages on the wire" section of the A2UI
 overview (Resource 2; Apache-2.0). Component IDs are chosen by the compiler; these are for readability.
 
-**Surface creation**, `createSurface`:
+🆕 **Surface creation**, `createSurface`:
 
 ```json
 {
@@ -15,7 +15,7 @@ overview (Resource 2; Apache-2.0). Component IDs are chosen by the compiler; the
 }
 ```
 
-**Layout**, `updateComponents`: each component names its children by ID, starting from `root`; prices and passenger
+🧱 **Layout**, `updateComponents`: each component names its children by ID, starting from `root`; prices and passenger
 counts are paths into the data model (`{"@path": "/return/pax"}`).
 
 ```json
@@ -69,7 +69,7 @@ counts are paths into the data model (`{"@path": "/return/pax"}`).
 }
 ```
 
-**Values**, `updateDataModel`: the numbers the paths point to.
+🔢 **Values**, `updateDataModel`: the numbers the paths point to.
 
 ```json
 {

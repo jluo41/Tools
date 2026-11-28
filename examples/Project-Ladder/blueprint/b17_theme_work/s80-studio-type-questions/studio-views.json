@@ -1,0 +1,52 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "The question",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/page--the-question.html"
+        },
+        {
+          "name": "Short answer",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/page--short-answer.html"
+        },
+        {
+          "name": "〈part〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/page--part.html"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/page--try-explaining.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/draw--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/map--topic-title.html"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "〈topic title〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s80-studio-type-questions/delivery/requirements/slides--topic-title.html"
+        }
+      ]
+    }
+  ]
+}

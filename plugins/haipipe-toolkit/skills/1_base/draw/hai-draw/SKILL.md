@@ -37,6 +37,9 @@ This holds for every engine and every kind, before any other rule here.
 3. **A box of words is not a picture**: a frame of only boxes, arrows and text is not done, however short.
 4. **Checked**: `check.py` ⑨ fails a frame with no picture and fewer than three icon shapes; `five_parts.build`
    warns a Design under 20 picture shapes (CONSTITUTION A04).
+   `check.py` also measures the whole drawing, frames or none, as its `V` lines: at most half of its things are
+   boxes that only hold words (a row of text boxes beside one screenshot fails), no block of text is longer than
+   30 words, and it says whether a number is drawn big (44 px or more). A `V ❌` is not done.
 5. **Look before saying done**: render it (`render_png.py`) and ask whether a newcomer sees the things first.
 
 
@@ -129,7 +132,7 @@ drawn by hand as one pattern (cycle, timeline, tree, fan-in) with the kit's box,
 and text. It follows `references/workflow-diagrams/excalidraw-diagram-skill`: colour as meaning (`quick_draw.SEM`),
 Excalidraw's code font, free text unless a shape carries meaning. It is never a list of the face's lines. An
 existing sketch is never overwritten; to draw the topic properly, give it a builder. A sketch still leads
-with icons of the real things (§ Vivid first), dragged in from `hai-studio/ref/icons/icons.excalidrawlib`.
+with icons of the real things (§ Vivid first), dragged in from `hai-studio/ref/icons/own-icons.excalidrawlib`.
 
 
 The principles

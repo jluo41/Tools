@@ -349,7 +349,7 @@ def job_map(job: Path, makes: dict | None) -> str:
 # ── the previews ──────────────────────────────────────────────────────────────────────────────────────────────────
 def previews() -> dict:
     out = {}
-    s01, s04 = topic(BLOCK / "s01-work-ladder"), topic(BLOCK / "s04-workbench-page-structure")
+    s01, s04 = topic(BLOCK / "s01-work-structure"), topic(BLOCK / "s04-discovery-structure")
     j01_views = ["MindMap", s01["type"].capitalize()]                  # MindMap · Skill
     j03_views = ["MindMap", s04["type"].upper() if s04["type"] == "ui" else s04["type"].capitalize()]   # MindMap · UI
     skill = dict(job=J01, bar=views(j01_views, j01_views[1]), caption=CAPTIONS["type"])

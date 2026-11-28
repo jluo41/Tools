@@ -1,7 +1,7 @@
 ---
 title: viewer icon buttons
 date: 2026-11-27 21:11
-topic: s04-workbench-page-structure
+topic: s04-discovery-structure
 aim: 'The pop-out viewer''s top bar shows two icons and no words: an arrow that goes to the page and a cross that closes, each named on hover.'
 closed: true
 plan:
@@ -18,14 +18,14 @@ plan:
   path: plugins/haipipe-toolkit/servers/workbench/page/job_task_views/tests/test_work_frame.py
   what: the top bar holds no button words
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.md
   what: 'Decided: icon buttons'
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/2111_viewer_icon_buttons.md
 - plugins/haipipe-toolkit/servers/workbench/page/block_index_page/focus_base.py
 - plugins/haipipe-toolkit/servers/workbench/focus-assets/focus.css
 - plugins/haipipe-toolkit/servers/workbench/page/job_task_views/tests/test_work_frame.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.md
 ---
 
 # viewer icon buttons

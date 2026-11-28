@@ -13,7 +13,7 @@ emoji: 🗂️
 
 **Covers:** the one Files tree and its parts by role (Block, Maintain: kind, Read-From, Touch); the marks a trace puts on its files; the effects; the right-click card; the Timeline of traces
 
-**Excluded:** the page frame and the sections menu (s04-workbench-page-structure); what a trace file holds (hai-ui A07); the Job and Studio split (hai-block A06)
+**Excluded:** the page frame and the sections menu (s04-discovery-structure); what a trace file holds (hai-ui A07); the Job and Studio split (hai-block A06)
 
 **Why:** when work is going on, can a reader see on the file tree which files it plans to change, is changing, and has changed?
 

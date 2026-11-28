@@ -1,6 +1,8 @@
 # Short answer
 
-In between. The model still writes text, but in a fixed format, A2UI Express, between `<a2ui>` and `</a2ui>` tags.
-The Agent SDK's compiler, running on your agent's server, parses that block, checks it against the catalog and emits
-the JSON messages. It is not free prose guessed into JSON afterwards. The model may also write the wire JSON
-directly; Express is shorter.
+**In between: the model writes text in a fixed format; your server turns it into JSON.**
+
+- 💬 **The model:** writes text, plus a block between `<a2ui>` and `</a2ui>` in A2UI Express.
+- ⚙️ **The Agent SDK's compiler, on your server:** parses the block, checks it against the catalog, emits the JSON messages.
+- 🚫 **Not guessing:** it is not free prose turned into JSON afterwards.
+- 🧩 **Also possible:** the model writes the JSON directly; Express is shorter.

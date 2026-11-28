@@ -1,0 +1,103 @@
+{
+  "check_type": "block-structure",
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/structure.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/structure.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/structure.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "〈Inquiry〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/types/job-type--inquiry.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "〈topic-summary〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/types/task-type--topic-summary.html"
+        },
+        {
+          "name": "〈source-map〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/types/task-type--source-map.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-discovery",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/SKILL.md"
+        },
+        {
+          "name": "hai-discovery-inquiry",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-inquiry/SKILL.md"
+        },
+        {
+          "name": "workbench-discovery",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/workbench-discovery/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Structure",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Job types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Task types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Skills",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/delivery/check.html",
+          "fragment": "check-4"
+        }
+      ]
+    }
+  ]
+}

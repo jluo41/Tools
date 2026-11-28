@@ -1,7 +1,7 @@
 ---
 title: Reuse the shared structure mind map
 date: 2026-11-27 11:57
-topic: s01-work-ladder
+topic: s01-work-structure
 aim: Render structure through hai-mindmap inside the owning Block and preserve the existing naming rules and examples.
 closed: false
 plan:

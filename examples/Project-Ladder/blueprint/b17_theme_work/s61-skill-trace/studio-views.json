@@ -22,6 +22,15 @@
       ]
     },
     {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-trace",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/0_utils/hai-trace"
+        }
+      ]
+    },
+    {
       "name": "Check",
       "items": [
         {
@@ -30,12 +39,17 @@
           "fragment": "check-0"
         },
         {
-          "name": "Draw",
+          "name": "Evaluation",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s61-skill-trace/delivery/check.html",
           "fragment": "check-1"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s61-skill-trace/delivery/check.html",
+          "fragment": "check-2"
         }
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+  "check_type": "skills"
 }

@@ -1,7 +1,7 @@
 ---
 title: Studio Structure uses Folder Tree
 date: 2026-11-27 18:02
-topic: s01-work-ladder
+topic: s01-work-structure
 aim: Structure Studio displays the approved Bands and topic slots as a collapsible Folder Tree.
 closed: false
 plan:
@@ -24,37 +24,37 @@ plan:
   path: plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
   what: Record correction and real acceptance
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Bind Structure Studio to folder tree; keep original Draw
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
   what: Link to Studio tree and clarify presentation
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/work-organization.html
   what: Regenerate Studio rule tree; preserve actual Folder section
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/studio-views.json
   what: Bind Structure Studio to folder tree; keep original Draw
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
   what: Link to Studio tree and clarify presentation
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/blueprint-organization.html
   what: Regenerate Studio rule tree; preserve actual Folder section
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/studio-views.json
   what: Bind Structure Studio to folder tree; keep original Draw
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/s03-q01-work-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/s03-cowork-structure.md
   what: Link to Studio tree and clarify presentation
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/cowork-organization.html
   what: Regenerate Studio rule tree; preserve actual Folder section
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/studio-views.json
   what: Bind Structure Studio to folder tree; keep original Draw
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.md
   what: Link to Studio tree and clarify presentation
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/discovery-organization.html
@@ -66,17 +66,17 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/studio-bands-by-block-type.md
 - plugins/haipipe-toolkit/skills/2_work/work/workbench-work/ref/topics.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/work-organization.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/blueprint-organization.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s03-q01-work-ladder/s03-q01-work-ladder.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/s03-cowork-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/cowork-organization.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/s04-workbench-page-structure.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/s04-discovery-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/discovery-organization.html
 ---
 

@@ -1,0 +1,72 @@
+{
+  "views": [
+    {
+      "name": "〈skill〉",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--skill-md.html"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--constitution-md.html"
+        },
+        {
+          "name": "ref/",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--ref.html"
+        },
+        {
+          "name": "scripts/",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--scripts.html"
+        },
+        {
+          "name": "〈folder〉/",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--folder.html"
+        },
+        {
+          "name": "〈file〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/skill--file.html"
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "Evaluation",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/evaluation.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/requirements/draw.html"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "〈skill〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Evaluation",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/check.html",
+          "fragment": "check-2"
+        }
+      ]
+    }
+  ],
+  "check_type": "skills"
+}

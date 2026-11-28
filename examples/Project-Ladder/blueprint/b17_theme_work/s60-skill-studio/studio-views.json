@@ -24,8 +24,40 @@
           "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/agents"
         },
         {
+          "name": "base-types/learning/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/base-types/learning"
+        },
+        {
           "name": "constitution/",
           "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/constitution"
+        },
+        {
+          "name": "gallery/applications/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/applications"
+        },
+        {
+          "name": "gallery/block-job-ui-preview/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview"
+        },
+        {
+          "name": "gallery/block-structure/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure"
+        },
+        {
+          "name": "gallery/methods/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/methods"
+        },
+        {
+          "name": "gallery/questions/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/questions"
+        },
+        {
+          "name": "gallery/resources/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/resources"
+        },
+        {
+          "name": "gallery/skills/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills"
         },
         {
           "name": "tests/",
@@ -34,6 +66,15 @@
         {
           "name": "CHANGELOG.md",
           "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-studio",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/project/hai-studio"
         }
       ]
     },
@@ -55,12 +96,17 @@
           "fragment": "check-0"
         },
         {
-          "name": "Draw",
+          "name": "Evaluation",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio/delivery/check.html",
           "fragment": "check-1"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio/delivery/check.html",
+          "fragment": "check-2"
         }
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+  "check_type": "skills"
 }

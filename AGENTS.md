@@ -57,7 +57,7 @@ Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness wi
 ## Validation
 
 - There is no single root build or test command. Read the relevant package guide and use checks appropriate to the files changed.
-- After a batch of Skills Studio or generated Studio Type changes, run `python plugins/haipipe-toolkit/checks/run.py --target 〈affected-topic-or-Block〉` with the host Python. Coverage: `plugins/haipipe-toolkit/checks/README.md`. An uncovered target or execution error is not a pass; do not sweep unrelated work after every edit.
+- After a batch of Skills Studio or generated Studio Type changes, run `python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/checks/run.py --target 〈affected-topic-or-Block〉` with the host Python. Coverage: `plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/checks/README.md`. An uncovered target or execution error is not a pass; do not sweep unrelated work after every edit.
 - For skill changes, follow the fresh-context validation process in the root README.
 - For installer or marketplace changes, inspect both platform installers and verify package source paths and metadata. Report platform-specific checks that could not be run.
 

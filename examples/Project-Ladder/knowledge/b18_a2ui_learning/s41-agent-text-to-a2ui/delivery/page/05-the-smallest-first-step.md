@@ -1,5 +1,9 @@
 # The smallest first step
 
-Send fixed A2UI messages from the server, a static payload, before teaching the model anything. That is what the
-practice Job j01 does with one card. Then add the catalog and the SDK, then handle actions. Resource 5 (Travel A2UI)
-shows all three steps in one small app.
+**Start without the model; add one piece at a time.**
+
+1. 🧪 Send fixed A2UI messages from the server (a static payload); the practice Job j01 does this with one card.
+2. 🧠 Add the catalog and the SDK, so the model writes the interface.
+3. 👆 Handle actions.
+
+🔍 **Look for:** all three steps in one small app, Travel A2UI (Resource 5).

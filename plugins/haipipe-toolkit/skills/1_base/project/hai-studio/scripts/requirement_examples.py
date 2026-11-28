@@ -92,4 +92,4 @@ def render(topic: Path, el: dict, root: Path) -> str:
     frame = f'<iframe title="{esc(label, quote=True)}" loading="lazy" src="{esc(url, quote=True)}"></iframe>'
     preview = ui_parts.open_dot(frame, url, label, new_tab=True)
     style = '''<style>dd{min-width:0;overflow-wrap:anywhere}.requirement-example{margin-top:22px;min-width:0}.requirement-example>summary{cursor:pointer;font-weight:600;margin-bottom:14px}.requirement-example iframe{display:block;width:100%;height:520px;border:1px solid var(--line);border-radius:8px;box-sizing:border-box;background:var(--bg)}@media(max-width:600px){body{padding:14px 12px}dl{grid-template-columns:64px minmax(0,1fr);gap:8px}dt{font-size:10px}.requirement-example iframe{height:440px}}</style>'''
-    return ui_parts.PB_CSS + style + '<details class="requirement-example"><summary>Example</summary>' + preview + '</details>'
+    return ui_parts.PB_CSS + style + '<details class="requirement-example" open><summary>Example</summary>' + preview + '</details>'

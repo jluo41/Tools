@@ -2,6 +2,37 @@ haipipe-studio · Changelog
 ==========================
 
 
+## [0.39.0] — 2026-11-27
+
+- One rule each. A topic that names a Studio Type is never read as a slide draft (`canvas.is_slide_draft`; s6N is the
+  Skill band in a blueprint Block). A type's instances are the topics that name it (`studio_types.named_by`); the
+  `instances:` line is no longer needed and is gone from the Skills and Block Structure types. Our own icons are
+  `ref/icons/own-icons.excalidrawlib`, no longer the same file name as a downloaded library.
+
+## [0.38.0] — 2026-11-27
+
+- The gallery: each Studio Type has one folder, `gallery/<name>/`: its delivered `elements.md` (was `types/<name>/`),
+  its `TYPE.md`, its own scripts and tests, one real example. Moved in: `skills_views.py`, `skills_checklist.py`
+  (skills); `block_structure_page.py`, `block_types_pages.py`, `block_types_check.py` (block-structure);
+  `ref/skills-topic.md` and `ref/ui-preview-topic.md` as the two types' `TYPE.md`. Shared scripts stay in `scripts/`.
+- `type_follow.py` and the check runner find a type's scripts in its gallery folder; `skill_text_check.py` holds a
+  type with scripts to a `TYPE.md` that names them.
+
+## [0.37.0] — 2026-11-27
+
+- Every Skill topic has an Evaluation top button after its skills: each skill measured live from its own files, one
+  fold per criterion (`servers/workbench/studio/tabs/skill_evaluation.py`, the live view `skill-eval`); the Skills
+  type lists it; `skills_views.py` writes it; the Checklist has its line.
+- SKILL.md and ref/studio-type.md name `type_follow.py follow` and a type's `build:` line.
+
+## [0.36.0] — 2026-11-27
+
+- Studio Types are kept in this skill: a blueprint Block designs a type, `types_deliver.py` copies its `elements.md`
+  to `types/<name>/` (a file piece in the type topic's `delivery/render.yaml`), and a topic names its type by that
+  name (`"check_type": "skills"`), in any SPACE. Seven types delivered. A path still reads.
+- `type_follow.py new <type name> <topic>`; where only the kept copy is there, it writes the requirement pages into
+  the topic. `type_requirements.py` refuses a topic that has no `elements.md` (it used to make the folder).
+
 ## [0.35.0] — 2026-11-27
 
 - `scripts/skills_views.py`: a folder that holds only folders (hai-draw's `gallery/`) gets one left tab per inner

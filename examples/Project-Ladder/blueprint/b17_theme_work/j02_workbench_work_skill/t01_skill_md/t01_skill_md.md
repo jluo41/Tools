@@ -5,6 +5,6 @@ close: every outline section is written from its cell's answered form or a decis
 task-type: tool
 
 Part of j02 · Workbench work skill. It makes b17-s02's `skill-md` piece
-(`../../s02-work-skills/delivery/render.yaml`). Its Run, in `runs/`: `run-write-skill-md`, soft, agent work, one
+(`../../s02-blueprint-structure/delivery/render.yaml`). Its Run, in `runs/`: `run-write-skill-md`, soft, agent work, one
 pass per page (Block, then Job, then Task) as that page's three cell forms come back; it waits, planned, until the
 Block page's forms (j03 t01_block_page r02 to r04) are answered.

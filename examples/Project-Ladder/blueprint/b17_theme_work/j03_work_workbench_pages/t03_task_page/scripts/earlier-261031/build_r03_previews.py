@@ -172,9 +172,9 @@ OWN = [topic(TASK / f, f"b17.j03.t03-{f[:3]}:theme_work.work_workbench_pages.tas
                     ("s59-task-ui-studio", "task_ui_studio"))]
 OWN = sorted(OWN, key=lambda t: not t["waits"])              # a card whose form waits on you comes first (stable)
 S59 = next(t for t in OWN if t["id"] == "s59")
-S01 = topic(BLOCK / "s01-work-ladder", "b17-s01:theme_work @ ", "work_ladder", UP_BLOCK, T01)
-S02 = topic(BLOCK / "s02-work-skills", "b17-s02:theme_work @ ", "work_skills", UP_BLOCK)
-S04 = topic(BLOCK / "s04-workbench-page-structure", "b17-s04:theme_work @ ", "workbench_page_structure", UP_BLOCK, TASK)
+S01 = topic(BLOCK / "s01-work-structure", "b17-s01:theme_work @ ", "work_ladder", UP_BLOCK, T01)
+S02 = topic(BLOCK / "s02-blueprint-structure", "b17-s02:theme_work @ ", "work_skills", UP_BLOCK)
+S04 = topic(BLOCK / "s04-discovery-structure", "b17-s04:theme_work @ ", "workbench_page_structure", UP_BLOCK, TASK)
 
 WHERE = {"t03": "Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work / j03_work_workbench_pages / t03_task_page",
          "t01": "Tools-SPACE / blueprints / Project-Ladder / work / b17_theme_work / j01_work_ladder_contract / t01_skill_section",

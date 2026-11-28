@@ -129,7 +129,7 @@ Date: 2026-11-27. Paper owning session `01a1bc86-c6c8-7bc2-b236-7944edb1d34e` re
 “然后你怎么把相同的要求发给其他的那些block，其他的三十他们也 follow 这个 block 呢。”
 User approved this session's four-file inventory plan: “好，现在我确认了，然后现在就进行这个更改吧。”
 Coordination scope, authorization and validation are in the
-[inventory Trace](../../../../../../../examples/Project-Ladder/blueprint/b12_theme_design/trace/261127/block_structure_types_alignment.md).
+[inventory Trace](../../../../../../../examples/Project-Ladder/blueprint/b12_theme_design/trace/261127/1727_block_structure_types_alignment.md).
 
 Questions: does each real Block kind have an inventory, do groups remain distinct from types, can an absent
 Task layer be represented without fabrication, and does Studio organization describe the actual Block kind?
@@ -161,7 +161,7 @@ parentage, omit absent Book Task levels, put meanings on hover and keep source s
 Scope: six approved files; Draw bindings, manual canvases and actual execution records remain outside this edit.
 Guard: build_organization.py check_structure() validates tree rows, parent links, level classes, actual source
 URLs and absence of a mind map in Structure. Actual Block-page expansion and source navigation must also pass.
-Receipt: [folder-tree Trace](../../../../../../../examples/Project-Ladder/blueprint/b12_theme_design/trace/261127/structure_folder_tree.md).
+Receipt: [folder-tree Trace](../../../../../../../examples/Project-Ladder/blueprint/b12_theme_design/trace/261127/1832_structure_folder_tree.md).
 Checks: both builders and the current-contract guard pass; negative mutations reject a mind map in Structure,
 wrong hierarchy colors and altered source URLs. Fresh-context skill invocation passes. Actual Block browser
 acceptance verifies both Folder trees, Job/Task and Studio trees, branch expansion, common colors and hover,

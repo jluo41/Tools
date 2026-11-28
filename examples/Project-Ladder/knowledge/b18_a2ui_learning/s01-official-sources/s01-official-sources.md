@@ -1,9 +1,9 @@
-s01 · Resources: Official Sources and Versions
-=============================
+s01 · Resource: Official Sources and Versions
+=============================================
 view: overview
 emoji: 📑
 
-**Tags:** Resources
+**Tags:** Resource
 
 **Stage:** explore
 

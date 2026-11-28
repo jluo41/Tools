@@ -182,6 +182,6 @@
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_type": "block-job-ui-preview",
   "check_layout": "elements"
 }

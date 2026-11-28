@@ -88,9 +88,8 @@
       "name": "QuickHtml",
       "items": [
         {
-          "name": "〈quick page〉",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
-          "old": true
+          "name": "Goal to topics",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s15-knowledge-job-preview/delivery/ui/goal-to-topics.html"
         }
       ]
     },
@@ -99,8 +98,7 @@
       "items": [
         {
           "name": "Draw",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/draw.html",
-          "old": true
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s15-knowledge-job-preview/s15-knowledge-job-preview.excalidraw"
         }
       ]
     },
@@ -180,6 +178,6 @@
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_type": "block-job-ui-preview",
   "check_layout": "elements"
 }

@@ -12,12 +12,12 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
   what: 'Draw: one requirement, no tabs; pages and views rebuilt'
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Draw opens the topic's .excalidraw (s02, s03, s04 the same)
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1405_draw_is_one_drawing.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
 ---
 
 # Draw is one Excalidraw drawing

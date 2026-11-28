@@ -1,7 +1,7 @@
 ---
 title: Check button on the Skills topics s52, s53, s54, s60, s61
 date: 2026-11-27 19:57
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: 'Every Skills topic from s51 to s61 has the Check top button s51 has: the requirements of s76 for each of its skills, how to verify them and the source, marked not verified.'
 closed: true
 plan:

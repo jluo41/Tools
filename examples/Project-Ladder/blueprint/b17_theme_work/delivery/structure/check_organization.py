@@ -11,8 +11,8 @@ from build_organization import example_maps, rule_jobs, rule_folder, rule_sectio
 
 ROOT = HERE.parents[5]
 BLOCK = HERE.parent.parent
-TOPICS = ('s01-work-ladder', 's02-work-skills', 's03-q01-work-ladder',
-          's04-workbench-page-structure')
+TOPICS = ('s01-work-structure', 's02-blueprint-structure', 's03-cowork-structure',
+          's04-discovery-structure')
 TITLES = ('Work', 'Blueprint', 'CoWork', 'Discovery')   # sNN · Block Structure: <title>
 
 
@@ -43,7 +43,7 @@ def check():
             pass
         else:
             raise AssertionError('Invalid organization input was accepted')
-    trace = (BLOCK / 'trace/261127/structure_folder_organization.md').read_text()
+    trace = (BLOCK / 'trace/261127/1021_structure_folder_organization.md').read_text()
     hashes = json.loads(re.search(r'```json\n(.*?)\n```', trace, re.S)[1])
     for path, digest in hashes.items():
         assert hashlib.sha256((ROOT / path).read_bytes()).hexdigest() == digest, path
@@ -53,31 +53,29 @@ def check():
         assert face.splitlines()[0] == f'{topic[:3]} · Block Structure: {title}'
         manifest = json.loads((folder / 'studio-views.json').read_text())
         views = manifest['views']
+        sys.path.insert(0, str(ROOT / 'plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts'))
+        sys.path.insert(0, str(ROOT / 'plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts'))
+        sys.path.insert(0, str(ROOT / 'plugins/haipipe-toolkit/servers/_host'))
         if manifest.get('check_type'):
-            sys.path.insert(0, str(ROOT / 'plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts'))
             from check_views import build as check_build
             assert all(p.read_text() == text for p, text in check_build(folder).items()), 'stale Check view'
             views = [v for v in views if v['name'] != 'Check']
         typed = [v for v in views if v['name'] in ('Job types', 'Task types')]   # an instance with its types.md pinned
         views = [v for v in views if v not in typed]
-        assert [v['name'] for v in views] == ['Structure', 'Draw', 'Examples', 'Skills']
-        assert len(typed) in (0, 2) and (not typed or (folder / 'types.md').is_file())
+        # an instance follows its type (s71): Structure drawn from the topic's own structure.md, no Examples view
+        assert [v['name'] for v in views] == ['Structure', 'Draw', 'Skills']
+        assert len(typed) in (1, 2) and (folder / 'types.md').is_file()   # Task types only when the type has Tasks
         draw = views[1]['items']                         # Draw is the topic's one Excalidraw drawing, no tabs
         assert len(draw) == 1 and draw[0]['path'].endswith(f'/{topic}/{topic}.excalidraw') and (ROOT / draw[0]['path']).is_file(), draw
-        for view in views[:1]:
-            assert tuple(r['name'] for r in view['items']) == LABELS
-            for row in view['items']:
-                assert (ROOT / row['path']).is_file(), row
-                assert row['path'].endswith(f'/{kind}-organization.html'), row
-                assert row['fragment'].removesuffix('-draw') in ('folder-rules', 'jobs-rules', 'studio-rules')
-        assert [r['fragment'] for r in views[2]['items'][:3]] == ['folder', 'jobs', 'studio']
-        assert views[2]['items'][3]['block'] == SOURCES[kind]
-        for view in views[2:]:
-            for row in view['items']:
-                if 'block' in row:
-                    assert (ROOT / row['block'] / 'board.md').is_file(), row
-                else:
-                    assert (ROOT / row['path']).is_file(), row
+        assert tuple(r['name'] for r in views[0]['items']) == LABELS
+        for row in views[0]['items']:
+            assert (ROOT / row['path']).is_file(), row
+            assert row['path'].endswith(f'/{topic}/delivery/structure.html'), row
+            assert row['fragment'] in ('folder-rules', 'jobs-rules', 'studio-rules')
+        from block_structure_page import build as structure_build
+        assert all(p.read_text() == text for p, text in structure_build(folder).items()), 'stale Structure page'
+        for row in views[2]['items']:
+            assert (ROOT / row['path']).is_file(), row
         assert (folder / 'result/structure-replaced-261127.md').is_file()
         html = (HERE / f'{kind}-organization.html').read_text()
         # Other sessions may add source files while this task preserves Folder verbatim.
@@ -186,7 +184,7 @@ def check():
     discovery = organization_rows('discovery')
     assert 'discovery_type: topic-summary' in discovery[0][-1]
     assert 'discovery_type: source-map' in discovery[1][-1]
-    previous = (BLOCK / 'trace/261127/organization_by_block_type.md').read_text()
+    previous = (BLOCK / 'trace/261127/1048_organization_by_block_type.md').read_text()
     folder_hashes = json.loads(re.search(r'```json\n(.*?)\n```', previous, re.S)[1])
     for kind, digest in folder_hashes.items():
         html = (HERE / f'{kind}-organization.html').read_text()

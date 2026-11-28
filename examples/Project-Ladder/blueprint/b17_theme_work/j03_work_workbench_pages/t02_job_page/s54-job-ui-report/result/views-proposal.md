@@ -7,7 +7,7 @@ date: 2026-10-31 · status: proposed, waiting on JL's answers
 
 A work Job page's Report section (verb: check), on the focus page (`layout=focus&section=report`). A work Job makes
 one sNN's delivery through its Tasks: `j01_work_ladder_contract` makes s01's three skill pieces (one per Task, named in
-`s01-work-ladder/delivery/render.yaml`); `j03_work_workbench_pages` makes s04's three page pieces.
+`s01-work-structure/delivery/render.yaml`); `j03_work_workbench_pages` makes s04's three page pieces.
 
 Applied, never re-asked (s51-D01 to D06, s52-D01, b16 t01 r04 and r07): the Report is MindMap first, then one view
 per delivery type, never one per delivery's name; a delivery opens from the tags below its sNN; a delivery not made
@@ -56,10 +56,10 @@ Caption: "How it is built, as a map: what it makes, its Tasks, their Runs." Draw
 one plain paragraph box (the draft map's rule, b32 s42). Its branches, top to bottom:
 
 1. **Root**: the Job's folder name, `j01_work_ladder_contract`. Reads the folder. Always there.
-2. **Makes** (Q3, my pick A): one point per sNN the Job makes. Pill: its folder, `s01-work-ladder`; title: its short
+2. **Makes** (Q3, my pick A): one point per sNN the Job makes. Pill: its folder, `s01-work-structure`; title: its short
    name, `work ladder`; box: its Topic's first sentence, "Delivers" and its `**For:**` (without "made by"), then its
-   one word (`planned`, or `v<N>`). Reads `s01-work-ladder/s01-work-ladder.md` (`**Topic:**`, `**For:**`) and the
-   newest `-v<N>` in `s01-work-ladder/delivery/`. Action: its label opens its drawing (`s01-work-ladder.excalidraw`,
+   one word (`planned`, or `v<N>`). Reads `s01-work-structure/s01-work-structure.md` (`**Topic:**`, `**For:**`) and the
+   newest `-v<N>` in `s01-work-structure/delivery/`. Action: its label opens its drawing (`s01-work-structure.excalidraw`,
    ✎), as the Block map's topics do. Empty: no Makes branch.
 3. **One branch per Task**, in the Job face's `## Tasks` order: grey line, its folder `t01_skill_section`; title, its
    face's title `Write hai-work's ladder section`. Reads `j01_work_ladder_contract.md` (`## Tasks`) and
@@ -81,14 +81,14 @@ Caption: "What this Job hands over." Two sections, a heading each; they fold by 
 (hai-ui rule 4).
 
 1. **The delivery**: the sNN's card, the same card the Block's Report (s51) and the Studio draw.
-   - picture: its deck's first slide (`s01-work-ladder.slides.json` names `slides/idea-01-rungs-one-shape.png`), else
-     its drawing `s01-work-ladder.png`; which one is s51's open question, and the Job follows it;
+   - picture: its deck's first slide (`s01-work-structure.slides.json` names `slides/idea-01-rungs-one-shape.png`), else
+     its drawing `s01-work-structure.png`; which one is s51's open question, and the Job follows it;
    - name: its address, `b17-s01:theme_work @ work_ladder` (`frame.topic_label`);
    - one line: its `**For:**` without "made by" (this page is the maker);
    - one word: its current version, the newest `-v<N>` in `delivery/` (hai-delivery's version rule,
      `frame.delivery_items`), else `planned` (s51-D03, D05);
-   - tags below: Slide · Draw · Mind map · Work · Delivery (s51-D02), each a pop-out: `s01-work-ladder.slides.html`,
-     `s01-work-ladder.excalidraw`, `s01-work-ladder.mindmap.md`, its Work (`work_root`: this Job), its Delivery
+   - tags below: Slide · Draw · Mind map · Work · Delivery (s51-D02), each a pop-out: `s01-work-structure.slides.html`,
+     `s01-work-structure.excalidraw`, `s01-work-structure.mindmap.md`, its Work (`work_root`: this Job), its Delivery
      (`topic_delivery`: its files, and where each piece goes); then Interaction when a collection Run's `for:` names
      it, "🙋 Interaction" in orange when one waits. Today s04's card is orange (`b17_theme_work/runs/
      r02_collect_interactions_page` waits); s01's is plain (`b17_theme_work/runs/r01_collect_theme_alignment` is planned).

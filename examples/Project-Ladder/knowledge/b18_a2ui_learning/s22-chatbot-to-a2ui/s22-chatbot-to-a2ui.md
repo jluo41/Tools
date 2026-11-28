@@ -1,9 +1,9 @@
-s22 · Methods: From a Text Chatbot to A2UI, Step by Step
-========================================
+s22 · Method: From a Text Chatbot to A2UI, Step by Step
+=======================================================
 view: overview
 emoji: 🛠️
 
-**Tags:** Methods
+**Tags:** Method
 
 **Stage:** explore
 

@@ -28,7 +28,11 @@ Files
 ```text
 s12-blueprint-job-preview/
 ├── s12-blueprint-job-preview.md     this face
-└── s12-blueprint-job-preview.html   the list of views: Page, the live pages of blueprint/b17_theme_work
+├── s12-blueprint-job-preview.html   the list of views: Page, the live pages of blueprint/b17_theme_work
+├── s12-blueprint-job-preview.excalidraw   its drawing, with its .png
+├── build_s12_blueprint_job_preview.py draws it from the Block's folders
+├── delivery/ui/job-row-builds.html    its quick page
+└── studio-views.json                  its views, written by s72's build_type_pages.py
 ```
 
 
@@ -40,8 +44,6 @@ Decided
 
 Open
 ----
-
-1. its drawing, and its quick views (Effect), once a change to these pages is proposed
 
 (write here, or mark the drawing in red)
 
@@ -57,8 +59,8 @@ Checklist
 - ✅ Page-Task · task-runs
 - ✅ Page-Task · task-findings
 - ✅ Job types
-- 🙋 Job types · pinned list: this Block type pins no `types.md` yet
+- 🙋 Job types · group types: no file says which Job group is of which type
 - ✅ Task types
-- 🙋 Task types · pinned list: this Block type pins no `types.md` yet
-- ❗ QuickHtml
-- ❗ Draw
+- 🙋 Task types · group types: no file says which Task group is of which type
+- ✅ QuickHtml
+- ✅ Draw

@@ -1,5 +1,4 @@
-Resources
-Concepts
-Methods
-Connections and Applications
-Questions
+Resource
+Method
+Application
+Question

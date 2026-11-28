@@ -131,11 +131,11 @@ an instance's content. A Blueprint's local bands cannot rename the shared groups
 **Class:** a list of a skill's files that is not the skill's own top level; every Skills topic (s5N and s6N in a Work Block (Blueprint)), every blueprint Block, the type s76.
 **Cases:** ✅ b17 s51 Work · ✅ s52 Blueprint · ✅ s53 CoWork · ✅ s54 Discovery · ✅ s60 Studio · ✅ s61 Trace · ✅ s62 Project · ✅ s55 Knowledge · ✅ s76 the type
 **Check:** each Skills topic's studio-views.json is what `skills_views.py` writes from its skills' folders today.
-**Guard:** `checks/run.py --target 〈topic-or-Block〉` checks real bindings and generator freshness through the existing owners; the Skills writer checks its completed output. Check-view freshness does not certify its prose criteria or runtime UI behavior. Invalid or uncovered targets never pass.
-**Run:** `PYTHONPATH=plugins/haipipe-toolkit/servers/_host ~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_views.py examples/Project-Ladder/blueprint/b17_theme_work --check`
+**Guard:** `scripts/checks/run.py --target 〈topic-or-Block〉` checks real bindings and generator freshness through the existing owners; the Skills writer checks its completed output. Check-view freshness does not certify its prose criteria or runtime UI behavior. Invalid or uncovered targets never pass.
+**Run:** `PYTHONPATH=plugins/haipipe-toolkit/servers/_host ~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py examples/Project-Ladder/blueprint/b17_theme_work --check`
 **Status:** fixed
-**Run:** `PYTHONPATH=plugins/haipipe-toolkit/servers/_host ~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_checklist.py examples/Project-Ladder/blueprint/b17_theme_work --check` (each topic against s76, part by part; the result shows in the Block's Checklist)
-**Solved by:** `scripts/skills_views.py` (writes and checks the views file), `scripts/skills_checklist.py` (each topic against its type), `ref/skills-topic.md`, `servers/workbench/studio/tabs/folder_folds.py` (a folder as folds)
+**Run:** `PYTHONPATH=plugins/haipipe-toolkit/servers/_host ~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_checklist.py examples/Project-Ladder/blueprint/b17_theme_work --check` (each topic against s76, part by part; the result shows in the Block's Checklist)
+**Solved by:** `scripts/skills_views.py` (writes and checks the views file), `scripts/skills_checklist.py` (each topic against its type), `gallery/skills/TYPE.md`, `servers/workbench/studio/tabs/folder_folds.py` (a folder as folds)
 
 
 ## A09 · A skill's text states the rule, never who asked for it
@@ -166,7 +166,7 @@ an instance's content. A Blueprint's local bands cannot rename the shared groups
 **Check:** every topic that names a type passes the follow check.
 **Run:** `~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/type_follow.py check examples/Project-Ladder/blueprint/b17_theme_work`
 **Status:** open
-**Solved by:** `scripts/type_follow.py`; `checks/skills/studio/follow.py`
+**Solved by:** `scripts/type_follow.py`; `scripts/checks/follow.py`
 
 ## A11 · Inside a topic every view is top, left, right
 
@@ -180,3 +180,42 @@ an instance's content. A Blueprint's local bands cannot rename the shared groups
 **Run:** `cd plugins/haipipe-toolkit && PYTHONPATH=servers/_host uv run --quiet --python 3.13 --with pytest --with pyyaml --with pillow python -m pytest servers/workbench/studio/tabs/tests/test_md_sections.py -q -p no:cacheprovider`
 **Status:** solved 261127
 **Solved by:** `servers/workbench/studio/tabs/md_sections.py`; `studio_views.read_views`
+
+## A12 · A blueprint Block designs a type; the skill keeps it; a topic names it
+
+> "could you explain where to find its type? from the hai-studio or from where? from the blueprint-block? I think blueprint-block is working to provide the types into the hai-studio" (JL 261127)
+
+**Rule:** A Studio Type is designed in a blueprint Block's Studio Type band and delivered into `hai-studio/gallery/<name>/elements.md`. A topic names its type by that name, never by the type topic's number or path. A kept type is never edited; the blueprint is changed and delivered again.
+**Why:** Types lived only in one blueprint Block and topics pointed at its path: a Block in another SPACE could not use a type, and renumbering a type topic (the Skills type went from 76 to 75 in one day) broke every pointer.
+**Class:** a class that only its own workshop can reach; every type, every blueprint Block, every SPACE that installs the skill.
+**Cases:** ✅ seven b17 types delivered · ✅ b17 Skills and Block Structure topics name `skills`, `block-structure` · ⬜ b17 s11 to s15 and their type still use a path (their own builder writes it) · ⬜ the other themes' blueprints deliver no type yet
+**Check:** every blueprint type with an `elements.md` has the same file under `gallery/`, and no kept type is without a blueprint.
+**Run:** `uv run --quiet --python 3.13 --with pyyaml python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/types_deliver.py --check`
+**Status:** open
+**Solved by:** `scripts/types_deliver.py`; `servers/workbench/studio/tabs/studio_types.type_home`
+
+## A13 · A Skill topic shows how good its skills are
+
+> "we can also add the top view named Evaluation and check the quality of this skill, right?" (JL 261127, on the Skills type)
+
+**Rule:** Every Skill topic has a top button Evaluation after its skills, one item per skill: the skill measured from its own files on every open, each criterion with its own mark and what was found. No score and no tally. What no file can show is listed as a person's call, never as passed.
+**Why:** A Skill topic showed a skill's files and nothing about whether the skill is sound; its weak points were found only when an agent tripped on them.
+**Class:** a thing shown without its quality; every Skill topic of every blueprint Block.
+**Cases:** ✅ b17 s51 to s55, s60 to s63 · ✅ the Skills type
+**Check:** each Skill topic's views file has an Evaluation view with one live item per skill.
+**Run:** `~/.cache/haipipe/host-venv/bin/python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py examples/Project-Ladder/blueprint/b17_theme_work --check`
+**Status:** solved 261127
+**Solved by:** `servers/workbench/studio/tabs/skill_evaluation.py`; `gallery/skills/scripts/skills_views.py`
+
+## A14 · Everything of one Studio Type is in its gallery folder
+
+> "for the hai-studio, for each studio type, will we have a gallery to store it?" (JL 261127) · "okay, I agree, please think about it and update it accoridngly" (JL 261127)
+
+**Rule:** `gallery/<name>/` holds everything of one Studio Type: its delivered `elements.md`, a `TYPE.md` that says how a topic of the type is built, the scripts that write and check one, their tests, and one real example. A script that serves every type stays in `scripts/`. Adding a type adds a folder and touches nothing else.
+**Why:** A type's definition, its scripts and its reference sat in three folders, mixed with other types'; to build a Skills topic an agent looked in three places, and a new type put a piece in each.
+**Class:** the parts of one thing spread by kind of file instead of kept together; every Studio Type.
+**Cases:** ✅ skills · ✅ block-structure · ✅ block-job-ui-preview (TYPE.md; its builder lives in the type topic) · ⬜ resources, methods, applications, questions (elements.md only, no example yet)
+**Check:** a type with scripts has a TYPE.md that names each of them; SKILL.md names `gallery/`.
+**Run:** `python3 plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skill_text_check.py`
+**Status:** open
+**Solved by:** `gallery/`; `scripts/skill_text_check.py`

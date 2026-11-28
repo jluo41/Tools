@@ -3,7 +3,7 @@
 One Task type, one folder (b32 s41-D15, JL 261016: "I want to put the UI assets related to this workbench-task-xxx
 to this folder ... we can have many other types of the task types later"). Everything a draft Task shows lives in
 servers/workbench/workbench-task-draft/: this layout, the Page views it embeds (outline.py, evidence.py, runs.py,
-delivery.py, ...), their assets/ and the standalone reader/. Its manual is skills/1_base/workbench/workbench-task-draft/.
+delivery.py, ...), their assets/ and the standalone reader/. Its manual is skills/1_base/draft/workbench-task-draft/.
 
 The frame finds this file by its name: every `workbench-task-<type>/task_<type>.py` (in servers/workbench/ for a type every
 theme uses, or in servers/workbench-<theme>/ for a theme's own) names TASK_TYPE and gives spaces(folder, root, sub).

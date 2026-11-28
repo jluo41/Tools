@@ -13,7 +13,7 @@ metadata:
 Open the owning Work Block on the focus page (`servers/workbench/page/block_index_page/focus_page.py`,
 `work_frame.py`). Job and Task selections stay embedded in that Block; never advertise a child `path=` as a
 standalone page (hai-ui A10). Its content views are Overview · Plan + Results · Findings · Delivery. These hold, each one
-b17 `s04-workbench-page-structure` Decided:
+b17 `s04-discovery-structure` Decided:
 
 | Rule | What the page does | Decided |
 |---|---|---|
@@ -154,7 +154,7 @@ its four Views (Description, Method, RoadMap Draw, Related Paper) come from
 page: `guide/methods.excalidraw` first, then `guide/method.md` as fold
 cards with its Run and Report method cards (`guide/methods/`); Related Paper is
 `related/papers.md`, all in `servers/workbench-work/`; RoadMap Draw opens the generated
-`Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw`.
+`Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw`.
 
 ### Classic workflow layout
 

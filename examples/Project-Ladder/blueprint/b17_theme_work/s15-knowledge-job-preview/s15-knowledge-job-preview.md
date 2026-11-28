@@ -29,7 +29,10 @@ Files
 s15-knowledge-job-preview/
 ├── s15-knowledge-job-preview.md     this face
 ├── s15-knowledge-job-preview.html   the list of views: Page, the live page of knowledge/b18_a2ui_learning
-└── studio-views.json                its views, written by s72's build_type_pages.py
+├── s15-knowledge-job-preview.excalidraw   its drawing, with its .png
+├── build_s15_knowledge_job_preview.py draws it from the Block's folders
+├── delivery/ui/goal-to-topics.html    its quick page
+└── studio-views.json                  its views, written by s72's build_type_pages.py
 ```
 
 
@@ -41,8 +44,6 @@ Decided
 
 Open
 ----
-
-1. its quick views (QuickHtml) and its drawing, as s12-s14
 
 Checklist
 ---------
@@ -59,5 +60,5 @@ Checklist
 - 🙋 Job types · group types: no file says which Job group is of which type
 - ✅ Task types
 - 🙋 Task types · group types: no file says which Task group is of which type
-- ❗ QuickHtml
-- ❗ Draw
+- ✅ QuickHtml
+- ✅ Draw

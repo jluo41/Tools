@@ -32,6 +32,7 @@ sys.path.insert(0, str(HERE))
 sys.path.insert(1, str(HERE.parents[0].parent / "job" / "scripts"))
 import task_drawing as td  # noqa: E402
 import job_ladder as jl  # noqa: E402
+import task_icons as ti  # noqa: E402
 
 jr, Drawing, canvas = td.jr, td.Drawing, td.canvas
 INK, RED, GREY = jl.INK, jl.RED, jl.GREY
@@ -129,7 +130,7 @@ def stairs_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, as
     cols = jl.columns(len(runs))
     title = f"🪜 {folder.name}"
     width = max(130 + max(cols, default=0) * SHIFT + NODE_W + 60, 40 + TASK_W + 60,
-                Drawing.measure(title, T_TITLE) + 760)                 # the title and the badge side by side
+                Drawing.measure(title, T_TITLE) + 760 + ti.HEAD_W)     # the title, its icons and the badge
     f = d.frame(f"① {title}: its {noun}s as steps", width)
     Drawing.room(f)
     if width > canvas.FRAME_MAX[0]:
@@ -137,6 +138,7 @@ def stairs_frame(d: Drawing, task: dict, folder: Path, runs: list, cfg: dict, as
     d.text(40, 22, title, T_TITLE)
     states = jl.jd.states([{"state": r.get("state") or "?"} for r in runs]) if runs else f"no {noun} yet"
     d.para(40, 112, f"{folder.parent.name} · {jl.jd.n_of(len(runs), noun)}: {states}", width - 80, T_CARD, GREY)
+    ti.task_icon(d, f, runs, noun)                                      # vivid first: its sources, lit by their states
     y = 180
     reading = str(cfg.get("reading") or idea.get("question") or task.get("question") or "")
     key = f"🎯 {words(reading, 45)}" if reading else "❓ no reading yet: write the face's task.reading"
@@ -262,6 +264,7 @@ def notes_frame(d: Drawing, task: dict, cfg: dict, assets: Path) -> dict | None:
             if isinstance(o, dict) and o.get("closer"):
                 y = d.para(70, y, f"→ close by: {words(o['closer'], 25)}", W - 110, 24, INK)
             y += 12
+    ti.notes_icon(d, W, opens)                                          # vivid first: the page its words come from
     canvas.explains(f)
     f["height"] = max(y + 40, 600)
     if f["height"] > canvas.FRAME_MAX[1]:

@@ -17,7 +17,7 @@ Board Page workbenches:
 They are server code beside their caller, not Paper routing logic and not a
 skill: `servers/workbench/workbench-task-draft/delivery_export/export.py` (the `/_board/latex` and
 `/_board/word` doors) runs them by path, and
-`skills/1_base/workbench/workbench-task-draft/ref/delivery.md` is the
+`skills/1_base/draft/workbench-task-draft/ref/delivery.md` is the
 contract they implement. They left `paper/hai-paper/scripts/to-word/`
 when the Paper family retired its stage runtime on 2026-08-20 and left
 `skills/` on 2026-09-21 so that no server code remains under a skill.

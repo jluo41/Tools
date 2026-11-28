@@ -1,4 +1,5 @@
 {
+  "check_type": "skills",
   "views": [
     {
       "name": "hai-draw",
@@ -58,6 +59,35 @@
         {
           "name": "CHANGELOG.md",
           "path": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-draw",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/draw/hai-draw"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s63-skill-draw/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Evaluation",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s63-skill-draw/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s63-skill-draw/delivery/check.html",
+          "fragment": "check-2"
         }
       ]
     }

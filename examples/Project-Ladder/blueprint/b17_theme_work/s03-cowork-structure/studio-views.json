@@ -1,0 +1,98 @@
+{
+  "check_type": "block-structure",
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/structure.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/structure.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/structure.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "〈Job group type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/types/job-group-type--job-group-type-1.html"
+        },
+        {
+          "name": "〈People〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/types/job-type--people.html"
+        },
+        {
+          "name": "〈Request〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/types/job-type--request.html"
+        },
+        {
+          "name": "〈Meeting〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/types/job-type--meeting.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/s03-cowork-structure.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-cowork",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork/SKILL.md"
+        },
+        {
+          "name": "workbench-cowork",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/workbench-cowork/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Structure",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Job types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Task types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Skills",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s03-cowork-structure/delivery/check.html",
+          "fragment": "check-4"
+        }
+      ]
+    }
+  ]
+}

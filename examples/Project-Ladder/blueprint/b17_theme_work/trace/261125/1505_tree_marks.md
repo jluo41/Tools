@@ -67,11 +67,11 @@ changed:
 - workbench tests: 234 passed (test_file_info 4 new, test_trace_view and test_element_info updated).
 - folder_icons_check.py --url 5623: 11 trace files, 0 problems.
 - 5623 b17 Files in Chrome: chips for the 2 open traces only; 13 folder dots; trace_view.py row sweeps with ◐; hovering it
-  shows the card (first sentence, path, ●, 3 traces); s03-q01-work-ladder's card says "How does work climb the ladder?";
+  shows the card (first sentence, path, ●, 3 traces); s03-cowork-structure's card says "How does work climb the ladder?";
   no grey titles on rows; "extends into" line above 2 · UI, which now starts at plugins/haipipe-toolkit/servers/.
 
 - Hover fix: the card stayed when the mouse left the pane (a frame gets no event); it now hides on the document's
-  mouseleave and the window's blur. Checked on 5623: hover s03-q01-work-ladder in the pane, card shows; move into the main page, card gone.
+  mouseleave and the window's blur. Checked on 5623: hover s03-cowork-structure in the pane, card shows; move into the main page, card gone.
 
 ## Summary
 

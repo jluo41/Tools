@@ -1,0 +1,127 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/structure.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/structure.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/structure.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "〈Version〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/job-group-type--version.html"
+        },
+        {
+          "name": "〈Ideas〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/job-group-type--ideas.html"
+        },
+        {
+          "name": "〈code〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/job-type--code.html"
+        },
+        {
+          "name": "〈check〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/job-type--check.html"
+        },
+        {
+          "name": "〈doc〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/job-type--doc.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "〈Make〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/task-group-type--make.html"
+        },
+        {
+          "name": "〈Show〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/task-group-type--show.html"
+        },
+        {
+          "name": "〈code〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/task-type--code.html"
+        },
+        {
+          "name": "〈display〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/types/task-type--display.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-work",
+          "path": "plugins/haipipe-toolkit/skills/2_work/work/hai-work/SKILL.md"
+        },
+        {
+          "name": "hai-job",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/SKILL.md"
+        },
+        {
+          "name": "hai-task",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Structure",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Job types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Task types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Skills",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html",
+          "fragment": "check-4"
+        }
+      ]
+    }
+  ],
+  "check_type": "block-structure"
+}

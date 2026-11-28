@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s13 Job row · next move</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--bg:#f4f4f2;--paper:#fff;--accent:#1f5fbf;--warm:#b45309}
+@media (prefers-color-scheme:dark){:root{--line:#3a3a37;--muted:#a3a39c;--ink:#e8e8e6;--bg:#1b1b19;--paper:#161719;--accent:#8ab4ff;--warm:#f0a45d}}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:860px;margin:0 auto;padding:18px 16px 40px}
+h2{font-size:12px;font-weight:600;color:var(--muted);margin:20px 0 8px;letter-spacing:.02em}
+.row{display:flex;gap:10px;align-items:baseline;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:9px 12px;margin:0 0 6px}
+.row.old{opacity:.5}.mark{flex:none;width:18px}.name{font-weight:600;flex:none;min-width:190px}.what{flex:1;min-width:0}
+.where{flex:none;color:var(--muted);font:11.5px ui-monospace,SFMono-Regular,Menlo,monospace}
+.chip{flex:none;border:1px solid var(--line);border-radius:999px;padding:1px 9px;font-size:11.5px;color:var(--muted)}
+.chip.you{border-color:var(--warm);color:var(--warm)}
+.kids{margin:0 0 10px 28px;padding:0 0 0 14px;border-left:2px solid var(--line)}.kids .row{padding:6px 10px}
+.goal{background:var(--paper);border:1px solid var(--accent);border-radius:12px;padding:12px 14px;font-size:14px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px}.cols h2{margin-top:0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:0 0 6px}
+.down{text-align:center;color:var(--muted);margin:6px 0}
+</style></head><body><main>
+<h2>🙋 Us</h2>
+<div class="row"><span class="mark">🙋</span><span class="name">j02 · Review board amendment</span><span class="what">pick the retention period, then send the amendment draft</span><span class="chip you">RB-0001</span><span class="where">2026-11-05</span></div>
+<h2>⏳ Data owner</h2>
+<div class="row"><span class="mark">⏳</span><span class="name">j01 · Data access request</span><span class="what">the extract date</span><span class="chip">REQ-0001</span><span class="where">2026-10-28</span></div>
+<h2>Nobody</h2>
+<div class="row old"><span class="mark">✅</span><span class="name">j03 · Kickoff meeting</span><span class="what">the kickoff notes went to everyone</span><span class="where">2026-10-15</span></div>
+<div class="row old"><span class="mark">📇</span><span class="name">j00 · People</span><span class="what">who to ask, by role</span></div>
+</main></body></html>

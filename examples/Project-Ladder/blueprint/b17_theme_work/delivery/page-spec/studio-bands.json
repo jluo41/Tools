@@ -33,13 +33,13 @@
     {
       "band": "s5N",
       "emoji": "🧰",
-      "name": "Skills",
+      "name": "Skill",
       "holds": "The skills that make one Block type, or one skill alone: a top button per skill; on the left its whole top level under the names on disk (`SKILL.md`, `CONSTITUTION.md`, `ref/`, `scripts/`, its other folders, its loose files); a folder shows one fold per file; every file read live."
     },
     {
       "band": "s6N",
       "emoji": "🧰",
-      "name": "Skills",
+      "name": "Skill",
       "holds": "Shared skills used by the Block."
     },
     {

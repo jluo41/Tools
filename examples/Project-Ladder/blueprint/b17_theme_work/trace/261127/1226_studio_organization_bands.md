@@ -1,7 +1,7 @@
 ---
 title: Studio Organization lists the blueprint bands
 date: 2026-11-27 12:26
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: 'The blueprint Block''s Studio Organization shows the four bands the Studio page groups by: Block Structure, Job previews, Side pane, Guide.'
 closed: true
 plan:

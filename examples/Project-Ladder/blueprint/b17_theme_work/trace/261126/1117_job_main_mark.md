@@ -27,7 +27,7 @@ plan:
     path: examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/delivery/ui/task-states.html
     what: the Tasks band alone, no legend
   - do: edit
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: mark with a data attribute, views of one page differ only by mark, left tabs even for one view
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1117_job_main_mark.md
@@ -37,7 +37,7 @@ changed:
   - plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_effect_view.py
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/delivery/ui/job-view-topics.html
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/delivery/ui/task-states.html
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
 ---
 
 # job main mark

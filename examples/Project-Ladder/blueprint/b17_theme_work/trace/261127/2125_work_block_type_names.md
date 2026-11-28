@@ -83,7 +83,7 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/s05-knowledge-structure.md
   what: Block type names as Work Block (<type>)
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
   what: Block type names as Work Block (<type>)
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/block-views.md
@@ -136,7 +136,7 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/example-types.json
 - examples/Project-Ladder/blueprint/b17_theme_work/s15-knowledge-job-preview/s15-knowledge-job-preview.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/s05-knowledge-structure.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s02-work-skills/s02-work-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/s02-blueprint-structure.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/block-views.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/studio-bands-by-block-type.md
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/block-elements.md
@@ -152,8 +152,8 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/s72-studio-type-block-job-ui-preview.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s73-studio-type-report/s73-studio-type-report.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s74-studio-type-ui-plugin/s74-studio-type-ui-plugin.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s78-studio-type-theme-guide/s78-studio-type-theme-guide.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-theme-guide/s76-studio-type-theme-guide.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/s05-knowledge-structure.png
 - examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/s05-knowledge-structure.excalidraw
 ---

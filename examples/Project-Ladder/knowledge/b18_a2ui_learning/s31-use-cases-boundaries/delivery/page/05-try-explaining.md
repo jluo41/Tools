@@ -1,3 +1,7 @@
 # Try explaining
 
-Choose between a fixed sign-up form and a travel assistant that assembles different controls for different requests. Explain your choice for each. Identify which claim needs an executable check and which needs a product decision.
+**Choose for two apps, and say why.**
+
+- 📝 A fixed sign-up form.
+- 🧳 A travel assistant that builds different controls for each request.
+- ⚖️ For each: which claim needs a check you can run, and which needs a product decision?

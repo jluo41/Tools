@@ -49,7 +49,7 @@ section          one per place a topic sits: the Block itself, then each Job, th
 - **Caption**: "The topics that deliver a skill, each with its drawing, slides and mind map."
 - **Section `b17_theme_work`** (heading words: `b17_theme_work`, then "this Block", muted)
   - shows: s01 work_ladder, s02 work_skills, one card each
-  - reads: `b17_theme_work/s01-work-ladder/s01-work-ladder.md` and `s02-work-skills/s02-work-skills.md` (their
+  - reads: `b17_theme_work/s01-work-structure/s01-work-structure.md` and `s02-blueprint-structure/s02-blueprint-structure.md` (their
     **Tags:** say Skill), and each topic folder's files (the card, below)
   - empty: a group with no Block-level topic draws no such section; its first section is its first Job or Task
   - actions: the heading folds the section (▾ open by default, ▸ folded; the reader's choice kept in the browser,
@@ -60,7 +60,7 @@ section          one per place a topic sits: the Block itself, then each Job, th
 
 - **Caption**: "The topics that deliver a screen, each with its drawing, slides and mind map."
 - **Section `b17_theme_work`** ("this Block"): s04 workbench_page_structure. Reads
-  `s04-workbench-page-structure/s04-workbench-page-structure.md`.
+  `s04-discovery-structure/s04-discovery-structure.md`.
 - **Section `j03 · t01_block_page`** ("The work Block page", from the Task face's `# t01 · The work Block page`):
   s51 block_ui_report, s52 block_ui_work, s53 block_ui_studio. Reads
   `j03_work_workbench_pages/t01_block_page/s5N-*/s5N-*.md`.

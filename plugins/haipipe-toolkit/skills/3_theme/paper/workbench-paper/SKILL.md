@@ -53,7 +53,7 @@ types, Draw, its verified Examples and Skills. Do not replace that contract with
 a theme-specific list of buttons. Omit Examples when no real Block is bound.
 
 The four lists in each topic's `types.md` are the source for type pages, built by
-`hai-studio/scripts/block_types_pages.py`. Each type defines its purpose and
+`hai-studio/gallery/block-structure/scripts/block_types_pages.py`. Each type defines its purpose and
 required content. Distinguish a semantic role, an observed reader field and a
 registered executor; names in 〈 〉 remain proposals. The catalog registers no
 execution type and grants no migration or submission authority.

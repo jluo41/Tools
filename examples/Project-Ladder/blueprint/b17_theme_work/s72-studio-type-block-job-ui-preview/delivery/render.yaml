@@ -1,0 +1,4 @@
+# Where this Studio Type is delivered (hai-studio scripts/types_deliver.py): a topic in any SPACE finds it by name.
+pieces:
+  - file: elements.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/elements.md

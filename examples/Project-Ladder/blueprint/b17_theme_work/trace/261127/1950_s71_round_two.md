@@ -21,10 +21,10 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/records
   what: JL's comment on the label column, as an item card
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/types.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/types.md
   what: open types in 〈 〉, b01's names as example values (block_types_pages.py, block_types_check.py follow)
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Examples view merged into Structure (s02, s03, s04 the same)
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py
@@ -34,8 +34,8 @@ changed:
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/type_requirements.py
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/types.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/types.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py
 ---
 

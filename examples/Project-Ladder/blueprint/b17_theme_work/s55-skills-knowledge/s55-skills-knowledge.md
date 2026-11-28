@@ -1,4 +1,4 @@
-s55 · Skills: Knowledge
+s55 · Skill: Knowledge
 =======================
 view: overview
 emoji: 📚
@@ -34,5 +34,5 @@ Checklist
 - ✅ CONSTITUTION.md · hai-knowledge, hai-studio
 - ✅ ref/ · hai-studio, hai-discovery, hai-work
 - ✅ scripts/ · hai-studio, hai-discovery
-- ✅ 〈folder〉/ · agents/, constitution/, tests/, feedback/, fn/
+- ✅ 〈folder〉/ · agents/, base-types/learning/, constitution/, gallery/applications/, gallery/block-job-ui-preview/, gallery/block-structure/, gallery/methods/, gallery/questions/, gallery/resources/, gallery/skills/, tests/, _parts/academic-researcher/, _parts/comm-lit-review/, _parts/research-lit/, feedback/, fn/
 - ✅ 〈file〉 · CHANGELOG.md, PREFERENCES.md

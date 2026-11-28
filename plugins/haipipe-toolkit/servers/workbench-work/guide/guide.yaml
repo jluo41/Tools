@@ -96,7 +96,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
+  - board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces, each with the shared Runs
@@ -125,10 +125,10 @@ roadmap:
   Block:
   - title: the work ladder
     shows: a work Project, from its Theme down to one Run
-    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/s01-work-structure.excalidraw
   - title: the work workbench before the frame
     shows: the old Task Workbench page, the old page the band links
-    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-discovery-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   Job: []
   Task:
   - title: what a Run is

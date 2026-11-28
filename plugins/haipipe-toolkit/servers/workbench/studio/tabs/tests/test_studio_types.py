@@ -70,3 +70,26 @@ class StudioTypeElementsTest(unittest.TestCase):
         self.assertEqual(about[f"{scope} [data-studio-view]"], "The drawing.")       # both buttons share the selector, told apart by text
         self.assertEqual(about[f'{scope} [data-studio-name="Page"] .pb-item'], "A Job.")
         self.assertEqual(about[f'{scope} [data-studio-name="Draw"] .pb-item'], "A Job, drawn.")
+
+
+class BaseTypeTest(unittest.TestCase):
+    """A type with a `base:` line starts from the base's parts; its own tabs come before the base's."""
+
+    def test_own_tabs_first_then_the_base(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            (root / "plugins/haipipe-toolkit").mkdir(parents=True)
+            base = root / "base/learning"
+            base.mkdir(parents=True)
+            (base / "elements.md").write_text("## Page\nwhat: The page.\n\n### Try explaining\nwhat: Explain it.\n\n"
+                                              "## Draw\nwhat: The drawing.\n\n### 〈topic title〉\nwhat: One canvas.\n")
+            kind = root / "block/s78-studio-type-method"
+            kind.mkdir(parents=True)
+            (kind / "elements.md").write_text("base: base/learning\ninstances: article[id=\"s21-x\"]\n\n"
+                                              "## Page\n\n### Where you start\nwhat: The start.\n")
+            els = studio_types.elements_of(kind)
+            self.assertEqual([(e["view"], e["tab"]) for e in els],
+                             [("Page", None), ("Page", "Where you start"), ("Page", "Try explaining"),
+                              ("Draw", None), ("Draw", "〈topic title〉")])
+            self.assertEqual(els[0]["what"], "The page.")                         # the type wrote Page again, empty: the base fills it
+            self.assertTrue(all(e["instances"] == 'article[id="s21-x"]' for e in els))

@@ -10,7 +10,7 @@ topic can use them, not only that one.
 Count of picture shapes in a Design: `picture_count(els)`; five_parts.build warns under PICTURES_MIN.
 
 The gallery (every icon in every state, and an Excalidraw library to drag them in by hand):
-    python icons.py --gallery         writes ../ref/icons/icons.excalidraw, icons.png, icons.excalidrawlib
+    python icons.py --gallery         writes ../ref/icons/icons.excalidraw, icons.png, own-icons.excalidrawlib
 A new icon: add a function here and a row in GALLERY, then rerun --gallery.
 """
 from five_parts import GR, OR, RE, PU, SEM, ROOM, GHOST, INK, poly, _el, text  # noqa: F401
@@ -177,7 +177,7 @@ def gallery(out_dir):
     els += text("g_n_l", 1060, y + 20, "lock", 22, INK) + lock("g_l", 1160, y)
     pics = out_dir / "icons.excalidraw"
     print(write(pics, els))
-    (out_dir / "icons.excalidrawlib").write_text(json.dumps({"type": "excalidrawlib", "version": 2,
+    (out_dir / "own-icons.excalidrawlib").write_text(json.dumps({"type": "excalidrawlib", "version": 2,
                                                              "source": "hai-studio icons.py",
                                                              "libraryItems": lib}, indent=1), encoding="utf-8")
     subprocess.run([sys.executable, str(Path(__file__).with_name("render_png.py")), str(pics), str(out_dir / "icons.png"),

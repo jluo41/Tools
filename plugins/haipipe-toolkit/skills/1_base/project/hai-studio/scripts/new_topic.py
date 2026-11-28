@@ -15,7 +15,7 @@ numbers run once across the Block. Each topic gets:
     one delivery;
   - its mind map `sNN-<topic>.mindmap.md`, built from that face;
   - a number in its band (BANDS): s01-s09 concepts · s11-s19 levels · s21-s29 Report · s31-s39 UI Plugin ·
-    s41-s49 Task procedures · s51-s59 Skills · s71-s79 Studio Type · s81-s89 theme Guide · s61-s69 slide drafts · s10-s19 related work (paper Boards only);
+    s41-s49 Task procedures · s51-s59 Skills · s71 onward Studio Type (past s79 as needed) · s81-s89 theme Guide · s61-s69 slide drafts · s10-s19 related work (paper Boards only);
   - its quick drawing `sNN-<topic>.excalidraw` (quick_draw.py), a light scratch opened from the ✎ on its map line.
 
 `--builder` instead writes `build_sNN_<topic>.py`, the five-part drawing on five_parts.py (1 Idea, 2 Now, 3 Design,

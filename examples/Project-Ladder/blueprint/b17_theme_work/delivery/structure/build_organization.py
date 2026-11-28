@@ -306,8 +306,8 @@ def rule_sections(kind):
     tree, headings = rule_jobs(kind)
     # the levels as a folder tree, as Folder is, each level's name small after it (b17 trace 261127/1250)
     diagram = '<div class="drawing"><ul class="tree"><li>' + tree_html(tree, roles=('',) + tuple(headings)) + '</li></ul></div>'
-    folders = dict(zip(KINDS, ('s01-work-ladder', 's02-work-skills',
-                               's03-q01-work-ladder', 's04-workbench-page-structure')))
+    folders = dict(zip(KINDS, ('s01-work-structure', 's02-blueprint-structure',
+                               's03-cowork-structure', 's04-discovery-structure')))
     source = HERE.parent.parent / folders[kind] / 'studio-organization.mindmap.md'
     model = shared_mindmap().MT.load(source)
     def as_tree(item):

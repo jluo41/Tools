@@ -1,6 +1,6 @@
 # Insight topics
 
-A topic records the current question, requirement and guard. fixed means its case passes with a guard; open names the work owed. Source prompts and event evidence are retained by topic id in the owning Block's [Trace](../../../../../../../examples/Project-Ladder/blueprint/b11_theme_insight/trace/261127/insight_topics_evidence.md). Consult the exact evidence before changing an existing verdict.
+A topic records the current question, requirement and guard. fixed means its case passes with a guard; open names the work owed. Source prompts and event evidence are retained by topic id in the owning Block's [Trace](../../../../../../../examples/Project-Ladder/blueprint/b11_theme_insight/trace/261127/1614_insight_topics_evidence.md). Consult the exact evidence before changing an existing verdict.
 
 ## Current index
 
@@ -93,7 +93,7 @@ Date: 2026-11-27. Source: user in this session; Work coordination from 01a1bc86-
 
 Questions: Do Structure and Draw pair rules with real examples? Are owning skills current? Do Job/Task previews remain in real Blocks? Are proposals and actual behavior distinct? Are Findings and source files referenced once across levels?
 
-Work: the approved file plan is in b11 trace/261127/insight_studio_bands.md. s01–s03 bind Structure / Job types / Task types / Draw / Skills. s11–s13 bind live Block selections, contracts, QuickHtml and Draw. Checklist items stay in the shared side pane. Generated bindings have one generator; main skill entries and structure rules describe the current contract.
+Work: the approved file plan is in b11 trace/261127/1602_insight_studio_bands.md. s01–s03 bind Structure / Job types / Task types / Draw / Skills. s11–s13 bind live Block selections, contracts, QuickHtml and Draw. Checklist items stay in the shared side pane. Generated bindings have one generator; main skill entries and structure rules describe the current contract.
 
 Guard: check_structure.py and build_job_previews.py --check pass. Real b11 browser acceptance verifies the Folder Tree in Structure, inline sources, live Job/Task selection routes, owning skills and all three QuickHtml proposals. T43 records the Structure guard; T44 records the separate Draw gap. Fresh-context invocation distinguishes all three Block contracts, retained members, execution ownership and human decisions. T34 and T36 track the live reader and phone gaps separately; active card/example dependencies remain T06/T10/T11.
 
@@ -120,7 +120,7 @@ Date: 2026-11-27. User in this session, verbatim:
 Paper coordination source: 01a1bc86-c6c8-7bc2-b236-7944edb1d34e, 2026-11-27. Relevant requirement, verbatim:
 
 > 每个实例有 types.md，分 Job group type / Job type / Task group type / Task type，并说明 for 与 holds、真实源字段和技能所有者；不存在的层级明确说明，不为通过检查发明类型。
-> Job types / Task types 由清单生成。复用 hai-studio/scripts/block_types_pages.py；不要只换标题或只验证自己硬编码的按钮列表。缺少所有 types.md 时不能把“0 types / 0 problems”当作通过。
+> Job types / Task types 由清单生成。复用 hai-studio/gallery/block-structure/scripts/block_types_pages.py；不要只换标题或只验证自己硬编码的按钮列表。缺少所有 types.md 时不能把“0 types / 0 problems”当作通过。
 
 Questions: Does each Block have a complete catalog? Are groups separate from types? Do missing layers stay absent? Can the generated view be traced to its catalog and actual members?
 
@@ -142,11 +142,11 @@ Guard: check_structure.py checks the shared writer ranges, source owners/bands, 
 
 ## T41 · Shared type-check and member interfaces · open
 
-Date: 2026-11-27. Source: the T39 approval and shared-generator inspection in b11 trace/261127/insight_structure_types.md.
+Date: 2026-11-27. Source: the T39 approval and shared-generator inspection in b11 trace/261127/1057_insight_structure_types.md.
 
 Questions: Can shared checking represent absent layers and reject an empty catalog inventory? Can type pages resolve Insight release members and open selections within their Block?
 
-Gap: hai-studio/scripts/block_types_check.py requires all four sections to contain types and succeeds with no catalogs. block_types_pages.py matches only explicit job-type/task-type fields and builds child-path member routes. Insight source semantics and retained membership need a shared adapter/selection interface. The local guard and inline examples cover this theme; they do not repair those shared interfaces.
+Gap: hai-studio/gallery/block-structure/scripts/block_types_check.py requires all four sections to contain types and succeeds with no catalogs. block_types_pages.py matches only explicit job-type/task-type fields and builds child-path member routes. Insight source semantics and retained membership need a shared adapter/selection interface. The local guard and inline examples cover this theme; they do not repair those shared interfaces.
 
 Guard owed: shared rejection tests for missing catalogs, valid-absence cases for Book/Prep, complete release-member matching and Block-owned routes, followed by browser acceptance. Research records must not gain invented fields just to make these checks pass.
 
@@ -170,7 +170,7 @@ Questions: Are all Structure items and their inline examples vertical Folder Tre
 
 Rule: A02 and shared s71 Job-Task require Folder Tree in Structure. The source model remains authoritative across views; types/groups and actual folders do not change. Native details/summary, branch lines, existing level colours and normal-size labels supply the presentation.
 
-Acceptance: check_structure.py passes and rejects both restored mindmap markup and a Draw fragment selected by Structure, for each Block kind. The fresh-context invocation confirms these checks and the current rule. Actual b11 browser acceptance exercises all three Structure items across s01–s03, expanded rules and actual examples, source hrefs, normal-size labels and hover responsibilities. At 390 × 844 the tree is visible and expandable; deep indentation still leaves narrow labels and the shared top-view row overflows. T36 stays open for phone layout. T44 separately tracks the missing owned Draw canvases. Evidence and scope audit are in b11 trace/261127/insight_structure_types.md.
+Acceptance: check_structure.py passes and rejects both restored mindmap markup and a Draw fragment selected by Structure, for each Block kind. The fresh-context invocation confirms these checks and the current rule. Actual b11 browser acceptance exercises all three Structure items across s01–s03, expanded rules and actual examples, source hrefs, normal-size labels and hover responsibilities. At 390 × 844 the tree is visible and expandable; deep indentation still leaves narrow labels and the shared top-view row overflows. T36 stays open for phone layout. T44 separately tracks the missing owned Draw canvases. Evidence and scope audit are in b11 trace/261127/1057_insight_structure_types.md.
 
 
 ## T44 · Block Structure needs an owned Draw canvas · open

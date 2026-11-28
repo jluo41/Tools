@@ -66,7 +66,7 @@ Other topics
 - s02-skill-layers: q01's layers, how servers pair with them, and its three open choices.
 - s03-path-lookup: how code finds a skill now, and what the next move must fix again.
 - s04-theme-shape: whether every theme folder has the same shape.
-- The work theme's skills are asked in b17 (`../../../../../Project-Ladder/blueprint/b17_theme_work/s02-work-skills/`).
+- The work theme's skills are asked in b17 (`../../../../../Project-Ladder/blueprint/b17_theme_work/s02-blueprint-structure/`).
 
 Rebuild every drawing: `../_build/make.sh`.
 

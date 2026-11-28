@@ -19,9 +19,9 @@ heading for where each one sits. Picks marked "form" wait on JL; the rest the ag
 
 ```text
 b17_theme_work/
-├── s01-work-ladder/               render.yaml by: j01_work_ladder_contract/...  ▶ j01 › Studio › Skill
-├── s02-work-skills/               render.yaml by: j02_workbench_work_skill/...      ▶ j02 › Studio › Skill
-├── s04-workbench-page-structure/  render.yaml by: j03_work_workbench_pages/...  ▶ j03 › Interface, Navigation
+├── s01-work-structure/               render.yaml by: j01_work_ladder_contract/...  ▶ j01 › Studio › Skill
+├── s02-blueprint-structure/               render.yaml by: j02_workbench_work_skill/...      ▶ j02 › Studio › Skill
+├── s04-discovery-structure/  render.yaml by: j03_work_workbench_pages/...  ▶ j03 › Interface, Navigation
 └── j03_work_workbench_pages/      no sNN of its own today
     ├── t01_block_page/   s51 s52 s53                                          ▶ j03 › Block UI
     ├── t02_job_page/     s54 s55 s56                                          ▶ j03 › Job UI
@@ -30,8 +30,8 @@ b17_theme_work/
 
 The link from a Job to the topic it makes is already on disk, one way: `focus_page.work_root(topic)` reads the
 sNN's `delivery/render.yaml` `by:` lines to give a card its Work tag. This proposal reads the same lines the other
-way, so `j01_work_ladder_contract` finds `s01-work-ladder` and `j03_work_workbench_pages` finds
-`s04-workbench-page-structure`. The topic keeps its own address (`b17-s04:theme_work @ workbench_page_structure`),
+way, so `j01_work_ladder_contract` finds `s01-work-structure` and `j03_work_workbench_pages` finds
+`s04-discovery-structure`. The topic keeps its own address (`b17-s04:theme_work @ workbench_page_structure`),
 since an address is read from where the topic sits. Today none of this shows: `frame.studio_inventory` gives a Job
 only its own and its Tasks' topics (plus Block topics whose face says `**At:**` that Job, which none of b17's does),
 so j01 and j02 have no Studio on their rail, and j03 shows its Tasks' nine topics but not s04.

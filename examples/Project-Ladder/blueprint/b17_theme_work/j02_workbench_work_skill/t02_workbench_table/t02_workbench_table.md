@@ -5,5 +5,5 @@ close: every view the SKILL.md names has its row (Run type none when it starts n
 task-type: tool
 
 Part of j02 · Workbench work skill. It makes b17-s02's `workbench-table` piece
-(`../../s02-work-skills/delivery/render.yaml`). Its Run, in `runs/`: `run-write-workbench-table`, soft, agent work;
+(`../../s02-blueprint-structure/delivery/render.yaml`). Its Run, in `runs/`: `run-write-workbench-table`, soft, agent work;
 each pass follows t01's pass for the same page, so the table never names a view the SKILL.md does not.

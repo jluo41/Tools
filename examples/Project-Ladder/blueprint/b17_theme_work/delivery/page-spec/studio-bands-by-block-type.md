@@ -8,7 +8,7 @@ exists; omit empty Bands in actual work. Bands add no directory layer and do not
 ## Content bands
 
 The English labels are the page labels; the Chinese labels explain the same groups.
-Knowledge uses the agreed display names Resources / Concepts / Methods / Connections and Applications / Questions, in that order.
+Knowledge uses the agreed display names Resource / Method / Application / Question, in that order.
 
 | Block | Band | 中文 | Purpose |
 |---|---|---|---|
@@ -21,11 +21,10 @@ Knowledge uses the agreed display names Resources / Concepts / Methods / Connect
 | Discovery | Question Design | 问题设计 | Set the question, scope and criteria for evaluating evidence. |
 | Discovery | Evidence Discussion | 证据讨论 | Discuss reliability and disagreement; source reading belongs to execution work. |
 | Discovery | Synthesis | 综合解释 | Interpret what the evidence supports and what remains unresolved. |
-| Knowledge | Resources | 学习资源 | Prepare and locate the materials used for learning. |
-| Knowledge | Concepts | 概念 | Explain the knowledge points to be understood. |
-| Knowledge | Methods | 方法 | Explain a derivation, algorithm or method and when it applies. |
-| Knowledge | Connections and Applications | 关联与应用 | Connect concepts and relate them to practical problems. |
-| Knowledge | Questions | 提问 | Keep the questions that come up while learning, each answered in its own topic. |
+| Knowledge | Resource | 学习资源 | Prepare and locate the materials used for learning. |
+| Knowledge | Method | 方法 | Explain what a thing is and how it works, as numbered steps a learner follows. |
+| Knowledge | Application | 应用 | Use the methods on practical problems and name their limits. |
+| Knowledge | Question | 提问 | Keep the questions that come up while learning, each answered in its own topic. |
 
 ## Blueprint
 
@@ -39,15 +38,15 @@ only additional types it needs. Task Procedure and Guide content do not require 
 - Work Studio discusses work choices; Jobs and Tasks implement and execute them.
 - CoWork Studio discusses arrangements, materials and acceptance; formal messages and accepted outputs remain in Delivery.
 - Discovery Studio discusses questions and evidence; source searches and readings stay in their execution records.
-- Knowledge Studio explains concepts, methods and their connections. Pure conceptual learning need not have a code Job;
+- Knowledge Studio explains concepts, methods and their applications. Pure conceptual learning need not have a code Job;
   one practice Job may support several knowledge topics.
 - These Band labels are content categories, not execution stages or a required sequence of work.
 
 ## Knowledge Resources Band
 
-Resources is the first Studio Band of a Work Block (Knowledge), followed by Concepts,
-Methods, and Connections and Applications. Their numbered ranges
-are s0N, s1N, s2N and s3N. Bands add no folders and do not renumber existing topics.
+Resources is the first Studio Band of a Work Block (Knowledge), followed by
+Methods, Applications and Questions. Their numbered ranges
+are s0N, s1N and s2N (both Methods), s3N and s4N. Bands add no folders and do not renumber existing topics.
 Resource-related Studio topics belong directly in Resources. There is no required
 same-named Resources or Knowledge Sources Studio, and no separate Sources view.
 

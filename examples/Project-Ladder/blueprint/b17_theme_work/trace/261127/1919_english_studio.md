@@ -2,7 +2,7 @@
 title: Knowledge definition aligned with real English Studios
 date: 2026-11-27 19:19
 topic: s05-knowledge-structure
-aim: Four real English learning Studios appear under Resources, Concepts, Methods, Connections and Applications; the example opens Studio.
+aim: Four real English learning Studios appear under Resources, Concepts, Methods, Applications; the example opens Studio.
 closed: true
 plan:
 - do: add
@@ -68,7 +68,7 @@ changed:
 
 ## Check
 
-- Actual Chrome A2UI Studio: four populated Bands in Resources / Concepts / Methods / Connections and Applications order; each of s01, s11, s21 and s31 opened its English learning Page.
+- Actual Chrome A2UI Studio: four populated Bands in Resources / Concepts / Methods / Applications order; each of s01, s11, s21 and s31 opened its English learning Page.
 - Actual Chrome at 390 x 844: all four folded topics wrap within the viewport; Resources Page text wraps and reads. Restored desktop viewport. Draw is a pan/zoom canvas; resizing an already-open canvas retains its view, so this is not a claim of automatic mobile canvas fitting.
 - Actual Chrome: Resources Draw, Concepts Map and Slides opened; deck picture and PowerPoint link displayed. Inspected generated drawings visually, corrected label/arrow overlaps. Other topic bindings and deck files checked on disk.
 - Actual Chrome source click: raw relative Markdown links were blocked in iframe; replaced with existing /_board/page reader URLs. Source document then opened successfully. Reader has no heading IDs, so removed unsupported fragments; R1–R6 labels identify records in the single source document.

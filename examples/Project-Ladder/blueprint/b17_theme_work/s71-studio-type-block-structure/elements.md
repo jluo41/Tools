@@ -5,7 +5,7 @@ requirement an instance must meet there. `## ` is a top button, `### ` a left ta
 shows the requirement (type_requirements.py builds the pages); an instance's right side shows the real thing; a
 right-click on the button or tab, in the type or an instance, shows its What, Why and From.
 
-instances: article[id^="s0"]
+build: block_structure_page.py, block_types_pages.py, block_structure_draw.py
 
 ## Structure
 what: The Block type's three models as rules: Folder, Job-Task and Studio.
@@ -20,19 +20,19 @@ from: the naming patterns of the Block type's folders
 must:
 - naming patterns with 〈placeholders〉 (`bNN_〈block〉/`, `jNN_〈job〉/`), never a real folder's name
 - every line's purpose on its hover
-- one tree, opened to the Job, folders before files
+- one tree, opened to the Job; inside a folder its folders come first, its face file last
 check: by eye: the rule tree names no real path
 > bNN_〈block〉/
->   board.md
 >   jNN_〈job〉/
->     jNN_〈job〉.md
 >     tNN_〈task〉/
+>       runs/rNN_〈run〉/
+>         result/
 >       tNN_〈task〉.md
->       runs/
+>     jNN_〈job〉.md
 >   sNN-〈topic〉/
->   trace/
 >   related/
->   delivery/
+>   trace/
+>   board.md
 
 ### Job-Task
 what: How a Block of this type divides its work: Job group, Job, Task group, Task.
@@ -48,11 +48,11 @@ must:
 - a type is fixed for the Block type; a group is named by each Block or Job on its `bands:` line, and is one of the group types
 - a Task's Runs on its hover only when a Run means something structural
 check: `block_types_check.py`: every Job type and Task type of the example Block is one `types.md` lists; by eye: the levels match the type
-> bNN_〈block〉/
->   〈Job group〉  # 〈Job group type〉
->     jNN_〈job〉/  # 〈Job type〉
->       〈Task group〉  # 〈Task group type〉
->         tNN_〈task〉/  # 〈Task type〉
+> 〈Work Block (type)〉
+>   〈job-group-name〉  # Job group
+>     jNN_〈job〉  # Job name
+>       〈task-group-name〉  # Task group
+>         tNN_〈task〉  # Task name
 
 ### Studio
 what: The Studio bands a Block of this type keeps its topics in.
@@ -60,16 +60,16 @@ why: A topic's number and title then say what kind of topic it is.
 from: `delivery/page-spec/studio-bands.json` and the Block type's Studio definitions
 must:
 - a collapsible Folder Tree: Block, then Band, then Studio topic; no Mind Map
-- one line per band, with its emoji, name and numbers
-- Blueprint bands read from the shared registry; a band is independent of a Studio type
+- one line per band: its emoji, its name and its numbers (`📚 Resources · s0N`), with the Studio Type its topics follow
+- a band is one Studio Type; Blueprint bands are read from the shared registry
 - Blueprint type definitions reuse shared types by reference and add only theme-specific types
 - ordinary Work Blocks show actual Studio topics without requiring type-definition topics
 check: by eye: Blueprint band names and order match the shared registry; empty bands are omitted from the live Studio
-> bNN_〈block〉/
->   〈emoji〉 〈band name〉  # sNN
->     sNN-〈topic〉/
->       sNN-〈topic〉.md
->       〈drawing〉.excalidraw
+> 〈Work Block (type)〉
+>   〈emoji〉 〈Band name〉 · sNN  # Studio Type: 〈type〉
+>     sNN-〈topic〉
+>   〈emoji〉 〈Band name〉 · sNN  # Studio Type: 〈type〉
+>     sNN-〈topic〉
 
 ## Job types
 what: The Job group types and the Job types of this Block type, one left tab each.
@@ -146,6 +146,7 @@ check: `block_types_check.py`: the type has `for:` and `holds:`
 >         holds: 〈what a Job of this type must hold〉
 
 ## Task types
+when: the Block type has a Task level
 what: The Task group types and the Task types of this Block type, one left tab each.
 why: A reader knows which kinds of Task a Job of this Block type may hold.
 from: the topic's `types.md`
@@ -222,12 +223,12 @@ check: `block_types_check.py`: the type has `for:` and `holds:`
 ## Draw
 what: The topic's one Excalidraw drawing of the Block type's structure.
 why: A picture shows how the Block, its Jobs and Tasks and its Studio hang together faster than a list.
-from: the topic's own `.excalidraw` file
+from: the topic's own `.excalidraw` file, drawn from its `structure.md` by `block_structure_draw.py`
 must:
 - one drawing, full width, with no left tabs
 - the folder, the Job-Task levels and the Studio bands of this Block type, drawn as a pattern, not listed as text
 - the same names as Structure, nothing added or left out
-check: `check_organization.py`: Draw is one item, the topic's own `.excalidraw` file, and it exists
+check: `block_structure_draw.py --check`: the drawing holds every name of the topic's `structure.md`
 
 ## Skills
 what: The skills that make and check a Block of this type, each read live.

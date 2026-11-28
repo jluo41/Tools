@@ -93,13 +93,14 @@ class RequirementExamples(unittest.TestCase):
                 siblings = [e for e in elements if e['view'] == el['view'] and e.get('tab')]
                 if el['view'] not in labels or el.get('mark') or (not el.get('tab') and siblings):
                     continue
-                self.assertIsNotNone(examples.resolve(topic, el, root), (name, el['name']))
+                if (topic / 'examples.json').is_file():      # a type whose Pattern is its example binds none
+                    self.assertIsNotNone(examples.resolve(topic, el, root), (name, el['name']))
             all_criteria = [m for el in elements for m in el.get('must', [])]
             cards = check_views.groups(check_views.criteria(topic), views, 'elements')
             shown = [m for _, rows in cards for el in rows for m in el.get('must', [])]
             self.assertTrue(all(m in shown for m in all_criteria))
 
-    def test_s71_examples_stay_inline_without_a_top_view(self):
+    def test_s71_shows_one_tree_the_pattern_and_no_example(self):
         root = type_requirements.SPACE
         topic = root / 'examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure'
         outputs = type_requirements.build(topic)
@@ -109,7 +110,11 @@ class RequirementExamples(unittest.TestCase):
         self.assertEqual(check['name'], 'Check')
         self.assertFalse(any(i['name'].startswith('Examples') for i in check['items']))
         self.assertFalse(any(p.name.startswith('examples--') for p in outputs))
-        self.assertIn('<summary>Example</summary>', outputs[topic / 'delivery/requirements/structure--studio.html'])
+        page = outputs[topic / 'delivery/requirements/structure--job-task.html']
+        self.assertNotIn('<summary>Example</summary>', page)          # one tree: the Pattern, drawn as an instance's
+        self.assertIn('<dt>Pattern</dt>', page)
+        self.assertIn('data-level="job-group"', page)
+        self.assertIn('data-level="task-name"', page)
 
 
 if __name__ == '__main__':

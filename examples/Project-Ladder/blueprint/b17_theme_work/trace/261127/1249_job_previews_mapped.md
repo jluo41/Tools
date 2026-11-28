@@ -1,7 +1,7 @@
 ---
 title: Job UI previews numbered as the Block Structure topics
 date: 2026-11-27 12:49
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: 'The second digit names the Block type in every band: 1 Work, 2 Blueprint, 3 CoWork, 4 Discovery; so s11 Work, s12 Blueprint, s13 CoWork, s14 Discovery, as s01-s04 and s51-s54.'
 closed: true
 plan:

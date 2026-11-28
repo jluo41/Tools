@@ -1,7 +1,7 @@
 ---
 title: Studio Type band starts at s70; theme Guide to s8N
 date: 2026-11-27 13:04
-topic: s02-work-skills
+topic: s02-blueprint-structure
 aim: The Studio Type topics are s70-s79 (last digit = the band each defines), the theme Guide band is s8N; every reader of the types follows.
 closed: true
 plan:

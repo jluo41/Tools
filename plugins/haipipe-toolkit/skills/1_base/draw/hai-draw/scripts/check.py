@@ -194,6 +194,46 @@ def part_names(els) -> set:
             and str(e.get("text")) in PARTS.values()}
 
 
+BOX_SHARE = 0.5     # V: at most this share of a drawing's things are boxes that only hold words
+BLOCK_WORDS = 30    # V: no single block of text longer than this
+BIG_NUMBER = 44     # V: a number drawn at this size or larger is a big number
+
+
+def _closed(e) -> bool:
+    """A line drawn as a closed, filled shape: part of an icon, not a connector."""
+    pts = e.get("points") or []
+    return e.get("type") == "line" and len(pts) > 3 and (e.get("polygon") or pts[0] == pts[-1]
+                                                          or e.get("backgroundColor") not in (None, "transparent"))
+
+
+def vivid(els) -> list:
+    """V: the whole drawing, with or without frames, measured for what a reader sees first. ⑨ asks whether a frame
+    holds any picture; a drawing of two screenshots and a row of text boxes passes it and is still not vivid (asked
+    261127: "for the draw, it need to be vivid"). Three measures: the share of boxes that only hold words, the
+    longest block of text, and whether a number is drawn big."""
+    shapes = [e for e in els if e.get("type") in ("rectangle", "diamond", "ellipse")]
+    texts = [e for e in els if e.get("type") == "text" and not is_badge(e)]
+
+    def holds(box, e):
+        cx, cy = e["x"] + e.get("width", 0) / 2, e["y"] + e.get("height", 0) / 2
+        return e is not box and box["x"] <= cx <= box["x"] + box["width"] and box["y"] <= cy <= box["y"] + box["height"]
+
+    pictures = sum(1 for e in els if e.get("type") in ("ellipse", "freedraw", "image") or _closed(e)
+                   or (e.get("customData") or {}).get("icon"))
+    boxes = sum(1 for b in shapes if b["type"] != "ellipse" and any(holds(b, t) for t in texts)
+                and not any(holds(b, s) for s in shapes) and not any(holds(b, e) for e in els if _closed(e) or e.get("type") in ("freedraw", "image")))
+    share = boxes / max(boxes + pictures, 1)
+    longest = max([Drawing.words_in(t.get("text", "")) for t in texts] or [0])
+    big = [t for t in texts if t.get("fontSize", 0) >= BIG_NUMBER and re.search(r"\d", str(t.get("text", "")))
+           and Drawing.words_in(t.get("text", "")) <= 4]
+    return [("❌" if boxes >= 4 and share > BOX_SHARE else "✅") +
+            f" {boxes} boxes of words beside {pictures} picture shapes ({round(100 * share)}% boxes, at most "
+            f"{round(100 * BOX_SHARE)}%)" + ("; draw the things as icons (hai-studio icons.py, icon_library.py)" if boxes >= 4 and share > BOX_SHARE else ""),
+            ("❌" if longest > BLOCK_WORDS else "✅") + f" longest block of text {longest} words (at most {BLOCK_WORDS})",
+            ("✅ a big number: " + str(big[0].get("text", "")).split("\n")[0][:24]) if big else
+            "🔶 no big number: is there a count or a score a reader should see first?"]
+
+
 def is_five_parts(els) -> bool:
     """A five_parts drawing: at least its Idea, Now and Design."""
     return {"Idea", "Now", "Design"} <= part_names(els)
@@ -242,7 +282,8 @@ def check(path):
         story = ("❌" if through else "✅" if acts else "🔶" if arrows else "❌") + \
             f" {len(acts)} acts named, {len(arrows)} arrows between frames" + \
             "".join(f" · an arrow runs through '{n[:40]}'" for n in through)
-    return {"drawing": path.name, "frames": len(fs), "③": story, "rows": rows, "slide": slide, "s00": s00}
+    return {"drawing": path.name, "frames": len(fs), "③": story, "rows": rows, "slide": slide, "s00": s00,
+            "V": [] if s00 or read else vivid(els)}
 
 
 def report(r):
@@ -250,6 +291,7 @@ def report(r):
         return "\n".join([f"{r['drawing']}: {r['③']}"] + [f"      ⑤P {x}" for x in r["⑤P"]])
     out = [f"{r['drawing']}: {r['frames']} frames · ③ {r['③']}" +
            (" · a slide draft: sizes and words are hai-draw slide's" if r.get("slide") else "")]
+    out += [f"  V {line}" for line in r.get("V", [])]              # the whole drawing: vivid, measured
     for f in r["rows"]:
         out.append(f"  {f['name'][:58]:58} {f['size']:>11} {f['kind']:>7} · {f['words']} words")
         for p in ("①", "②", "④", "⑤", "⑥", "⑦", "⑨"):
@@ -265,6 +307,11 @@ def main(argv=None):
     for p in paths:
         print(report(check(p)))
     return 0
+
+
+def is_vivid(path) -> bool:
+    """True when no V line of the drawing fails."""
+    return not any(line.startswith("❌") for line in check(path).get("V", []))
 
 
 if __name__ == "__main__":

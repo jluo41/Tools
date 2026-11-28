@@ -127,7 +127,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_step_records_track_changes_and_bounded_preference_inference(self):
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         template = (WORKFLOW / "ref/writing-step-template.md").read_text()
-        presenter = (SKILLS / "1_base/workbench/workbench-task-draft/ref/run-space.md").read_text()
+        presenter = (SKILLS / "1_base/draft/workbench-task-draft/ref/run-space.md").read_text()
         for required in (
             "#### Track changes", "###### Before", "###### After",
             "###### Why", "###### Analysis status",
@@ -230,7 +230,7 @@ class InteractiveSkillContractTest(unittest.TestCase):
     def test_page_run_identity_is_separate_from_task_run_identity(self):
         contract = (WORKFLOW / "ref/interactive-writing-run.md").read_text()
         run_contract = run_contract_text()
-        presenter = (SKILLS / "1_base/workbench/workbench-task-draft/ref/run-space.md").read_text()
+        presenter = (SKILLS / "1_base/draft/workbench-task-draft/ref/run-space.md").read_text()
         for text in (contract, run_contract, presenter):
             with self.subTest(source=text[:40]):
                 self.assertIn("run-structure-", text)          # full names (JL 261001)
@@ -313,8 +313,8 @@ class InteractiveSkillContractTest(unittest.TestCase):
         families = (SKILLS / "1_base/draft/hai-draft/ref/page-run-families.md").read_text()
         page = (SKILLS / "1_base/draft/hai-draft/ref/page-runs.md").read_text()   # the label grammar moved out of SKILL.md
         evidence = (SKILLS / "1_base/evidence/hai-evidence/ref/page-evidence.md").read_text()
-        displays = (SKILLS / "1_base/workbench/workbench-task-draft/ref/evidence/displays.md").read_text()
-        citations = (SKILLS / "1_base/workbench/workbench-task-draft/ref/evidence/citations.md").read_text()
+        displays = (SKILLS / "1_base/draft/workbench-task-draft/ref/evidence/displays.md").read_text()
+        citations = (SKILLS / "1_base/draft/workbench-task-draft/ref/evidence/citations.md").read_text()
 
         for text in (families, page, evidence):
             with self.subTest(source=text[:40]):

@@ -15,7 +15,7 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/type_requirements.py
   what: Preserve and generate the managed Check view
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_views.py
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py
   what: Keep Check separate from skills during generation
 - do: add
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/tests/test_check_views.py
@@ -30,16 +30,16 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html
   what: Generated criteria and verification methods
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: Bind owning type and append Check
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html
   what: Generated criteria and verification methods
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/studio-views.json
   what: Bind owning type and append Check
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/delivery/check.html
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/check.html
   what: Generated criteria and verification methods
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work/studio-views.json
@@ -57,15 +57,15 @@ changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1814_studio_check_pilot.md
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/check_views.py
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/type_requirements.py
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_views.py
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_views.py
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/tests/test_check_views.py
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/check-view.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/delivery/check.html
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/studio-views.json
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/delivery/check.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/delivery/check.html
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery/check.html
 - examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work/delivery/check.html
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/check_organization.py

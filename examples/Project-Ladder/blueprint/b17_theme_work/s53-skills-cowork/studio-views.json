@@ -39,6 +39,19 @@
       ]
     },
     {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-cowork",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork"
+        },
+        {
+          "name": "workbench-cowork",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/cowork/workbench-cowork"
+        }
+      ]
+    },
+    {
       "name": "Check",
       "items": [
         {
@@ -52,12 +65,17 @@
           "fragment": "check-1"
         },
         {
-          "name": "Draw",
+          "name": "Evaluation",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s53-skills-cowork/delivery/check.html",
           "fragment": "check-2"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s53-skills-cowork/delivery/check.html",
+          "fragment": "check-3"
         }
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+  "check_type": "skills"
 }

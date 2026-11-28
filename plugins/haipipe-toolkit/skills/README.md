@@ -87,7 +87,7 @@ The Page workflow
 =================
 
 The Page family is canonical under `skills/1_base/draft/` (the Board family was retired
-into it, JL 261005): `hai-draft`, `hai-draft-logic`, `hai-draft-writing`, `hai-draft-review`, `hai-draft-workflow` with its Run pages (context, structure, scratch in `hai-draft-logic/ref/`; revise in `hai-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is hai-studio's. The Page runtime owns file intake,
+into it, JL 261005): `hai-draft`, `hai-draft-logic`, `hai-draft-writing`, `hai-draft-review`, `hai-draft-workflow` with its Run pages (context, structure, scratch in `hai-draft-logic/ref/`; revise in `hai-draft-writing/ref/`). The draft Task's screen manual `workbench-task-draft` lives here in `skills/1_base/draft/`; the /wb door `hai-workbench` lives in `skills/1_base/workbench/`; the Studio screen is hai-studio's. The Page runtime owns file intake,
 individual rendering and standalone editing/hosting, the Board checker and the
 Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
@@ -220,7 +220,7 @@ Where to read next
 * `README.md` — user-facing doors and the Run/Result overview.
 * `skills/1_base/project/hai-run/SKILL.md` — the neutral Level-4 contract.
 * `skills/1_base/draft/hai-draft-workflow/SKILL.md` — the Page loop.
-* `skills/1_base/workbench/workbench-task-draft/` — Bullet/Evidence
+* `skills/1_base/draft/workbench-task-draft/` — Bullet/Evidence
   Workspaces, the evidence-item table, and `ref/run-space.md`, the
   read-only Runs view.
 * `skills/3_theme/paper/workbench-paper/` — the Paper Board's Setup, Ideation,

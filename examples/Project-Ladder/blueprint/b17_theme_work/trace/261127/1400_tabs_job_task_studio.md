@@ -12,7 +12,7 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
   what: tab names; requirement pages and views rebuilt
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
   what: tab names (s02, s03, s04 and their faces the same)
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/build_organization.py
@@ -23,7 +23,7 @@ plan:
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1400_tabs_job_task_studio.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/delivery/structure/build_organization.py
 ---
 

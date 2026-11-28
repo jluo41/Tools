@@ -1,4 +1,4 @@
-s61 · Skills: Trace
+s61 · Skill: Trace
 ===================
 view: overview
 emoji: 🧵
@@ -30,6 +30,7 @@ Checklist
 - ✅ scripts/ · hai-trace
 - ✅ 〈folder〉/ · tests/
 - — 〈file〉: no skill here has a loose file
+- ✅ Evaluation · every skill, measured live
 - — Draw: the topic has no drawing
 
 

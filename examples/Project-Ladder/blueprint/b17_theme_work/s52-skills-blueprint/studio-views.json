@@ -163,6 +163,35 @@
       ]
     },
     {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-blueprint",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/blueprint/hai-blueprint"
+        },
+        {
+          "name": "hai-ui",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui"
+        },
+        {
+          "name": "hai-block",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/project/hai-block"
+        },
+        {
+          "name": "hai-project",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/project/hai-project"
+        },
+        {
+          "name": "hai-stack",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/0_utils/hai-stack"
+        },
+        {
+          "name": "hai-workbench",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench"
+        }
+      ]
+    },
+    {
       "name": "Check",
       "items": [
         {
@@ -196,12 +225,17 @@
           "fragment": "check-5"
         },
         {
-          "name": "Draw",
+          "name": "Evaluation",
           "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
           "fragment": "check-6"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-7"
         }
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+  "check_type": "skills"
 }

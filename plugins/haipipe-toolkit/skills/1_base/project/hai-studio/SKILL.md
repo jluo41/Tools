@@ -3,7 +3,7 @@ name: hai-studio
 description: "Owns Studio topics at every level: their faces, sNN numbering, drawings and session passes; also the Page's Studio screen. Use to add or redraw a Studio topic, preview a drawing or save a session. Trigger: studio topic, studio tab, keep this session, /hai-studio, /workbench-studio."
 allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
 metadata:
-  version: "0.35.0"
+  version: "0.39.0"
   last_updated: "2026-11-27"
   # version history: ./CHANGELOG.md
 ---
@@ -20,36 +20,54 @@ what a topic of each kind must show.
 ## 1. Start with the Studio Type
 
 Before adding or changing a topic, find its type. The type decides what the topic shows; nothing else in this file
-comes before it. This file lists no types: each kind of Block keeps its own, as topics in its Studio Type band.
+comes before it. A blueprint Block designs a type; the agreed type is delivered into this skill, `gallery/<name>/`,
+and a topic in any SPACE names it by that name.
 
 ```text
-the topic ─▶ names its type ─▶ the type's elements.md ─▶ what the topic must show
-            studio-views.json    its top buttons and left tabs   the same top and left, the real thing on the right
+blueprint Block ─delivers─▶ gallery/<name>/elements.md ◀─names it─ a topic ("check_type": "<name>")
+ designs the type            what a topic must show              the same top and left, the real thing on the right
 ```
 
-1. **Find it**: the topic's `studio-views.json` names its type (`check_type`, the type topic's path). For a new
-   topic, open the Block's page, Studio section, Studio Type band, and take the type its sibling topics name.
+1. **Find it**: `ls gallery/` in this skill lists every type; the topic's `studio-views.json` names one
+   (`"check_type": "skills"`). In a SPACE that holds the blueprint, the type topic there is read, so a change shows
+   before it is delivered.
 2. **Read it**: the type's `elements.md` lists every top button and left tab a topic of the type has, and for each:
    what it is, why, what it must show, where it comes from and how to check it.
-3. **Same top and left, different right**: the type topic shows the requirement on its right side; your topic shows
-   the real thing there. Add no button or tab the type does not list.
-4. **Start from it, then hold to it**: `type_follow.py new <type topic> <topic>` gives a new topic the type's own
+3. **Same top and left, different right**: the type shows the requirement on its right side; your topic shows the
+   real thing there. Add no button or tab the type does not list.
+4. **Start from it, then hold to it**: `type_follow.py new <type name> <topic>` gives a new topic the type's own
    buttons and tabs, each still showing its requirement; replace them one at a time with the real thing.
-   `type_follow.py check <Block or topic>` says what differs from the type. This works for any type, also one
-   written today.
-5. **No type fits**: write the type first, in the same band, then the topic. How a type is written, and the four
-   questions that give its top, left and right: [ref/studio-type.md](ref/studio-type.md).
+   `type_follow.py follow <topic>` builds a topic as its type says (the scripts on the type's `build:` line), rebuilds
+   its Check view and says what differs; `type_follow.py check <Block or topic>` only says what differs. This works
+   for any type, also one written today.
+5. **No type fits**: design it in a blueprint Block's Studio Type band, then deliver it with `types_deliver.py`.
+   Never edit a file under `gallery/`. How a type is written, and the four questions that give its top, left and
+   right: [ref/studio-type.md](ref/studio-type.md).
 6. **A name every topic fills in is written in 〈 〉** (`〈skill〉`, `bNN_〈block〉/`); a real, agreed name has no brackets.
 
 Inside a topic every view reads the same way: the kinds of thing on top, the parts of the picked one on the left,
 one part on the right. A view with one Markdown file gets a left tab per `##` section, made by the page; only a
 thing with one part is shown full width (`ref/studio-section.md`).
 
-A Block with no Studio Type band (an ordinary Work Block) follows sections 2 to 4 only. To change a type: edit its
-`elements.md`, then run `type_requirements.py <type topic>`. A type whose topics a script writes has its own
-reference: Skills topics [ref/skills-topic.md](ref/skills-topic.md), UI preview topics `ref/ui-preview-topic.md`.
-Examples beside a requirement: [ref/type-examples.md](ref/type-examples.md). The Check button:
-[ref/check-view.md](ref/check-view.md).
+A topic that names no type follows sections 2 to 4 only. To change a type: edit its `elements.md` in the blueprint
+Block, run `type_requirements.py <type topic>`, then `types_deliver.py`.
+
+**The gallery: one folder per type.** Everything of one type sits in `gallery/<name>/`; a script that serves every
+type stays in `scripts/`.
+
+```text
+gallery/<name>/
+├── elements.md     what a topic of the type must show: delivered from the blueprint, never edited here
+├── TYPE.md         how a topic of the type is built, when there is more to say than elements.md does
+├── scripts/        the scripts that write and check a topic of this type
+├── tests/          their tests
+└── example.md      one real topic of the type, with its picture
+```
+
+Read the type's `TYPE.md` before building a topic of it: [gallery/skills/TYPE.md](gallery/skills/TYPE.md),
+[gallery/block-structure/TYPE.md](gallery/block-structure/TYPE.md),
+[gallery/block-job-ui-preview/TYPE.md](gallery/block-job-ui-preview/TYPE.md). Examples beside a requirement:
+[ref/type-examples.md](ref/type-examples.md). The Check button: [ref/check-view.md](ref/check-view.md).
 
 
 ## 2. A Studio is never a report
@@ -121,17 +139,19 @@ python $S/render_delivery.py <level>/sNN-<topic> [--apply]                      
 
 | To | Run |
 |---|---|
-| write a Skills topic's buttons and tabs | `skills_views.py <topic> [--skills <skill dir> …]` |
+| write a Skills topic's buttons and tabs | `gallery/skills/scripts/skills_views.py <topic> [--skills <skill dir> …]` |
 | write a type's requirement pages, with their examples | `type_requirements.py <type topic>` (examples resolved by `requirement_examples.py`) |
 | write a topic's Check button | `check_views.py <topic>` |
-| write a Block Structure topic's Job and Task type pages | `block_types_pages.py <topic>` |
+| write a Block Structure topic's Job and Task type pages | `gallery/block-structure/scripts/block_types_pages.py <topic>` |
+| write a Block Structure topic's Structure page | `gallery/block-structure/scripts/block_structure_page.py <topic>` |
+| deliver the blueprint's types into `gallery/` | `types_deliver.py` |
 | draw a Job's current results as a topic | `job_results.py <block>` (`ref/job-results.md`) |
 | propose topics for a Block that has work but no topics | `block_inventory.py <block>` (`ref/infer-topics.md`) |
 | rebuild a topic's slides | `topic_slides.py <topic>` |
 | bring older topics up to today's rules | `studio_update.py audit` then `update [--apply]` |
 | move topics out of an old `studio/` folder | `studio_move.py <path> [--apply]` |
 | fold an old `reports/` folder into topics | `reports_to_topics.py <path>` |
-| list every kind of topic with a real example | `gallery_scan.py` (`ref/gallery.md`) |
+| count every topic in the SPACEs, with the newest of each kind | `gallery_scan.py` (`ref/gallery.md`; not the type gallery) |
 | shrink a folder's Studio pictures | `shrink_media.py <folder> [--dry]` |
 | add an icon for a Design | `icons.py --gallery` (the pictures: `ref/icons/icons.png`) |
 | draw an item of a downloaded icon library | `icon_library.py --list <word>`, then `item("<name>", …)` in the builder (`ref/icon-libraries.md`) |
@@ -144,18 +164,19 @@ row passes. Showing a Check button does not run a check.
 
 | After you changed | Run | It passes when |
 |---|---|---|
-| any topic of a blueprint Block | `python plugins/haipipe-toolkit/checks/run.py --target <topic or Block>` | every line reads PASS; coverage is in [checks/README.md](../../../../checks/README.md) |
+| any topic of a blueprint Block | `python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/checks/run.py --target <topic or Block>` | every line reads PASS; coverage is in [scripts/checks/README.md](scripts/checks/README.md) |
 | a topic's title or number | `topic_titles_check.py <Block>` | the title starts with its band's name |
 | a type's `elements.md` | `type_requirements.py <type topic> --check` | its requirement pages are not stale |
+| a type's `elements.md` | `types_deliver.py --check` | the copy kept in `gallery/` is the blueprint's |
 | a type's or a topic's names | `placeholder_check.py examples` | no bare slot name |
 | a topic that names a type, or the type | `type_follow.py check <Block or topic>` | no ❗: its buttons and tabs are the type's (⬜ marks a part not filled in yet) |
-| a Skills topic, or a skill it shows | `skills_views.py <Block> --check` then `skills_checklist.py <Block> --check` | the tabs are the skill's folder today; no ❗ line |
+| a Skills topic, or a skill it shows | `gallery/skills/scripts/skills_views.py <Block> --check` then `gallery/skills/scripts/skills_checklist.py <Block> --check` | the tabs are the skill's folder today; no ❗ line |
 | a Check button's source | `check_views.py <topic> --check` | the Check page matches its type |
-| a Block Structure topic's types | `block_types_check.py <Block>` | every example Job and Task names a listed type |
+| a Block Structure topic's types | `gallery/block-structure/scripts/block_types_check.py <Block>` | every example Job and Task names a listed type |
 | a drawing | `$X/check.py <drawing>.excalidraw`, then the reader review | no missing part; the reviewer returns `answers` |
 | a topic's delivery | `render_delivery.py <topic>` | every piece reads `same` |
 | this skill's `SKILL.md` or a `ref/` file | `skill_text_check.py` | no who-and-when note, no marker line; every named file exists, every ref and script is named |
-| this skill's scripts | the tests in `tests/` | all pass |
+| this skill's scripts | the tests in `tests/` and in each `gallery/<name>/tests/` | all pass |
 
 Then open the owning Block's page and look at the topic itself: a check that passes on files is not a page that
 reads right.
@@ -172,8 +193,7 @@ reads right.
 | `ref/reader-review.md` | the reader's questions and the reviewer loop |
 | `ref/topic-rounds.md` | saving a session or a meeting |
 | [ref/studio-type.md](ref/studio-type.md) | writing a Studio Type: its `elements.md`, the four questions |
-| [ref/skills-topic.md](ref/skills-topic.md) | a Skills topic: skills on top, a skill's folder on the left, its drawing |
-| `ref/ui-preview-topic.md` | a UI preview topic: live pages and quick pages |
+| `gallery/<name>/TYPE.md` | building a topic of one type: Skills, Block Structure, Block Job UI Preview |
 | [ref/type-examples.md](ref/type-examples.md) · [ref/check-view.md](ref/check-view.md) | a type's examples; the Check button |
 | `ref/proposal-topic.md` · `ref/slide-draft-topic.md` | a proposal section topic; a slide draft |
 | `ref/job-results.md` · `ref/infer-topics.md` · `ref/gallery.md` | a Job's results topic; topics inferred from work; real examples |

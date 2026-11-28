@@ -1,7 +1,7 @@
 ---
 title: 'Skills Studio: Ladder, Blueprint and Knowledge'
 date: 2026-11-27 16:33
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: Add Ladder and Knowledge Skills topics and a Blueprint entry skill while preserving existing record owners, live file previews and topic identifiers; the user approved the complete file plan before implementation.
 closed: true
 plan:
@@ -24,10 +24,10 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-project/SKILL.md
   what: Route cross-level placement decisions to hai-ladder; retain Project creation and existing shape audit ownership.
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/s62-skills-ladder.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/s62-skills-project.md
   what: 'Define Skills: Ladder and bind its actual skill owners; s62 is proposed and unused in the inspected Block.'
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/studio-views.json
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/studio-views.json
   what: Generate views for hai-ladder, hai-project, hai-block, hai-job, hai-task and hai-run.
 - do: add
   path: examples/Project-Ladder/blueprint/b17_theme_work/s63-skills-knowledge/s63-skills-knowledge.md
@@ -45,13 +45,13 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
   what: Extend A08 to related skill groups and the new instances; retain the current top/left/right presentation.
 - do: edit
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/skills-topic.md
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/TYPE.md
   what: Describe level/kind/capability groupings as content organization and permit references to one skill in multiple topics.
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
   what: Extend the instance selector to s62 and s63 and broaden introductory scope to shared skill groups; keep requirement panels unchanged.
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
   what: Add Ladder and Knowledge to the examples and describe the shared skill-group scope.
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/board.md
@@ -63,16 +63,16 @@ changed:
 - plugins/haipipe-toolkit/skills/2_work/blueprint/hai-blueprint/SKILL.md
 - plugins/haipipe-toolkit/skills/2_work/blueprint/hai-blueprint/CONSTITUTION.md
 - plugins/haipipe-toolkit/skills/1_base/project/hai-project/SKILL.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/s62-skills-ladder.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-ladder/studio-views.json
+- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/s62-skills-project.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s62-skills-project/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/s63-skills-knowledge/s63-skills-knowledge.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s63-skills-knowledge/studio-views.json
 - examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/s52-skills-blueprint.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/studio-views.json
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/skills-topic.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/s76-studio-type-skills.md
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/TYPE.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/s75-studio-type-skills.md
 - examples/Project-Ladder/blueprint/b17_theme_work/board.md
 ---
 
@@ -120,7 +120,7 @@ The user approved the listed file plan with “OK好，那你开始去执行吧�
 
 1. Immediately before edits, re-read dirty target files and confirm new paths/IDs remain unused. Preserve others' changes.
 2. Validate both new skills with skill-creator quick_validate.py. Following root README, use fresh-context subagent exercises in temporary locations: route a cross-level request, handle concept-only Knowledge, distinguish a Blueprint change from Work execution, and preserve Run graph ownership. Record findings here; no unplanned repository receipts.
-3. Generate the three planned views files through hai-studio/scripts/skills_views.py; check every Skills topic in b17.
+3. Generate the three planned views files through hai-studio/gallery/skills/scripts/skills_views.py; check every Skills topic in b17.
 4. Run the existing skill-view and Studio-type/band checks. Run type_requirements.py on S76 with --check: its requirement pages must remain current, since only instance matching/introduction change. If generated files would change, revise the file plan before writing them.
 5. Check links, file lengths, placeholders, topic titles and the new IDs without renumbering existing work.
 6. Walk the Block's live Studio in Chrome: s52 first skill, s62 all level buttons, s63 existing skill files, real top-level tab names and folder folds. Keep Block title and route. No service restart is included.

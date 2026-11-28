@@ -160,7 +160,7 @@ do not navigate or replace browser history, and retain their Block titles while 
 **Status:** open (new examples comply; existing legacy theme readers still need migration)
 
 A UI preview is a Studio topic whose face says `**Delivery type:** ui`; its rules are in
-`hai-studio/ref/ui-preview-topic.md`.
+`hai-studio/gallery/block-job-ui-preview/TYPE.md`.
 
 
 ## A08 · A page design is looked at on an example Block's live page

@@ -10,7 +10,7 @@ Band is the outer category. Blueprint Band names and order come from `examples/P
 |---|---|---|
 | Block Structure | s71-studio-type-block-structure | s01 Insight Board, s02 Question Book, s03 DataPrep |
 | Block Job UI Preview | s72-studio-type-block-job-ui-preview | s11 Insight Board, s12 Question Book, s13 DataPrep |
-| Theme Guide | s78-studio-type-theme-guide | s99 Insight guide |
+| Theme Guide | s76-studio-type-theme-guide | s99 Insight guide |
 
 These instances require no additional local Studio Type. The three Block kinds are not six Studio Types. A type's reference and a folder's number are different facts. Keep s99 and its authored content in place. Task procedures belong to their Task type/skill; guidance belongs to Theme Guide. Use only binding fields supported by the shared reader.
 
@@ -24,7 +24,7 @@ Each s01–s03 instance has types.md as its type-list source. Use the four secti
 | Question Book | absent: Job is the version | Question-set version | Question level | Question definition |
 | DataPrep | absent: Job is the version | Prep-code version | absent: steps ordered directly | Prep step |
 
-The two views Job types and Task types come from shared `hai-studio/scripts/block_types_pages.py`; they are not hand-written button lists. Each generated page describes For/Holds. `structure_contracts.py` validates the catalog and adapts Insight content; shared Studio and mindmap renderers own its presentation.
+The two views Job types and Task types come from shared `hai-studio/gallery/block-structure/scripts/block_types_pages.py`; they are not hand-written button lists. Each generated page describes For/Holds. `structure_contracts.py` validates the catalog and adapts Insight content; shared Studio and mindmap renderers own its presentation.
 
 ## Fields, names and owners
 
@@ -91,7 +91,7 @@ Record implementation comparisons in the existing Checklist. Structure/proposals
 ```text
 uv run --python 3.13 --with pyyaml python examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/check_structure.py
 uv run --python 3.13 --with pyyaml python examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/build_job_previews.py --check
-uv run --python 3.13 --with pyyaml python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/block_types_pages.py <s01-or-s02-or-s03-folder> --check
+uv run --python 3.13 --with pyyaml python plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts/block_types_pages.py <s01-or-s02-or-s03-folder> --check
 ```
 
 Use the running workbench's Python environment when available; shared UI imports require Python 3.10 or newer. The local checks cover catalogs, valid absence, owner files, full Book membership, Board pins, prep ownership, Structure Folder Trees, negative rejection of mindmap content/bindings, separate Draw, authored changes, real Studio owners/bands and generated freshness. Then open the three instances within b11, expand Structure trees and actual examples, inspect both type views and source links, and inspect phone layout separately. Verify Draw independently. Fresh-context skill invocation must distinguish all three Block kinds and their signing boundaries. Record results in the active Trace and current topics; a case without a guard remains open.

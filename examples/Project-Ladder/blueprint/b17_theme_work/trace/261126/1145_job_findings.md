@@ -24,7 +24,7 @@ plan:
     path: examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md
     what: Files names the four Page tabs
   - do: edit
-    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md
     what: s11's four tabs as the example, a tab named level-part
 changed:
   - examples/Project-Ladder/blueprint/b17_theme_work/trace/261126/1145_job_findings.md
@@ -33,7 +33,7 @@ changed:
   - plugins/haipipe-toolkit/servers/workbench/page/job_task_views/tests/test_round_findings.py (new)
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.html
   - examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview/s11-work-job-preview.md
-  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/ui-preview-topic.md (the four tab names, level-part)
+  - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview/TYPE.md (the four tab names, level-part)
 ---
 
 # job findings

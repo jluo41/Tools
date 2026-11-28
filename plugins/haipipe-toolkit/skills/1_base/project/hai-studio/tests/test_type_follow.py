@@ -67,10 +67,35 @@ class TypeFollow(unittest.TestCase):
         (self.kind / "studio-views.json").write_text(json.dumps({"check_type": "block/s71-studio-type-x", "views": [
             {"name": "Page", "items": [{"name": "Rows", "path": "block/s71-studio-type-x/delivery/requirements/page--rows.html"}]},
             {"name": "Check", "items": [{"name": "Page", "path": "block/s71-studio-type-x/delivery/check.html"}]}]}))
-        (self.topic / "studio-views.json").write_text(type_follow.new(self.kind, self.topic, self.root))
-        data = json.loads((self.topic / "studio-views.json").read_text())
+        files = type_follow.new(self.kind, self.topic, self.root)
+        data = json.loads(files[self.topic / "studio-views.json"])
+        self.assertEqual(data["check_type"], "x")                                        # the type's name, no path
         self.assertEqual([v["name"] for v in data["views"]], ["Page"])                   # the type's Check is not copied
+        (self.topic / "studio-views.json").write_text(json.dumps(dict(data, check_type="block/s71-studio-type-x")))
         self.assertEqual(type_follow.problems(self.topic, self.root), ([], ["Page › Rows still shows the requirement"]))
+
+    def test_a_type_with_no_pages_of_its_own_gets_them_written_into_the_topic(self):
+        files = type_follow.new(self.kind, self.topic, self.root)                        # only elements.md: a kept type
+        pages = sorted(p.name for p in files if p.suffix == ".html")
+        self.assertEqual(pages, ["draw.html", "page--notes.html", "page--quick-page.html", "page--rows.html"])
+        data = json.loads(files[self.topic / "studio-views.json"])
+        self.assertEqual([[i["name"] for i in v["items"]] for v in data["views"]], [["Rows", "Notes", "〈quick page〉"], ["Draw"]])
+        self.assertTrue(data["views"][0]["items"][0]["path"].startswith("block/s11-x/delivery/requirements/"))
+
+class FollowCommand(unittest.TestCase):
+    """`follow` builds a topic with the scripts its type names, then checks it."""
+    def test_the_block_structure_type_names_its_builders(self):
+        import type_follow
+        topic = type_follow.SPACE / 'examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure'
+        names = [s.name for s in type_follow.builders_of(topic)]
+        self.assertEqual(names, ['block_structure_page.py', 'block_types_pages.py', 'block_structure_draw.py'])
+
+    def test_a_topic_that_names_no_type_is_not_built(self):
+        import tempfile
+        import type_follow
+        with tempfile.TemporaryDirectory() as tmp:
+            self.assertIsNone(type_follow.builders_of(Path(tmp)))
+            self.assertEqual(type_follow.follow(Path(tmp)), 1)
 
 
 if __name__ == "__main__":

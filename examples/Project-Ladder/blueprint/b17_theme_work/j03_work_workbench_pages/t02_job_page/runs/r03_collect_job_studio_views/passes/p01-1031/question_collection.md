@@ -14,7 +14,7 @@ A Job's Studio shows the topics it makes; every view is listed in s56's `result/
 j01 makes b17-s01, which sits at the Block: s01's render.yaml names j01's Runs. Today j01 has no Studio at all, so s01 shows only on the Block's Studio.
 
 ```text
-b17_theme_work/s01-work-ladder/delivery/render.yaml
+b17_theme_work/s01-work-structure/delivery/render.yaml
   by: j01_work_ladder_contract/t01_skill_section/runs/run-write-ladder-section
   by: j01_work_ladder_contract/t02_scaffold/runs/run-build-work-scaffold
   by: j01_work_ladder_contract/t03_demo_fixture/runs/run-check-demo-block

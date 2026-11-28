@@ -1,4 +1,4 @@
-s60 · Skills: Studio
+s60 · Skill: Studio
 ====================
 view: overview
 emoji: 🎨
@@ -28,8 +28,9 @@ Checklist
 - ✅ CONSTITUTION.md · hai-studio
 - ✅ ref/ · hai-studio
 - ✅ scripts/ · hai-studio
-- ✅ 〈folder〉/ · agents/, constitution/, tests/
+- ✅ 〈folder〉/ · agents/, base-types/learning/, constitution/, gallery/applications/, gallery/block-job-ui-preview/, gallery/block-structure/, gallery/methods/, gallery/questions/, gallery/resources/, gallery/skills/, tests/
 - ✅ 〈file〉 · CHANGELOG.md
+- ✅ Evaluation · every skill, measured live
 - ✅ Draw · the topic's drawing
 
 

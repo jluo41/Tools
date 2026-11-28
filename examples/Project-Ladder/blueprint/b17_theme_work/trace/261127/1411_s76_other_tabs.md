@@ -1,7 +1,7 @@
 ---
 title: 's76: a skill''s other folders and loose files on the left'
 date: 2026-11-27 14:11
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: 'A skill''s left tabs are its whole top level: SKILL, Rules, ref, scripts, then one tab per other folder, then other (its loose files); s76 shows the same with 〈folder〉 and other.'
 closed: true
 plan:
@@ -18,10 +18,10 @@ plan:
   path: plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_folder_folds.py
   what: a test for skipped files
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
   what: requirements for 〈folder〉 and other
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/ (delivery/requirements, studio-views.json)
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/ (delivery/requirements, studio-views.json)
   what: rebuilt
 - do: edit
   path: examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace (studio-views.json)
@@ -31,8 +31,8 @@ changed:
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/folder_folds.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_views.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_folder_folds.py
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/ (delivery/requirements rebuilt, studio-views.json)
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/elements.md
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/ (delivery/requirements rebuilt, studio-views.json)
 - examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace (studio-views.json)
 ---
 

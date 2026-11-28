@@ -37,8 +37,40 @@
           "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/agents"
         },
         {
+          "name": "base-types/learning/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/base-types/learning"
+        },
+        {
           "name": "constitution/",
           "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/constitution"
+        },
+        {
+          "name": "gallery/applications/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/applications"
+        },
+        {
+          "name": "gallery/block-job-ui-preview/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-job-ui-preview"
+        },
+        {
+          "name": "gallery/block-structure/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure"
+        },
+        {
+          "name": "gallery/methods/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/methods"
+        },
+        {
+          "name": "gallery/questions/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/questions"
+        },
+        {
+          "name": "gallery/resources/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/resources"
+        },
+        {
+          "name": "gallery/skills/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills"
         },
         {
           "name": "tests/",
@@ -64,6 +96,18 @@
         {
           "name": "scripts/",
           "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/scripts"
+        },
+        {
+          "name": "_parts/academic-researcher/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/_parts/academic-researcher"
+        },
+        {
+          "name": "_parts/comm-lit-review/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/_parts/comm-lit-review"
+        },
+        {
+          "name": "_parts/research-lit/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/_parts/research-lit"
         },
         {
           "name": "feedback/",
@@ -101,6 +145,27 @@
         {
           "name": "CHANGELOG.md",
           "path": "plugins/haipipe-toolkit/skills/2_work/work/hai-work/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "items": [
+        {
+          "name": "hai-knowledge",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/knowledge/hai-knowledge"
+        },
+        {
+          "name": "hai-studio",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/1_base/project/hai-studio"
+        },
+        {
+          "name": "hai-discovery",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery"
+        },
+        {
+          "name": "hai-work",
+          "url": "/_board/workbench?view=skill-eval&path=plugins/haipipe-toolkit/skills/2_work/work/hai-work"
         }
       ]
     }

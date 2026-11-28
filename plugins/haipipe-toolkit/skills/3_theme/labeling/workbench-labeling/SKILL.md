@@ -56,7 +56,7 @@ This inventory requires no additional Labeling Studio Type definition. Ordinary 
 do not add mandatory type-definition topics or empty groups. Theme guidance belongs to Theme Guide.
 
 Block Structure keeps Structure / Draw / Skills and derives applicable Job types / Task types views from each
-instance’s `types.md` using shared `hai-studio/scripts/block_types_pages.py`. Folder, Job-Task and Studio
+instance’s `types.md` using shared `hai-studio/gallery/block-structure/scripts/block_types_pages.py`. Folder, Job-Task and Studio
 each embed their relevant examples. A missing catalog or empty Task inventory is not a passing check.
 Each catalog declares all four type levels, for/holds, real source fields and owning skills; absent levels remain
 explicit. Independent Job identifiers and actual Work Studio Band names/numbering remain unresolved.

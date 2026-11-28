@@ -178,6 +178,10 @@ class FrameMixin:
             body = work_progress.render_run(folder, root, get("run"))
             return self.guide_send(body or "<h1>Run unavailable</h1>", 200 if body else 404,
                                    head_only=head_only)
+        if get("view") == "skill-eval":                  # one skill measured from its files (a Skill topic's Evaluation)
+            from live import skill_evaluation
+            body = skill_evaluation.document(folder, root)
+            return self.guide_send(body or "<h1>No skill here</h1>", 200 if body else 404, head_only=head_only)
         if get("view") == "focus-map":
             from live import focus_page
             body = focus_page.mindmap_document((root / raw).resolve(), root, compact=get("fit") == "1")

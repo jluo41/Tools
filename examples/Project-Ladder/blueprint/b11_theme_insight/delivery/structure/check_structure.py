@@ -313,7 +313,7 @@ def check():
     for cfg in build.CONFIG.values():
         topic=build.BLOCK/cfg['topic']
         assert 's71-studio-type-block-structure' in (topic/(topic.name+'.md')).read_text()
-    assert 's78-studio-type-theme-guide' in (build.BLOCK/'s99-guide/s99-guide.md').read_text()
+    assert 's76-studio-type-theme-guide' in (build.BLOCK/'s99-guide/s99-guide.md').read_text()
     contract_files=['workbench-insight/SKILL.md','workbench-insight/CONSTITUTION.md',
                     'workbench-insight/ref/block-structure.md','hai-insight/SKILL.md',
                     'hai-insight/ref/insight-ladder.md','hai-insight/ref/dataprep.md',

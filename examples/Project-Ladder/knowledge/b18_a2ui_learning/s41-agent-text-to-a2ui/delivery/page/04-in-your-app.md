@@ -1,6 +1,8 @@
 # In your app
 
-1. **A renderer** for your platform: Flutter, Web (React, Lit, Angular), SwiftUI or Compose.
-2. **A surface**: one region of the screen the renderer draws. Navigation and chat stay your own code.
-3. **Actions back**: a tap on a button sends an `action` message to the agent. Editing a bound value, such as the
-   passenger count, changes only the local data model and sends nothing.
+**One renderer, one surface, actions back.**
+
+- 📱 **A renderer:** Flutter, Web (React, Lit, Angular), SwiftUI or Compose.
+- 🖼️ **A surface:** one region of the screen it draws; navigation and chat stay your own code.
+- 👆 **Actions back:** a tap on a button sends an `action` message to the agent.
+- 🏠 **Local edits:** changing a bound value, such as the passenger count, sends nothing.

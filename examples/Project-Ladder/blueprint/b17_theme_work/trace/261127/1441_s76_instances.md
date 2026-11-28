@@ -1,7 +1,7 @@
 ---
 title: 's76 Instances: the six Skills topics against the type'
 date: 2026-11-27 14:41
-topic: s76-studio-type-skills
+topic: s75-studio-type-skills
 aim: 's76 has an Instances view: one row per Skills topic, one column per left tab of the type, each cell a mark with the requirement on its hover, built and checked by a script; a fold''s file loads only when the fold is opened.'
 closed: true
 plan:
@@ -21,7 +21,7 @@ plan:
   path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
   what: 'A06 and A08: the instance check and its command'
 - do: edit
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/ (delivery/instances.html, studio-views.json)
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/ (delivery/instances.html, studio-views.json)
   what: built
 - do: edit
   path: plugins/haipipe-toolkit/servers/workbench/studio/tabs/folder_folds.py
@@ -35,11 +35,11 @@ changed:
 - plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/folder_folds.py
 - plugins/haipipe-toolkit/servers/workbench/studio/tabs/tests/test_folder_folds.py
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/skills_checklist.py
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/tests/test_skills_checklist.py
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/skills-topic.md
-- 'examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace, s62-skills-ladder, s63-skills-knowledge (face: Checklist lines)'
-- examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills/delivery (requirement pages and check.html rebuilt), examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work (views and check.html rebuilt)
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/scripts/skills_checklist.py
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/tests/test_skills_checklist.py
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/skills/TYPE.md
+- 'examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work, s52-skills-blueprint, s53-skills-cowork, s54-skills-discovery, s60-skill-studio, s61-skill-trace, s62-skills-project, s63-skills-knowledge (face: Checklist lines)'
+- examples/Project-Ladder/blueprint/b17_theme_work/s75-studio-type-skills/delivery (requirement pages and check.html rebuilt), examples/Project-Ladder/blueprint/b17_theme_work/s51-skills-work (views and check.html rebuilt)
 ---
 
 # s76 Instances: the six Skills topics against the type

@@ -12,16 +12,16 @@ plan:
   path: examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
   what: Job-Task must pin the four lists in types.md; pages rebuilt
 - do: add
-  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/types.md
+  path: examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/types.md
   what: 'Work: Job group types, Job types, Task group types, Task types'
 - do: add
-  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/block_types_check.py
+  path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts/block_types_check.py
   what: every Job and Task type of the example Block is one its types.md lists
 changed:
 - examples/Project-Ladder/blueprint/b17_theme_work/trace/261127/1407_pin_job_task_types.md
 - examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/elements.md
-- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/types.md
-- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts/block_types_check.py
+- examples/Project-Ladder/blueprint/b17_theme_work/s01-work-structure/types.md
+- plugins/haipipe-toolkit/skills/1_base/project/hai-studio/gallery/block-structure/scripts/block_types_check.py
 ---
 
 # Job and Task types pinned per Block type

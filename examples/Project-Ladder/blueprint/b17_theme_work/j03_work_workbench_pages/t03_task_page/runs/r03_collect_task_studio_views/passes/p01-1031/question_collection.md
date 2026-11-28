@@ -14,7 +14,7 @@ A Task's Studio, proposed: what it makes, its own topics, then Ask the agent. Ev
 t01_skill_section holds no sNN, but it makes s01's piece ladder-section: s01's delivery/render.yaml names its Run. Today t01 has no Studio, so s01 shows only on the Block's.
 
 ```text
-b17_theme_work/s01-work-ladder/delivery/render.yaml
+b17_theme_work/s01-work-structure/delivery/render.yaml
   - code: "ladder-section: hai-work SKILL.md's The work ladder section"
     by: j01_work_ladder_contract/t01_skill_section/runs/run-write-ladder-section
 ```

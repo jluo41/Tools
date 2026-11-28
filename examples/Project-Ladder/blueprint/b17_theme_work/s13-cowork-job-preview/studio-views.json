@@ -53,12 +53,24 @@
       "name": "Job types",
       "items": [
         {
-          "name": "Group · j0N",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-group-0.html"
+          "name": "Job group type 1",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-group-type-job-group-type-1.html"
         },
         {
-          "name": "Type · cowork-job",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-cowork-job.html"
+          "name": "People",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-people.html"
+        },
+        {
+          "name": "Request",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-request.html"
+        },
+        {
+          "name": "Meeting",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-meeting.html"
+        },
+        {
+          "name": "no type",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-none.html"
         }
       ]
     },
@@ -76,9 +88,8 @@
       "name": "QuickHtml",
       "items": [
         {
-          "name": "〈quick page〉",
-          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
-          "old": true
+          "name": "Job row · next move",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/ui/job-row-next-move.html"
         }
       ]
     },
@@ -167,6 +178,6 @@
       ]
     }
   ],
-  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_type": "block-job-ui-preview",
   "check_layout": "elements"
 }
