@@ -24,15 +24,15 @@ TOPICS = {
     's11-messages-components-data': ('Method', 'Messages, Components and Data'),
     's21-tracing-interaction': ('Method', 'Tracing a User Interaction'),
     's22-chatbot-to-a2ui': ('Method', 'From a Text Chatbot to A2UI, Step by Step'),
-    's31-use-cases-boundaries': ('Application', 'Use Cases and Boundaries'),
+    's31-use-cases-boundaries': ('Method', 'Use Cases and Boundaries'),
     's41-agent-text-to-a2ui': ('Question', 'If My Agent Only Returns Text, What Changes?'),
     's42-who-writes-the-json': ('Question', 'Who Writes the JSON?'),
 }
 # each Band is one Studio Type (hai-knowledge A07), kept in the Work Blueprint b17 beside s05 Block Structure: Knowledge
 TYPES_HOME = ROOT / 'examples/Project-Ladder/blueprint/b17_theme_work'
 TYPES = {'Resource': 's77-studio-type-resources', 'Method': 's78-studio-type-methods',
-         'Application': 's79-studio-type-applications', 'Question': 's80-studio-type-questions'}
-TYPE_NAMES = {'Resource': 'resources', 'Method': 'methods', 'Application': 'applications', 'Question': 'questions'}
+         'Question': 's80-studio-type-questions'}
+TYPE_NAMES = {'Resource': 'resources', 'Method': 'methods', 'Question': 'questions'}
 TOPIC_IMAGES = {'s01-official-sources': (1, 2, 3, 4, 5, 6), 's11-messages-components-data': (1, 3), 's41-agent-text-to-a2ui': (1,), 's22-chatbot-to-a2ui': (5,)}
 
 

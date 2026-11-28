@@ -137,17 +137,18 @@ belongs in a knowledge/ instance. Use
 to discuss Folder, Job-Task and Studio organization. An A2UI learning topic is
 an instance of content, not the place to redesign the whole Block type.
 
-Learning Studio Bands appear in this order: Resource, Method, Application, Question.
-Their number ranges are s0N, s1N and s2N (both Method), s3N and s4N; a concept is explained in Method, as the steps that read it. Keep existing identifiers; a
+Learning Studio Bands appear in this order: Resource, Method, Question.
+Their number ranges are s0N, s1N to s3N (all Method) and s4N; a concept is explained in Method as the steps that read it,
+and a use case as the steps that decide it. Keep existing identifiers; a
 numbered range is organization, not an extra directory. Omit empty Bands in
 actual Studio views. This order provides a resource-first learning entrance;
-it does not prescribe four mandatory execution stages.
+it does not prescribe mandatory execution stages.
 
 Each learning Band is one Studio Type, named in the singular like its Band: every topic in s2N follows the
-Method type, and so on. Only a Blueprint holds Studio Types: the four live in the Work Blueprint's Studio Type
+Method type, and so on. Only a Blueprint holds Studio Types: the three live in the Work Blueprint's Studio Type
 band, after the Work types and together; Block Structure: Knowledge names each Band's type in its Studio. A
-type's `instances:` lists the learning topics by exact ID. The face's `bands:` line names s1N and s2N both
-Method, so a concept topic numbered s1N keeps its ID. The four types start from hai-studio's learning base type
+type's `instances:` lists the learning topics by exact ID. The face's `bands:` line names s1N, s2N and s3N all
+Method, so a topic numbered s1N or s3N keeps its ID. The three types start from hai-studio's learning base type
 (`base:`): Page, Draw, Map and Slides, and Try explaining as the last Page tab; each writes only its own Page tabs
 before it. Each topic names its type (`check_type`) and passes `type_follow.py check`.
 

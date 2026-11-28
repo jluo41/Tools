@@ -38,6 +38,15 @@ class JobOverviewTest(unittest.TestCase):
         groups = groups if groups is not None else work_frame.topics_for(folder, self.root, [])
         return job_overview.render(folder, self.root, data, [], groups)
 
+    def test_each_top_view_has_left_tabs_and_no_expand_dot(self):
+        # b17 trace 261127 brief_top_left_right: Goal and Requirements keep a left tab for their one thing
+        html = self.render()
+        self.assertEqual(re.findall(r'data-jov-view="\d"[^>]*>([^<]+)</button>', html), ['Goal', 'Requirements', 'MindMap'])
+        tabs = re.findall(r'class="pb-item[^"]*" data-pbtab="[^"]+"><b>([^<]+)</b>', html)
+        self.assertEqual(tabs, ['Goal', 'Requirements', 'Topics', 'Work Structure'])
+        self.assertNotIn('jov-expand', html)
+        self.assertNotIn('class="open-dot', html)
+
     def test_authored_bands_group_real_tasks(self):
         self.assertEqual(job_overview.task_groups(self.job, self.root, []),
                          [('Validation', [self.t1]), ('Reporting', [self.t2])])

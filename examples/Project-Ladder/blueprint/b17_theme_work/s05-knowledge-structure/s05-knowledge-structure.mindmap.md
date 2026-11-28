@@ -47,14 +47,10 @@ written: yes
       Source-related topics belong directly in this first Band; no same-named Studio is required. Studio Type: s77 Resource.
       - s0N-〈source-selection〉 <!-- resource-topic -->
         Original link, version, precise location and related learning topics or practices. Reference the original Related or Discovery record.
-    - 🧭 Method · s2N <!-- methods -->
-      Explain what a thing is and how it works as numbered steps a learner can follow. Studio Type: s78 Method.
-      - s2N-〈method-question〉 <!-- method-topic -->
-        Where you start, numbered steps, Try explaining; linked to relevant practice results.
-    - 🎯 Application · s3N <!-- applications -->
-      Use the methods on a real decision: practical choices and limits. Studio Type: s79 Application.
-      - s3N-〈application-question〉 <!-- connection-topic -->
-        Several topics can support one practice Job and cite the same sources.
+    - 🧭 Method · s1N, s2N, s3N <!-- methods -->
+      How a thing works, how to do it, and when to use it, as numbered steps a learner can follow. Studio Type: s78 Method.
+      - sNN-〈method-question〉 <!-- method-topic -->
+        Where you start, numbered steps, Try explaining; a step that decides names both sides and its limits.
     - 🤔 Question · s4N <!-- questions -->
       Keep the questions that come up while learning; each gets its own topic. Studio Type: s80 Question.
       - s4N-〈learner-question〉 <!-- question-topic -->

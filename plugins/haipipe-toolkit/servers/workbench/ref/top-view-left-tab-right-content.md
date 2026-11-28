@@ -24,7 +24,8 @@ left-tab        ▌Metro map    •───────────────
 
 A view with one thing has no left-tab; the thing takes the full width.
 One exception: a UI preview topic's Page and Effect (`hai-studio` ref/ui-preview-topic.md) keep their left-tab
-even for one view, so another view or effect is one more tab.
+even for one view, so another view or effect is one more tab. So does a Job's Brief fold (Goal, Requirements,
+MindMap): each top view opens left tabs and the framed content, a single thing too.
 
 ## The two dots
 

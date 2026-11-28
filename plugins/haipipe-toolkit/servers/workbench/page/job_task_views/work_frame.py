@@ -171,8 +171,10 @@ def overview(folder, root, data, questions, groups):
     parts = [('🎯 Goal', goal(folder, root, data))] + ([('🗺️ Work map', drawn)] if drawn else []) + [
         ('📋 Requirements', requirements(folder, root, data, questions)), ('🧠 MindMap', maps)]
     if f.page_level(folder) == 'Job':      # one fold, its parts as top views (b17 s11 overview-top-views, trace 261127/0010)
-        return OV_CSS + TOP_VIEWS + section(1, '📋 Brief', top_views(
-            'ov' + re.sub(r'\W', '', folder.name), [(re.sub(r'^\W+\s*', '', t), b) for t, b in parts]))
+        eid = 'ov' + re.sub(r'\W', '', folder.name)       # each top view is left tabs and framed content, one thing too
+        named = [(re.sub(r'^\W+\s*', '', t), b) for t, b in parts]
+        return OV_CSS + TOP_VIEWS + section(1, '📋 Brief', top_views(eid, [
+            (t, b if 'pb-tabset' in b else _side_tabs(f'{eid}-tab{i}', [(t, '')], [b])) for i, (t, b) in enumerate(named)]))
     return OV_CSS + ''.join(section(n, t, b) for n, (t, b) in enumerate(parts, 1))
 
 

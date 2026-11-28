@@ -74,8 +74,8 @@ opens the real b18 Block, and proposed execution types cannot become runtime typ
 **Source:** direct user correction and approval of the thirteen-file update,
 2026-11-27; the exact request and approval are recorded in each Block's Trace.
 
-**Rule:** The ordered learning Bands are Resource / Method / Application / Question,
-using s0N / s1N and s2N / s3N / s4N (A07). Resource-related Studios belong directly in Resource.
+**Rule:** The ordered learning Bands are Resource / Method / Question,
+using s0N / s1N to s3N / s4N (A07). Resource-related Studios belong directly in Resource.
 No same-named Resource or Knowledge Sources Studio, extra Sources tab, or storage
 level is required. Individual sources do not automatically become Studios.
 The order gives sources priority without imposing mandatory learning stages.
@@ -124,7 +124,7 @@ A2UI under an unsupported code route or a misapplied display route.
 **Rule:** Chat may be Chinese; authored learning pages, labels and diagrams are English.
 Implement requested learning content in actual sNN Studio topics. Report holds a summary and links.
 A learning proposal in Report does not replace an implemented Studio, and no runtime execution is implied.
-Resource is the first outer Band, followed by Method, Application and Question (A07).
+Resource is the first outer Band, followed by Method and Question (A07).
 Use shared grouping, views, drawings and decks; each Block records its own change.
 
 **Check:** The A2UI Studio page shows four populated Bands in order; each topic opens English content and its diagram.
@@ -143,14 +143,20 @@ Run b18_a2ui_learning/build_studios.py --check and the S05 build_structure.py --
 
 > we should not have things here, becuase it is not the blueprint, only blueprint will contain the studio types, do you know? so we might still put it in b17
 
+> maybe they are the same, right? How do yoiu think we can merge the two studio type? (Method and Application)
+
+> okay, I think this is want we want, go ahead for it.
+
 **Source:** user decision, 2026-11-27; recorded in b18's trace `261127/2233_band_is_studio_type.md`.
 
-**Rule:** The four learning Bands are Resource, Method, Application and Question (s0N, s1N and s2N, s3N, s4N),
-and each Band is exactly one Studio Type. Concepts is merged into Method: a concept is explained as the steps
-that read it. Only a Blueprint holds Studio Types: the four live in b17's Studio Type band beside s05 Block Structure:
-Knowledge, which names each Band's type: s77 Resource, s78 Method, s79 Application, s80 Question, after the Work types and together; band, type and topic title all use the singular, and the four start from hai-studio's learning base type. A type's `instances:` lists the learning topics by exact ID, so it never
-marks a Blueprint topic of the same number. The face's `bands:` line names s1N and s2N both
-Method: the Studio page groups by that line before tags, so the two decades read as one Band.
+**Rule:** The three learning Bands are Resource, Method and Question (s0N; s1N, s2N and s3N; s4N),
+and each Band is exactly one Studio Type. Concepts and Applications are merged into Method: a concept is explained
+as the steps that read it, and a use case as the steps that decide it, naming both sides and its limits. Only a
+Blueprint holds Studio Types: the three live in b17's Studio Type band beside s05 Block Structure: Knowledge, which
+names each Band's type: s77 Resource, s78 Method, s80 Question, after the Work types and together; band, type and
+topic title all use the singular, and the three start from hai-studio's learning base type. A type's `instances:` lists the learning topics by exact ID, so it never
+marks a Blueprint topic of the same number. The face's `bands:` line names s1N, s2N and s3N all
+Method: the Studio page groups by that line before tags, so the three decades read as one Band.
 Every type has the top buttons Page, Draw, Map and Slides; the Page left tabs give the Band's shape and end in
 Try explaining. A topic whose content does not fit its Band's shape is rewritten or moved to the Band it fits;
 a second type inside one Band is not added.
@@ -233,4 +239,3 @@ and official pictures stay as A08 and A09 say.
 
 **Check:** by eye on each Page tab: a bold first line, a list instead of paragraphs, one emoji per item with the
 meanings above.
-

@@ -1,4 +1,3 @@
 Resource
 Method
-Application
 Question

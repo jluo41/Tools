@@ -4,7 +4,7 @@ board-kind: task-block
 spine: Understand A2UI messages, components, data and user actions through one interaction.
 close: Explain the interaction and its limits; record executable practice evidence separately.
 workbench: work
-bands: j0N 🃏 Interactive card · s0N 📚 Resource · s1N 🧭 Method · s2N 🧭 Method · s3N 🎯 Application · s4N 🤔 Question
+bands: j0N 🃏 Interactive card · s0N 📚 Resource · s1N 🧭 Method · s2N 🧭 Method · s3N 🧭 Method · s4N 🤔 Question
 
 ## Topic
 
@@ -19,7 +19,7 @@ Learning content lives in the Studio topics, and the learner's own questions in 
 - [Method: Messages, Components and Data](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s11-messages-components-data#s11-messages-components-data)
 - [Method: Tracing a User Interaction](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s21-tracing-interaction#s21-tracing-interaction)
 - [Method: From a Text Chatbot to A2UI, Step by Step](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s22-chatbot-to-a2ui#s22-chatbot-to-a2ui)
-- [Application: Use Cases and Boundaries](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s31-use-cases-boundaries#s31-use-cases-boundaries)
+- [Method: Use Cases and Boundaries](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s31-use-cases-boundaries#s31-use-cases-boundaries)
 - [Question: If My Agent Only Returns Text, What Changes?](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s41-agent-text-to-a2ui#s41-agent-text-to-a2ui)
 - [Question: Who Writes the JSON?](/_board/workbench?path=examples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning&layout=focus&theme=work&section=studio&topic=s42-who-writes-the-json#s42-who-writes-the-json)
 

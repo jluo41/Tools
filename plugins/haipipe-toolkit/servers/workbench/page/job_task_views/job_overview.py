@@ -85,8 +85,11 @@ def render(folder: Path, root: Path, data: dict, questions: list, groups: list) 
     maps = _side_tabs(scope + '-map', [('Topics', ''), ('Work Structure', '')], [tree, structure])
     has_requirements = bool(data['sections'].get('requirements') or data.get('close')
                             or any(q.get('acceptance') for q in questions))
-    views = [('Goal', wf.goal(folder, root, data) if data.get('goal') else ''),
-             ('Requirements', wf.requirements(folder, root, data, questions) if has_requirements else ''),
+    # every top view is left tabs and framed content, a single thing too (ref/top-view-left-tab-right-content.md)
+    one = lambda key, name, body: _side_tabs(f'{scope}-{key}', [(name, '')], [body]) if body else ''
+    views = [('Goal', one('goal', 'Goal', wf.goal(folder, root, data) if data.get('goal') else '')),
+             ('Requirements', one('req', 'Requirements',
+                                  wf.requirements(folder, root, data, questions) if has_requirements else '')),
              ('MindMap', maps)]
     first = next(i for i, (_, body) in enumerate(views) if body)
     buttons = ''.join(f'<button type=button data-topview="{eid}-{i}" data-jov-view="{i}" '
@@ -96,11 +99,8 @@ def render(folder: Path, root: Path, data: dict, questions: list, groups: list) 
     panels = ''.join(f'<div data-topbody="{eid}-{i}" data-jov-panel="{i}"'
                      + ('' if i == first else ' hidden') + f'>{body}</div>' for i, (_, body) in enumerate(views))
     stage = ('<div class=jov-stage><div class=jov-toolbar><nav class=jov-views aria-label="Overview views">'
-             + buttons + '</nav><button type=button class="open-dot jov-expand" data-jov-expand '
-             'aria-label="Expand Overview" title="Expand Overview" aria-pressed="false"></button></div>'
-             '<div class=jov-content>' + panels + '</div>' + ''.join(dialogs) + '</div>')
-    body = (f'<div class=job-overview data-job-overview="{scope}">{stage}'
-            '<dialog class=jov-expanded aria-label="Overview"></dialog></div>')
+             + buttons + '</nav></div><div class=jov-content>' + panels + '</div>' + ''.join(dialogs) + '</div>')
+    body = f'<div class=job-overview data-job-overview="{scope}">{stage}</div>'
     return (wf.OV_CSS + PB_CSS + STYLE + wf.section(1, '📋 Brief', body)
             .replace('<details class=band-sec>', '<details class=band-sec open>', 1) + PB_JS + SCRIPT)
 
@@ -113,13 +113,10 @@ STYLE = '''<style>
 .jov-views button[aria-pressed=true]{background:var(--soft);color:var(--accent);border-color:var(--line);font-weight:600}
 .jov-views button:disabled{opacity:.4;cursor:default}
 .job-overview button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.job-overview .jov-expand{position:static;display:grid;flex:none;cursor:pointer;background:none;border:0}
-.job-overview .jov-expand::before,.job-overview .jov-expand:hover::before{content:'';width:8px;height:8px;background:var(--accent);opacity:1}
 .jov-content{min-height:190px;padding:0 2px 10px}
 .jov-content .wk-ov{margin:10px 0 18px;max-width:76ch}
 .jov-content .pb-big{font-size:22px;line-height:1.65;letter-spacing:-.25px}
 .jov-content .pb-kv{grid-template-columns:100px 1fr}
-.jov-content .pb-panel{border:0;padding:0;background:none;min-height:0}
 .job-overview .pb-side{grid-template-columns:150px minmax(0,1fr)}
 .job-overview .pb-side>.pb-list{display:flex}
 .job-overview .pb-side.jov-list-hidden{grid-template-columns:minmax(0,1fr)}
@@ -142,31 +139,24 @@ STYLE = '''<style>
 .jov-detail{width:min(760px,90vw)}.jov-detail h2{font-size:22px;padding-right:75px;margin:0 0 20px}.jov-detail h3{font-size:14px;margin:18px 0 8px}
 .jov-task-goal{font-size:19px;line-height:1.6}.jov-detail code{display:block;font-size:12px;color:var(--muted);overflow-wrap:anywhere;margin-top:24px}
 .jov-close{float:right;background:none;border:1px solid var(--line);border-radius:6px;padding:5px 12px;font:inherit;color:var(--ink);cursor:pointer}
-.jov-expanded{width:min(1120px,94vw)}.jov-expanded .jov-content{min-height:300px}
 @media(max-width:700px){.job-overview .pb-side{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:600px){.jov-content .pb-big{font-size:19px}.jov-content .pb-kv{grid-template-columns:1fr}.job-overview dialog{padding:18px}.jov-views button{padding:6px 9px}}
-@media(pointer:coarse){.jov-views button,.jov-node,.jov-close{min-height:44px}.job-overview .jov-expand{border:14px solid var(--paper);box-sizing:content-box}}
+@media(pointer:coarse){.jov-views button,.jov-node,.jov-close{min-height:44px}}
 </style>'''
 
 
 SCRIPT = '''<script>
 (function(){document.querySelectorAll('.job-overview').forEach(function(root){
  if(root.dataset.jovReady)return;root.dataset.jovReady='1';
- var expanded=root.querySelector('.jov-expanded'),stage=root.querySelector('.jov-stage'),placeholder=null,last=null;
- function restore(){if(placeholder){placeholder.replaceWith(stage);placeholder=null;}
-  var b=root.querySelector('[data-jov-expand]');b.setAttribute('aria-pressed','false');b.title='Expand Overview';b.setAttribute('aria-label',b.title);b.focus();}
- expanded.addEventListener('close',restore);
+ var last=null;
  root.querySelectorAll('.jov-detail').forEach(function(d){d.addEventListener('close',function(){if(last)last.focus();});});
- root.addEventListener('click',function(e){var b=e.target.closest('[data-jov-view],[data-jov-task],[data-jov-expand],[data-jov-close],.pb-fold');
+ root.addEventListener('click',function(e){var b=e.target.closest('[data-jov-view],[data-jov-task],[data-jov-close],.pb-fold');
   if(!b||!root.contains(b))return;e.preventDefault();e.stopPropagation();
   if(b.classList.contains('pb-fold')){var hidden=b.closest('.pb-tabset').classList.toggle('jov-list-hidden');b.setAttribute('aria-expanded',hidden?'false':'true');}
   if(b.hasAttribute('data-jov-view')){root.querySelectorAll('[data-jov-view]').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false');});
    root.querySelectorAll('[data-jov-panel]').forEach(function(p){p.hidden=p.dataset.jovPanel!==b.dataset.jovView;});}
   if(b.hasAttribute('data-jov-task')){last=b;var d=root.querySelector('[data-jov-detail="'+b.dataset.jovTask+'"]');if(d)d.showModal();}
   if(b.hasAttribute('data-jov-close'))b.closest('dialog').close();
-  if(b.hasAttribute('data-jov-expand')){if(expanded.open){expanded.close();return;}
-   placeholder=document.createComment('Overview');stage.before(placeholder);expanded.append(stage);expanded.showModal();
-   b.setAttribute('aria-pressed','true');b.title='Restore Overview';b.setAttribute('aria-label',b.title);}
  });
  root.querySelectorAll('dialog').forEach(function(d){d.addEventListener('click',function(e){if(e.target!==d)return;var r=d.getBoundingClientRect();
   if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)d.close();});});

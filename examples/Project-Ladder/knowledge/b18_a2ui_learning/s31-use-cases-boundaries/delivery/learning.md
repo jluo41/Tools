@@ -1,52 +1,65 @@
 # Use Cases and Boundaries
 
-## A decision to explore
+## Where you start
 
-**A2UI fits when the screen depends on the task and the app keeps the components.**
+**Two apps; one question decides which gets A2UI.**
 
-- ✅ **Good fit:** an agent composes the interface for this request, from the app's catalog.
-- ➖ **Maybe not:** a stable form with a fixed order is often simpler as ordinary app UI (a design judgement, not an A2UI rule).
-
-| 🧭 Situation | 🔍 Direction to look at |
-|---|---|
-| 🔀 The task changes which controls help | a dynamic surface, limited by the catalog |
-| 📝 The same form every time | a fixed app form |
-| 🧩 The agent asks for a component the app lacks | catalog and validation agree |
-| ⚠️ It looks right but triggers a sensitive action | app authorization and action handling |
+- 🧳 **A travel assistant:** each request needs different controls (flights today, hotels tomorrow).
+- 📝 **A sign-up form:** the same fields, in the same order, every time.
+- 💡 The method below decides between them, and names what to check either way.
 
 🔍 **Look for:** "When to use A2UI" in [Resource 6](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)
 
-## Connect the topics
+## 1. Ask the question
 
-**Every topic feeds the same decision; one practice Job is enough.**
+**Does the request change what the screen should show?**
 
-- 📚 **Resource** (s01): which version and which evidence
-- 🧭 **Method** (s11, s21, s22): structure and values, the action boundary, the six steps
-- 🤔 **Question** (s41, s42): what changes in a chatbot, and who writes the JSON
-- 🧪 One practice Job (j01) can serve them all; no topic needs its own Job or Task.
+- 🔀 **Yes:** "BER to SFO today, 2 back on Oct 19" needs two flight cards with passenger counts; another request needs other controls.
+- ➖ **No:** a sign-up form asks for the same name, email and password every time.
 
-## A bounded practice proposal
+✅ **You know it when:** you can answer yes or no for one screen of your own app.
 
-**One card, fixed messages, four checks.**
+## 2. Choose
+
+**Yes leads to an A2UI surface; no leads to ordinary app UI.**
+
+- ✅ **Where it helps:** the agent composes the screen for this request, from the app's catalog.
+- ❌ **Where it does not:** a fixed form is often simpler to build and test as ordinary app UI.
+- ⚠️ This is a design judgement, not an A2UI rule.
+
+| 🧭 Situation | 🔍 Choose |
+|---|---|
+| 🔀 The task changes which controls help | an A2UI surface, limited by the catalog |
+| 📝 The same form every time | a fixed app form |
+
+✅ **You know it when:** you can say both sides for your screen.
+
+## 3. Check the boundaries
+
+**Two limits hold whichever you choose.**
+
+- 🧩 **A component the app lacks:** the agent may ask for one; the catalog rejects it (see s42, step ③).
+- ⚠️ **A sensitive action:** a card that looks right may trigger a payment; your app checks and authorizes the action.
+
+🔍 **Look for:** the catalog as "the guardrail" in [Resource 5](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)
+
+✅ **You know it when:** you can name who stops each one.
+
+## 4. Plan a practice
+
+**One card, fixed messages, four checks; a plan, not a result.**
 
 - 🆕 Render one selection card from fixed input messages.
 - 🔢 Change a value on the device.
 - 📤 Send one action.
 - 📥 Apply one response.
-- 🔍 Compare what you see with the table in s21, step 5; Travel A2UI is a reference ([Resource 5](/_board/page?path=%2Fexamples%2FProject-Ladder%2Fknowledge%2Fb18_a2ui_learning%2Fs01-official-sources%2Fdelivery%2Flearning.md)).
+- 🔗 It draws on s11 (structure and values), s21 (the tap) and s22 (the steps); the practice Job j01 would hold it.
+- ✅ It would show that known messages draw the expected card and an action carries the expected value.
+- ❌ It would not show that a model is reliable, that it is ready for production, or that you understood it.
 
-⚠️ A plan only: no Job, Task or Run result is claimed. Running it needs a pinned version and a matching execution contract.
+⚠️ A plan only: no Job, Task or Run result is claimed.
 
-## What that practice could establish
-
-**What it would show, and what it would not.**
-
-- ✅ Known messages produce the expected interface.
-- ✅ An explicit action carries the expected value.
-- ✅ The addressed interface shows the tested update.
-- ❌ Not: that a model is reliable in general.
-- ❌ Not: that it is ready for production.
-- ❌ Not: that the learner understood; that needs its own explanation and a counterexample.
+✅ **You know it when:** you can say what the practice would prove and what it would not.
 
 ## Try explaining
 

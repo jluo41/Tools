@@ -1,9 +1,9 @@
-s31 · Application: Use Cases and Boundaries
-===========================================
+s31 · Method: Use Cases and Boundaries
+======================================
 view: overview
 emoji: 🚧
 
-**Tags:** Application
+**Tags:** Method
 
 **Stage:** explore
 

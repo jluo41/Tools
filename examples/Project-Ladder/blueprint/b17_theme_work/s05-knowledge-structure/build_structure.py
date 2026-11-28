@@ -164,8 +164,7 @@ def drawing():
     words('resources-topic', 630, 170, 's0N-〈source-selection〉', 25)
     words('resources-detail', 630, 215, 'Link · Version · Precise location', 23)
     words('resources-owner', 630, 255, 'Reference Related / Discovery originals', 23)
-    bands = [('methods', 280, 'Method · s2N', 's2N-〈method-question〉'),
-             ('application', 880, 'Application · s3N', 's3N-〈application-question〉')]
+    bands = [('methods', 580, 'Method · s1N, s2N, s3N', 'sNN-〈method-question〉\nhow it works, how to do it,\nwhen to use it')]
     for key, x, label, topic in bands:
         els += icons.person('band-' + key, x, 440, 'off', s=0.8)
         words('band-' + key + '-name', x + 105, 440, label, 25)
@@ -245,10 +244,8 @@ def check():
     sections = {n.text: n.children[0] for n in model.root.children}
     assert list(sections) == ['Folder', 'Job-Task', 'Studio']
     bands = sections['Studio'].children
-    assert [n.id for n in bands] == ['resources', 'methods', 'applications', 'questions']
-    assert [n.text for n in bands] == ['📚 Resource · s0N',
-                                     '🧭 Method · s2N', '🎯 Application · s3N',
-                                     '🤔 Question · s4N']
+    assert [n.id for n in bands] == ['resources', 'methods', 'questions']
+    assert [n.text for n in bands] == ['📚 Resource · s0N', '🧭 Method · s1N, s2N, s3N', '🤔 Question · s4N']
     mt = shared().shared_mindmap().MT
     job_nodes = list(mt.walk(sections['Job-Task']))
     assert max(depth for _, _, depth, _ in job_nodes) == 4
@@ -258,11 +255,11 @@ def check():
                ('job-group', 'job-name', 'task-group', 'task-name'))
     assert 'b11_theme_insight/delivery/structure/structure.css' in html
     definitions = (HERE.parent / 'delivery/page-spec/studio-bands-by-block-type.md').read_text()
-    assert re.findall(r'^\| Knowledge \| ([^|]+) \|', definitions, re.M) == [
-        'Resource', 'Method', 'Application', 'Question']
+    known = re.findall(r'^\| Knowledge \| ([^|]+) \|', definitions, re.M)      # Application leaves when its type is retired
+    assert known[0] == 'Resource' and 'Method' in known and known[-1] == 'Question', known
     example = ROOT / 'examples/Project-Ladder/knowledge/b18_a2ui_learning'
     face = (example / 'board.md').read_text()
-    assert 'bands: j0N 🃏 Interactive card · s0N 📚 Resource · s1N 🧭 Method · s2N 🧭 Method · s3N 🎯 Application · s4N 🤔 Question' in face
+    assert 'bands: j0N 🃏 Interactive card · s0N 📚 Resource · s1N 🧭 Method · s2N 🧭 Method · s3N 🧭 Method · s4N 🤔 Question' in face
     expected_topics = ['s01-official-sources', 's11-messages-components-data',
                        's21-tracing-interaction', 's22-chatbot-to-a2ui', 's31-use-cases-boundaries',
                        's41-agent-text-to-a2ui', 's42-who-writes-the-json']

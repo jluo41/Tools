@@ -184,3 +184,13 @@ Prompts: "ok" (name the types; s05 names block-structure) · "I feel the content
 
 - build_studios.py：check_type 写类型名（resources、methods、applications、questions），不再写 s77–s80 的路径；check 不再依赖 instances: 行。s05 build_structure.py：manifest() 写 "check_type": "block-structure"。type_follow：b18 7 ✅、s05 ✅；checks/run.py exit 0。
 - s01 assets：resource-1、3、4、5 按 2 倍重截且不缩小（约 1320 px 宽），resource-6 用 1300 px；SOURCES.md 说明更新。原先缩到 900 px，违反 A09。
+
+## Application merged into Method
+
+Prompts: "application and methods, what are the differences?" · "maybe they are the same, right? How do yoiu think we can merge the two studio type?" · "okay, I think this is want we want, go ahead for it."
+
+- b18：bands 改为 s3N 🧭 Method；_studio_groups.txt 只剩 Resource、Method、Question；s31 改为 Method（face、Tags、board 链接、views、mind map），learning.md 改写为 Method 步骤：Where you start、1. Ask the question、2. Choose、3. Check the boundaries、4. Plan a practice、Try explaining；build_studios.py 的类型表去掉 Application。
+- s05：face、mind map（Method · s1N, s2N, s3N）、build_structure.py（三个 band；band 表断言在 s79 退役前兼容）。
+- hai-knowledge：A04、A06、A07 与 SKILL.md 改为三个 Type，A07 记下原话。
+- 已请 s7N：退役 s79 与 gallery/applications，s78 加“做决定的步骤写两面与边界、练习只是计划”，更新 studio-bands-by-block-type.md。
+- 检查：5623 页面 band：Resource [s01] · Method [s11 s21 s22 s31] · Question [s41 s42]；type_follow 7 ✅；标题检查 0；checks/run.py exit 0；s05 --check 通过。

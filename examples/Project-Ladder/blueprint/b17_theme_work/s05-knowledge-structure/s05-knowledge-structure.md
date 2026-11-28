@@ -25,15 +25,15 @@ Views
 -----
 - Structure / Folder: variable folder names; sNN topics beside optional jNN/tNN/runs.
 - Structure / Job-Task: four organization levels; Run details remain in tooltips.
-- Structure / Studio: Resource, Method, Application, Question; each Band is one Studio Type.
+- Structure / Studio: Resource, Method, Question; each Band is one Studio Type.
 - Job types and Task types: separate group and member types, generated from types.md; shared requirements resolve directly from Work.
 - Draw: resources support understanding; learning topics can share one practice.
 - Skills: reads the owning files.
 
 Resource Band
 -------------
-Resource comes first, followed by Method, Application, and Question.
-The ranges are s0N, s1N and s2N (both Method), s3N and s4N; each Band is one Studio Type, kept in this Blueprint's Studio Type band: s77 Resource, s78 Method, s79 Application, s80 Question. A Questions topic keeps the learner's question in their own words and answers it from the Resources. Bands group actual Studio topics and add no folders.
+Resource comes first, followed by Method and Question.
+The ranges are s0N, s1N to s3N (all Method: how it works, how to do it, when to use it) and s4N; each Band is one Studio Type, kept in this Blueprint's Studio Type band: s77 Resource, s78 Method, s80 Question. A Questions topic keeps the learner's question in their own words and answers it from the Resources. Bands group actual Studio topics and add no folders.
 Do not add a second same-named Resource Studio or a separate Sources view.
 
 Resource topics record original links, versions and precise sections, pages or timecodes.

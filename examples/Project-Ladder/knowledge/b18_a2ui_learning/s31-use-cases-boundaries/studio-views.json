@@ -4,24 +4,28 @@
       "name": "Page",
       "items": [
         {
-          "name": "A decision to explore",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/01-a-decision-to-explore.md"
+          "name": "Where you start",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/01-where-you-start.md"
         },
         {
-          "name": "Connect the topics",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/02-connect-the-topics.md"
+          "name": "1. Ask the question",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/02-1-ask-the-question.md"
         },
         {
-          "name": "A bounded practice proposal",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/03-a-bounded-practice-proposal.md"
+          "name": "2. Choose",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/03-2-choose.md"
         },
         {
-          "name": "What that practice could establish",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/04-what-that-practice-could-establish.md"
+          "name": "3. Check the boundaries",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/04-3-check-the-boundaries.md"
+        },
+        {
+          "name": "4. Plan a practice",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/05-4-plan-a-practice.md"
         },
         {
           "name": "Try explaining",
-          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/05-try-explaining.md"
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/06-try-explaining.md"
         }
       ]
     },
@@ -78,5 +82,5 @@
       ]
     }
   ],
-  "check_type": "applications"
+  "check_type": "methods"
 }
