@@ -16,24 +16,24 @@ from icons import phone, laptop, monitor, server, cylinder, cloud, shield, gate,
 
 def sketch_a(x, y):
     """A: the real things as pictures, left to right, each lit by its state (ok, wait, bad, off), one big number."""
-    els = text("pa", x, y, "A · <the path, as pictures>", 26, TITLE)
-    els += text("pa_s", x, y + 38, "<one line: what moves from the first thing to the last>", 15, BODY)
+    els = text("pa", x, y, "A · 〈the path, as pictures〉", 26, TITLE)
+    els += text("pa_s", x, y + 38, "〈one line: what moves from the first thing to the last〉", 15, BODY)
     top = y + 110
     els += laptop("a_from", x, top, "ok")
     els += server("a_mid", x + 300, top - 10, "wait")
     els += cylinder("a_to", x + 600, top - 10, "off")
     els += arrow("a_1", [(x + 194, top + 60), (x + 296, top + 60)], GR, width=4)
     els += arrow("a_2", [(x + 434, top + 60), (x + 596, top + 60)], OR, width=4)
-    for k, (cx, name) in enumerate(((x + 95, "<thing 1>"), (x + 365, "<thing 2>"), (x + 675, "<thing 3>"))):
+    for k, (cx, name) in enumerate(((x + 95, "〈thing 1〉"), (x + 365, "〈thing 2〉"), (x + 675, "〈thing 3〉"))):
         els += text(f"a_n{k}", cx, top + 172, name, 18, INK, "center")
-    els += big_number("a_big", x + 365, top + 220, "<N>", "<what the number counts>", OR, 48)
+    els += big_number("a_big", x + 365, top + 220, "〈N〉", "〈what the number counts〉", OR, 48)
     return els, top + 320
 
 
 def sketch_b(x, y):
     """B: how the design grew: stations left to right, what each taught."""
     els = text("pb", x, y, "B · how the design grew, and why", 18, TITLE)
-    stations = [("<first try>", "<what it taught>"), ("<now>", "<why it changed>")]
+    stations = [("〈first try〉", "〈what it taught〉"), ("〈now〉", "〈why it changed〉")]
     for k, (st, lesson) in enumerate(stations):
         cx = x + 120 + k * 260
         els += sticky(f"bs{k}", cx, y + 110, 220, 80, st, 15, 0.0, (SEM["start"][0], OR) if k == len(stations) - 1 else STICKY)
@@ -46,7 +46,7 @@ def sketch_b(x, y):
 def sketch_c(x, y):
     """C: the open choices, options side by side, the leaning starred (★), an unknown marked (?)."""
     els = text("pc", x, y, "C · open choices", 18, TITLE)
-    rows = [("<an open question>", ["★ <the leaning>", "<another option>"])]
+    rows = [("〈an open question〉", ["★ 〈the leaning〉", "〈another option〉"])]
     for r, (q, opts) in enumerate(rows):
         ry = y + 100 + r * 140
         els += sticky(f"cq{r}", x + 110, ry, 210, 90, q, 15, -0.03, RED, RE)

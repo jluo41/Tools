@@ -145,7 +145,7 @@ def first_line(lines: list[str]) -> str:
         t = line.strip()
         if t.startswith("#"):
             break
-        if (t.startswith("<") and t.endswith(">")) or t.startswith(">"):
+        if (t.startswith(("<", "〈")) and t.endswith((">", "〉"))) or t.startswith(">"):
             continue                                        # a template's placeholder, not the face's words                                           # the next section: no prose under the title
         if not t or re.fullmatch(r"[=\-`~]+.*", t) or re.match(r"^[A-Za-z_ -]+:\s", t) or re.match(r"^([-*|]|\d+\.)\s", t):
             continue

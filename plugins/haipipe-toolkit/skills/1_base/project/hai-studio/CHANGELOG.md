@@ -6,6 +6,9 @@ haipipe-studio · Changelog
 
 - `scripts/skills_views.py`: a folder that holds only folders (hai-draw's `gallery/`) gets one left tab per inner
   folder that holds a file, `gallery/〈kind〉/`; the Skills type's `〈folder〉/` slot says so.
+- A new topic's placeholders are 〈 〉 (CONSTITUTION A07): the face `new_topic.py` writes and the three builder
+  templates; `gallery_scan.py`, `job_results.py` and the workbench's `studio_tabs.py` read both 〈 〉 and an older `<…>`
+  as unfilled.
 - `/hai-draw studio` is `/hai-draw` (SKILL.md, ref/topic-builder.md, ref/topic-look.md); CONSTITUTION A04 points to the
   one hai-draw door.
 

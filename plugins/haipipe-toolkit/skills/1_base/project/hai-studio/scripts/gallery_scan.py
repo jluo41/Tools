@@ -147,7 +147,7 @@ def face_line(path: Path) -> tuple[str, str]:
     title = lines[0].lstrip("# ").strip() if lines else ""
     m = next((ln for ln in lines if ln.startswith("**For:**")), "")
     words = re.sub(r"\[([^\]]+)\]\([^)]*\)", r"\1", m.removeprefix("**For:**").strip())
-    return title, ("" if words.startswith("<") else words)
+    return title, ("" if words.startswith(("<", "〈")) else words)
 
 
 def _example(rows, good=lambda r: True):

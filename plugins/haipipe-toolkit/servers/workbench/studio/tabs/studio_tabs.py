@@ -129,7 +129,7 @@ def render(rows, root, group='', asks=()):
             parts = dict(parts, Elements=shown)
         esc = frame.esc
         goal = f.first_sentence(facts.get('topic', ''))       # the topic's sentence: a hover on its fold, never a line
-        goal = '' if goal.lstrip().startswith('<') else goal  # a template's unfilled <placeholder> is no sentence
+        goal = '' if goal.lstrip().startswith(('<', '〈')) else goal  # a template's unfilled <placeholder> is no sentence
         body = f.interaction_button([r for r in asks if r.get('topic') == topic], topic, root)   # no sentence line (JL 261125)
         buttons, content = [], []      # top-view-left-tab-right-content (ref/top-view-left-tab-right-content.md)
         for i, (name, href, image) in enumerate(views):   # (JL 261125: "this to be on the top ... these to be in the left")

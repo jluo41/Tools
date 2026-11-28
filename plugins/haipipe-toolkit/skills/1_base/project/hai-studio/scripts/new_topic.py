@@ -110,7 +110,7 @@ def face_text(nn: int, title: str, feeds: list[str], at: str = "", view: str = "
     Each Question it feeds gets its answer part here, since a topic, not a reports/qNN page, holds the answer."""
     name = f"s{nn:02d} · {title}"
     qs = question_ids(feeds)
-    feed = " · ".join(qs) if qs else "<the Block Questions it answers: Q01 · Q02, or none>"
+    feed = " · ".join(qs) if qs else "〈the Block Questions it answers: Q01 · Q02, or none〉"
     answers = [line for q in qs for line in (
         f"{q} · Answer", "-" * len(f"{q} · Answer"), "",
         "**Answer:** <the answer today, in one or two sentences>", "",
@@ -120,21 +120,21 @@ def face_text(nn: int, title: str, feeds: list[str], at: str = "", view: str = "
         name, "=" * len(name), f"view: {view}", "",
         "**Stage:** explore", "",
         *([f"**At:** {at}", ""] if at else []),
-        "**For:** <its one delivery: a deck, and the thing the deck is about (a draft, a figure, code or skills, a data"
-        " table, a server package), and who it is for>", "",
-        "**Delivery type:** <one word: skill · ui · code · draft · display · data; never deck, every sNN has one>", "",
-        "**Covers:** <what this sNN decides, in a few parts>", "",
-        "**Excluded:** <what it leaves to other sNN or Blocks, each named>", "",
-        "**Why:** <the one question this topic answers, in a sentence; the five-part drawing asks it>", "",
-        "**Topic:** <one paragraph: what this topic thinks through, and why now>", "",
+        "**For:** 〈its one delivery: a deck, and the thing the deck is about (a draft, a figure, code or skills, a data"
+        " table, a server package), and who it is for〉", "",
+        "**Delivery type:** 〈one word: skill · ui · code · draft · display · data; never deck, every sNN has one〉", "",
+        "**Covers:** 〈what this sNN decides, in a few parts〉", "",
+        "**Excluded:** 〈what it leaves to other sNN or Blocks, each named〉", "",
+        "**Why:** 〈the one question this topic answers, in a sentence; the five-part drawing asks it〉", "",
+        "**Topic:** 〈one paragraph: what this topic thinks through, and why now〉", "",
         f"**Feeds:** {feed}", "",
         "", *answers, "Files", "-----", "",
-        "```text", f"s{nn:02d}-<topic>/", f"├── s{nn:02d}-<topic>.md        this face", "└── <drawings, builder>",
+        "```text", f"s{nn:02d}-〈topic〉/", f"├── s{nn:02d}-〈topic〉.md        this face", "└── 〈drawings, builder〉",
         "```", "",
         "", "Decided", "-------", "",
-        f"(none yet: a decision is one line, s{nn:02d}-D01 · <what was decided> (<who> <date>))", "",
+        f"(none yet: a decision is one line, s{nn:02d}-D01 · 〈what was decided〉 (〈who〉 〈date〉))", "",
         "", "Open", "----", "",
-        "1. <the first open point>", "",
+        "1. 〈the first open point〉", "",
         "(write here, or mark the drawing in red)", ""])
 
 
