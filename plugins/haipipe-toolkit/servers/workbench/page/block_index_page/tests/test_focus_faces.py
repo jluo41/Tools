@@ -25,7 +25,7 @@ class FocusPageTest(fixtures.FocusPageCase):
             self.assertEqual(focus_page.interaction_topic(f"{name}.j01-s01:x @ y", board / "j01_first"), topic, name)
         self.assertIsNone(focus_page.interaction_topic("Other-Example.j01-s01:x @ y", self.root / "Insight-Example"))
 
-    def test_a_job_and_a_task_show_their_part_of_the_blocks_delivery(self):   # haipipe-delivery's <job>/<task>/ (261106)
+    def test_a_job_and_a_task_show_their_part_of_the_blocks_delivery(self):   # hai-delivery's <job>/<task>/ (261106)
         task = self.block / "j02_estimates" / "t04_deliver"
         task.mkdir(parents=True)
         (self.block / "j02_estimates" / "j02_estimates.md").write_text("# Estimates\n")
@@ -82,8 +82,8 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertEqual(data["close"], "Each result names its source.")
         self.assertEqual(focus_page.home_section(data, "work"), "status")
         page = focus_page.render(frame.Theme(name="work"), self.root, self.block)
-        self.assertRegex(page, r'<button type="button" class="h1-section[^>]*>Report</button>')  # haipipe-ui: a Block opens on Report
-        self.assertNotIn('class="focus-goal"', page)                 # no goal-line under the title (haipipe-block A03)
+        self.assertRegex(page, r'<button type="button" class="h1-section[^>]*>Report</button>')  # hai-ui: a Block opens on Report
+        self.assertNotIn('class="focus-goal"', page)                 # no goal-line under the title (hai-block A03)
         self.assertNotIn('<dt>Done when</dt>', page)                  # JL 261030: "we don't need this"
         self.assertNotIn('no state recorded', page)                   # an empty state is not shown as a box
         self.assertNotRegex(page, r'<details[^>]*\bopen\b')
@@ -136,7 +136,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertNotIn('>Findings<', page)          # a paper Board has no Findings view (JL 261031: "no need to use them")
         self.assertNotIn('No takeaways recorded', page)
         self.assertLessEqual(page.count('Compare the methods.'), 1)  # never repeated as a takeaway
-        self.assertNotIn('class="focus-goal"', page)                 # no goal-line under the title (haipipe-block A03)
+        self.assertNotIn('class="focus-goal"', page)                 # no goal-line under the title (hai-block A03)
         work = focus_page.render(frame.Theme(name="paper"), self.root, self.block, 'work')
         self.assertIn('>Writing<', work)   # a paper Board's Work shares its Report's list; the versions sit in Writing (JL 261031)
 

@@ -1,0 +1,8 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Structure</title>
+<script>
+const maps = {"organization": "/_board/workbench?view=focus-map&path=examples%2FProject-Ladder%2Fblueprint%2Fb12_theme_design%2Fs01-design%2Fdelivery%2Forganization.mindmap.md&fit=1", "example": "/_board/workbench?view=focus-map&path=examples%2FProject-Ladder%2Fblueprint%2Fb12_theme_design%2Fs01-design%2Fdelivery%2Fexample.mindmap.md&fit=1", "studio": "/_board/workbench?view=focus-map&path=examples%2FProject-Ladder%2Fblueprint%2Fb12_theme_design%2Fs01-design%2Fdelivery%2Fstudio.mindmap.md&fit=1"};
+const key = location.hash.slice(1);
+location.replace(maps[key] || maps.organization);
+</script>

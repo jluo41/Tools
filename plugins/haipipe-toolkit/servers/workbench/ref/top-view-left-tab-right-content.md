@@ -16,13 +16,14 @@ left-tab        ▌Metro map    •───────────────
 ## The three parts
 
 1. **top-view**: a row of buttons, one per kind of view the fold has (Page, Slide, Draw, Work, Delivery; no
-   MindMap, its file stays in Files). Only the kinds that exist show; the first is picked.
+   MindMap, its file stays in Files). Only the kinds that exist show; the first is picked. The row is one line and
+   never wraps: when the buttons do not fit, it scrolls left and right (`.studio-view-buttons`, `.top-views`, `.jov-views`).
 2. **left-tab**: the things inside the picked view, one tab each, as narrow as the longest name. An earlier version
    reads faded (opacity .5), never under a word like "Earlier".
 3. **right-content**: the picked thing in one frame (`.pb-panel`), loaded only when its tab shows.
 
 A view with one thing has no left-tab; the thing takes the full width.
-One exception: a UI preview topic's Page and Effect (`haipipe-studio` ref/ui-preview-topic.md) keep their left-tab
+One exception: a UI preview topic's Page and Effect (`hai-studio` ref/ui-preview-topic.md) keep their left-tab
 even for one view, so another view or effect is one more tab.
 
 ## The two dots
@@ -49,10 +50,10 @@ On a phone (700 px or less) the left-tab is a row on top and the hide dot does n
 
 ## Example
 
-`blueprints/Project-Ladder/work/b17_theme_work`, Studio, `s06 · Files pane`: top-view Page · Draw · Delivery;
+`examples/Project-Ladder/blueprint/b17_theme_work`, Studio, `s06 · Files pane`: top-view Page · Draw · Delivery;
 Page's left-tab Metro map, Marks + card, then three faded earlier previews; the Metro map on the right.
 
 ## Where it sits among the page parts
 
-`view-button-list` › `band` › `fold` › **top-view-left-tab-right-content** (haipipe-ui SKILL.md › Page parts). The
+`view-button-list` › `band` › `fold` › **top-view-left-tab-right-content** (hai-ui SKILL.md › Page parts). The
 view-button-list switches the views of a section; a top-view switches the views of one fold.

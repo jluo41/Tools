@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Block folders · Insight Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar" id="bar"></header>
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages"></nav>
+  <main class="main" id="main" data-page="work-blocks.html">
+    <h2>Block folders</h2>
+    <p class="intro">The Work Folder: the work itself. Each Block holds three kinds of numbered folders side by side: <code>jNN</code> Jobs,
+      <code>sNN</code> Studio topics and <code>cNN</code> Chats. Insight has three Blocks: the Question Book, the DataPrep
+      Block and the Board.</p>
+    <ul class="kinds">
+      <li class="j"><span class="mono">jNN_&lt;job&gt;/</span><b>Job</b><em>the work: Job, Task, Run, Result</em></li>
+      <li class="s"><span class="mono">sNN-&lt;topic&gt;/</span><b>Studio</b><em>a topic thought through and drawn</em></li>
+      <li class="c"><span class="mono">cNN_&lt;slug&gt;/</span><b>Chat</b><em>one kept session, numbered in time order</em></li>
+    </ul>
+    <div class="tree-box" data-tree="blocks"></div>
+    <footer class="foot">Read from <span class="mono">PRINCIPLE.md</span>, <span class="mono">hai-insight/ref/</span>, <span class="mono">hai-chat/ref/chat-contract.md</span>, <span class="mono">servers/workbench/ref/three-views.md</span> and <span class="mono">servers/workbench-insight/</span>. Names in angle brackets are placeholders.</footer>
+  </main>
+  <aside class="outline" id="outline" aria-label="On this page"></aside>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

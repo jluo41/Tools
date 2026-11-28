@@ -64,4 +64,4 @@ risk: Simulated readers are not validated for this population (ours). Readers' r
 evidence on AI: A language model conditioned on real backstories reproduced the answers
   of human subgroups [Argyle 2023]. Generative agents simulate believable
   human behaviour [Park 2023].
-skill: haipipe-design-by-user-test (proposed)
+skill: hai-design-by-user-test (proposed)

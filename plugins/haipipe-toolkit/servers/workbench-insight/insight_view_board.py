@@ -120,7 +120,7 @@ def _map(b: dict, root: Path, href) -> str:
 
 
 def _prototype_tabs(b: dict, root: Path, eid: str) -> str:
-    """The questions, question version by question version, as side tabs (the focus page; haipipe-ui: one kind of tabs, no count in a label):
+    """The questions, question version by question version, as side tabs (the focus page; hai-ui: one kind of tabs, no count in a label):
     each question version a tab, its state word (signed or not), its questions by DIKW level as tables."""
     proto = b["prototype"]
     items, panels = [], []

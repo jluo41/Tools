@@ -84,7 +84,7 @@ class StyleTest(unittest.TestCase):
 
 class ButtonSkillTest(unittest.TestCase):
     """Every Run button the frame draws names its owning skill, and that skill exists (b03 s21-D02;
-    haipipe-run ref/run-types-by-space.md)."""
+    hai-run ref/run-types-by-space.md)."""
 
     def buttons(self, root):
         block = root / "Project" / "tasks" / "b01_topic"
@@ -99,7 +99,7 @@ class ButtonSkillTest(unittest.TestCase):
                     yield "Page Task", space + " " + sub, k
 
     def test_every_button_names_a_skill_that_exists(self):
-        skills = Path(frame.__file__).resolve().parents[3] / "skills"    # servers/workbench/page/frame.py
+        skills = Path(frame.__file__).resolve().parents[4] / "skills"    # servers/workbench/page/block_index_page/frame.py
         names = {p.parent.name for p in skills.glob("**/SKILL.md")}
         with tempfile.TemporaryDirectory() as tmp:
             seen = list(self.buttons(project(tmp)))
@@ -116,11 +116,11 @@ class ButtonSkillTest(unittest.TestCase):
             seen = {(level, k.get("doing") or k["label"]): k["skills"] for level, _, k in buttons}
         self.assertTrue(all(k["label"].startswith(("run-", "rNN_")) for _, _, k in buttons),
                         [k["label"] for _, _, k in buttons if not k["label"].startswith(("run-", "rNN_"))])
-        self.assertEqual(seen[("Block", "add a Job")], ["haipipe-block"])
-        self.assertEqual(seen[("Job", "add a Task")], ["haipipe-job"])
-        self.assertEqual(seen[("Task", "build the Task")], ["haipipe-task"])
-        self.assertEqual(seen[("Job", "write the report")], ["haipipe-report"])
-        self.assertEqual(seen[("Block", "add a topic · redraw it · save this session, each a pass")], ["haipipe-studio"])
+        self.assertEqual(seen[("Block", "add a Job")], ["hai-block"])
+        self.assertEqual(seen[("Job", "add a Task")], ["hai-job"])
+        self.assertEqual(seen[("Task", "build the Task")], ["hai-task"])
+        self.assertEqual(seen[("Job", "write the report")], ["hai-report"])
+        self.assertEqual(seen[("Block", "add a topic · redraw it · save this session, each a pass")], ["hai-studio"])
 
 
 class RouteTest(unittest.TestCase):

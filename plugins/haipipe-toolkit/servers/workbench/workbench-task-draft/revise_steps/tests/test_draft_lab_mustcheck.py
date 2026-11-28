@@ -1,4 +1,4 @@
-"""Draft Lab against haipipe-paper ref/must-check.md: full-address keys (M-D05), decided cards folded and answered
+"""Draft Lab against hai-paper ref/must-check.md: full-address keys (M-D05), decided cards folded and answered
 comments faded, stale ★ (M-D13), a checked sentence left alone (M-D06), the blind pair's `meaning: no` (M-D07), merged
 earlier wordings, and name-year citations with "not in Bib" (M-D02). Every case runs on a temp Draft."""
 from __future__ import annotations

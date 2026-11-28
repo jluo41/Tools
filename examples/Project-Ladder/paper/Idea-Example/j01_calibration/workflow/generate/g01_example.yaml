@@ -1,0 +1,18 @@
+version: 1
+kind: ideation-generate
+id: g01
+direction: cards/direction.yaml
+bundle: bundle/evidence-bundle.yaml
+bundle_updated_at: '2026-11-27T18:39:41-05:00'
+lenses_attempted:
+- boundary-heterogeneity
+- measurement-data
+provisional_candidates:
+- provisional_id: p01
+  disposition: admitted
+  canonical_card: cards/i01_idea.yaml
+  reason: Retained as a demonstration hypothesis, without a novelty or feasibility claim.
+deduplication: []
+rejected_framings: []
+evidence_requests: []
+created_at: '2026-11-27T18:39:41-05:00'

@@ -1,5 +1,5 @@
 """A Run's page shows its report first, an agent's reading beside result/, then the generated tables (workbench-insight
-T31; haipipe-insight ref/run-report.md). A report written before the result changed is marked, and its headline is not
+T31; hai-insight ref/run-report.md). A report written before the result changed is marked, and its headline is not
 used as the segment's takeaway. Placeholders only.
 """
 from __future__ import annotations
@@ -34,7 +34,7 @@ class RunReportPageTest(unittest.TestCase):
         (res / "report.md").rename(res / "tables.md")
         (res / "runtime.yaml").write_text(yaml.safe_dump({"status": "ok", "tables_sha256": "placeholder-sha"}))
         fm = {"run": "r01_full", "question": "D01", "segment": "full", "status": "ok", "result-sha256": "placeholder-sha",
-              "written-by": "haipipe-insight-agent", "check": "✅ 261120 haipipe-insight-reviewer-agent", "headline": HEAD,
+              "written-by": "hai-insight-agent", "check": "✅ 261120 hai-insight-reviewer-agent", "headline": HEAD,
               "sentences": [{"text": "Placeholder sentence with 3 rows.", "file": "rates.csv"}], "caveat": "Placeholder caveat."}
         (self.run / "report.md").write_text("---\n" + yaml.safe_dump(fm, sort_keys=False) + "---\n\n# D01 · full\n")
 

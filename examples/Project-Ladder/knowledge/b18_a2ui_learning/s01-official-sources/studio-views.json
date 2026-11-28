@@ -1,0 +1,72 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Reading route",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/01-reading-route.md"
+        },
+        {
+          "name": "Resource 1 · Architecture",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/02-resource-1-architecture.md"
+        },
+        {
+          "name": "Resource 2 · Messages",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/03-resource-2-messages.md"
+        },
+        {
+          "name": "Resource 3 · Data binding",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/04-resource-3-data-binding.md"
+        },
+        {
+          "name": "Resource 4 · Actions",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/05-resource-4-actions.md"
+        },
+        {
+          "name": "Resource 5 · Quickstart",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/06-resource-5-quickstart.md"
+        },
+        {
+          "name": "Resource 6 · Repository",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/07-resource-6-repository.md"
+        },
+        {
+          "name": "Version choice",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/08-version-choice.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/page/09-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Official Sources and Versions",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/s01-official-sources.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "Official Sources and Versions",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/s01-official-sources.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "Official Sources and Versions",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s01-official-sources/delivery/deck/s01-official-sources.slides.html"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+status: done
+data: data-v2
+prep: prep-v1
+prep_hash: d7fe454e751b
+raw: Tools/examples/Project-Ladder/insight/Insight-Example/data/data-v2
+cut: {}
+params: {}
+started: '2026-11-26T09:43:31'
+scripts_sha256:
+  t01_experiment: 99df26851a5f68ee958db98dee7042dcf7d06209435ac13ca145e56e477f2430
+  t02_source: a77fa75f4f18709fd48f66dd53718d8be0c8d1ed54711820521e4f244ff2d789
+  t03_prepare: 1c8607b014fa30f6819d40c9a7acc0b918a2f2cb32e2d6abfea3f20b0090c2cb
+steps:
+- step: t01_experiment
+  status: done
+  out: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t01_prep-v1_example-ready/runs/r01_example/result/steps/t01_experiment
+  seconds: 0.6
+- step: t02_source
+  status: done
+  out: _WorkSpace/ProjectResult/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t01_prep-v1_example-ready/r01_example/t02_source
+  seconds: 0.0
+- step: t03_prepare
+  status: done
+  out: _WorkSpace/insight-ready/Example_data-v2@prep-v1
+  seconds: 0.0
+ready: _WorkSpace/insight-ready/Example_data-v2@prep-v1/
+finished: '2026-11-26T09:43:31'

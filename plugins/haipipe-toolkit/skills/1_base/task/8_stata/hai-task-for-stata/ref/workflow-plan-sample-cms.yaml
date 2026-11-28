@@ -1,0 +1,133 @@
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
+# Schema: project/hai-run/ref/plan-schema.md
+name: cms-<YEAR>
+purpose: Extract and enrich raw CMS claims for year <YEAR> into 1-CMS-Store
+input:
+  args:
+    config: runs/rNN_<run>/config.do
+    year: <YEAR>
+  files_in: &id001
+  - runs/rNN_<run>/config.do
+  - runs/rNN_<run>/run.yaml
+  - scripts/config/cms_production.do
+  - G:/CMS/DATA/<YEAR>/Stata/pde_file[_k]_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/bcarrier_claims[_k]_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/bcarrier_line[_k]_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/outpatient_*_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/mbsf_abcd_summary_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/mbsf_cc_summary_<YEAR>.dta
+  - G:/CMS/DATA/<YEAR>/Stata/mbsf_costuse_<YEAR>.dta
+owner: hai-task-for-stata
+workbench:
+  id: <owning-workbench>
+  workspace_roster_ref: <workbench-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Extract and enrich raw CMS claims for year <YEAR> into 1-CMS-Store
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: hai-task-for-stata
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: hai-task-for-stata
+    worker_skill_chain:
+    - hai-task-for-stata
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:validate
+    required: true
+    prompt: Validate config exists, resolve ws_root via pyproject.toml walk-up, create $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/log/
+    files_in:
+    - scripts/config/cms_production.do
+    files_out: []
+  - section: Parallel extracts
+    label: extract:pde
+    required: true
+    prompt: Load raw PDE, keep 9 vars, save PDE-Neat-<YEAR>.dta
+    files_in:
+    - G:/CMS/DATA/<YEAR>/Stata/pde_file[_k]_<YEAR>.dta
+    files_out:
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
+  - section: Parallel extracts
+    label: extract:carrier-claim
+    required: true
+    prompt: Load raw BCarrier claims, keep 13 vars, run Elixhauser (5-slot), save BCarrierClaim-Neat-<YEAR>.dta
+    files_in:
+    - G:/CMS/DATA/<YEAR>/Stata/bcarrier_claims[_k]_<YEAR>.dta
+    files_out:
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierClaim-Neat-<YEAR>.dta
+  - section: Parallel extracts
+    label: extract:carrier-line
+    required: true
+    prompt: Load raw BCarrier lines, keep 6 vars, run Elixhauser (1-slot), save BCarrierLine-Neat-<YEAR>.dta
+    files_in:
+    - G:/CMS/DATA/<YEAR>/Stata/bcarrier_line[_k]_<YEAR>.dta
+    files_out:
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierLine-Neat-<YEAR>.dta
+  - section: Parallel extracts
+    label: extract:outpatient
+    required: true
+    prompt: Load raw Outpatient claims, keep 15 vars, run Elixhauser (5-slot), save OutpatientClaim-Neat-<YEAR>.dta
+    files_in:
+    - G:/CMS/DATA/<YEAR>/Stata/outpatient_*_<YEAR>.dta
+    files_out:
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/OutpatientClaim-Neat-<YEAR>.dta
+  - section: Bene_Info
+    label: bene:build
+    required: true
+    prompt: Load MBSF-ABCD, merge CC + CostUse, aggregate LICS from PDE-Neat, save Bene_Info-<YEAR>.dta
+    files_in:
+    - G:/CMS/DATA/<YEAR>/Stata/mbsf_abcd_summary_<YEAR>.dta
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
+    files_out:
+    - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/Bene_Info-<YEAR>.dta
+  - section: Summary
+    label: summary:counts
+    required: true
+    prompt: Walk year-<YEAR>/ dir, count rows per .dta, write summary.txt
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  returns: *id002
+  files_out:
+  - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/PDE-Neat-<YEAR>.dta
+  - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierClaim-Neat-<YEAR>.dta
+  - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/BCarrierLine-Neat-<YEAR>.dta
+  - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/OutpatientClaim-Neat-<YEAR>.dta
+  - _WorkSpace/1-CMS-Store/cms_full/<VER>/year-<YEAR>/Bene_Info-<YEAR>.dta
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/summary.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/log/<step>-<YEAR>.txt

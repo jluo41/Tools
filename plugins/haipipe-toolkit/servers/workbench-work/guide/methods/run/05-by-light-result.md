@@ -35,10 +35,10 @@ limitations: A pointer can outlive its store; the store's path is checked when r
 Applied to AI
 -------------
 
-agent: the Ticket itself, run by haipipe-task-orchestrator-agent.
+agent: the Ticket itself, run by hai-task-orchestrator-agent.
 steps: 1. Route each output by size and kind. 2. Write the pointer.
 returns: the Result and its pointer file.
 verify: No Result file is over the size limit, and each pointer resolves (T5).
 risk: An agent may copy a large file into the Result to make a figure work (ours).
 evidence on ai: No study tests this split with agents (ours).
-skill: haipipe-task
+skill: hai-task

@@ -1,0 +1,210 @@
+<div id="b03_itemization" data-labeling-block>
+  <style>[data-labeling-block]{color-scheme:light dark;--lb-bg:light-dark(#fff,#17191c);--lb-ink:light-dark(#202124,#e7e9ec);--lb-muted:light-dark(#686b70,#b0b5bc);--lb-line:light-dark(#dfe2e6,#393e46);--lb-blue:light-dark(#1967a5,#9bcdff);--lb-soft:light-dark(#eaf4fd,#203348);--lb-warn:light-dark(#99520b,#ffc181);font:14px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--lb-ink);background:var(--lb-bg);overflow-wrap:anywhere}
+[data-labeling-block] *{box-sizing:border-box}
+[data-labeling-block] button,[data-labeling-block] input{font:inherit}
+[data-labeling-block] button{color:inherit;background:var(--lb-bg);border:1px solid var(--lb-line);border-radius:7px;padding:6px 12px;cursor:pointer}
+[data-labeling-block] button:disabled{opacity:.45;cursor:default}
+[data-labeling-block] button[aria-pressed=true],[data-labeling-block] .lb-primary{background:var(--lb-soft);border-color:var(--lb-blue);color:var(--lb-blue)}
+[data-labeling-block] button:focus-visible,[data-labeling-block] input:focus-visible,[data-labeling-block] summary:focus-visible{outline:2px solid var(--lb-blue);outline-offset:3px}
+[data-labeling-block] .lb-header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:0 0 18px;padding-right:90px}
+[data-labeling-block] .lb-eyebrow{color:var(--lb-muted);font-size:12px}
+[data-labeling-block] h1{font-size:24px;line-height:1.3;font-weight:600;margin:5px 0 0;letter-spacing:-.3px}
+[data-labeling-block] .lb-preview{font-size:12px;color:var(--lb-muted);border:0;border-bottom:1px dotted var(--lb-muted);border-radius:0;padding:0;white-space:nowrap}
+[data-labeling-block] .lb-sections,[data-labeling-block] .lb-row{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin:0 0 10px}
+[data-labeling-block] .lb-sections{border-bottom:1px solid var(--lb-line);padding-bottom:12px;margin-bottom:18px}
+[data-labeling-block] .lb-sections>button{border:0;background:transparent;color:var(--lb-muted)}
+[data-labeling-block] .lb-sections>button[aria-pressed=true]{color:var(--lb-ink);background:var(--lb-soft)}
+[data-labeling-block] .lb-sections>.lb-wait{margin-left:auto;color:var(--lb-warn)}
+[data-labeling-block] .lb-row button{max-width:100%;text-align:left}
+[data-labeling-block] .lb-topics{gap:20px}
+[data-labeling-block] .lb-topics button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:5px 0;color:var(--lb-muted);background:transparent}
+[data-labeling-block] .lb-topics button[aria-pressed=true]{border-color:var(--lb-blue);color:var(--lb-ink)}
+[data-labeling-block] h2{font-size:17px;font-weight:600;display:flex;align-items:center;gap:12px;margin:22px 0 12px}
+[data-labeling-block] h2:after{content:'';flex:1;border-top:1px solid var(--lb-line)}
+[data-labeling-block] details{margin-bottom:9px}
+[data-labeling-block] summary{display:flex;align-items:center;gap:10px;list-style:none;border:1px solid var(--lb-line);border-radius:8px;padding:10px 13px;font-weight:500;cursor:pointer}
+[data-labeling-block] summary::-webkit-details-marker{display:none}
+[data-labeling-block] summary:before{content:'▸';color:var(--lb-muted);font-size:11px}
+[data-labeling-block] details[open]>summary:before{content:'▾'}
+[data-labeling-block] .lb-output{margin-left:auto;color:var(--lb-muted);font-size:12px;font-weight:400}
+[data-labeling-block] .lb-mark{margin-left:auto;font-weight:400;color:var(--lb-muted)}
+[data-labeling-block] .lb-output+.lb-mark{margin-left:0}
+[data-labeling-block] .lb-mark[data-mark=waiting]{color:var(--lb-warn)}
+[data-labeling-block] .lb-fold{padding:14px 16px}
+[data-labeling-block] dl{display:grid;grid-template-columns:130px minmax(0,1fr);gap:8px 16px;margin:0 0 14px}
+[data-labeling-block] dt{color:var(--lb-muted)}
+[data-labeling-block] dd{margin:0}
+[data-labeling-block] table{border-collapse:collapse;width:100%;font-size:13px}
+[data-labeling-block] th,[data-labeling-block] td{text-align:left;vertical-align:top;padding:9px 12px 9px 0;border-bottom:1px solid var(--lb-line);overflow-wrap:anywhere}
+[data-labeling-block] th{color:var(--lb-muted);font-weight:500;overflow-wrap:normal}
+[data-labeling-block] .lb-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:15px}
+[data-labeling-block] .lb-run{display:flex;gap:12px;align-items:start;padding:8px 0;border-bottom:1px solid var(--lb-line)}
+[data-labeling-block] .lb-runs{margin-top:15px}
+[data-labeling-block] .lb-case{display:grid;grid-template-columns:140px minmax(0,1fr);gap:18px}
+[data-labeling-block] .lb-case nav{display:flex;flex-direction:column;align-items:start;gap:6px}
+[data-labeling-block] blockquote{margin:0 0 12px;padding-left:12px;border-left:2px solid var(--lb-line);color:var(--lb-muted)}
+[data-labeling-block] p{margin:10px 0}
+[data-labeling-block] .lb-choices{display:flex;flex-wrap:wrap;gap:12px;margin:16px 0}
+[data-labeling-block] .lb-choices label{display:flex;gap:6px;align-items:center}
+[data-labeling-block] .lb-reason{color:var(--lb-warn)}
+[data-labeling-block] .lb-feedback{color:var(--lb-muted);font-size:12px;margin:14px 0 0}
+[data-labeling-block] [hidden]{display:none!important}
+@media(max-width:600px){[data-labeling-block] .lb-header{align-items:start;padding-right:0;gap:8px}[data-labeling-block] h1{font-size:21px}[data-labeling-block] .lb-output{display:none}[data-labeling-block] summary{padding:10px;gap:7px}[data-labeling-block] .lb-fold{padding:12px 4px}[data-labeling-block] dl{grid-template-columns:90px minmax(0,1fr);gap:8px 10px}[data-labeling-block] .lb-case{grid-template-columns:1fr}[data-labeling-block] .lb-case nav{flex-direction:row;flex-wrap:wrap}[data-labeling-block] .lb-preview{white-space:normal;max-width:75px;text-align:right}}
+@media(pointer:coarse){[data-labeling-block] button{min-height:44px}[data-labeling-block] .lb-choices label{min-height:44px}}
+</style>
+  <header class="lb-header">
+    <div><span class="lb-eyebrow">Labeling</span><h1>Itemization</h1></div>
+    <button type="button" class="lb-preview" data-action="about">Design preview</button>
+  </header>
+  <nav class="lb-sections" aria-label="Block sections">
+    <button type="button" data-section="Jobs" aria-pressed="true">Jobs</button>
+    <button type="button" data-section="Review" aria-pressed="false">Review</button>
+    <button type="button" data-section="Delivery" aria-pressed="false">Delivery</button>
+    <button type="button" data-action="waits" class="lb-wait" hidden></button>
+  </nav>
+  <div class="lb-navigation">
+    <nav class="lb-row lb-topics" data-row="topic" aria-label="Job topics"></nav>
+    <nav class="lb-row" data-row="job" aria-label="Jobs"></nav>
+    <nav class="lb-row lb-topics" data-row="group" aria-label="Task topics"></nav>
+    <nav class="lb-row" data-row="task" aria-label="Tasks" hidden></nav>
+  </div>
+  <div class="lb-content"></div>
+  <p class="lb-feedback" role="status" hidden></p>
+  <script type="application/json" class="lb-model">{"kind":"items","name":"Itemization","goal":"Turn a source snapshot into reusable items without choosing a downstream label.","jobUnit":"One source snapshot × one accepted item recipe; recipe trials are Runs of the same Job.","jobGroups":"Source collection","taskGroups":"Source · Build · Check","input":"Source snapshot and an accepted item recipe","output":"Items package with stable IDs, context and source references","releaseName":"Items package","releaseRequirements":[["Source","Immutable source snapshot"],["Recipe","Accepted item boundaries and context"],["Check","IDs, provenance, exclusions and coverage"]],"jobs":[{"id":"j01","name":"Assistant replies","topic":"Conversations","goal":"Build one item per assistant reply with its preceding context.","inputs":[["Source","conversations-v1"],["Recipe","assistant-reply-v1"]],"tasks":[{"id":"t01","name":"Describe source","group":"Source","state":"done","output":"conversations-v1","facts":[["Unit","Conversation turns"],["Source snapshot","conversations-v1"]],"runs":[["r01","Read source and inspect fields","done"]],"columns":["Conversation","Speaker","Text"],"rows":[["conversation-01","User","Can I share this password?"],["conversation-01","Assistant","Keep the password private."]]},{"id":"t02","name":"Build items","group":"Build","state":"done","output":"items-v1","facts":[["Recipe","assistant-reply-v1"],["Context","Preceding turns, without labels"]],"runs":[["r01","Build stable item IDs","done"]],"columns":["Item","Source turn","Context"],"rows":[["conversation-01/reply-01","turn-02","turn-01"],["conversation-02/reply-01","turn-04","turn-01…03"]]},{"id":"t03","name":"Check package","group":"Check","state":"done","output":"checks.json","facts":[["Identity","Unique item IDs"],["Coverage","All eligible assistant turns accounted for"],["Isolation","Reference labels excluded"]],"runs":[["r01","Validate identity and provenance","done"]]}],"delivery":{"title":"Items · items-v1","facts":[["Source","conversations-v1"],["Recipe","assistant-reply-v1"],["Items","items.jsonl"],["Provenance","source_refs.jsonl"],["Manifest","manifest.yaml"],["Used by","Guideline Generation · Labeling at Scale"]]},"recipe":{"unit":"assistant reply","context":"preceding turns","boundary":"One assistant response per item","accepted":true}},{"id":"j02","name":"Whole conversations","topic":"Conversations","goal":"Build one item per complete conversation.","inputs":[["Source","conversations-v1"],["Recipe","whole-conversation draft"]],"tasks":[{"id":"t01","name":"Describe source","group":"Source","state":"done","output":"conversations-v1","facts":[["Unit","Conversation turns"],["Source snapshot","conversations-v1"]],"runs":[["r01","Read source and inspect fields","done"]],"columns":["Conversation","Speaker","Text"],"rows":[["conversation-01","User","Can I share this password?"],["conversation-01","Assistant","Keep the password private."]]},{"id":"t02","name":"Build items","group":"Build","state":"waiting","output":"Recipe to review","facts":[["Recipe","whole-conversation draft"],["Boundary","Full conversation"]],"runs":[],"columns":["Item","Source turn","Context"],"rows":[["conversation-01","entire conversation","all turns"]],"action":"recipe","issue":"Choose the item boundary","reason":"A reply and a full conversation answer different labeling questions."},{"id":"t03","name":"Check package","group":"Check","state":"planned","output":"","facts":[["Reads","The next built item package"]],"runs":[]}],"delivery":null,"recipe":{"unit":"whole conversation","context":"all turns in source order","boundary":"One complete conversation per item","accepted":false}}],"blockId":"b03_itemization","example":"synthetic","owner":"examples/Project-Ladder/labeling/b03_itemization","handoffs":["Guideline Generation","Labeling at Scale"]}</script>
+  <script>(() => {
+ 'use strict';
+ const root=document.getElementById('b03_itemization');
+ const model=JSON.parse(root.querySelector('.lb-model').textContent);
+ const first={block:model.blockId,job:model.jobs[0].id,task:'main',section:'Jobs',case:0,answers:{},generated:{},validated:{},approved:{},recipes:{},queued:{}};
+ let state={...first}, remembered={};
+ const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ const job=()=>model.jobs.find(j=>j.id===state.job)||model.jobs[0];
+ const marks={done:'✓',waiting:'🙋',ready:'',planned:'⬜',blocked:'⬜',running:'🏃'};
+ const mark=s=>`<span class="lb-mark" data-mark="${esc(s)}" aria-label="${esc(s)}">${marks[s]||''}</span>`;
+ const pick=(label,key,value,on)=>`<button type="button" data-${key}="${esc(value)}" aria-pressed="${!!on}">${esc(label)}</button>`;
+ const action=(name,id,disabled=false)=>`<button type="button" class="lb-primary" data-action="${esc(id)}"${disabled?' disabled':''}>${esc(name)}</button>`;
+ const facts=rows=>`<dl>${rows.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}</dl>`;
+ const table=(heads,rows)=>`<table><thead><tr>${heads.map(h=>`<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(r=>`<tr>${r.map(v=>`<td>${esc(v)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+ const fold=(name,body,s='',output='')=>`<details><summary><span class="lb-label">${esc(name)}</span>${output?`<span class="lb-output">${esc(output)}</span>`:''}${mark(s)}</summary><div class="lb-fold">${body}</div></details>`;
+ const band=(name,body)=>`<section><h2>${esc(name)}</h2>${body}</section>`;
+ const reviewed=()=>model.cases?.every((_,i)=>state.answers[state.job+':'+i]);
+ function notice(text){const p=root.querySelector('.lb-feedback');p.textContent=text;p.hidden=!text;}
+ function taskState(t){
+  if(t.action==='recipe'&&state.recipes[state.job])return 'ready';
+  if(t.action==='decisions'&&state.generated[state.job])return 'done';
+  if(t.action==='evaluation'&&state.generated[state.job])return state.validated[state.job]?'done':'planned';
+  if(t.action==='queue'&&state.queued[state.job])return 'running';
+  return t.state;
+ }
+ function revision(){return table(['Case','Interpretation','Proposed rule'],model.cases.map((c,i)=>{const label=state.answers[state.job+':'+i];return [c.id,label,c.rules[label]];}));}
+ const evidence=()=>facts([['Candidate','guideline-v3 · '+job().name],['Basis','Current case judgments'],['Checks','Rule coverage and uncertainty handling'],['Evidence','Synthetic validation example']]);
+ function delivered(){
+  if(model.kind==='guideline'&&state.approved[state.job])return {title:'Response safety · guideline-v3',facts:[['Meaning','Reviewed boundary judgments'],['Expression',job().name],['Evidence','Synthetic validation example'],['Confirmation','Preview reviewer'],['Existing Scale binding','guideline-v2']]};
+  return job().delivery;
+ }
+ function queue(){
+  const j=job(),enabled=j.signed&&j.qualified&&!j.complete&&!state.queued[j.id];
+  const reason=!j.signed?'Select a signed Guideline.':!j.qualified?'Qualify this executor before running batches.':'';
+  return `<div class="lb-actions">${action('Run all','queue',!enabled)}</div>${reason?`<p class="lb-reason">${reason}</p>`:''}`;
+ }
+ function runs(t){
+  const rows=[...t.runs];
+  if(t.action==='decisions'&&state.generated[state.job])rows.push(['r02','Generate guideline-v3 · preview','done']);
+  if(t.action==='evaluation'&&state.validated[state.job])rows.push(['r03','Validate guideline-v3 · synthetic example','done']);
+  return rows.length?`<div class="lb-runs">${rows.map(r=>`<div class="lb-run"><span>${esc(r[1])}</span>${mark(t.action==='queue'&&state.queued[state.job]&&r[2]==='planned'?'running':r[2])}</div>`).join('')}</div>`:'';
+ }
+ function taskBody(t){
+  let body=facts(t.facts||[])+(t.columns?table(t.columns,t.rows):'');
+  if(t.action==='decisions'&&state.generated[state.job])body=revision();
+  if(t.action==='evaluation'&&state.generated[state.job])body=state.validated[state.job]?evidence():facts([['Candidate','guideline-v3'],['Required action','Validate the current revision in Review']]);
+  body+=runs(t);
+  if(['recipe','decisions'].includes(t.action))body+=`<div class="lb-actions">${action(t.action==='recipe'?'Review recipe':'Review cases','review')}</div>`;
+  if(t.action==='queue')body+=queue();
+  return body;
+ }
+ function taskOutput(t){
+  if(t.action==='recipe'&&state.recipes[state.job])return '';
+  if(t.action==='evaluation'&&state.generated[state.job])return state.validated[state.job]?'guideline-v3 checks':'';
+  return t.output;
+ }
+ function main(){
+  const j=job(),pkg=delivered();
+  let body=band('📊 Plan + Results',fold('Inputs',facts(j.inputs)) +j.tasks.map(t=>fold(t.name,taskBody(t),taskState(t),taskOutput(t))).join(''));
+  const waits=j.tasks.filter(t=>['waiting','blocked'].includes(taskState(t)));
+  if(waits.length)body+=band('🔎 Findings',waits.map(t=>fold(t.issue||t.name,`<p>${esc(t.reason)}</p><div class="lb-actions">${action('Review','finding:'+t.id)}</div>`,taskState(t))).join(''));
+  if(pkg)body+=band('📦 Delivery',fold(pkg.title,facts(pkg.facts),'done'));
+  return body;
+ }
+ function review(){
+  if(model.kind==='items'){
+   const r=job().recipe,accepted=r.accepted||state.recipes[state.job];
+   return band('🎨 Item boundaries',fold(job().name,table(['Source','Unit','Context'],[['conversation-01',r.unit,r.context],['conversation-02',r.unit,r.context]])+facts([['Boundary',r.boundary],['Provenance','Conversation, source turns and snapshot'],['Label fields','Excluded from model-visible context']])+`<div class="lb-actions">${action('Accept recipe','recipe',accepted)}</div>`,accepted?'done':'waiting'));
+  }
+  if(model.kind==='scale')return band('🎨 Audit review',fold('Ambiguous predictions',table(['Item','Prediction','Review'],[['conversation-02/reply-01','Uncertain','Guideline meaning requires review']])+`<div class="lb-actions">${action('Prepare feedback','feedback')}</div>`,'waiting'));
+  const c=model.cases[state.case],key=state.job+':'+state.case,approved=state.approved[state.job];
+  const choices=['Safe','Unsafe','Needs context'];
+  const content=`<div class="lb-case"><nav aria-label="Review cases">${model.cases.map((x,i)=>pick(x.id,'case',i,i===state.case)).join('')}</nav><article><blockquote>${esc(c.context)}</blockquote><p>${esc(c.text)}</p><div class="lb-choices">${choices.map(v=>`<label><input type="radio" name="${esc(model.blockId)}-judgment" value="${esc(v)}"${state.answers[key]===v?' checked':''}${approved?' disabled':''}>${esc(v)}</label>`).join('')}</div><p>${esc(c.rule)}</p></article></div><div class="lb-actions">${action('Generate revision','generate',!reviewed()||!!state.generated[state.job])}</div>`;
+  const candidate=state.generated[state.job]?band('📋 Revision',fold(job().name,revision()+(state.validated[state.job]?evidence():`<div class="lb-actions">${action('Validate revision','validate')}</div>`),state.validated[state.job]?'done':'')):'';
+  const release=facts([['Candidate','guideline-v3'],['Previous release','guideline-v2'],['Scope','Response safety on conversational replies']])+`<div class="lb-actions">${action('Confirm guideline','approve',!state.validated[state.job]||!!approved)}</div>`;
+  return band('🎨 Human–AI review',fold('Boundary cases',content,reviewed()?'done':'waiting'))+candidate+band('📦 Guideline release',fold('Response safety',release,approved?'done':'waiting'));
+ }
+ function render(preserve=false){
+  const open=preserve?[...root.querySelectorAll('details[open]')].map(d=>d.querySelector('.lb-label').textContent):[];
+  const j=job(),t=j.tasks.find(t=>t.id===state.task);
+  root.querySelector('.lb-navigation').hidden=state.section!=='Jobs';
+  root.querySelectorAll('[data-section]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.section===state.section));
+  root.querySelector('[data-row=topic]').innerHTML=[...new Set(model.jobs.map(j=>j.topic))].map(v=>pick(v,'topic',v,j.topic===v)).join('');
+  root.querySelector('[data-row=job]').innerHTML=model.jobs.filter(x=>x.topic===j.topic).map(x=>pick(x.name,'job',x.id,x.id===j.id)).join('');
+  root.querySelector('[data-row=group]').innerHTML=pick('Main','task','main',state.task==='main')+[...new Set(j.tasks.map(x=>x.group))].map(g=>pick(g,'group',g,g===t?.group)).join('');
+  const row=root.querySelector('[data-row=task]');row.hidden=!t;
+  row.innerHTML=t?j.tasks.filter(x=>x.group===t.group).map(x=>pick(x.name,'task',x.id,x.id===t.id)).join(''):'';
+  const pkg=delivered();
+  root.querySelector('.lb-content').innerHTML=state.section==='Review'?review():state.section==='Delivery'?band('📦 Delivery',pkg?fold(pkg.title,facts(pkg.facts),'done'):fold(model.releaseName,facts(model.releaseRequirements))):t?band('📊 Plan + Results',fold(t.name,taskBody(t),taskState(t))):main();
+  root.querySelectorAll('details').forEach(d=>d.open=open.includes(d.querySelector('.lb-label').textContent));
+  let waits=j.tasks.filter(t=>['waiting','blocked'].includes(taskState(t))).length;
+  if(model.kind==='guideline'&&!state.approved[state.job])waits=Math.max(1,waits);
+  const tray=root.querySelector('[data-action=waits]');tray.hidden=!waits;tray.textContent='🙋 '+waits;tray.setAttribute('aria-label','Review waiting items');
+ }
+ function save(){
+  if(window.openai?.setWidgetState)window.openai.setWidgetState({modelContent:{block:model.name,job:job().name,section:state.section,task:job().tasks.find(t=>t.id===state.task)?.name||'Main'},privateContent:{state,remembered}}).catch(()=>{});
+ }
+ function restore(snapshot){
+  const saved=snapshot?.privateContent?.state;
+  if(saved?.block!==model.blockId)return;
+  state={...first,...saved};remembered=snapshot.privateContent.remembered||{};
+  if(!model.jobs.some(j=>j.id===state.job))state.job=first.job;
+  if(state.task!=='main'&&!job().tasks.some(t=>t.id===state.task))state.task='main';
+  if(!['Jobs','Review','Delivery'].includes(state.section))state.section='Jobs';
+  state.case=Math.min(model.cases?.length-1||0,Math.max(0,state.case||0));
+ }
+ root.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||b.disabled)return;let keep=false;
+  notice('');
+  if(b.dataset.section)state.section=b.dataset.section;
+  if(b.dataset.job){state.job=b.dataset.job;state.task='main';}
+  if(b.dataset.topic){state.job=model.jobs.find(j=>j.topic===b.dataset.topic).id;state.task='main';}
+  if(b.dataset.group)state.task=remembered[state.job+':'+b.dataset.group]||job().tasks.find(t=>t.group===b.dataset.group).id;
+  if(b.dataset.task){state.task=b.dataset.task;if(state.task!=='main')remembered[state.job+':'+job().tasks.find(t=>t.id===state.task).group]=state.task;}
+  if(b.dataset.case!==undefined){state.case=Number(b.dataset.case);keep=true;}
+  const a=b.dataset.action;
+  if(a==='about'){notice('Synthetic design example. These actions update the preview; they do not run workers or sign real releases.');return;}
+  if(a==='review'||a==='waits')state.section='Review';
+  if(a==='recipe'){state.recipes[state.job]=true;keep=true;notice('Recipe accepted for this preview. Item building can proceed.');}
+  if(a==='generate'&&reviewed()){state.generated[state.job]=true;keep=true;}
+  if(a==='validate'&&state.generated[state.job]){state.validated[state.job]=true;keep=true;}
+  if(a==='approve'&&state.validated[state.job]){state.approved[state.job]=true;keep=true;notice('Preview guideline-v3 confirmed. Existing Scale Jobs remain bound to guideline-v2.');}
+  if(a==='queue'&&job().signed&&job().qualified&&!job().complete&&!state.queued[state.job]){state.queued[state.job]=true;keep=true;notice('Preview batches queued; completed batches are retained. No worker was started.');}
+  if(a==='feedback'){notice('Feedback prepared for the Guideline Generation Block: conversation-02/reply-01, guideline-v2, context changes interpretation.');return;}
+  if(a?.startsWith('finding:')){const t=job().tasks.find(t=>t.id===a.slice(8));state.section=t.state==='blocked'?'Jobs':'Review';state.task=t.id;}
+  render(keep);save();
+ });
+ root.addEventListener('change',e=>{
+  if(e.target.type!=='radio')return;
+  state.answers[state.job+':'+state.case]=e.target.value;
+  state.generated[state.job]=false;state.validated[state.job]=false;notice('');render(true);save();
+ });
+ restore(window.openai?.widgetState);render();
+ window.addEventListener('openai:set_globals',e=>{if(e.detail?.globals?.widgetState){restore(e.detail.globals.widgetState);render(true);}});
+})();
+</script>
+</div>

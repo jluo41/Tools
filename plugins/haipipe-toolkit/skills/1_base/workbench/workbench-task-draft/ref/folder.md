@@ -26,7 +26,7 @@ follow the DISPLAY Result contract, not this retired folder row.
 Current source material (`studio/draw` `studio/chat` `draft/skill`) is often
 older than the prose and that is HEALTHY: it gets an age, never a warning. An
 existing Page-local `meeting/` is shown the same way only as legacy input;
-new meeting records belong to `haipipe-related`, in a Block's `related/meetings/`.
+new meeting records belong to `hai-related`, in a Block's `related/meetings/`.
 Widening the flag to source folders would train readers to ignore it, which is the one way a staleness signal dies.
 
 ## 📡 Surface · explicit lanes, live on every open
@@ -71,7 +71,7 @@ No route may ever cache or persist this view — the no-store header is part of 
 
 ## 📂 Files
 
-- `../../../../../servers/workbench/workbench-task-draft/folderstat.py`
+- `../../../../../servers/workbench/workbench-task-draft/run_views/folderstat.py`
   The live walk, the staleness rule, the GET and its no-write POST twin.
 - `../../../../../servers/workbench/workbench-task-draft/assets/js/10-drawer/06-workbench-folder.js`
   The registration: ordered after Delivery, folded pages only.

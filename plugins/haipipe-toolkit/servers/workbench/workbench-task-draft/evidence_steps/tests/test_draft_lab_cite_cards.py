@@ -1,4 +1,4 @@
-"""Draft Lab against haipipe-paper ref/must-check.md M-D20: every CITE evidence item of a Section whose
+"""Draft Lab against hai-paper ref/must-check.md M-D20: every CITE evidence item of a Section whose
 evidence/cards.yaml holds no card for it still gets its ❝ card beside its sentence, from its bound Run, else the
 citation Job's citations.csv row (with the discovery Run's reference), else its BibTeX marked "not read yet".
 Every case runs on a temp Board."""

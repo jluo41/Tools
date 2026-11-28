@@ -311,7 +311,7 @@ def _run_again(vm: dict, run: dict, *, built: bool = True) -> tuple[str, str]:
             return "", ""
         action = "Resume" if run["status"] == "running" else "Rerun"
         return action, (f"{action} the {run['operation']} Corpus Preparation Run for {run['target']} "
-                        f"at {run['owner']} through /haipipe-labeling-preparation. "
+                        f"at {run['owner']} through /hai-labeling-preparation. "
                         + (f"Keep Ticket {run['run']}." if action == "Resume" else
                            f"Reuse {run['run']} for identical accepted inputs, or allocate a new full run-corpus name for changed inputs."))
     where = _job_where(vm)
@@ -347,10 +347,10 @@ def _run_again(vm: dict, run: dict, *, built: bool = True) -> tuple[str, str]:
     if run["operation"] in {"round-prepare", "embedding-build"}:
         return "", ""  # these start through checked view actions, not a generic prompt
     if run["status"] == "running":
-        return "Resume", (f"Resume Run {run['run']} on the labeling job at {where} through /haipipe-labeling. "
+        return "Resume", (f"Resume Run {run['run']} on the labeling job at {where} through /hai-labeling. "
                           "Keep the same Ticket and Result name.")
     return "Rerun", (f"Start a new {run['operation']} Run{' for target ' + run['target'] if run.get('target') else ''} on the labeling job "
-                     f"at {where} through /haipipe-labeling. Give it a new full run-labeling name; {run['run']} stays as it is.")
+                     f"at {where} through /hai-labeling. Give it a new full run-labeling name; {run['run']} stays as it is.")
 
 
 def _skills_line(skills: list[str]) -> str:
@@ -433,7 +433,7 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
             prep = vm.get("preparation") or {}
             owner = (prep.get("reference") or prep.get("owner_reference") or {}).get("owner")
             prompt = (f"Start the next {t['op']} Corpus Preparation Run for the Page at {where} "
-                      f"through /haipipe-labeling-preparation. "
+                      f"through /hai-labeling-preparation. "
                       + (f"Source owner: {owner}. " if owner else
                          "First attach the source preparation owner to this Page. ")
                       + "Record a full run-corpus Ticket and Result.")
@@ -444,7 +444,7 @@ def _runs_panel(vm: dict, sid: str, types: list[dict]) -> str:
             if (prep.get("linked") and not prep.get("error")
                     and not (vm["root"] / "config.yaml").is_file()):
                 package = (prep.get("reference") or {}).get("package") or ""
-                prompt = (f"Use /haipipe-labeling to create the Labeling Contract for the Page "
+                prompt = (f"Use /hai-labeling to create the Labeling Contract for the Page "
                           f"in {vm['root'].parent} from the accepted Corpus Preparation package "
                           f"at {package}. Labeling folder: {where}. Confirm the target trait, "
                           "job ID, identified semantic human, and sealed-test custodian; "

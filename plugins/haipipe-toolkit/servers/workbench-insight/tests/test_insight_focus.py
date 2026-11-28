@@ -1,6 +1,6 @@
 """The insight pages on the focus page (insight_focus.py, b11 j01): the Report's letters, each Work view ⚙️ Process then
 📊 Results (the Report's view by the same function), sign the plan before the close, the grid's cells their next verb;
-and the shared page rules (haipipe-ui, 261106): every bar its state word, no 🙋 section of the theme's own, no count in
+and the shared page rules (hai-ui, 261106): every bar its state word, no 🙋 section of the theme's own, no count in
 a side tab's label, the MindMap always a view."""
 from __future__ import annotations
 
@@ -214,7 +214,7 @@ class InsightLettersTest(unittest.TestCase):
         self.assertIn("<p class=fd-wait>🙋 Sign the advice W02", work)          # its waiting line, under the closed bar
         self.assertIn("W02 waits for your sign", IF.board_report_views(self.board, self.root)["handoff"][1]())
 
-    # ── the shared page rules (haipipe-ui, 261106) ──────────────────────────────────────────────────────────────
+    # ── the shared page rules (hai-ui, 261106) ──────────────────────────────────────────────────────────────
     def every_view(self):
         """(where, html) of every insight view of the fixture's Board, a Job and a Task, Report and Work."""
         tasks = [p for p in sorted(self.job.iterdir()) if p.is_dir() and p.name.startswith("t")]
@@ -344,14 +344,14 @@ class RoundOneTest(unittest.TestCase):
 
     def test_a_prototype_is_signed_and_triaged_on_its_own_work(self):
         """Round 2: the Question Book's Work · Findings carries the triage and the sign, each a Copy prompt for
-        /haipipe-insight; Status says "nothing to do" when nothing waits; a release's map groups its questions by
+        /hai-insight; Status says "nothing to do" when nothing waits; a release's map groups its questions by
         DIKW level; Status and Findings each open with a main line."""
         A.set_front(self.root / F.PROJECT / F.PROTO / "j02_p2" / "j02_p2.md", {"signed": "", "state": "draft"})
         steps = IF.prototype_process(self.proto, self.root, "Block", "findings")
         body = steps[0][2]
         self.assertIn("Sort the open ideas", body)
         self.assertIn("Sign ", body)
-        self.assertIn("/haipipe-insight ", body)
+        self.assertIn("/hai-insight ", body)
         self.assertIn("for you", steps[0][1])
         job = next(p for p in sorted(self.proto.iterdir()) if p.name.startswith("j01_"))
         self.assertEqual(IF.prototype_process(job, self.root, "Job", "standing")[0][1], "✅")
@@ -382,9 +382,9 @@ class RoundOneTest(unittest.TestCase):
 
     def test_a_freeze_folder_is_found_from_a_tools_root(self):
         tools = self.root / "Tools"
-        data = tools / "blueprints" / "data" / "v1"
+        data = tools / "examples" / "data" / "v1"
         data.mkdir(parents=True)
-        v = {"version": "v1", "folder": "Tools/blueprints/data/v1/"}
+        v = {"version": "v1", "folder": "Tools/examples/data/v1/"}
         self.assertEqual(P.version_folder(v, tools), data.resolve())
         self.assertEqual(P.version_folder(v, self.root), data.resolve())
 

@@ -12,7 +12,7 @@ from live.labeling_job import (_board_pages, _canonical_job_module, _labeling_la
     inspect, is_labeling_surface_page)
 
 
-# The labelings/ Job (haipipe-project 0.10.0, JL 261005: "for a data + labeling, it should be
+# The labelings/ Job (hai-project 0.10.0, JL 261005: "for a data + labeling, it should be
 # a job ... for this job, we will have many tasks"). A labeling Page at
 # labelings/bNN_<block>/jNN_<dataset>_<label>/tNN_<task>/ belongs to that Job: one dataset with
 # one label. The workbench is the Job's: its card carries the Job address, Data → Preparation

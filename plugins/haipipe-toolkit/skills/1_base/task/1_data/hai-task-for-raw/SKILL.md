@@ -1,0 +1,407 @@
+---
+name: hai-task-for-raw
+description: "Raw-stage Task: extraction Jobs move cohort data from a database into RawStore as <cohort>-v<yymmdd>, and a raw-understanding Block profiles each table for Source. Called by /hai-task when task-type=raw. Trigger: raw extraction, RawStore, cohort extract, /hai-task raw."
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
+metadata:
+  version: "0.6.2"
+  last_updated: "2026-10-26"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+---
+
+Skill: hai-task-for-raw
+=================================
+
+Scaffolds a **raw extraction job** — a runnable example that extracts source tables from a Databricks catalog as wide parquet files.
+In **Pattern 1** (non-PHI) the parquet is then processed locally with Python (pandas) and heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/`; in **Pattern 2** (PHI, server-resident — see below) everything stays on the catalog volume.
+The job keeps scripts, configs, and convert-only notebooks either way.
+
+**Invocation modes (see `../../hai-task/ref/types.md` § Asked or silent):** interactive (a human steers; missing fields get ASKed) OR headless (a full spec → run silently, no ASK).
+`hai-task-creator-agent` calls this skill headless during fan-out, then authors the `<TASK>.py` body.
+Always end with the structured return block of `../../hai-task/ref/types.md` § Asked or silent (see Return contract below).
+
+## Type contract
+
+```yaml
+task-type: raw
+skill: hai-task-for-raw
+does: extract one cohort's tables from an operational database into RawStore as a versioned
+  dataset <cohort>-v<yymmdd>, or profile and route that dataset version in the b00 Block
+worker: scripts/<worker>.py in the Task, Python with SQL strings in percent cells, converted to a
+  notebook and run on Databricks; on a PHI server one entry scripts/run_<task>.py; shared
+  extraction helpers in the Job's src/
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; seeded from
+  ref/config-seed.yaml; the Job's src/config-defaults.yaml types raw_data_name once
+ticket: runs/<run>/<run>.sh from ref/run-databricks-sh-template.sh (it converts only; the cluster
+  executes), or runs/<run>/<run>.cmd on a PHI server
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and manifest.json; a full-read
+  Run adds description.json
+heavy: _WorkSpace/0-RawDataStore/<raw_data_name>/ (Pattern 1), or the catalog volume
+  <VOLUME_BASE>/0-RawDataStore/<raw_data_name>/ for PHI (Pattern 2)
+roles: [make, describe, check]
+companions: [hai-data, hai-task-for-description]
+plan_sample: none
+```
+
+Store boundary
+--------------
+
+```
+Operational Database -- cohort extraction code --> 0-RawDataStore/<raw-data>/
+Vendor/API source ---- ingestion/build code -----> ExternalStore/@raw/ -> @{release}/
+```
+
+Use this skill for the first line. Use `hai-data external` for the second.
+“Extract”, “landing”, and “ingestion” describe code/actions, not additional
+stores between the database and RawStore. One delivered extraction is a Raw
+Data version/snapshot; reserve “cohort” for the selected population.
+
+
+Position in the series
+----------------------
+
+```
+/hai-task raw         ◀── you are here (Stage 0 — raw extraction)
+/hai-task data            data-pipeline (Stages 1-4)
+/hai-task algo            algo-dev demo
+/hai-task fit             model training
+/hai-task eval            model evaluation
+/hai-task display         paper figure / table
+/hai-task individual      individual-centric query
+/hai-task agent           LLM agent call
+/hai-task endpoint        package + deploy (absorbed inference profiling)
+```
+
+
+What this scaffolds
+-------------------
+
+```
+work/bNN_<raw_block>/
+└── jNN_<extraction_job>/
+    ├── src/                                 shared extraction helpers
+    └── tNN_<raw_table_or_step>/
+        ├── tNN_<raw_table_or_step>.md
+        ├── scripts/<worker>.py              SQL strings in Python; # %% cells
+        ├── runs/rNN_<run>/                  one folder per Run
+        │   ├── rNN_<run>.sh                 the Ticket (.cmd on a PHI server)
+        │   ├── config.yaml
+        │   ├── run.yaml                     its card (hai-run)
+        │   └── result/runtime.yaml
+        └── notebooks/rNN_<run>.ipynb
+```
+
+Two kinds of raw Job, never in one Block (see `hai-task/ref/pipeline-blocks.md` § Block
+number ranges):
+- **Extraction Job**: pulls tables from an operational database into
+  `0-RawDataStore/<dataset>/`. It lives in its own extraction Project, e.g.
+  `<extraction-Project>/work/bNN_<source_system>/jNN_<cohort>_raw_extraction`.
+  The Job's `src/config-defaults.yaml` types `raw_data_name` once; a refresh
+  changes that line and never writes into another version's folder.
+- **Raw understanding Block `b00`**: in every Project that USES the data, one
+  Job per dataset version reads what the extraction wrote. It never extracts
+  and never writes RawStore. See § Raw understanding Block below.
+Heavy outputs land in: `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the catalog-volume equivalent for server-resident cohorts — see Pattern 2).
+
+
+Raw understanding Block (`b00`)
+-------------------------------
+
+Reference implementations: a PHI SPACE's `examples/<Project>/work/b00_rawdata/`
+(one dataset) and a partner-data SPACE's `examples-1-data/<Project>/work/b00_rawdata/`
+(14 datasets in seven raw families, Jobs `j51`-`j96`; migrated 260923).
+
+```
+b00_rawdata/
+└── j51_<cohort>_v<yymmdd>_raw/           one raw dataset version = one Job (j51-j99)
+    ├── src/config-defaults.yaml          raw_data_name, upstream extraction, store path, min_cell
+    ├── src/synthetic_individual.yaml     one synthetic person through every table (synth_df)
+    ├── t01_intake_inventory/             every table: rows, columns, size; every upstream Run ok?
+    ├── t02_table_catalog_schema/         per table: subject key, time columns, schema family
+    ├── t11_profile_<table>/ …            ONE Task per observed table, from the inventory;
+    │   └── notebooks/<dataset>_<table>.ipynb   its reader notebook, with its synth_df
+    ├── t91_audit_file_routing/           each raw table → exactly one ProcName
+    ├── t92_datapoint_timeline/           date ranges (years) + open questions with evidence
+    └── t93_source_handoff/               preserve / derive / ask lists + gated readiness
+```
+
+- The Job number is the dataset's number in `b01` to `b03` too
+  (`b01/j51_<cohort>_v<yymmdd>_source`); see `hai-task/ref/pipeline-blocks.md`.
+  `t01`-`t09` cover the whole dataset, `t11` onward its tables, `t91`+ close it.
+- Keep only Tasks a person reads. A partner-data Project has three kinds per dataset: `t01` for its
+  files (`r01` what is there, `r04` where each goes), one Task per table it carries, and `t93`
+  for the dataset (`r05` when its rows fall, `r06` whether it is ready, plus the dataset
+  notebook). A catalog-sample Task or a separate routing or timeline Task is not kept.
+- Table Tasks come from the observed inventory, never a fixed topic list. A table the
+  family's catalog expects but a drop lacks gets no Task: the intake Run lists it
+  (`absent_tables` in its config) and fails if a file named after it turns up.
+- Each Run is one reading of the table (a Run here, not a hai-run pass):
+  `r01_structure_schema` (local, from receipts or headers),
+  `r02_profile_semantics` (types, nulls, distincts, year ranges), `full_scan`
+  only where needed. Only the Runs that apply exist.
+- Privacy: metadata only. For PHI the profile Run is a server `.cmd` Run;
+  dates leave as years, counts 1 to 10 as `<11`, and no row value leaves.
+  Encoded ids (`patient_id_encoded`, `invitation_id_encoded`) are meaningless
+  UUIDs, not PHI: a notebook may show them, and they never block a commit (JL 260929).
+- A table's reader-facing description (what one row is, what each column means, pictures
+  of the values) is a `tNN_describe_<table>` Task from `hai-task-for-description`,
+  beside the profile Runs; its column dictionary lives in the Block's `src/`. A raw
+  table in a non-parquet format gets the same card from its `r07_full_scan` Run
+  (`description.json`, built while every row is read once); the Run fails when the card
+  leaves a question open.
+- Every table Task has a reader notebook, `<task>/notebooks/<dataset>_<table>.ipynb`, that
+  shows its `synth_df`: one synthetic person's rows in that table, invented values in the real
+  columns (`hai-task-for-description` § synth_df); `t93` has the dataset notebook, the same
+  person through every table. For PHI the profile Run is a server `.cmd` Run, which brings no
+  notebook back, so the Job's `src/build_notebooks.py` builds them on the laptop from the fetched
+  Results (for example `j51_reachpd2d_v260922_raw`, JL 260929). Where the raw rows sit on this
+  machine (a partner-data SPACE's `b00`), the table notebook draws three real people instead, in the same
+  one notebook, and git ignores it (`hai-task-for-description` rule 12, JL 260929).
+- `datapoint_timeline` and `source_handoff` are `hai-data raw`'s
+  `understand` and `hand-off` as Tasks. Readiness is computed from gates
+  (every table routed once, every table profiled, no blocking question), never
+  declared: `ready_for_sourcefn_review` or `blocked` with the failing gate.
+- `b01_sourcestore` starts from `audit_file_routing`: one contract Task per
+  routed ProcName, in the topic Jobs `j01_procdf_<topic>` onward.
+
+
+Dataset versions: name, freeze, refresh
+---------------------------------------
+
+One extraction is one dataset version, and the version lives on the dataset
+folder, never on the workspace (JL, 260922):
+
+```
+_WorkSpace/                                   fixed, un-dated
+├── 0-RawDataStore/
+│   ├── reach-pd2d-v260922/                   one extraction; _FROZEN.yaml once done
+│   └── reach-pd2d-v261015/                   the next refresh, beside it
+└── task-results/<raw_data_name>/<block>/<job>/<task>/<run>/   receipts, per version
+```
+
+- **Name**: `<cohort>-v<yymmdd>`, lowercase, the date the extraction STARTED
+  (`[a-z0-9]+(-[a-z0-9]+)*-v\d{6}`). Typed by hand, once, as `raw_data_name:`
+  in the extraction Job's `src/config-defaults.yaml`. Never auto-generated: a
+  date computed at run time would split one extraction that crosses midnight,
+  or a resumed one, across two folders.
+- **One source of the name**: the Job runner builds
+  `raw_root = <volume_base>/0-RawDataStore/<raw_data_name>` and hands it to
+  every worker; a worker never spells a store path, and a Run config never
+  names the dataset. A Ticket carries no parameters, so the date is never a
+  command-line argument.
+- **Freeze**: the runner writes `<raw_root>/_FROZEN.yaml` after the Run named
+  by `freeze_after:` (the last Run of the Job). Any later Run against that
+  dataset is refused. A partial extraction stays open, so a failed Run is
+  resumed (`run_all.cmd resume`), not renamed.
+- **Refresh** = edit the one `raw_data_name` line to a new date, push, pull,
+  run the whole Job without `resume`. The old version is untouched and every
+  downstream store that names it stays reproducible.
+- Downstream (`b00` understanding Job, SourceFn config) names the exact
+  version it reads; `b00` gets a new Job per new version.
+
+**Knowing when to refresh.** The operational database gives no update
+notice, and its table-timestamp catalog (`information_schema`) is
+permission-denied on some servers. The signal is the table census: rerun the census
+Run that records `n_rows` per source table (for example
+`<extraction-Project>/work/bNN_<source_system>/j01_table_census/t01_table_catalog`,
+Run `r01_deid_derived`), fetch it, and `git diff` its committed
+`table_catalog.csv`. Changed `n_rows` on the tables the extraction reads means
+the source was refreshed: cut a new version. No change means no new data. It
+reads metadata and counts only, so it is safe to run on a schedule (monthly),
+and asking the data owner for a refresh notice is the second channel.
+
+
+Two patterns — pick by data-governance
+---------------------------------------
+
+  Pattern 1  extract-wide-process-local   data may leave the server
+             (doctrine below)             (de-identified / synthetic / licensed-local)
+  Pattern 2  server-resident              PHI: raw data NEVER leaves the
+             (A00 rawstore)               server/volume; all stages run on Databricks
+
+
+Pattern 1: Extract-Wide-Process-Local Doctrine
+-----------------------------------------------
+
+The default for non-PHI cohorts.
+Every such task MUST follow it:
+
+  1. **One SQL query per source table → one large parquet file.**
+     Keep SQL simple: `SELECT columns FROM single_table WHERE filters`.
+     Avoid complex JOINs in SQL. If you need joins, extract both tables
+     as separate parquet files and join in Python.
+
+  2. **Save parquet to Databricks catalog volume.**
+     Path pattern: `/Volumes/<catalog>/<schema>/<volume>/<cohort>/<table>.parquet`
+
+  3. **Download/sync parquet to local `_WorkSpace/0-RawDataStore/<raw_data_name>/`.**
+     One parquet file per source table. No partitioned directories.
+
+  4. **Process with Python (pandas), NOT Spark.**
+     Local reads, local transforms, local output. Spark is for extraction
+     only (because the data lives in Databricks). Once the parquet is
+     local, everything is pandas.
+
+
+Pattern 2: Server-resident rawstore (PHI cohorts)
+--------------------------------------------------
+
+When the cohort is PHI, step 3 above is FORBIDDEN — raw data never leaves the server.
+The whole extraction pipeline runs on Databricks and writes to the catalog volume.
+Current shape: an extraction Project's
+`work/bNN_<source_system>/jNN_<cohort>_raw_extraction/`. One
+extraction Job; `src/config-defaults.yaml` holds `volume_base` and the ONE
+versioned `raw_data_name` (`reach-adhd-v260922`), so a refresh is one edit;
+each Task has one entry `scripts/run_<task>.py` and `runs/rNN_<run>/rNN_<run>.cmd`
+tickets; `sbatch/run_all.cmd` runs the Job and writes `_FROZEN.yaml` after
+the last Run. No `.ipynb`, no `.sh`.
+
+Legacy example: `<Project>/work/A00_rawstore_<cohort>/`.
+
+Legacy shape (readable, never scaffolded for new work):
+
+```
+work/A00_rawstore_<cohort>/
+├── run_pipeline_<cohort>_raw.py(+.ipynb)   ← group-root orchestrator (sequences stages)
+├── 01_stage1_universe/                     ← cohort universe (Spark SQL on deid tables)
+├── 02_stage2_phenotype/                    ← phenotype definition (parallelizable sub-steps)
+├── 03_stage3_features/                     ← feature tables
+├── _databricks/                            ← .ipynb copies of every stage (what the
+│                                             workspace import executes)
+└── README.md                               ← legacy documentation only
+```
+
+Rules:
+  - Stages can be all-Spark (the local-pandas rule of Pattern 1 does not
+    apply — nothing comes local).
+  - **Output path MUST align to what the Stage-1 SourceFn reads**:
+    `<VOLUME_BASE>/0-RawDataStore/<raw_data_name>/...` with the exact
+    `<raw_data_name>` the SourceFn config expects (e.g. `reach-adhd-v260922`,
+    not `REACH-ADHD` or the unversioned `reach-adhd`). Misalignment here is the classic silent failure.
+  - Orchestration + stage launching (jobs vs inline exec, sequential-only
+    caveats, widget params): `../../hai-task/ref/databricks-execution.md`.
+  - Only aggregated/derived summaries may move off-server; raw and
+    row-level intermediates stay on the volume.
+
+
+Execution model — Databricks notebooks
+---------------------------------------
+
+Unlike other task-types that use papermill for local execution, raw extraction tasks run on **Databricks**.
+The run script only converts the `.py` to `.ipynb` — it does NOT execute locally.
+
+Extraction Run procedure:
+  1. `runs/<RUN>/<RUN>.sh` converts `.py` → `.ipynb` and writes `runs/<RUN>/result/runtime.yaml`
+  2. User uploads `.ipynb` to Databricks workspace (browser Import when no
+     CLI is allowed; keep converted stage notebooks in the group's
+     `_databricks/` folder)
+  3. User runs the notebook on a Databricks cluster (Pattern 2: run the
+     group orchestrator or the project's `run_<project>.py` driver instead
+     of individual notebooks)
+  4. Extracted parquet files land in the catalog volume
+  5. Pattern 1 only: user syncs parquet to local
+     `_WorkSpace/0-RawDataStore/<raw_data_name>/` (Pattern 2 skips this — PHI
+     stays on the volume and Stage 1 reads it there)
+
+The run-script template is `ref/run-databricks-sh-template.sh`: conversion is a Step inside the extraction Run.
+Its successful exit means notebook preparation only; the Run remains blocked awaiting external execution.
+Read `../../hai-task/ref/databricks-execution.md` before the upload/run handoff.
+Bind the external job/run id, config path, cluster logs, output manifest, and Result checks to the same bNNjNNtNNrNN receipt.
+No separate converter Run is allocated by default. Only actual cluster completion plus the Result gate can close extraction.
+On timeout preserve the external run id and report still-running; inspect it before any retry.
+
+
+Task naming within a cohort extraction Job
+-------------------------------------------
+
+Each cohort's extraction pipeline is organized as numbered stages:
+
+```
+b01_prediabetes_raw/
+└── j01_operational_extract/
+    ├── t01_encounters_extract/
+    ├── t02_medications_extract/
+    └── t03_raw_snapshot_validate/
+```
+
+Convention (Pattern 1):
+  - `stage1` = extract SQL tables → parquet (Databricks)
+  - `stage2` = read parquet, clean/transform with pandas (local)
+  - `stage3+` = optional further processing stages
+
+Convention (Pattern 2, all stages on Databricks — see A00 shape above):
+  - `stage1` = cohort universe, `stage2` = phenotype, `stage3` = features;
+    stage meaning is cohort-specific, ordering is what matters.
+
+Stage numbering is cohort-specific.
+Different cohorts may have different numbers of stages depending on complexity.
+
+
+Cross-reference to pipeline skill
+----------------------------------
+
+`/hai-data raw` owns the understanding of raw cohort data — the datapoint-timeline lifecycle documentation.
+After extraction, suggest `/hai-data raw understand <cohort>` to document what was extracted, then `/hai-data source` to wrap into Stage 1.
+
+
+Commands
+--------
+
+```
+/hai-task raw                                 ASK project / Block / Job / Task
+/hai-task raw <project> <block>/<job> <task>  scaffold direct
+```
+
+
+Scaffold flow
+-------------
+
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
+
+  1. Identify project + block.
+  2. Collect metadata (NN, name, stage number, _meta block).
+  3. Create canonical Task skeleton (`scripts/`, `runs/rNN_<run>/` with its
+     `config.yaml`, `run.yaml` card and `result/`, `notebooks/`; `draft/` only when the Task writes,
+     `workflow/` only when a plan pays).
+  4. Seed `runs/rNN_<run>/config.yaml` from `ref/config-seed.yaml`.
+  5. Copy run-script from `ref/run-databricks-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
+  6. Suggest next via cross-skill link.
+  7. Emit return contract.
+
+
+Return contract
+---------------
+
+Every call ends with the block in `../../hai-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
+
+```
+status:    ok | blocked | failed
+summary:   2-3 sentences on what was scaffolded
+artifacts: [paths created]
+next:      /hai-data raw understand <cohort>  OR  run on Databricks
+```
+
+
+MUST NOT
+---------
+
+- Place heavy artifacts (`.parquet`, a row-level `.csv`, any file over 10 MB) in a Run's `result/`.
+  Heavy outputs land in `_WorkSpace/0-RawDataStore/<raw_data_name>/` (or the
+  catalog volume for Pattern 2).
+- Write complex multi-table JOINs in SQL — extract tables separately,
+  join in Python downstream.
+- Use Spark for local processing — pandas only once data is local.
+- Sync PHI raw data to a laptop / local `_WorkSpace` (Pattern 2 cohorts are
+  server-only; only aggregated outputs move).
+- Skip the `_meta:` block.
+- Create `README.md` at Block, Job, or Task root. Use `board.md`, the Task Page,
+  and a Block `studio/` topic; legacy Databricks-native READMEs remain readable.
+
+
+First-run gate
+---------------
+
+`runs/<RUN>/<RUN>.sh` does NOT execute the notebook — it only converts.
+The code-review gate is still present (inherited from the base template pattern) but uses `skip_review: true` by default for initial scaffolding since the notebook will be reviewed manually before Databricks upload.

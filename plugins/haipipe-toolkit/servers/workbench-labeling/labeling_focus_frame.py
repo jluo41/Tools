@@ -53,12 +53,8 @@ def task_shell(root, folder, section, views: dict, view: str, body: str, head_ex
         + ('<span class="vw fd-you" title="waits for you">🙋</span>'       # a mark, only where the step waits on you
            if (words or {}).get(key, ("", ""))[1] == "you" else "")
         + '</a>' for key, name in views.items()) + '</nav>')
-    data = F.read_face(folder, root)
-    goal = data["goal"].split("\n")[0] if data["goal"] else ""
-    goal_html = (f'<div class="focus-goal"><span class="goal-word">{F.GOAL_WORD.get(level, "Goal")}</span>'
-                 f'{F.markdown(goal, folder, root)}</div>' if goal else '')
-    source = (frame.pop(frame.reader(data["face"], root), "Source Markdown", "Open this page's Markdown")
-              if data["face"] and F.inside(data["face"], root) else "")
+    goal_html = ""                          # no goal-line under the title: the Goal fold holds it (hai-block A03)
+    source = ""                             # no "Open this page's Markdown" line: the face opens from Files (hai-block A02)
     crumbs, cur = [frame._link("/", root.name)], root          # the path, from the SPACE down (focus_page.render)
     for part in folder.relative_to(root).parts[:-1]:
         cur /= part
@@ -196,7 +192,7 @@ def shared_section_page(theme, root, folder, section, group=""):
 def task_frame(theme, root, folder, section, group, views: dict, default, body, words=None,
                head_extra="", tail_extra="", old=None):
     """A labeling Task on the shared frame (the Paper Section Task's shape): one Report section, the Task's steps as
-    its views and Delivery last, each view 📋 Review Content (`body(view)`: the whole step) then 🧭 Around the Work
+    its views and Delivery last, each view 📋 Review Content (`body(view)`: the whole step) then its 🙋 Interactions (the side pane holds the rest)
     (the 8 shared sections scoped to that step); the right rail is Report plus the 8 shared sections. Older links
     (section=work, a step named as a section, the Task's own `old` keys, section=delivery) open the nearest view.
     `default()` names the view that opens; `words` puts each step's state word on its button."""
@@ -221,10 +217,8 @@ def task_frame(theme, root, folder, section, group, views: dict, default, body, 
         content = body(view)
     topics, every = F.topic_rows(folder, root), F.interactions(folder, root)
     knows, events = F.known(folder, root, every), F.timeline_events(folder, root)
-    shared = WF.shared(folder, root, theme.name, "Task", view, topics, every, knows, events, every)
-    content = ('<section class="work-section-group"><h2>📋 Review Content</h2>' + content
-               + '</section><section class="work-section-group"><h2>🧭 Around the Work</h2>'
-               + shared + '</section>')
+    content = ('<section class="work-section-group"><h2>📋 Review Content</h2>' + content   # the side pane holds the
+               + WF.view_asks(folder, root, theme.name, "Task", view, topics, every, knows, events, every) + '</section>')
     head, tail = _assets()
     return task_shell(root, folder, "report", views, view, WF.STYLE + F.side_css() + content,
                       head + head_extra, tail + F.PB_JS + tail_extra, words, aligned=True)

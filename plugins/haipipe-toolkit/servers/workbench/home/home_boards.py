@@ -45,8 +45,8 @@ PROJECT_FIELD = re.compile(r"^(id|profile|state):\s*(.*?)\s*$")
 BOARD_STATE = re.compile(r"^state:[ \t]*([^\w\s]+)?[ \t]*([A-Z][A-Z-]+)?", re.M)
 
 # The Space view: Project -> Theme -> Block. A Theme is the Project-root folder a
-# Block sits in (skills/1_base/project/haipipe-project/ref/project-structure.md), listed in
-# the order of haipipe-draft's src/themes.py; an old plural folder (`tasks/`, `papers/`, ...)
+# Block sits in (skills/1_base/project/hai-project/ref/project-structure.md), listed in
+# the order of hai-draft's src/themes.py; an old plural folder (`tasks/`, `papers/`, ...)
 # is an alias of its singular Theme folder and sorts with it.
 THEMES = tuple(folder for _, folder, _ in THEME_TABLE)
 THEME_ALIASES = {old: folder for _, folder, old in THEME_TABLE if old}
@@ -154,7 +154,7 @@ def board_kind(board: Path, root: Path) -> tuple[str, str]:
         return "Skill Board", "🧩"
     if any(theme_kind_of(part) == "discovery" for part in parts):
         return "Discovery Board", "🔭"
-    if "cowork" in parts:                       # a CoWork Block (haipipe-cowork), not a Task Board
+    if "cowork" in parts:                       # a CoWork Block (hai-cowork), not a Task Board
         return "CoWork Board", "📨"
     if board.name.lower().endswith("-designboard"):
         return "Design Board", "🎨"

@@ -2,7 +2,7 @@ describe-food / benchmark
 ================================================================================
 
 The noun-specific half of describe-food's benchmark. The harness is shared:
-`haipipe-norm/xbench`. This directory declares only the three things xbench
+`hai-norm/xbench`. This directory declares only the three things xbench
 cannot know.
 
 ```text

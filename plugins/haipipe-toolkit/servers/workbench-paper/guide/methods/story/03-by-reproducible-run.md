@@ -41,4 +41,4 @@ verify: Every evidence item names a Run with a receipt (T3).
 risk: An agent may patch a table by hand; generated files are never edited (ours).
 evidence on ai: No study tests agent-run analyses for reproducibility in this setting
   (ours).
-skill: haipipe-task
+skill: hai-task

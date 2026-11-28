@@ -40,13 +40,13 @@ description: 'The Insight Workbench reads one dataset, version by version, and a
   checks it. The workbench shows what each Job found, the runs behind each answer, and what still needs a check or
   a signature.'
 skills:
-- skill: haipipe-insight
+- skill: hai-insight
   role: 'The Insight Block: one task per question, its file, its script and its runs'
-- skill: haipipe-insight-evidence-plan
+- skill: hai-insight-evidence-plan
   role: A question's evidence needs, agreed by a reviewer
-- skill: haipipe-insight-check
+- skill: hai-insight-check
   role: Question rules and each cell's status from receipts and checks
-- skill: haipipe-draft-workflow
+- skill: hai-draft-workflow
   role: One page per question, checked by an agent that did not write it
 - skill: workbench-insight
   role: Scope, Question Book, Insight, Check and Delivery over the Block
@@ -113,7 +113,7 @@ folders:
   - meta/status.md
 # Method: one page, as Design's: the Insight method (asking, answering, reading) with its cards, then the
 # methods drawing, served by insightboard.py from guide/ ("only": the page carries the six steps, so Guide
-# skips its own list); RoadMap Draw: the design drawing in b11_theme_insight's s02-insight-workbench, view
+# skips its own list); RoadMap Draw: the design drawing in this workbench's studio/, view
 # only; Related Paper: related/papers.md, the papers the cards cite
 explain:
   method:
@@ -124,7 +124,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw
+  - board: Tools/plugins/haipipe-toolkit/servers/workbench-insight/studio/insight-workbench-design.excalidraw
   - Workbench design
   - first
   related-paper:
@@ -136,7 +136,7 @@ explain:
 boundary: 'One task Block holds everything: the segments and settings in meta/, one task per question with its
   file, its one script, one run per dataset and segment, and its page. Status is computed from run receipts and
   CHECK runs. Guide never signs a question change or a handoff.'
-# the card Guide's words per level (b11 s31-insight-guide, plan C, 261007); a Space card's sub and runs
+# the card Guide's words per level (plan C, 261007); a Space card's sub and runs
 # are read live from the frame (insight_theme.py). roadmap: per level is still open in s31, so not yet here.
 levels:
   Block:

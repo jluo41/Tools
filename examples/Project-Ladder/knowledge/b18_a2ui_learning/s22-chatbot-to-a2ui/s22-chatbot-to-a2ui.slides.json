@@ -1,0 +1,11 @@
+{
+  "style": "sketch-notes",
+  "slides": [
+    {
+      "id": "01",
+      "idea": "What do I change, step by step, so my chatbot also returns A2UI, and which A2UI tools do I use?",
+      "image": "s22-chatbot-to-a2ui.png",
+      "notes": "See Page for each step, its tool and where Travel A2UI keeps it. This diagram is learning material, not an execution receipt."
+    }
+  ]
+}

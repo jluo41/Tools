@@ -1,0 +1,12 @@
+version: 1
+kind: ideation-block
+direction: Robust models under change
+question: Which modelling choices remain reliable when the deployment data change?
+scope: Demonstration portfolio with provisional candidates and no scientific results.
+ideas:
+- idea_id: i01
+  job: j01_calibration
+- idea_id: i02
+  job: j02_missingness
+- idea_id: i03
+  job: j11_subgroup_testing

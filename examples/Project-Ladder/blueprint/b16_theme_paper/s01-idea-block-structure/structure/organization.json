@@ -1,0 +1,63 @@
+{
+  "title": "Idea Block · Job / Task Organization",
+  "reference": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/structure/jobs.md",
+  "scope": "Named design examples; a Job without children has no Task assigned in this map. Group labels remain metadata and create no folder level.",
+  "legend": "Design examples · Idea Job is recognized by its manifest; ideation is the assessment Task type.",
+  "tree": {
+    "name": "Idea Block",
+    "children": [
+      {
+        "name": "Idea Job",
+        "group": "Ideas",
+        "source": "plugins/haipipe-toolkit/skills/1_base/ideation/hai-ideation/references/idea-block.md",
+        "note": "Semantic Idea Job recognized by ideation-unit / idea-job manifest and one canonical Card; no job-type key is invented.",
+        "children": [
+          {
+            "name": "Calibration under shift",
+            "children": [
+              {
+                "name": "ideation",
+                "source": "plugins/haipipe-toolkit/skills/1_base/ideation/hai-ideation/references/assessment-task.md",
+                "note": "Registered assessment Task type; skills are methods within a Task.",
+                "children": [
+                  {
+                    "name": "Falsifiable claim",
+                    "group": "Framing"
+                  },
+                  {
+                    "name": "Closest-work comparison",
+                    "group": "Assessment"
+                  },
+                  {
+                    "name": "Minimum experiment",
+                    "group": "Assessment"
+                  },
+                  {
+                    "name": "Development recommendation",
+                    "group": "Decision"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Missingness robustness",
+            "children": [
+              {
+                "name": "ideation",
+                "source": "plugins/haipipe-toolkit/skills/1_base/ideation/hai-ideation/references/assessment-task.md",
+                "note": "Registered assessment Task type; skills are methods within a Task.",
+                "children": [
+                  {
+                    "name": "Missing-input experiment design",
+                    "group": "Assessment"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

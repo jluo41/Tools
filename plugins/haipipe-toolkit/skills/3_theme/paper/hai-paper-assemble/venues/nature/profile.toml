@@ -1,0 +1,43 @@
+# Nature Portfolio research journals (Nature, Nature Machine Intelligence, Nature Medicine, ...): the print rules
+# they share. A journal's own few values are a [journals.<journal>] table at the end; a paper picks one with
+#   venue_profile = "nature/<journal>"
+# and may still override any key in its own [profile]. Venue behaviour only; never claims.
+layout = "generic"
+article_type = "Article"
+venue_pack = "playbook-nature-portfolio"
+font = "Times New Roman"
+line_numbers = false
+draft_label = "DRAFT — NOT SUBMISSION READY"
+abstract_heading = "Abstract"
+references_heading = "References"
+# must match what build_delivery.py emits verbatim ("Acknowledgments"); latex_room_to_docx.py reads this key
+backmatter_heading = "Acknowledgments"
+# superscript numbers in the order cited; author-year is not used
+citation_style = "numeric"
+# the main-text count is Introduction, Results and Discussion: Methods is not counted
+back_matter_headings = ["Methods"]
+word_count_label = "Main-text word count (excluding abstract, Methods, references and figure legends)"
+# Data availability and Code availability are their own sections after Methods
+word_top_level = ["Data availability", "Code availability"]
+# the supplement file is the Extended Data: no "Appendix A" line, single-spaced, Nature's float names.
+# A Supplementary Information file overrides the title and prefixes in its own [profile].
+supplement_title = "EXTENDED DATA"
+appendix_heading = false
+supplement_line_spacing = 1.0
+supplement_table_prefix = "Extended Data Table "
+supplement_figure_prefix = "Extended Data Fig. "
+
+[latex]
+bibstyle = "unsrtnat"   # numbered, order of appearance; the paper's preamble.tex switches natbib to superscript
+spacing = "onehalf"
+displays = "inline"
+appendix_newpage = true
+title_page = "inline"
+abstract_page = false
+running_head = true
+
+# ── one table per journal: only what differs from the series ──────────────────
+[journals.nature-machine-intelligence]
+venue_label = "Nature Machine Intelligence"
+venue_pack = "playbook-nature-portfolio/NMI"
+main_text_word_limit = 3500   # Article: up to 3,500 words of main text

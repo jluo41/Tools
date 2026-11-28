@@ -57,4 +57,4 @@ verify: Verify checks the delivery limits as rules (T0) and a reviewer agent cri
 risk: An agent can state a plan it cannot know to be true: reach and adoption are measured
   in use, not reasoned (ours).
 evidence on AI: No study tests an AI designing for implementation yet (ours).
-skill: haipipe-design-by-implementation (proposed)
+skill: hai-design-by-implementation (proposed)

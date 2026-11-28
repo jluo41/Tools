@@ -137,7 +137,7 @@ def main():
                 f"{len(declared)} keys. {len(gap)} declared key(s) are absent, so "
                 f"citing any of them prints a bare key: "
                 f"{', '.join(gap[:6])}{' …' if len(gap) > 6 else ''}. "
-                f"Regenerate: python3 <haipipe-draft>/cli/refs.py <paper-root>"))
+                f"Regenerate: python3 <hai-draft>/cli/refs.py <paper-root>"))
     bbl = Bbl(bbl_path)
     disp = Displays(root, extra_root=a.display_root)
     inline = Inline(bbl, disp, num, report)

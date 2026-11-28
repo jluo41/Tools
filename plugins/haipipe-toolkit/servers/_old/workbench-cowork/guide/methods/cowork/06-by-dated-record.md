@@ -27,10 +27,10 @@ limitations: Notes can drift from decisions; the decision's home is design/, not
 Applied to AI
 -------------
 
-agent: haipipe-cowork-agent (planned) writes the note from the person's input.
+agent: hai-cowork-agent (planned) writes the note from the person's input.
 steps: 1. Take the person's notes. 2. Write the dated note. 3. Move the decisions. 4. Stop for the person.
 returns: the meeting note and the design/ change.
 verify: Every decision in the note appears in design/ (T5).
 risk: An agent may record a decision nobody made; the person agrees the list (ours).
 evidence on ai: No study tests agents writing meeting records (ours).
-skill: haipipe-cowork
+skill: hai-cowork

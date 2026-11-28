@@ -1,4 +1,4 @@
-"""A draft Task's §1 Structure map is drawn by haipipe-mindmap's shared renderer (mapview.py), the one a Studio topic's
+"""A draft Task's §1 Structure map is drawn by hai-mindmap's shared renderer (mapview.py), the one a Studio topic's
 mind map is drawn by too; moving or breaking that skill breaks §1, so this fails first."""
 from __future__ import annotations
 
@@ -55,7 +55,7 @@ def draft_task(root: Path) -> Path:
 class StructureMapTest(unittest.TestCase):
     def test_section_1_is_drawn_by_the_shared_renderer(self):
         mv = draft_steps._mapview()
-        self.assertIn("haipipe-mindmap", str(Path(mv.__file__)))         # the shared skill, wherever it lives
+        self.assertIn("hai-mindmap", str(Path(mv.__file__)))         # the shared skill, wherever it lives
         with tempfile.TemporaryDirectory() as tmp:
             task = draft_task(Path(tmp))
             d = draft_steps.read_draft(task)

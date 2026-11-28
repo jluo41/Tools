@@ -61,7 +61,7 @@ class DesignContextTest(unittest.TestCase):
 
     def test_all_shared_sections_use_the_same_selection(self):
         catalog = {}
-        for name in ('haipipe-design-goal', 'skill_goals', 'skill_override', 'skill_unassigned'):
+        for name in ('hai-design-goal', 'skill_goals', 'skill_override', 'skill_unassigned'):
             md = self.root / 'skills' / name / 'SKILL.md'
             md.parent.mkdir(parents=True)
             md.write_text(name)
@@ -70,7 +70,7 @@ class DesignContextTest(unittest.TestCase):
             bodies = c.shared_bodies(self.board, self.root, 'design', 'Block', 'goals', self.topics, [], [], [], self.rows)
             for key, marker in [('studio', 's01-goals'), ('interactions', 'goals_QUESTION'),
                                 ('decisions', 'GOALS_DECISION'), ('checklist', 'GOALS_CHECK'), ('know', 'GOALS_NOTE'),
-                                ('timeline', 'r01_goals'), ('skills', 'skill_goals'), ('files', 'r01_goals')]:
+                                ('timeline', 'r01_goals'), ('skills', 'skill_goals')]:   # Files is the page's own folder only
                 self.assertIn(marker, bodies[key][0], key)
             combined = ''.join(body for body, _ in bodies.values())
             for marker in ('METHODS_DECISION', 'UNASSIGNED_DECISION', 'override_QUESTION', 'unassigned_QUESTION', '/skill_override'):
@@ -85,7 +85,7 @@ class DesignContextTest(unittest.TestCase):
             page = f.render(THEME, self.root, self.board, 'work', 'work-'+key)
             self.assertIn(f'aria-current="page">{dict(d.BLOCK_VIEWS)[key]}</a>', page)
             self.assertIn('📋 Review Content', page)
-            self.assertIn('🧭 Around the Work', page)
+            self.assertNotIn('🧭 Around the Work', page)   # the side pane holds it (hai-block A01)
             self.assertNotIn('aria-label="Work"', page)
             self.assertNotIn('<h3 class=pb-group>⚙️ Process', page)
             groups = re.findall(r'<h3 class=fd-h>(\d+) · ', page)
@@ -95,12 +95,12 @@ class DesignContextTest(unittest.TestCase):
         self.assertNotIn('aria-label="Work"', f.render(THEME, self.root, self.job, 'work', 'work-release'))   # Work retired (JL 261111)
 
     def test_blueprint_sections_and_examples_are_real_and_routed(self):
-        blueprint = REPO / 'blueprints/Project-Ladder/work/b12_theme_design'
-        guide = json.loads((blueprint / 'ui/view-guide.json').read_text())
-        matrix = f.ui_matrix_html(blueprint / 'ui/block-views.md', REPO)
+        blueprint = REPO / 'examples/Project-Ladder/blueprint/b12_theme_design'
+        guide = json.loads((blueprint / 'delivery/page-spec/view-guide.json').read_text())
+        matrix = f.ui_matrix_html(blueprint / 'delivery/page-spec/block-views.md', REPO)
         for key in ('designs', 'goals', 'inputs', 'rounds', 'tests', 'mindmap'):
             self.assertIn('group='+key, html.unescape(matrix))
-        matrices = ''.join(f.ui_matrix_html(blueprint / ('ui/' + level + '-views.md'), REPO)
+        matrices = ''.join(f.ui_matrix_html(blueprint / ('delivery/page-spec/' + level + '-views.md'), REPO)
                            for level in ('block', 'job', 'task'))
         for title, entry in guide['sections'].items():
             if title == '🧭 Around the Work':
@@ -123,7 +123,7 @@ class DesignContextTest(unittest.TestCase):
         self.assertIn('data-title="🎯 The goals"', blueprint_page)
 
     def test_use_cases_have_real_public_pages_and_correct_task_roles(self):
-        ui = REPO / 'blueprints/Project-Ladder/work/b12_theme_design/ui'
+        ui = REPO / 'examples/Project-Ladder/blueprint/b12_theme_design/delivery/page-spec'
         guide = json.loads((ui / 'view-guide.json').read_text())
         # Public fixtures must remain portable; no deployment paths or identities.
         with patch.object(use_case_examples, '_json', return_value={}):

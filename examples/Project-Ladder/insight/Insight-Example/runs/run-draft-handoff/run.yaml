@@ -1,0 +1,16 @@
+run: run-draft-handoff
+kind: soft
+type: draft
+scope: Tools/examples/Project-Ladder/insight/Insight-Example
+target: handoff
+ticket: run-draft-handoff.md
+skill: hai-insight-wisdom
+agent: hai-insight-agent
+signs:
+- a person (the handoff)
+status: waiting
+passes:
+- p01-1106
+writes:
+- delivery/handoff-W01.md
+feeds: []

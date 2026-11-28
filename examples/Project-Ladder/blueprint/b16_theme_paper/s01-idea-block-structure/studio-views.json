@@ -1,0 +1,117 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/structure/jobs.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/structure/jobs.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/structure/jobs.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "〈Research topic〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/job-group-type--research-topic.html"
+        },
+        {
+          "name": "Idea Job",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/job-type--idea-job.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "〈Framing〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/task-group-type--framing.html"
+        },
+        {
+          "name": "〈Assessment〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/task-group-type--assessment.html"
+        },
+        {
+          "name": "〈Decision〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/task-group-type--decision.html"
+        },
+        {
+          "name": "ideation",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/task-type--ideation.html"
+        },
+        {
+          "name": "draft",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/delivery/types/task-type--draft.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s01-idea-block-structure/structure/type.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Examples",
+      "items": [
+        {
+          "name": "Folder",
+          "url": "/_board/workbench?view=focus-folder&path=examples%2FProject-Ladder%2Fpaper%2FIdea-Example"
+        },
+        {
+          "name": "Job-Task",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FIdea-Example&layout=focus&section=jobs&group=j01"
+        },
+        {
+          "name": "Studio",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FIdea-Example&layout=focus&section=studio"
+        },
+        {
+          "name": "Idea-Example",
+          "block": "examples/Project-Ladder/paper/Idea-Example"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-ideation",
+          "path": "plugins/haipipe-toolkit/skills/1_base/ideation/hai-ideation/SKILL.md"
+        },
+        {
+          "name": "hai-block",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/SKILL.md"
+        },
+        {
+          "name": "hai-task",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/SKILL.md"
+        },
+        {
+          "name": "hai-run",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/SKILL.md"
+        },
+        {
+          "name": "hai-job",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

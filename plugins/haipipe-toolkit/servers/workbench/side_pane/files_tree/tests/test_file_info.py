@@ -14,7 +14,7 @@ class FileInfoTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = root = Path(self.tmp.name).resolve()
-        self.block = root / "blueprints" / "P" / "work" / "b01_x"
+        self.block = root / "examples" / "P" / "work" / "b01_x"
         (self.block / "s03-ladder").mkdir(parents=True)
         (self.block / "s03-ladder" / "s03-ladder.md").write_text("# s03 · How does work climb the ladder?\n")
         (root / "tools").mkdir()

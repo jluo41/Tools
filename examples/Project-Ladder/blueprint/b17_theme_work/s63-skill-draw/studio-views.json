@@ -1,0 +1,65 @@
+{
+  "views": [
+    {
+      "name": "hai-draw",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/SKILL.md"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/agents"
+        },
+        {
+          "name": "gallery/draft/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/draft"
+        },
+        {
+          "name": "gallery/ideation/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/ideation"
+        },
+        {
+          "name": "gallery/job/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/job"
+        },
+        {
+          "name": "gallery/read/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/read"
+        },
+        {
+          "name": "gallery/report/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/report"
+        },
+        {
+          "name": "gallery/slide/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/slide"
+        },
+        {
+          "name": "gallery/story/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/story"
+        },
+        {
+          "name": "gallery/task/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/task"
+        },
+        {
+          "name": "gallery/workflow/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/gallery/workflow"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/CHANGELOG.md"
+        }
+      ]
+    }
+  ]
+}

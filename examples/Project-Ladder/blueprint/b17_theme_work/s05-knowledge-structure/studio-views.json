@@ -1,0 +1,104 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Job group type · 〈Practice theme〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "job-group-type--practice-theme"
+        },
+        {
+          "name": "Job type · code",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "job-type--code"
+        },
+        {
+          "name": "Job type · check",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "job-type--check"
+        },
+        {
+          "name": "Job type · doc",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "job-type--doc"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Task group type · Make",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "task-group-type--make"
+        },
+        {
+          "name": "Task group type · Show",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "task-group-type--show"
+        },
+        {
+          "name": "Task type · code",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "task-type--code"
+        },
+        {
+          "name": "Task type · display",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/delivery/structure.html",
+          "fragment": "task-type--display"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s05-knowledge-structure/s05-knowledge-structure.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-knowledge",
+          "path": "plugins/haipipe-toolkit/skills/2_work/knowledge/hai-knowledge/SKILL.md"
+        },
+        {
+          "name": "hai-studio",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md"
+        },
+        {
+          "name": "hai-related",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-related/SKILL.md"
+        },
+        {
+          "name": "hai-discovery",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

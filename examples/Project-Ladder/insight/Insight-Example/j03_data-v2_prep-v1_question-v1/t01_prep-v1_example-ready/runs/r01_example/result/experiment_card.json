@@ -1,0 +1,31 @@
+{
+  "stated": "nothing stated",
+  "settings": {
+    "arms": {
+      "A": 459,
+      "B": 501
+    },
+    "groups": [
+      "group_1",
+      "group_2",
+      "group_3"
+    ]
+  },
+  "time": {
+    "first_day": "2026-01-05",
+    "last_day": "2026-01-20",
+    "calendar_days": 16,
+    "active_days": 16,
+    "gaps": [],
+    "rows_per_day": {
+      "min": 60,
+      "max": 60
+    },
+    "utc_and_local_time": "not checkable: the export holds days, not times",
+    "send_hours": "not checkable: the export holds days, not times"
+  },
+  "checks": {
+    "settings": "not checkable: nothing stated",
+    "time": "not checkable: nothing stated"
+  }
+}

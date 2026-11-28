@@ -1,0 +1,14 @@
+run: run-check-reader
+kind: soft
+type: check
+scope: null
+target: reader
+ticket: run-check-reader.md
+skill: hai-ui
+agent: claude
+signs: null
+status: waiting
+passes:
+- p01-1125
+writes: []
+feeds: []

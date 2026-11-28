@@ -29,25 +29,25 @@ OK = ("ok", "closed", "answered", "✅", "held", "new finding", "new question", 
 QUIET = ("—", "", "planned", "not comparable", "none")
 
 
-# each button's owner skill (b11 s21-insight-run-skill, frame 1; 261007)
-SKILLS = {"Add a data version": ("haipipe-insight-meta",), "Add a Job": ("haipipe-insight",),
-          "Close a Job": ("haipipe-insight-workflow",), "Close the Job": ("haipipe-insight-workflow",),
-          "Run the Job": ("haipipe-insight-workflow",), "Propose a segment": ("haipipe-insight-question",),
-          "Propose questions": ("haipipe-insight-question",), "Update the coverage": ("haipipe-insight-check",),
-          "Draw a track": ("haipipe-insight-check",), "Check consistency": ("haipipe-insight-knowledge",),
-          "Pool or split": ("haipipe-insight-knowledge",), "Ask a Block question": ("haipipe-report",),
-          "Write the report": ("haipipe-report",), "Check a report": ("haipipe-report",),
-          "Write the counsel": ("haipipe-insight-wisdom",), "Draft the handoff": ("haipipe-insight-wisdom",),
-          "Draw the question map": ("haipipe-insight",), "Run a segment": ("haipipe-insight",),
-          "Check alignment": ("haipipe-insight-check",), "Add a topic": ("haipipe-studio",),
-          "Open the release ↗": ("haipipe-insight",), "Open the Question Book Block ↗": ("haipipe-insight",),
-          "Write a report": ("haipipe-insight-data", "haipipe-insight-information", "haipipe-insight-knowledge"),
-          "Write the overall report": ("haipipe-insight",), "Write the Data report": ("haipipe-insight-data",), "Write the Information report": ("haipipe-insight-information",),
-          "Write the Knowledge report": ("haipipe-insight-knowledge",), "Write the Wisdom report": ("haipipe-insight-wisdom",),
-          "Compare with jNN": ("haipipe-insight-knowledge",)}
+# each button's owner skill (261007)
+SKILLS = {"Add a data version": ("hai-insight-meta",), "Add a Job": ("hai-insight",),
+          "Close a Job": ("hai-insight-workflow",), "Close the Job": ("hai-insight-workflow",),
+          "Run the Job": ("hai-insight-workflow",), "Propose a segment": ("hai-insight-question",),
+          "Propose questions": ("hai-insight-question",), "Update the coverage": ("hai-insight-check",),
+          "Draw a track": ("hai-insight-check",), "Check consistency": ("hai-insight-knowledge",),
+          "Pool or split": ("hai-insight-knowledge",), "Ask a Block question": ("hai-report",),
+          "Write the report": ("hai-report",), "Check a report": ("hai-report",),
+          "Write the counsel": ("hai-insight-wisdom",), "Draft the handoff": ("hai-insight-wisdom",),
+          "Draw the question map": ("hai-insight",), "Run a segment": ("hai-insight",),
+          "Check alignment": ("hai-insight-check",), "Add a topic": ("hai-studio",),
+          "Open the release ↗": ("hai-insight",), "Open the Question Book Block ↗": ("hai-insight",),
+          "Write a report": ("hai-insight-data", "hai-insight-information", "hai-insight-knowledge"),
+          "Write the overall report": ("hai-insight",), "Write the Data report": ("hai-insight-data",), "Write the Information report": ("hai-insight-information",),
+          "Write the Knowledge report": ("hai-insight-knowledge",), "Write the Wisdom report": ("hai-insight-wisdom",),
+          "Compare with jNN": ("hai-insight-knowledge",)}
 
 
-# each button named by the Run it makes (haipipe-run ref/run-types-by-space.md rule 6; b11 s21's names);
+# each button named by the Run it makes (hai-run ref/run-types-by-space.md rule 6; b11 s21's names);
 # a hard Run keeps its rNN_ name. Its words stay as what it does, the small line under the button.
 RUNS = {"Add a data version": "run-add-version-data-v<M>", "Add a Job": "run-add-<jNN>", "Close a Job": "run-close-<jNN>",
         "Close the Job": "run-close-<jNN>", "Run the Job": "run-launch-<jNN>", "Propose a segment": "run-propose-cut-<slug>",
@@ -73,8 +73,8 @@ def _kind(label: str, prompt: str, *skills: str, rows=(), run: str = "") -> dict
 
 
 # the run cards are the one source of each button's Run, skill, agent, sign and prompt (b11 s21 step 2,
-# 261008): haipipe-insight-workflow/ref/run-cards.md, read through its own reader run_cards.py
-_CARDS_DIR = skill_dir("haipipe-insight-workflow") / "scripts"   # wherever it lives: a skill, or a part of its door
+# 261008): hai-insight-workflow/ref/run-cards.md, read through its own reader run_cards.py
+_CARDS_DIR = skill_dir("hai-insight-workflow") / "scripts"   # wherever it lives: a skill, or a part of its door
 _CARDS: dict = {}
 ALIAS = {"Write a report": ("Write the Data report", "Write the Information report", "Write the Knowledge report",
                             "Write the Wisdom report")}
@@ -114,7 +114,7 @@ _NEXT: dict = {}  # {folder: (time, line)} · next_run reads every run card of a
 
 def _next_line(folder: Path) -> str:
     """One quiet line at the top of a level's Runs Space: where it stands and the Run to press next, from
-    haipipe-insight-workflow's next_run.py (reads files only); its owner skill from the card. '' if absent."""
+    hai-insight-workflow's next_run.py (reads files only); its owner skill from the card. '' if absent."""
     import time
     hit = _NEXT.get(str(folder))
     if hit and time.time() - hit[0] < 60:
@@ -325,7 +325,7 @@ def _by_level(rows: dict, head: str, empty: str = "No question at this DIKW leve
     board laid them: "Data questions 5", its 'may say' line, and on the right a link to where
     that level's questions are kept (`links`: {letter: html}). A level opens to its question rows.
     With `tabs` (the focus page's id for them): side tabs instead, a level's name on the left with its state word
-    (`words`: {letter: word}), no count in a label (haipipe-ui: one kind of tabs, labels carry no counts; 261106)."""
+    (`words`: {letter: word}), no count in a label (hai-ui: one kind of tabs, labels carry no counts; 261106)."""
     if tabs:
         lvs = [(lv, name, says) for lv, name, says in LEVELS if rows.get(lv)]
         if not lvs:

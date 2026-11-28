@@ -1,0 +1,15 @@
+run: r05_third
+kind: hard
+type: partition
+partition: third
+target: t04_I01_outcome-by-arm
+question: I01
+release: question-v1
+data: data-v2
+status: refused
+passes: 1
+script: 4aa6f79116c7
+n: 68
+power: low
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t04_I01_outcome-by-arm/runs/r05_third/run.sh
+reason: 'underpowered: third MDE 33.42 > 20.0'

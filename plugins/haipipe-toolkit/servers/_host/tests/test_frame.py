@@ -1,4 +1,4 @@
-"""The base frame (servers/workbench/page/frame.py): levels, theme options, fill tags, level patterns,
+"""The base frame (servers/workbench/page/block_index_page/frame.py): levels, theme options, fill tags, level patterns,
 the Block claim, the band and named question ids. Other parts: test_frame_page_task, _delivery, _studio,
 _groups and _routes."""
 from __future__ import annotations
@@ -32,7 +32,7 @@ class LadderTest(unittest.TestCase):
             self.assertEqual(sorted(frame.chain(task, root)), ["Block", "Job", "Task"])
             self.assertEqual(frame.theme_of(task, root), "work")          # tasks/ reads as the work theme
             self.assertEqual([r["type"] for r in frame.runs_of(task)], ["fit", "build"])
-            tools = root / "Tools" / "blueprints" / "b02_workbench"           # not inside a Project
+            tools = root / "Tools" / "examples" / "b02_workbench"           # not inside a Project
             tools.mkdir(parents=True)
             (tools / "board.md").write_text("# b02\n")
             self.assertEqual(frame.theme_of(tools, root), "vanilla")
@@ -173,7 +173,7 @@ class BandTest(unittest.TestCase):
 
 
 class NamedQuestionIdsTest(unittest.TestCase):
-    """A register cut by a word (Q-food-1, haipipe-report rule 1) reads like Q01 does (b51 261021): its report
+    """A register cut by a word (Q-food-1, hai-report rule 1) reads like Q01 does (b51 261021): its report
     folder q-food-1_<topic>/ is found without a report: line, a Task its face and the register's work: both name is
     listed once, and a Job's Description shows its answers: line."""
 

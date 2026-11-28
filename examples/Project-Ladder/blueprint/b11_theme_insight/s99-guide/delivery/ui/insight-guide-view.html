@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s99 insight Guide section</title>
+<style>
+/* the look of s11's insight-job-view.html (the real page's focus.css), so the previews agree */
+:root{--line:#e3e3e6;--muted:#8a8a86;--ink:#1c1c1c;--accent:#1864ab;--soft:#e7f5ff;--bg:#fff;--wash:#f1f3f5}
+@media (prefers-color-scheme:dark){:root{--line:#2c2e33;--muted:#8e8e8a;--ink:#e8e8e6;--accent:#91caff;--soft:#253749;--bg:#161719;--wash:#25262b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:1100px;margin:auto;padding:20px 24px}
+h1{font-size:22px;margin:0 0 10px;display:flex;align-items:baseline;gap:14px}h1 span{font-size:18px;color:var(--muted);font-weight:600}
+.menu{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin:0 0 18px;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.menu b{color:var(--accent);border-bottom:2px solid var(--accent)}
+.views{display:flex;gap:6px;margin:0 0 14px}
+.views button,.tabs button{border:1px solid var(--line);background:none;color:inherit;border-radius:8px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.views button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.split{display:grid;grid-template-columns:210px 1fr;gap:18px;align-items:start}
+.split.one{grid-template-columns:1fr}
+.tabs{display:flex;flex-direction:column;gap:4px;position:sticky;top:12px}
+.tabs button{text-align:left;border-color:transparent;white-space:normal;padding:5px 10px}
+.tabs button[aria-pressed=true]{background:var(--wash);font-weight:600}
+.tabs .grp{font-size:12px;color:var(--muted);margin:8px 0 0 10px}
+.pane{min-width:0;position:relative}
+.lead{font-size:15px;margin:0 0 12px}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+.card{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:0 0 8px}
+.card b{display:block;margin-bottom:2px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;margin:6px 0 14px}.kv dt{color:var(--muted)}.kv dd{margin:0}
+.fig{position:relative;border:1px solid var(--line);border-radius:8px;overflow:auto;background:#fff}
+.fig img{display:block;max-width:none;height:min(70vh,640px);width:auto}
+.dot{position:absolute;top:8px;right:8px;width:14px;height:14px;border-radius:50%;background:var(--accent);opacity:.75;z-index:2}.dot:hover{opacity:1}
+details.more>summary{cursor:pointer;color:var(--muted);font-size:13px;margin:8px 0}
+.star{color:#e8590c}
+code{font-size:12px;background:var(--wash);padding:1px 4px;border-radius:4px}
+</style></head><body><main>
+<h1>Insight-Example<span>📖 Guide</span></h1>
+<nav class=menu aria-label="Page sections"><span>Report</span><span>💼 Jobs</span><span>🎨 Studio</span><b>📖 Guide</b><span>🙋 Interactions</span><span>⚖️ Decisions</span><span>📚 Things to Know</span><span>📝 Checklist</span><span>🕒 Timeline</span><span>🧰 Skills</span><span>Files</span></nav>
+<div class=views id=views></div>
+<div id=body></div>
+</main>
+<script src="insight-guide-view-data.js"></script>
+<script>
+const G = GUIDE;
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const dot = (href, name) => `<a class=dot href="${esc(href)}" target=_blank title="${esc(name)}" aria-label="${esc(name)}"></a>`;
+const fig = f => `<div class=fig>${dot(f.open, f.name)}<img src="${esc(f.png)}" alt="${esc(f.name)}"></div>`;
+const FAMILY = {asking: 'Question-asking', answering: 'Question-answering', reading: 'Results reading'};
+const famOf = g => {
+  for (const [k, cs] of Object.entries(G.cards)) if (cs.some(c => c.name.toLowerCase() === g)) return FAMILY[k];
+  if (g.startsWith('tests')) return 'Tests';
+  if (g.includes('asking')) return 'Question-asking';
+  if (g.includes('answering')) return 'Question-answering';
+  return 'Question-asking';
+};
+const cardList = cs => cs.map(c => `<div class=card title="${esc(c.file)}"><b>${esc(c.name)}</b>${esc(c.move)}</div>`).join('');
+const STEP_CARDS = {1: 'asking', 3: 'answering', 5: 'reading'};
+
+/* each View: its left tabs as [group, key, label], and the pane for a tab */
+const VIEWS = {
+  'Description': {
+    tabs: Object.keys(G.levels).map(k => [null, k, k]),
+    pane: k => {
+      const L = G.levels[k];
+      const rows = Object.entries(L.spaces).map(([s, v]) => `<tr><td>${esc(s)}</td><td>${esc(v.is)}</td><td><code>${esc(v.reads)}</code></td></tr>`).join('');
+      return (k === 'Block' ? `<p class=lead>${esc(G.description)}</p>` : '')
+        + `<p class=lead><b>${esc(k)}</b> · ${esc(L.role)}</p>`
+        + `<table><tr><th>part</th><th>what it holds</th><th>reads</th></tr>${rows}</table>`
+        + (k === 'Block' ? `<h3>Skills</h3><table>${G.skills.map(s => `<tr><td><code>${esc(s.skill)}</code></td><td>${esc(s.role)}</td></tr>`).join('')}</table>` : '');
+    }
+  },
+  'Method': {
+    tabs: [...G.steps.map(s => [null, s.n, `${s.n} · ${s.name}`]), [null, 'draw', '✏️ Methods drawing']],
+    pane: k => {
+      if (k === 'draw') return G.methods_drawing.map(fig).join('');
+      const s = G.steps.find(x => x.n === k), fam = STEP_CARDS[k];
+      return `<p class=lead><b>${esc(s.n)} · ${esc(s.name)}</b> · ${esc(s.what)}</p>`
+        + `<dl class=kv><dt>on</dt><dd>${esc(s.board)}</dd><dt>where</dt><dd>${esc(s.where)}</dd><dt>who decides</dt><dd>${esc(s.who)}</dd></dl>`
+        + (fam ? `<h3>${FAMILY[fam]} methods</h3>` + cardList(G.cards[fam]) : '');
+    }
+  },
+  'RoadMap': {
+    tabs: G.roadmap.map((f, i) => [null, String(i), f.name]),
+    pane: k => fig(G.roadmap[+k])
+  },
+  'Related Paper': {
+    tabs: (() => {
+      const groups = [...new Set(G.papers.map(p => p.group))];
+      const fams = ['Question-asking', 'Question-answering', 'Results reading', 'Tests'];
+      return fams.flatMap(f => { const gs = groups.filter(g => famOf(g) === f); return gs.length ? [[f, null, null], ...gs.map(g => [f, g, g[0].toUpperCase() + g.slice(1)])] : []; });
+    })(),
+    pane: k => {
+      const ps = G.papers.filter(p => p.group === k), key = ps.filter(p => p.key), rest = ps.filter(p => !p.key);
+      const tbl = rows => `<table><tr><th></th><th>paper</th><th>role</th><th>why here</th></tr>${rows.map(p =>
+        `<tr><td class=star>${p.key ? '★' : ''}</td><td>${p.doi ? `<a href="https://doi.org/${esc(p.doi)}" target=_blank>${esc(p.paper)}</a>` : esc(p.paper)}<br><small>${esc(p.venue)}</small></td><td>${esc(p.role)}</td><td>${esc(p.why)}</td></tr>`).join('')}</table>`;
+      return key.length ? tbl(key) + (rest.length ? `<details class=more><summary>more papers</summary>${tbl(rest)}</details>` : '') : tbl(rest);
+    }
+  }
+};
+
+const state = {view: 'Description', tab: {}};
+function draw() {
+  document.getElementById('views').innerHTML = Object.keys(VIEWS).map(v =>
+    `<button aria-pressed=${v === state.view} data-view="${esc(v)}">${esc(v)}</button>`).join('');
+  const V = VIEWS[state.view], tabs = V.tabs.filter(t => t[1] !== null);
+  const cur = state.tab[state.view] ?? tabs[0][1];
+  const left = V.tabs.map(([g, k, label]) => k === null ? `<div class=grp>${esc(g)}</div>`
+    : `<button aria-pressed=${k === cur} data-tab="${esc(k)}">${esc(label)}</button>`).join('');
+  document.getElementById('body').innerHTML = tabs.length > 1
+    ? `<div class=split><nav class=tabs>${left}</nav><div class=pane>${V.pane(cur)}</div></div>`
+    : `<div class="split one"><div class=pane>${V.pane(cur)}</div></div>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.view) { state.view = b.dataset.view; draw(); }
+  if (b.dataset.tab !== undefined) { state.tab[state.view] = b.dataset.tab; draw(); }
+});
+draw();
+</script>
+</body></html>

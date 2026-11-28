@@ -1,0 +1,13 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Call fit",
+          "path": "examples/Project-Ladder/paper/Grant-Example/s01-call-fit/s01-call-fit.md"
+        }
+      ]
+    }
+  ]
+}

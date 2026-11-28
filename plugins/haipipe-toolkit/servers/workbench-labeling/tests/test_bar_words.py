@@ -1,6 +1,6 @@
 """A closed bar of a labeling page carries a word on its right only when it asks the person to act ("waits for your
 sign", "3 wait for you"), with that one waiting thing under it; a state alone (done, agreed, nothing yet, a count) is
-never said on the page (AGENTS.md § Page words), as on the other themes' bars (servers/workbench/page/ui_parts.py). Checked on the
+never said on the page (AGENTS.md § Page words), as on the other themes' bars (servers/workbench/page/parts_and_map/ui_parts.py). Checked on the
 placeholder Job that runs both loops with the real tools (labeling_example.py), on an items Task whose recipe waits for
 a Sign behind a waiting form, and on a building Task's bars."""
 import re

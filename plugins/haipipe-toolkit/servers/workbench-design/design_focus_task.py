@@ -104,7 +104,7 @@ def _changes(d: dict, root: Path) -> tuple:
 
 
 def _walk(d: dict, j: dict) -> tuple:
-    """A design's state walk (haipipe-design-workflow): draft → verify → revise → passed → kept | dropped → released,
+    """A design's state walk (hai-design-workflow): draft → verify → revise → passed → kept | dropped → released,
     each step with its word."""
     n = len(V.draft_files(d)) or len(d["drafts"])
     steps = [("③ draft", "v1", "done" if n else "not yet")]

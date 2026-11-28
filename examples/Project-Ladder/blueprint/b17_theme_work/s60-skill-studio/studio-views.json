@@ -1,0 +1,66 @@
+{
+  "views": [
+    {
+      "name": "hai-studio",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/agents"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/constitution"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio/s60-skill-studio.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s60-skill-studio/delivery/check.html",
+          "fragment": "check-1"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+}

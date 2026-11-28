@@ -9,7 +9,7 @@ per Question, left to right: the Question (id, title, the question), the Tasks i
 (one line per Task folder, with the Jobs it runs in), and its report. A Task that serves another
 Question too is marked "also" with that Question's id.
 
-It is the Task family's twin of Insight's question map (haipipe-insight ref/question_map.py), in
+It is the Task family's twin of Insight's question map (hai-insight ref/question_map.py), in
 the same drawing style. The drawing is generated (AGENTS.md rule 0): never edit it; change the
 register in board.md and rerun this script. The workbench shows it view only and says when
 board.md is newer than it. A hand sketch is its own drawing in the same studio/.

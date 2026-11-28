@@ -1,0 +1,281 @@
+---
+name: diagram
+part-of: hai-display
+description: "Generate deterministic publication-quality architecture, workflow, and pipeline diagrams from structured JSON (FigureSpec) into editable SVG. Use when user says \"架构图\", \"workflow 图\", \"pipeline 图\", \"确定性矢量图\", \"figure spec\", \"draw architecture\", or needs precise, editable, publication-ready vector diagrams. Preferred over AI illustration for formal architecture/workflow figures."
+argument-hint: "[description-of-diagram]"
+metadata:
+  version: "0.2.1"
+  last_updated: "2026-10-26"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+---
+
+# FigureSpec: Deterministic JSON → SVG Figure Generation
+
+Generate publication-quality **architecture diagrams**, **workflow pipelines**, **audit cascades**, and **system topology** figures as editable SVG vector graphics using a deterministic JSON → SVG renderer.
+
+## Output: write into a display unit
+
+The diagram goes into the caller-supplied unit directory per the shared contract:
+`../../../ref/display-unit-output-contract.md`. For a Page DISPLAY Result, the caller
+supplies `<page>/results/<re-run>/payload/<unit>/`; a View or other caller
+supplies its own unit path.
+THIS renderer's row: asset -> `assets/figure.svg` (plus `assets/figure.pdf` if you
+rasterize/convert for LaTeX); rebuild spec -> `recipe/<name>.json` (the FigureSpec).
+
+One invocation that produces one bounded diagram unit may be one Run in the parent Workflow.
+Spec edits, render calls, compilation, review, and retries remain internal Steps.
+
+For a new unit, read `intake/manifest.yaml` before drafting the FigureSpec.
+The manifest provides the approved narrative context and any real numeric facts that appear in a
+study-flow or schematic.
+Do not invent counts, percentages, or estimates.
+Legacy `source/` units remain valid only through the compatibility path in the shared contract.
+
+## When to Use This Skill
+
+**Use `hai-display diagram`** for:
+- System architecture diagrams (layered, hub-and-spoke, multi-plane)
+- Workflow / pipeline figures
+- Audit cascade / flow-control diagrams
+- Any structured diagram where node positions, connections, and groupings are semantically important
+- Figures that need to be edited/tweaked later (SVG is plain text)
+- Figures where determinism matters (same spec → same SVG)
+
+**Do NOT use for:**
+- Data plots (bar/line/scatter) — use `/hai-display figure`
+- Natural/qualitative illustrations — use `/hai-display illustration`
+- Quick state-machine / flowchart — use `/mermaid-diagram` (lighter syntax)
+
+## Core Properties
+
+- **Deterministic**: identical FigureSpec JSON always produces identical SVG output (for a fixed renderer version + fonts)
+- **Editable**: SVG output is plain-text, can be post-edited by hand or programmatically
+- **Validated**: renderer enforces schema, rejects malformed specs with clear error messages
+- **Shape-aware**: edge clipping works correctly for rect/rounded/circle/ellipse/diamond
+- **CJK support**: multi-line labels with proper Chinese character width estimation
+- **No external API**: runs fully local, no network, no API keys
+
+## Tool Location
+
+Skill-local at `scripts/figure_renderer.py` (pure stdlib, no network, no API key).
+Resolve it via `$CLAUDE_SKILL_DIR` (CC 1.0+ exposes it).
+Invoke via:
+
+```bash
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render <spec.json> --output <out.svg>
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate <spec.json>
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" schema
+```
+
+## Workflow
+
+### Step 1: Understand the Diagram Goal
+
+From the display brief and its Intake context, identify:
+- **Purpose**: architecture, workflow, pipeline, audit cascade, topology?
+- **Main entities**: what are the boxes?
+- **Relationships**: how do they connect?
+  (uses, produces, calls, verifies, chains)
+- **Grouping**: do entities cluster into named regions?
+- **Hierarchy vs network**: stacked layers, left-to-right flow, or central hub?
+
+### Step 2: Draft the FigureSpec JSON
+
+Canvas sizing guide:
+- Single-column figure: ~500×350 px
+- Two-column (full-width): ~900×500 px
+- Tall topology: ~700×700 px
+
+Start from a template based on the diagram type:
+
+**Architecture (stacked rows)**:
+```json
+{
+  "canvas": {"width": 900, "height": 520},
+  "nodes": [
+    {"id": "layer1_label", "label": "Layer 1", "x": 450, "y": 60, ...},
+    {"id": "node_a", "label": "A", "x": 180, "y": 120, ...},
+    {"id": "node_b", "label": "B", "x": 350, "y": 120, ...}
+  ],
+  "edges": [...],
+  "groups": [
+    {"label": "Layer 1", "node_ids": ["node_a", "node_b"], "fill": "#F0F9FF", "stroke": "#BAE6FD"}
+  ]
+}
+```
+
+**Workflow (left-to-right chain)**:
+```json
+{
+  "canvas": {"width": 900, "height": 300},
+  "nodes": [
+    {"id": "step1", "label": "Step 1", "x": 100, "y": 150, "shape": "rounded"},
+    {"id": "step2", "label": "Step 2", "x": 280, "y": 150, "shape": "rounded"}
+  ],
+  "edges": [
+    {"from": "step1", "to": "step2", "label": "produces"}
+  ]
+}
+```
+
+**Decision diamond**:
+```json
+{"id": "check", "label": "Passes?", "shape": "diamond", "x": 450, "y": 200}
+```
+
+### Step 3: Render and Validate
+
+```bash
+UNIT_DIR=/path/to/caller-supplied-unit
+
+# Validate first (the FigureSpec lives in the unit's recipe/)
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" validate "$UNIT_DIR/recipe/spec.json"
+
+# Render to SVG (into the unit's assets/)
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render "$UNIT_DIR/recipe/spec.json" --output "$UNIT_DIR/assets/figure.svg"
+
+# Convert to PDF for LaTeX inclusion
+rsvg-convert -f pdf "$UNIT_DIR/assets/figure.svg" -o "$UNIT_DIR/assets/figure.pdf"
+
+# Compile and inspect the complete display unit, including its caption (the door's one preview recipe).
+python3 <hai-display>/scripts/build_preview.py "$UNIT_DIR"
+```
+
+For an explicit comparison, keep the variant spec and render outside the active asset paths:
+
+```bash
+cp "$UNIT_DIR/recipe/spec.json" "$UNIT_DIR/recipe/spec-A.json"
+# Edit spec-A.json for the proposed variant.
+mkdir -p "$UNIT_DIR/candidates"
+python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" render \
+  "$UNIT_DIR/recipe/spec-A.json" \
+  --output "$UNIT_DIR/candidates/A-figure.svg" --preview
+rsvg-convert -f pdf "$UNIT_DIR/candidates/A-figure.svg" \
+  -o "$UNIT_DIR/candidates/A-figure.pdf"
+```
+
+Inspect `candidates/A-figure.pdf` itself; the active `preview.pdf` still shows the active asset.
+After the caller selects a candidate, promote its SVG/PDF into `assets/` and rebuild the canonical
+unit preview before recording any human acceptance.
+
+If validation fails, inspect the error (missing field, duplicate ID, overlap warning, invalid hex color) and fix the JSON.
+Open `preview.pdf` and check label fit, edge clarity, and caption/asset pairing.
+Compilation failure or a visible defect is a HOLD; the renderer does not promote
+the unit or record `accepted:`.
+
+### Step 4: Visual Review
+
+Open the SVG/PDF and check:
+- **No overlaps**: nodes don't collide with each other or group boundaries
+- **Readability**: font sizes are consistent, labels aren't clipped
+- **Edge clarity**: arrows hit nodes at clean angles, labels near edges are legible
+- **Group alignment**: background rectangles frame their members cleanly
+- **Color distinction**: categories are visually distinct in both color and grayscale
+
+If issues found, edit the JSON spec (never the generated SVG) and re-render.
+
+### Step 5: Iterate with Codex Review (Optional, for High-Stakes Figures)
+
+The review that counts is the door's revise loop (`SKILL.md`, **Revise loop**: a fresh blind
+agent). When `mcp__codex__codex` is available, it may add a second opinion for paper
+architecture figures:
+
+```
+mcp__codex__codex:
+  model: gpt-5.4
+  config: {"model_reasoning_effort": "xhigh"}
+  prompt: |
+    Review this SVG figure for a technical paper (architecture / workflow diagram).
+
+    Spec file: /path/to/spec.json
+    Rendered: /path/to/fig.svg
+
+    Evaluate:
+    1. Clarity (C): can a reader understand the system from this figure alone?
+    2. Readability (R): font sizes, label placement, visual hierarchy
+    3. Semantic accuracy (S): do relationships match the described system?
+
+    Score each axis 1-10 and list specific issues to fix.
+```
+
+Use the scores to prioritize internal edits. A score of 7/10 is not an
+acceptance decision. If the caller asked to compare alternatives, keep this
+variant in `candidates/` and wait for the caller to choose one. For a single
+caller-directed render, leave it selected in `assets/` but pending the human
+`accepted:` decision after the compiled unit preview is inspected.
+The ARIS tech report figures went through 5 rounds of this loop to reach C:7/R:7/S:8.
+
+## Schema Quick Reference
+
+Run `python3 "${CLAUDE_SKILL_DIR:-.}/scripts/figure_renderer.py" schema` for the authoritative schema.
+
+### Nodes
+
+| Field | Required | Default | Notes |
+|-------|----------|---------|-------|
+| `id` | ✓ | — | Unique |
+| `label` | ✓ | — | `\n` for multi-line |
+| `x`, `y` | ✓ | — | Center coordinates |
+| `width`, `height` | | 120, 50 | |
+| `shape` | | `rounded` | `rect` / `rounded` / `circle` / `ellipse` / `diamond` |
+| `fill`, `stroke` | | auto from palette | `#RRGGBB` |
+| `text_color` | | `#333333` | |
+| `font_size` | | 14 | Override style default |
+
+### Edges
+
+| Field | Default | Notes |
+|-------|---------|-------|
+| `from`, `to` | required | Same = self-loop |
+| `label` | — | Short edge label |
+| `style` | `solid` | `solid` / `dashed` / `dotted` |
+| `color` | `#555555` | |
+| `curve` | `false` | Curved path |
+
+### Groups
+
+Rectangular background regions framing a set of nodes:
+```json
+{"label": "Layer Name", "node_ids": ["a", "b", "c"], "fill": "#EFF6FF", "stroke": "#BFDBFE"}
+```
+
+## Design Patterns
+
+### Pattern 1: Layered Architecture
+Stack rows of related nodes, each row is a group, add inter-layer arrows with semantic labels (`uses↓`, `produces↑`, `checks↓`).
+
+### Pattern 2: Hub-and-Spoke
+Central node (e.g., Executor), peripheral nodes (skills, tools), solid arrows for primary relations, dashed for feedback.
+
+### Pattern 3: Pipeline with Feedback
+Left-to-right main flow, feedback arrows curve below with `curve: true`.
+
+### Pattern 4: Audit Cascade
+Three-stage horizontal cascade with inputs feeding in from top, outputs exiting right, each stage in its own group.
+
+## Anti-Patterns
+
+- **Don't use groups as hierarchy**: groups frame peer nodes, not containment
+- **Don't nest groups**: renderer draws them as background rectangles; nested groups look like Russian dolls
+- **Don't cross-draw long diagonals**: if an arrow crosses 3+ rows, rethink the layout
+- **Don't mix font sizes for same role**: keep one size per node category
+
+## Output Contract
+
+Write into the display unit per the shared contract
+(`../../../ref/display-unit-output-contract.md`): Intake context -> FigureSpec in `recipe/` ->
+editable SVG in `assets/figure.svg` -> optional PDF in `assets/figure.pdf`.
+
+## Integration with Other Skills
+
+Sibling display renderers and when to use each: see the sibling-routing table in the
+contract (`../../../ref/display-unit-output-contract.md`).
+`/mermaid-diagram` is a lighter alternative for simple flowcharts. ARIS
+`/paper-writing` routes FigureSpec illustration requests to this skill; the
+numbered authoring instructions here remain Steps inside the renderer Run.
+
+## Review Tracing
+
+After each `mcp__codex__codex` or `mcp__codex__codex-reply` reviewer call, save the trace following `shared-references/review-tracing.md`.
+Use `tools/save_trace.sh` or write files directly to `.aris/traces/<skill>/<date>_run<NN>/`.
+Respect the `--- trace:` parameter (default: `full`).

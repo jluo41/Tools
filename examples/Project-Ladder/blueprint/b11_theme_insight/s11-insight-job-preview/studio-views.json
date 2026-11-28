@@ -1,0 +1,78 @@
+{
+  "views": [
+    {
+      "name": "Page-Job",
+      "items": [
+        {
+          "name": "job-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsight-Example&layout=focus&section=jobs&group=j03&mark=jobs-rows%2Cjob-ttopics%2Cjob-subs"
+        },
+        {
+          "name": "job-overview",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsight-Example&layout=focus&section=jobs&group=j03&mark=view%3Doverview"
+        },
+        {
+          "name": "job-tasks",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsight-Example&layout=focus&section=jobs&group=j03&mark=view%3Dstanding"
+        },
+        {
+          "name": "job-findings",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsight-Example&layout=focus&section=jobs&group=j03&mark=view%3Dfindings"
+        }
+      ]
+    },
+    {
+      "name": "Page-Task",
+      "items": [
+        {
+          "name": "Question answer",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsight-Example&layout=focus&section=jobs&group=j03&task=t02"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Analysis",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/insight-ladder.md"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Preparation",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/dataprep.md"
+        },
+        {
+          "name": "Question answer",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/insight-ladder.md"
+        }
+      ]
+    },
+    {
+      "name": "QuickHtml",
+      "items": [
+        {
+          "name": "Segment grid",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s11-insight-job-preview/delivery/ui/segment-grid.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "MindMap",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s11-insight-job-preview/s11-insight-job-preview.mindmap.md"
+        },
+        {
+          "name": "Canvas",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s11-insight-job-preview/s11-insight-job-preview.excalidraw"
+        }
+      ]
+    }
+  ]
+}

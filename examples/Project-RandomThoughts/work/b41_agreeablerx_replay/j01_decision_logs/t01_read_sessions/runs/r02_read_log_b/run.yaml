@@ -1,0 +1,11 @@
+run: r02_read_log_b
+kind: soft
+role: make
+type: agent
+scope: examples/Project-Replay/work/b41_agreeablerx_replay/j01_decision_logs/t01_read_sessions
+skill: hai-task
+says: read the seven other Section sessions into decisions-B.md
+status: done
+started_by: '261114: WorkBench-Paper-UI, for the replay JL asked for'
+reads: [src/extract.py timelines of the transcripts]
+writes: [src/decisions-B.md]

@@ -43,4 +43,4 @@ verify: Every claim names its evidence and its warrant (T1).
 risk: A model writes confident claims without the qualifier; the rebuttal line is
   required (ours).
 evidence on ai: No study tests agent-written warrants for paper claims (ours).
-skill: haipipe-paper-story
+skill: hai-paper-story

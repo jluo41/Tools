@@ -88,7 +88,7 @@ def _b_summary(b: dict, block: Path, root: Path) -> tuple:
     pdf = block / "delivery" / "summary.pdf"
     proc = _step("📄 Build the summary", [(
         "Build the one-page summary", "delivery/summary.pdf, from what the Runs wrote only",
-        "done" if pdf.is_file() else "open", _copy("", "Block", block, root, "/haipipe-design delivery: build the one-page summary of {folder} with "
+        "done" if pdf.is_file() else "open", _copy("", "Block", block, root, "/hai-design delivery: build the one-page summary of {folder} with "
                                          "scripts/summary.py into delivery/summary.html and summary.pdf, and check the "
                                          "PDF is one page. It reads what the Runs wrote and has no Run of its own."))])
     return proc, res

@@ -59,7 +59,7 @@ def page_id_of(stem):
     """A page's id from its filename stem, numbered OR named.
 
     `stem.split("-")[0]` was right while every page was `QA4-slug`; a named
-    family (`Q-Skill-haipipe-board`, JL 260727) collapses to `Q` under that
+    family (`Q-Skill-hai-board`, JL 260727) collapses to `Q` under that
     rule, so every skill page reported as one row called `Q` in the activity
     tree. The named form keeps `Q-<Family>-<rest>` whole, which is the id
     `parse.py` assigns and therefore the id everything else already uses.

@@ -1,0 +1,21 @@
+version: 1
+kind: ideation-unit
+layout: idea-job
+block: ../ideation.yaml
+idea_id: i03
+address: Idea-Example.j11
+direction: Subgroup stress tests
+question: Do prespecified subgroup stress tests reveal model failures that an overall performance average
+  conceals?
+scope: Demonstration hypotheses for robustness under deployment change.
+decision_rule: Compare verified prior work, a bounded test and target fit before requesting human selection.
+stage: generate
+state: open
+bundle: bundle/evidence-bundle.yaml
+direction_card: cards/direction.yaml
+test_matrix: null
+paper_sync: projection/paper-ideation-sync.yaml
+selection_receipt: null
+paper_handoff: null
+created_at: '2026-11-27T18:39:41-05:00'
+updated_at: '2026-11-27T18:39:41-05:00'

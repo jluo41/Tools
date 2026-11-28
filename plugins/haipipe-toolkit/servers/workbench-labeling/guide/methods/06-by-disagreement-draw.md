@@ -39,4 +39,4 @@ verify: no test item is drawn (T3); the random share is recorded
 risk: Models that agree on a mistake are never drawn; the random share and the audit catch
   some (ours).
 evidence on ai: Active learning helps BERT at small budgets [Ein-Dor 2020].
-skill: haipipe-labeling-rounds
+skill: hai-labeling-rounds

@@ -101,7 +101,7 @@ def _scan_task(job, name, tdir):
     tickets = sorted(x for x in runs_dir.rglob("*") if x.is_file() and x.suffix in _TICKET_EXT
                      and (x.parent == runs_dir or x.parent.name == x.stem)) if runs_dir.is_dir() else []
     receipts, receipt_map = [], {}
-    # one folder per Run (haipipe-run 0.31.0): runs/<run>/result/ beside the older results/<run>/
+    # one folder per Run (hai-run 0.31.0): runs/<run>/result/ beside the older results/<run>/
     folders = [(x.name, x / "result") for x in sorted(runs_dir.iterdir())
                if x.is_dir() and (x / "result").is_dir()] if runs_dir.is_dir() else []
     folders += [(x.name, x) for x in sorted(res_dir.iterdir()) if x.is_dir()] if res_dir.is_dir() else []

@@ -12,7 +12,7 @@ from live.paper_text import VERSION_DIR, read, scalar
 
 
 def gates(d):
-    """G0–G5 as haipipe-paper-workflow names them, each read from a file, never
+    """G0–G5 as hai-paper-workflow names them, each read from a file, never
     inferred from a percentage. A gate no file can answer says so."""
     b = d["board"]
     g = []
@@ -113,7 +113,7 @@ def delivery_dir(b):
 
 
 def delivery_info(d, ddir=None):
-    """What leaves the paper: delivery/ (generated whole by haipipe-paper-assemble),
+    """What leaves the paper: delivery/ (generated whole by hai-paper-assemble),
     its manifest, the compile order with every Section page's fragment and lanes,
     the display register, the checks, the Round pages and returned manuscripts.
     `ddir` reads one version's delivery/ in place of the Board's newest."""

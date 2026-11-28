@@ -235,7 +235,7 @@ class LayoutsTest(unittest.TestCase):
             self.assertNotIn("No Story yet", html, sub)
 
     def test_the_ideas_table_reads_verdict_and_went_to_by_name(self):
-        # haipipe-paper-ideation 1.3.0 orders the Ideas (ranked) columns novelty · pilot · venue fit · verdict ·
+        # hai-paper-ideation 1.3.0 orders the Ideas (ranked) columns novelty · pilot · venue fit · verdict ·
         # target · went to, so the verdict is the sixth cell, not the fifth
         from live import paper as P
         tmp = tempfile.TemporaryDirectory()

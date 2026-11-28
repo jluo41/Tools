@@ -14,5 +14,5 @@ SKILL.md in line.
 **Check:** a Pass whose body carries an older rule date and a card written on the Pass's day keeps that sentence's ★ current.
 **Run:** `cd plugins/haipipe-toolkit/servers/workbench && PYTHONPATH=../_host python -m pytest -q tests/test_draft_lab_mustcheck.py -k ReviewDateFromPassTitle`
 **Status:** solved 261118
-**Solved by:** `servers/workbench/workbench-task-draft/draft_step_revise.py`: review date from the Pass title
+**Solved by:** `servers/workbench/workbench-task-draft/revise_steps/draft_step_revise.py`: review date from the Pass title
 **Report:** constitution/A01-marks-agree-with-record.md

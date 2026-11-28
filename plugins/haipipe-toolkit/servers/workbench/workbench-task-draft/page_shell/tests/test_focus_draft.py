@@ -59,7 +59,7 @@ class FocusDraftTest(unittest.TestCase):
             self.assertNotIn(gone, bar)
         self.assertNotIn("4 · Display", bar)          # the text calls no Table or Figure: no empty view (JL 261031)
         self.assertNotIn("Ask the agent", self.page("work", "evidence"))   # prompts only on Plan, Write, Revise
-        self.assertNotIn(">Studio<", bar)                            # a section, never a view (haipipe-ui Page parts)
+        self.assertNotIn(">Studio<", bar)                            # a section, never a view (hai-ui Page parts)
         self.assertNotIn(">Delivery<", bar)
         self.assertNotIn("space=Work+Details", page)                # no old step page in an iframe
         self.assertNotIn('class="draft-frame"', page)
@@ -90,7 +90,7 @@ class FocusDraftTest(unittest.TestCase):
         for view, now in (('plan', 'plan'), ('write', 'draft'), ('evidence', 'evidence'), ('revise', 'draft')):
             page = self.page('work', view)
             self.assertIn('<h2>📋 Review Content</h2>', page)
-            self.assertNotIn('🧭 Around the Work', page)   # the side pane holds it (haipipe-block A01)
+            self.assertNotIn('🧭 Around the Work', page)   # the side pane holds it (hai-block A01)
             rail = re.search(r'<nav class="focus-rail right".*?</nav>', page, re.S).group()
             self.assertNotIn('aria-label="Work"', rail)
             for key, title in work_frame.SHARED:

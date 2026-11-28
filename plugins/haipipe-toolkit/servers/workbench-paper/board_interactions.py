@@ -1,4 +1,4 @@
-"""A paper Board's interactions (haipipe-interaction forms) on its pages: each form as a folded row with its one
+"""A paper Board's interactions (hai-interaction forms) on its pages: each form as a folded row with its one
 button, the answers of a saved form, and the forms and sign lines that wait on you."""
 from __future__ import annotations
 

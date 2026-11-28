@@ -1,7 +1,7 @@
 {
  "type": "excalidraw",
  "version": 2,
- "source": "haipipe-method-canvas",
+ "source": "hai-method-canvas",
  "elements": [
   {
    "id": "title",
@@ -2807,8 +2807,8 @@
    "updated": 1790976316209,
    "link": null,
    "locked": false,
-   "text": "Search outside evidence\n  haipipe-discovery-orchestrator-agent\n  subjective-label-definition\nDiscuss the label meanings\n  moderator-agent\n  subjective-label-definition",
-   "originalText": "Search outside evidence\n  haipipe-discovery-orchestrator-agent\n  subjective-label-definition\nDiscuss the label meanings\n  moderator-agent\n  subjective-label-definition",
+   "text": "Search outside evidence\n  hai-discovery-orchestrator-agent\n  subjective-label-definition\nDiscuss the label meanings\n  moderator-agent\n  subjective-label-definition",
+   "originalText": "Search outside evidence\n  hai-discovery-orchestrator-agent\n  subjective-label-definition\nDiscuss the label meanings\n  moderator-agent\n  subjective-label-definition",
    "fontSize": 14,
    "fontFamily": 8,
    "textAlign": "left",

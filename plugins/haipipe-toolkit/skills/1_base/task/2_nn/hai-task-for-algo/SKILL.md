@@ -1,0 +1,142 @@
+---
+name: hai-task-for-algo
+description: "algo-dev Task specialist: scaffolds jNN_<job>/tNN_<task>/ Task folders in an algo-dev Block that smoke-test a newly developed algorithm class end-to-end on a TINY config. NOT full training -- see /hai-task fit. Called by /hai-task when task-type=algo. Cross-references /hai-nn algo."
+argument-hint: "[project_id] [bNN_<block>/jNN_<job>] [tNN_<task>]"
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+disable-model-invocation: true
+metadata:
+  version: "0.2.2"
+  last_updated: "2026-10-26"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+---
+
+Skill: hai-task-for-algo
+=================================
+
+Scaffolds an **algo-dev smoke-test job**.
+Purpose: verify a new algorithm class (forward / loss / metric) runs end-to-end.
+This is NOT a training run — minimal config, minutes-not-hours, just "did it crash + does the loss go down on one batch".
+
+**Invocation modes:** interactive (human steers; missing fields get ASKed) OR headless (`hai-task-creator-agent` calls this skill during the Build command, then authors the `<TASK>.py` body).
+Always end with the structured return block of `../../hai-task/ref/types.md` § Asked or silent (see Return contract below).
+
+
+## Type contract
+
+```yaml
+task-type: algo
+skill: hai-task-for-algo
+does: smoke-test a newly developed algorithm class (forward, loss, one update) end-to-end on a
+  tiny config; not a training run
+worker: scripts/<worker>.py in the Task, Python, calling the algorithm class under
+  code/hainn/algo/<family>/
+config: runs/<run>/config.yaml, or scripts/config/<run>.yaml in a Block not yet moved; seeded from
+  ref/config-seed.yaml (tiny knobs)
+ticket: runs/<run>/<run>.sh, from ../../hai-task/ref/run-sh-template.sh
+result: $OUTPUT_ROOT/<task>/runs/<run>/result/ with runtime.yaml and loss.json
+heavy: none
+roles: [trial]
+companions: [hai-nn, hai-task-for-fit]
+plan_sample: ref/workflow-plan-sample.yaml
+```
+
+
+task-algo vs task-training (don't confuse them)
+------------------------------------------------
+
+```
+                    task-algo (this)        task-training
+Purpose             smoke-test algorithm    train + sweep a model
+Hierarchy           bNN/jNN/tNN/rNN       bNN/jNN/tNN/rNN
+Config              minimal / 1-batch       full hyperparam grid
+Runtime             minutes                 hours-to-days
+Outputs             "didn't crash" + loss   checkpoint → _WorkSpace/5
+Audience            algo developer self     cross-run comparison
+Pipeline skill      /hai-nn algo        /hai-nn tuner+instance
+```
+
+
+What this scaffolds
+-------------------
+
+```text
+work/bNN_<block>/
+├── board.md
+└── jNN_<job>/
+    ├── src/                         shared code + config-defaults.yaml
+    └── tNN_<task>/
+        ├── tNN_<task>.md
+        ├── draft/                   only when the Task writes
+        ├── workflow/                optional: plan.yaml + report.yaml
+        ├── scripts/<worker>.py
+        └── runs/rNN_<run>/              one folder per Run
+            ├── rNN_<run>.sh             the Ticket
+            ├── config.yaml
+            └── run.yaml                 its card (hai-run), role: trial
+
+Generated: $OUTPUT_ROOT/tNN_<task>/runs/rNN_<run>/result/
+           $OUTPUT_ROOT/tNN_<task>/notebooks/rNN_<run>.ipynb
+```
+
+Hierarchy prefixes are bNN / jNN / tNN / rNN; domain belongs in the descriptive suffix.
+Heavy outputs: none (tiny / disposable).
+
+
+Cross-reference to pipeline skill
+----------------------------------
+
+`/hai-nn algo` owns the algorithm class itself (Layer 1: model, forward, loss, metric).
+This skill scaffolds the smoke-test demo that exercises it.
+Typical flow:
+
+  1. `/hai-nn algo` — author the algorithm class.
+  2. `/hai-task algo` — scaffold the paired demo.
+  3. Run the demo. Iterate.
+  4. Once stable → `/hai-task fit` for the real run.
+
+
+Scaffold flow
+-------------
+
+See `fn/scaffold.md` for the detailed step-by-step.
+Summary:
+
+  1. Identify project + block.
+  2. Collect metadata (NN, name, type-specific extras, _meta block).
+  3. Create the canonical Task Page, workflow/ (only when a plan pays), worker and the Run folder `runs/rNN_<run>/` (Ticket, `config.yaml`, `run.yaml` card); resolve generated output through OUTPUT_ROOT.
+  4. Seed config from `ref/config-seed.yaml`.
+  5. Copy run-script from `../../hai-task/ref/run-sh-template.sh` to `runs/rNN_<run>/rNN_<run>.sh`.
+  6. Suggest next via cross-skill link.
+  7. Emit return contract.
+
+
+Return contract
+---------------
+
+Every call ends with the block in `../../hai-task/ref/types.md` § Asked or silent (status, job,
+task_folder, run_name, files, result, missing, note). A scaffold call also gives:
+
+```
+status:    ok | blocked | failed
+summary:   2-3 sentences on what was scaffolded
+artifacts: [paths created]
+next:      suggested next command (run the demo / /hai-nn algo refine)
+```
+
+
+
+Workflow plan
+--------------
+
+When `/hai-task plan` targets an existing job of this type, the sole `workflow/plan.yaml` Run Spec roster (`../../hai-task/fn/stage-plan.md`) follows the type-specific sample:
+
+```
+ref/workflow-plan-sample.yaml     ← Run Spec example with internal domain steps
+../../hai-task/ref/workflow-template.yaml  ← authoritative Run Spec template with entry/exit gates
+```
+
+Schema source of truth:
+  ../../../project/hai-run/ref/plan-schema.md
+
+Resolve `RESULT_STORE`, then the Job store declaration, then the Job root as OUTPUT_ROOT.
+Use the same output-root contract as `hai-task`; no physical output is moved by scaffolding.

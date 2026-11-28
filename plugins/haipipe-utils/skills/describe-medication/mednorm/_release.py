@@ -1,5 +1,5 @@
 """
-The event release, read through haipipe-norm/paths.py beside this skill (no PYTHONPATH needed).
+The event release, read through hai-norm/paths.py beside this skill (no PYTHONPATH needed).
 
     release_file(asset, filename=None)   the pinned file of an ext_ asset, sha256 checked, or None
     release_key_column(asset)            that table's key column (<key>_original), or None
@@ -14,7 +14,7 @@ import pathlib
 def _load():
     here = pathlib.Path(__file__)
     for base in (here.absolute(), here.resolve()):
-        p = base.parents[2] / "haipipe-norm" / "paths.py"
+        p = base.parents[2] / "hai-norm" / "paths.py"
         if p.exists():
             spec = importlib.util.spec_from_file_location("haipipe_norm_paths", p)
             mod = importlib.util.module_from_spec(spec)

@@ -6,7 +6,7 @@ topic with its gate, one Job for each request, a message drafted inside a checkl
 the wait named with its date, meetings kept as dated notes (Scope, Job and Record
 methods); and the answer written from the Block's own files, then checked by an agent that
 did not write it (Report methods). How a Question is asked and reviewed belongs to
-`haipipe-report` (`skills/1_base/project/haipipe-report/`). Guide › Related Paper shows this file; each `group` is
+`hai-report` (`skills/1_base/project/hai-report/`). Guide › Related Paper shows this file; each `group` is
 one method card, so a card lists its own papers.
 
 Shape and check: `skills/0_utils/table-papers/SKILL.md`. Each row is one paper or article.

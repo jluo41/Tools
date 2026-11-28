@@ -45,7 +45,7 @@ def definition(board: Path, runtime: dict) -> dict:
         raise ValueError("frozen definition must remain inside its Runtime directory")
     data = yaml.safe_load(path.read_bytes())
     if not isinstance(data, dict) or data.get("schema") != "haipipe.insight-definition/v1" \
-            or data.get("workflow_id") != "haipipe-insight-workflow":
+            or data.get("workflow_id") != "hai-insight-workflow":
         raise ValueError("unsupported Insight definition")
     specs, targets = data.get("run_specs"), data.get("requested_answer_targets")
     if not isinstance(specs, list) or not isinstance(targets, list):

@@ -3,7 +3,7 @@
 # servers/workbench/workbench-task-draft; skill:<name>/<rest> is a skill's file; Tools/… is SPACE-relative.
 family: page
 label: Page
-presenter: outline.py
+presenter: plan_outline/outline.py
 table: skill:workbench-task-draft/ref/workbench-table.md
 method_doc: guide/method.md
 method_drawing: guide/methods.excalidraw
@@ -15,7 +15,7 @@ description: 'The Page Workbench works on one Page: a paper Section, a Task repo
   It reads the Page''s Markdown and Run receipts on every open; the person approves the plan, checks sources
   and releases the Page.'
 skills:
-- skill: haipipe-draft-workflow
+- skill: hai-draft-workflow
   role: Page planning, writing, evidence and delivery
 - skill: workbench-task-draft
   role: The Page's workbench and native lanes

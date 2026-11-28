@@ -1,0 +1,111 @@
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
+# Schema: project/hai-run/ref/plan-schema.md
+name: package-<ENDPOINT>
+purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
+input:
+  args:
+    config: runs/rNN_<run>/config.yaml
+    modelinstance: <_WorkSpace path to ModelInstance_Set (with examples)>
+  files_in: &id001
+  - scripts/<worker>.py
+  - runs/rNN_<run>/config.yaml
+  - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
+owner: hai-task-for-endpoint
+workbench:
+  id: <owning-workbench>
+  workspace_roster_ref: <workbench-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Package <MODELINSTANCE> (Stage 5) into deployable Endpoint_Set <ENDPOINT> (Stage 6)
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: hai-task-for-endpoint
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload:
+      status: complete
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: hai-task-for-endpoint
+    worker_skill_chain:
+    - hai-task-for-endpoint
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup
+    label: setup:load-modelinstance
+    required: true
+    prompt: Load ModelInstance_Set (verify examples_data present)
+    files_in:
+    - _WorkSpace/5-ModelInstanceStore/<MODELINSTANCE>
+    files_out: []
+  - section: Setup
+    label: setup:resolve-fns
+    required: true
+    prompt: Resolve MetaFn/TrigFn/PostFn/Src2InputFn/Input2SrcFn in code/haifn/fn_endpoint/
+    files_in:
+    - runs/rNN_<run>/config.yaml
+    files_out: []
+  - section: Package
+    label: package:pipeline
+    required: true
+    prompt: 'Run Endpoint_Pipeline: Src2InputFn per example → payload.json; assemble model/ code/ examples/
+      meta.json manifest.json'
+    files_in: []
+    files_out:
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+  - section: Verify
+    label: verify:payloads
+    required: true
+    prompt: Every examples/example_*/ has payload.json
+    files_in:
+    - _WorkSpace/6-EndpointStore/<ENDPOINT>
+    files_out: []
+  - section: Verify
+    label: verify:inference
+    required: true
+    prompt: Run inference(payload) on sample payloads; responses parse
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/inference_test.json
+  - section: Report
+    label: report:summary
+    required: true
+    prompt: Write $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json + runtime.yaml; note the .tar.gz
+      path and next deploy command
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  files_out:
+  - _WorkSpace/6-EndpointStore/<ENDPOINT>
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml

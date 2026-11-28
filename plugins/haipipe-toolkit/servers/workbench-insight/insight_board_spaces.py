@@ -96,51 +96,51 @@ def _space_kinds(snap: dict) -> dict[str, list[dict]]:
     return {
         # the Question Book's runs, in the order the method takes them (ref/workbench-table.md)
         "prototype": [
-            {"label": "Carry a board over", "skill": "haipipe-insight", "rows": [],
-             "prompt": f"/haipipe-insight carry a register board over into this board's Question Book ({rel})."},
-            {"label": "Register a segment", "skill": "haipipe-insight-partition (new)", "rows": [],
-             "prompt": f"/haipipe-insight add a segment to the Question Book's 0-Meta/partitions.md, with its filter and why ({rel})."},
-            {"label": "Review the questions", "skill": "haipipe-report", "rows": [],
-             "prompt": f"/haipipe-insight review the Question Book's questions by Q1-Q7 and propose keep, split, merge or move ({rel})."},
-            {"label": "Plan the evidence", "skill": "haipipe-insight-evidence-plan", "rows": [],
-             "prompt": f"/haipipe-insight-evidence-plan {{question}}: write its needs, each with a full work spec ({rel})."},
-            {"label": "Write the script", "skill": "haipipe-insight", "rows": [],
-             "prompt": f"/haipipe-insight write the Question Book script for {{question}} from its live needs ({rel})."},
-            {"label": "Review the script", "skill": "haipipe-insight", "rows": [],
-             "prompt": f"/haipipe-insight review the script of {{question}}: an agent that did not write it ({rel})."},
-            {"label": "Draw the question map", "skill": "haipipe-insight", "rows": [],
-             "prompt": "/haipipe-insight redraw the Question Book's question map: run ref/question_map.py on the "
+            {"label": "Carry a board over", "skill": "hai-insight", "rows": [],
+             "prompt": f"/hai-insight carry a register board over into this board's Question Book ({rel})."},
+            {"label": "Register a segment", "skill": "hai-insight-partition (new)", "rows": [],
+             "prompt": f"/hai-insight add a segment to the Question Book's 0-Meta/partitions.md, with its filter and why ({rel})."},
+            {"label": "Review the questions", "skill": "hai-report", "rows": [],
+             "prompt": f"/hai-insight review the Question Book's questions by Q1-Q7 and propose keep, split, merge or move ({rel})."},
+            {"label": "Plan the evidence", "skill": "hai-insight-evidence-plan", "rows": [],
+             "prompt": f"/hai-insight-evidence-plan {{question}}: write its needs, each with a full work spec ({rel})."},
+            {"label": "Write the script", "skill": "hai-insight", "rows": [],
+             "prompt": f"/hai-insight write the Question Book script for {{question}} from its live needs ({rel})."},
+            {"label": "Review the script", "skill": "hai-insight", "rows": [],
+             "prompt": f"/hai-insight review the script of {{question}}: an agent that did not write it ({rel})."},
+            {"label": "Draw the question map", "skill": "hai-insight", "rows": [],
+             "prompt": "/hai-insight redraw the Question Book's question map: run ref/question_map.py on the "
                        "Question Book board; it writes studio/question-map.excalidraw, never edited by hand."},
         ],
         "scope": [
-            {"label": "Prepare extract", "skill": "haipipe-task", "rows": [],
-             "prompt": f"/haipipe-task: prepare the extract this board reads; MT00 records it ({rel})."},
-            {"label": "Ask", "skill": "haipipe-insight-question", "rows": [],
-             "prompt": f'/haipipe-insight application {rel} question "<your question>"'},
+            {"label": "Prepare extract", "skill": "hai-task", "rows": [],
+             "prompt": f"/hai-task: prepare the extract this board reads; MT00 records it ({rel})."},
+            {"label": "Ask", "skill": "hai-insight-question", "rows": [],
+             "prompt": f'/hai-insight application {rel} question "<your question>"'},
             # Add a method and Add a paper are Guide runs now (ref/workbench-table.md): the method
             # library is the family's, shared by every board, not this board's data.
         ],
         "insight": [
-            {"label": "Data runs", "skill": "haipipe-task", "rows": _run_rows(snap, "D"),
-             "prompt": "/haipipe-task: run the task call that answers {question} on {partition}; its config lists it under answers:."},
-            {"label": "Information runs", "skill": "haipipe-task", "rows": _run_rows(snap, "I"),
-             "prompt": "/haipipe-task: run the task call that answers {question} on {partition}; its config lists it under answers:."},
-            {"label": "Report", "skill": "haipipe-insight-data · -information · -knowledge · -wisdom",
+            {"label": "Data runs", "skill": "hai-task", "rows": _run_rows(snap, "D"),
+             "prompt": "/hai-task: run the task call that answers {question} on {partition}; its config lists it under answers:."},
+            {"label": "Information runs", "skill": "hai-task", "rows": _run_rows(snap, "I"),
+             "prompt": "/hai-task: run the task call that answers {question} on {partition}; its config lists it under answers:."},
+            {"label": "Report", "skill": "hai-insight-data · -information · -knowledge · -wisdom",
              "rows": _report_rows(snap),
-             "prompt": f"/haipipe-insight application {rel} report {{question}} {{partition}}: read the runs that "
+             "prompt": f"/hai-insight application {rel} report {{question}} {{partition}}: read the runs that "
                        "answer it and write reports/<segment>/<question>.md (headline, answer, strength, limit, runs)."},
-            {"label": "Pool or split", "skill": "haipipe-insight-workflow", "rows": [],
-             "prompt": f"/haipipe-insight application {rel} verdict"},
+            {"label": "Pool or split", "skill": "hai-insight-workflow", "rows": [],
+             "prompt": f"/hai-insight application {rel} verdict"},
         ],
         "check": [
             {"label": "Mechanical check", "skill": "cli/check.py", "rows": [],
-             "prompt": f"/haipipe-insight application {rel} check"},
-            {"label": "Answer review", "skill": "haipipe-draft-review", "rows": [],
-             "prompt": f"/haipipe-insight application {rel} review {{question}} {{partition}}"},
+             "prompt": f"/hai-insight application {rel} check"},
+            {"label": "Answer review", "skill": "hai-draft-review", "rows": [],
+             "prompt": f"/hai-insight application {rel} review {{question}} {{partition}}"},
         ],
         "delivery": [
-            {"label": "Handoff draft", "skill": "haipipe-insight-wisdom", "rows": [],
-             "prompt": f"/haipipe-insight application {rel} handoff {{question}} {{partition}}"},
+            {"label": "Handoff draft", "skill": "hai-insight-wisdom", "rows": [],
+             "prompt": f"/hai-insight application {rel} handoff {{question}} {{partition}}"},
         ],
     }
 

@@ -40,4 +40,4 @@ risk: A chat that hints at the models' view breaks blindness; the moderator show
   item (ours).
 evidence on ai: Anchoring is shown for people [Tversky 1974]; no study tests it with model
   pre-labels (ours).
-skill: haipipe-labeling-rounds
+skill: hai-labeling-rounds

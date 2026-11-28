@@ -69,7 +69,7 @@ def explain_html(profile, view, context, family=None):
             'referrerpolicy="no-referrer" '
             f'style="display:block;width:100%;{size};border:0"></iframe>'
             '<script>addEventListener("message",function(e){if(e.origin!==location.origin||'
-            'e.data?.kind!=="haipipe-explain-height")return;document.querySelectorAll(".wg-explain-frame").forEach('
+            'e.data?.kind!=="hai-explain-height")return;document.querySelectorAll(".wg-explain-frame").forEach('
             'function(f){if(f.contentWindow===e.source)f.style.height=Math.ceil(e.data.height)+"px"})})</script>' + tail)
 
 
@@ -228,8 +228,8 @@ def method_page_html(family, profile, editable=True):
                   "d.querySelectorAll('iframe.st-frame[data-src]').forEach(go)},true)})()</script>")
     else:
         canvas = (f'<div class=empty>No methods drawing yet: draw it from the method file with '
-                  f'<code>blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/method-canvas.py</code>.</div>')
-    height = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
+                  f'<code>servers/workbench/guide/method_canvas.py</code>.</div>')
+    height = ("<script>(function(){function post(){parent.postMessage({kind:'hai-explain-height',"
               "height:document.documentElement.scrollHeight},location.origin)}"
               "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"
               "addEventListener('load',post);document.addEventListener('toggle',post,true)})()</script>")

@@ -225,7 +225,7 @@ class FrameStudioTest(unittest.TestCase):
             self.assertIn('<button type=button data-side=structured aria-pressed="false"', row)
             free = re.search(r'<div class=st-pane data-side=free>(.*?)</div>', row, re.S).group(1)
             self.assertIn("flow.excalidraw", unquote(free))                # the free side: the topic's own drawing
-            # the structured side: the mind map drawn by the code that draws a draft's §1 map (haipipe-mindmap), no canvas
+            # the structured side: the mind map drawn by the code that draws a draft's §1 map (hai-mindmap), no canvas
             mind = row[row.index('<div class="st-pane st-map" data-side=structured hidden>'):]
             rel = "Project/tasks/b01_topic/studio/s01-flow/s01-flow.mindmap.md"
             self.assertIn(f'<div class=pm-edit data-task="{rel}" data-file="{rel}" data-endpoint="/_board/mindmap">', mind)
@@ -244,7 +244,7 @@ class FrameStudioTest(unittest.TestCase):
             self.assertIn('data-side="structured"', row)
             self.assertIn('data-side=free aria-pressed="false" disabled', row)
             self.assertIn("No drawing", row)
-            # a change on the map (the payload a draft's §1 map sends) is written into the file by haipipe-mindmap
+            # a change on the map (the payload a draft's §1 map sends) is written into the file by hai-mindmap
             code, res = frame.mindmap_module().act(root, {"task": rel, "what": "add", "p": "n01", "after": "n02",
                                                          "value": "clean rows"})
             self.assertEqual(code, 200)

@@ -326,7 +326,7 @@ function act(n){  // Work only: ask about it, or propose a follow-up for the nex
   var ask='On '+where+': a question about '+n.id+' ('+n.q+').'+(n.answer?' Its answer now: '+n.answer:'')
     +' It rests on '+ids(down[n.id])+' and is used by '+ids(up[n.id])+'.'+(n.task?' Read its Task '+n.task+' and its Runs\' results first, then answer from them; say what they cannot tell.':'');
   var prop=function(t){return 'Propose a follow-up to '+n.id+' ('+n.q+') for the next question version: write it as a proposal in '
-    +w.proposals+' (haipipe-insight-question), with from: '+n.id+' and the level it asks at. The follow-up: '+t;};
+    +w.proposals+' (hai-insight-question), with from: '+n.id+' and the level it asks at. The follow-up: '+t;};
   var h='<div class=qc-act><span class="pb-prompt qc-askbox"><textarea data-field="My question" rows=2 placeholder="Ask about '+esc(n.id)+' …"></textarea>'
     +'<button type=button class="fd-btn pb-copy" data-copy="'+esc(ask)+'" data-tail="'+esc(w.tail)+'">Ask about it</button></span>';
   if(n.gaps&&n.gaps.length){h+='<b>Follow up</b><ul class=qc-gaps>'+n.gaps.map(function(g){return '<li><span class=pb-prompt>'

@@ -35,7 +35,7 @@ BANK = _pinned("ext_fda_ndc") or _find(Path("medbank") / "fda_ndc_product.parque
 LEXICON = _pinned("ext_med_lexicon") or _find(Path("medbank") / "med_lexicon.parquet")   # ours
 
 # --------------------------------------------------------- what a row IS -----
-# Rule 2 of haipipe-norm: TYPE, DO NOT DELETE.
+# Rule 2 of hai-norm: TYPE, DO NOT DELETE.
 CODED = "coded"            # a WellDoc MedicationID. resolvable via the lexicon.
 NAMED = "named"            # a drug name in text. Shanghai, or a resolved id.
 CLASS_ONLY = "class_only"  # OhioT1DM's 'Basal Insulin' -- a CLASS, never a product.

@@ -1,0 +1,11 @@
+{
+  "style": "sketch-notes",
+  "slides": [
+    {
+      "id": "01",
+      "idea": "What stays local, and what returns to the agent?",
+      "image": "s21-tracing-interaction.png",
+      "notes": "See Page for the explanation, source records and learner exercise. This diagram is learning material, not an execution receipt."
+    }
+  ]
+}

@@ -28,7 +28,7 @@ a session has intervals, and the quantity a food log omits is grams while the
 one an exercise log omits is minutes. What they share is the SHAPE of the
 problem, not the solution to it.
 
-`haipipe-norm` holds the shared contract and the `eventnorm/` event-processing
+`hai-norm` holds the shared contract and the `eventnorm/` event-processing
 layer: raw logs become structured inputs and outputs grouped by local hour.
 Each noun-specific skill owns its resolver and reference-bank implementation.
 
@@ -62,7 +62,7 @@ LAYOUT
 
     .claude-plugin/     plugin.json + marketplace.json
     skills/
-        haipipe-norm/           shared contract, eventnorm/ implementation, and tests
+        hai-norm/           shared contract, eventnorm/ implementation, and tests
         describe-food/          SKILL.md · foodnorm/ (client.py …) · pipeline.py · test_foodnorm.py · benchmark/
         describe-exercise/      same shape, exnorm/
         describe-medication/    same shape, mednorm/

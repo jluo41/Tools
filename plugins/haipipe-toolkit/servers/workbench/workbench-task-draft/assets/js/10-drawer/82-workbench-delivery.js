@@ -2,7 +2,7 @@
  *
  * The evidence fold's twin: the delivery/ category (latex · word · slide ·
  * render, the roster's "what leaves the page") gets ONE registry row; the
- * live segmented surface is servers/workbench/workbench-task-draft/delivery.py (/_board/delivery), whose
+ * live segmented surface is servers/workbench/workbench-task-draft/delivery_export/delivery.py (/_board/delivery), whose
  * LaTeX and Word segments press the lanes' own deterministic pens
  * (/_board/latex, /_board/word) on demand. Slides is never auto-built there
  * — its pen is claude -p authoring, reached from the Slides segment's ✨ bar.

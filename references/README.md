@@ -1,6 +1,17 @@
 # References
 
-This directory collects external skill and workflow references.
+This directory collects external skill, workflow, and tool references.
+
+## Remote Workspaces
+
+- [How dsh-remote works in Tools-SPACE](dsh-remote-guide.md): where commands run, where files are saved, and when to sync the local mirror.
+- [dsh-remote upstream source](dsh-remote): Git submodule pinned to `v1.4.1`, matching the version used for the guide.
+
+## Generative UI
+
+- [dsh-a2ui](dsh-a2ui): answer-first, self-contained A2UI snapshots.
+- [dsh-genui-a2ui](dsh-genui-a2ui): reactive A2UI Express surfaces, live docks, and structured forms.
+- [Comparison and learning path](dsh-a2ui-comparison.md): what to borrow for Tools-SPACE without replacing the file-backed workbench.
 
 ## Submodules
 

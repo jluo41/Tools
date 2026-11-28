@@ -10,7 +10,7 @@
   tracked changes, build ours as tracked changes by one author (`scripts/wordtc.py` read, try, build,
   render, check), points on their own sentences as Word comments, the PDF rendered by Microsoft Word
   (AppleScript, LibreOffice fallback), pull, import and push through haipipe-delivery's `word_round.py`.
-- `excalidraw-draft/ref/track_changes.py`: an edit's `comment:` (with optional `anchor:`) adds one plain
+- `hai-draw/gallery/draft/ref/track_changes.py`: an edit's `comment:` (with optional `anchor:`) adds one plain
   Word comment; with no `new` it only comments.
 
 ## 2026-10-11 — haipipe-related joins the project group

@@ -253,7 +253,7 @@ def _version_rows(d, board, job):
 
 def _version_round_pages(board, job):
     """The review batches of this send: today the Board's Bc-<desk>-Round/RD<NN>-…/, on the ladder the version's
-    own RD<NN>-…/ and CM<NN>-…/ (haipipe-paper-comments)."""
+    own RD<NN>-…/ and CM<NN>-…/ (hai-paper-comments)."""
     found = (list(board.glob("B[a-z]-*-Round/RD*/RD*.md")) + list(job.glob("RD*/RD*.md"))
              + [q for q in job.glob("reports/q[0-9][0-9]_*/q[0-9][0-9]_*.md")      # a comments report (JL 261007)
                 if re.search(r"(?m)^page-type:\s*(comments|round)\b", q.read_text(encoding="utf-8", errors="replace"))]
@@ -379,7 +379,7 @@ def _paragraphs(folder, stem):
 
 
 # ── Cover letter (JL 261007, s12): the letter as the editor reads it, one row per paragraph ───────────────
-ASSEMBLE = skill_dir("haipipe-paper-assemble") / "scripts"      # a skill, or a part of haipipe-paper
+ASSEMBLE = skill_dir("hai-paper-assemble") / "scripts"      # a skill, or a part of hai-paper
 LETTER = (("¶1 · what we submit", "the version's face: title · article type · venue", ("submit", "what we", "manuscript")),
           ("¶2 · the one-minute story", "J1 · the one-minute story", ("story", "one-minute", "contribution", "finding")),
           ("¶3 · why this venue", "J2 · why this venue", ("venue", "fit", "journal", "why")),
@@ -389,7 +389,7 @@ LETTER = (("¶1 · what we submit", "the version's face: title · article type �
 
 def _letter_words(board, job):
     """(paragraphs as [(heading, text)], the page that holds them, content | draft): from the version's cover
-    letter Task (t3N_), else its batches, through haipipe-paper-assemble's own reader (cover_letter.py)."""
+    letter Task (t3N_), else its batches, through hai-paper-assemble's own reader (cover_letter.py)."""
     import importlib.util
     try:
         spec = importlib.util.spec_from_file_location("cover_letter", ASSEMBLE / "cover_letter.py")

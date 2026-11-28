@@ -1,0 +1,56 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "A decision to explore",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/01-a-decision-to-explore.md"
+        },
+        {
+          "name": "Connect the topics",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/02-connect-the-topics.md"
+        },
+        {
+          "name": "A bounded practice proposal",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/03-a-bounded-practice-proposal.md"
+        },
+        {
+          "name": "What that practice could establish",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/04-what-that-practice-could-establish.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/page/05-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Use Cases and Boundaries",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/s31-use-cases-boundaries.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "Use Cases and Boundaries",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/s31-use-cases-boundaries.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "Use Cases and Boundaries",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s31-use-cases-boundaries/delivery/deck/s31-use-cases-boundaries.slides.html"
+        }
+      ]
+    }
+  ]
+}

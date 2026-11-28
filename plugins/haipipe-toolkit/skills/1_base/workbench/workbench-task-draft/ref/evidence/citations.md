@@ -96,7 +96,7 @@ and is never their authority. Legacy BibTeX `verified = {...}` fields remain
 readable during migration but are not the new ordinary-Page write target.
 
 The exact Paper Run contract lives in
-`../../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md`.
+`../../../../../2_work/discovery/hai-discovery/ref/paper-run-contract.md`.
 
 ## Legal writers
 

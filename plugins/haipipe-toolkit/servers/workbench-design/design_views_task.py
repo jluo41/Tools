@@ -18,13 +18,13 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     kind = R.kind_of(tdir)
     rs = R.runs(tdir)
     rows = lambda *t: _rows(rs, root, *t)
-    draw = _kind("Add a topic", "Add or redraw a studio topic about this Task with /haipipe-studio: {folder}/sNN-<topic>/ "
+    draw = _kind("Add a topic", "Add or redraw a studio topic about this Task with /hai-studio: {folder}/sNN-<topic>/ "
                  "(new_topic.py topic); save each working session as a round, sNN-<topic>/passes/pNN-<MMDD>/.",
-                 "haipipe-studio")
+                 "hai-studio")
     if kind == "t00":
         r = _kind("run-reason-t00", "Reason ideas for the Job (② run-reason-t00): inputs/ only, topic by topic, to N + 5 "
-                  "ideas, each naming its source.", "haipipe-design-unit", rows=rows("reason"), level="Task")
-        opend = _kind(f"run-open-designs-{j['id']}", "Open one design Task per idea (run-open-designs-jNN).", "haipipe-design",
+                  "ideas, each naming its source.", "hai-design-unit", rows=rows("reason"), level="Task")
+        opend = _kind(f"run-open-designs-{j['id']}", "Open one design Task per idea (run-open-designs-jNN).", "hai-design",
                       rows=_rows(j["runs"], root, "open-designs"))
         ar = ("Topics", "Ideas")
         a_open = sub if sub in ar else "Topics"
@@ -43,7 +43,7 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
                                   page=True, note="Nothing to run here: t00 hands its ideas to the Job.")}
     if kind == "t99":
         r = _kind("run-rank-t99", "Review the whole (⑤ run-rank-t99): rank the N + 5, keep the top N, each with its predicted "
-                  "outcome; another agent.", "haipipe-design-unit", rows=rows("rank"), level="Task")
+                  "outcome; another agent.", "hai-design-unit", rows=rows("rank"), level="Task")
         ar = ("Ranking", "Coverage")
         a_open = sub if sub in ar else "Ranking"
         return {"Description": Space(html=_t99_task(j), subspaces=("Task",), open="Task", run_types=(r,), page=True,
@@ -61,13 +61,13 @@ def task_spaces(tdir: Path, root: Path, sub: str, href) -> dict:
     d = R.design(tdir)
     did = d["id"]
     gen = _kind(f"run-generate-{did}", f"Generate {did} from its idea (③ run-generate-{did}): inputs/ only.",
-                "haipipe-design-unit", rows=rows("generate"), level="Task")
+                "hai-design-unit", rows=rows("generate"), level="Task")
     ver = _kind(f"run-verify-{did}", f"Verify {did} (④ run-verify-{did}-v<k>) in a fresh context, by another agent.",
-                "haipipe-design-unit", rows=rows("verify"), level="Task")
+                "hai-design-unit", rows=rows("verify"), level="Task")
     rev = _kind(f"run-revise-{did}", f"Revise {did} after a failed review (run-revise-{did}), then verify again.",
-                "haipipe-design-unit", rows=rows("revise"), level="Task")
+                "hai-design-unit", rows=rows("revise"), level="Task")
     frz = _kind(f"run-freeze-prediction-{did}", f"Freeze {did}'s prediction at release (the Job's run-freeze-predictions).",
-                "haipipe-design", rows=_rows(j["runs"], root, "freeze-predictions"))
+                "hai-design", rows=_rows(j["runs"], root, "freeze-predictions"))
     desc = ("Design", "Evaluation")
     d_open = sub if sub in desc else "Design"
     ar = ("Tests", "Drafts", "Performance")

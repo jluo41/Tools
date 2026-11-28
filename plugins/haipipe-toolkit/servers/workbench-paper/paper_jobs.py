@@ -105,7 +105,7 @@ def _check(job: Path, root: Path, work: bool) -> tuple:
     task = _check_task(job)
     if task is None:
         return "", _section("🔎 Check", '<p class=mut>No check Task yet: a <code>t99_</code> Task runs the whole-paper check '
-                                       '(haipipe-paper-evidence).</p>', "")
+                                       '(hai-paper-evidence).</p>', "")
     pill, _ = _run_pill(task)
     data = er.value_data(task)
     if data.get("rows"):                         # the value check: what differs, each printed number
@@ -133,7 +133,7 @@ def _bind_prompt(job: Path, root: Path) -> str:
     if not props:
         return ""
     rel = ds._rel(job, root)
-    how = (f"Use /haipipe-paper-evidence. The value bindings the search proposed wait in "
+    how = (f"Use /hai-paper-evidence. The value bindings the search proposed wait in "
            + ", ".join(ds._rel(f, root) for f in props) + ". Read each, tell me which to tick, and after I tick them run "
            f"values_ledger.py bind {rel} --adopt, then rerun the value Runs' tickets. Change no Result by hand.")
     from live.board_process import behind_copy
@@ -183,12 +183,12 @@ PORTAL_MARK = {"keep": "✅ in the draft", "paste": "✏️ paste this", "upload
 
 
 def portal_survey(job: Path) -> dict:
-    """haipipe-paper's portal_fill.survey of a submission Job (the walk's fields, the values, the build), read only; {}
+    """hai-paper's portal_fill.survey of a submission Job (the walk's fields, the values, the build), read only; {}
     when the Job has no walk or no values yet."""
     import importlib
     import sys
     from host_paths import skill_dir
-    scripts = str(skill_dir("haipipe-paper") / "scripts")
+    scripts = str(skill_dir("hai-paper") / "scripts")
     if scripts not in sys.path:
         sys.path.insert(0, scripts)
     try:
@@ -250,7 +250,7 @@ def _portal(job: Path, root: Path, work: bool) -> tuple:
         body = (f'<div class=pb-verbs>{_open_btn("⤢ Pop out the fill page", "/" + quote(ds._rel(fill, root)), fill.name)}</div>'
                 + body)
     if not body:
-        return proc, _section("📮 Portal", "<p class=mut>No fill page yet: haipipe-paper <code>portal_fill.py</code> builds "
+        return proc, _section("📮 Portal", "<p class=mut>No fill page yet: hai-paper <code>portal_fill.py</code> builds "
                                            f"<code>delivery/{esc(job.name)}/portal-fill.html</code>.</p>", "")
     # a person checks every field and presses Submit themselves (the Job's close): until `sent`, it waits on them
     word = "sent" if sent else "waits for you" if fill.is_file() or tabs else portal_word(vdir)
@@ -282,7 +282,7 @@ def _display(key: str, job: Path, root: Path, work: bool) -> tuple:
                         f"runs in {session}" if session else "1 prompt") if step else ""
         topic = next((t for t in sorted(board.glob("s[0-9]*-paper-displays")) if t.is_dir()), None)
         return proc, _section("📐 Plan", plan or "<p class=mut>No display plan drawn yet: the Board topic "
-                              "<code>sNN-paper-displays</code> (haipipe-paper-plan).</p>", (_stage(topic) or "drawn") if plan else "")
+                              "<code>sNN-paper-displays</code> (hai-paper-plan).</p>", (_stage(topic) or "drawn") if plan else "")
     if key == "display-list":
         res, _ = _evidence_kinds(board, root, ("Displays",))  # each display's state is its tab's (JL 261109)
         res = _not_here(res, job, root)

@@ -27,10 +27,10 @@ limitations: Two requests to one office can be merged by habit; each still gets 
 Applied to AI
 -------------
 
-agent: haipipe-cowork-agent (planned) writes the Job page; the person signs the request.
+agent: hai-cowork-agent (planned) writes the Job page; the person signs the request.
 steps: 1. Read the Block's header. 2. Write the Job page and header. 3. Add Timeline.md. 4. Stop for the person.
 returns: jNN_<job>/jNN_<job>.md with its header lines.
 verify: Every Job folder has a page with state, waiting-on, since and next (T1).
 risk: An agent may invent the office's ticket number; it leaves the ticket: line empty until the office gives one (ours).
 evidence on ai: No study tests agents opening coordination Jobs (ours).
-skill: haipipe-cowork
+skill: hai-cowork

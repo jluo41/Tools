@@ -97,7 +97,7 @@ the authored W records verbatim. A manuscript Section carries no `###
 Writing Style` block in the product `<page>.md` and no separate writing file.
 
 **Context** is the generated PREPARE projection described by
-`../../../draft/haipipe-draft-logic/ref/context-record.md`. Its stable
+`../../../draft/hai-draft-logic/ref/context-record.md`. Its stable
 records `CTX1` to `CTX6` resolve identity, purpose/scope,
 policy/structure/style, related information, feedback/decisions, and
 planning/evidence readiness. It summarizes for orientation but every rule
@@ -146,6 +146,6 @@ the path with a real related Page before use):
 - Every kind is one flat file carrying the stem; only the plan is
   many-per-page, by version. No other file name contains `draft-v` or `outline-v`,
   because the plan globs are `*-draft-v*.md` and the legacy `*-outline-*.md`.
-- The renderer (`servers/workbench/workbench-task-draft/outline.py _records`) draws every kind the same way: id
+- The renderer (`servers/workbench/workbench-task-draft/plan_outline/outline.py _records`) draws every kind the same way: id
   badge, headline, label grid, status pill, a "more" fold; one chip per file
   that exists, with its record count. The lens writes nothing.

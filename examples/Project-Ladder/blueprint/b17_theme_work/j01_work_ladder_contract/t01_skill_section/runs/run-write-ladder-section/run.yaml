@@ -1,0 +1,15 @@
+run: run-write-ladder-section
+kind: soft
+type: write
+scope: null
+target: ladder-section
+ticket: run-write-ladder-section.md
+skill: hai-work
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- plugins/haipipe-toolkit/skills/2_work/work/hai-work/SKILL.md
+- plugins/haipipe-toolkit/skills/2_work/work/hai-work/CHANGELOG.md
+feeds: []

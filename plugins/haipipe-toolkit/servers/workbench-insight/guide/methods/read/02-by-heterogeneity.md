@@ -57,4 +57,4 @@ risk: With many segments, a split by chance is likely, and a post-hoc split is s
   [Rothwell 2005].
 evidence on AI: No study tests an AI agent judging heterogeneity across segments yet
   (ours).
-skill: haipipe-insight its cross group's POOL, SPLIT or UNDETERMINED verdict
+skill: hai-insight its cross group's POOL, SPLIT or UNDETERMINED verdict

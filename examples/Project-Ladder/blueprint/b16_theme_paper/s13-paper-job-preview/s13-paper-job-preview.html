@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Paper Job UI</title><style>
+:root{color-scheme:light dark;--line:#e3e3e6;--ink:#1c1c1c;--muted:#6b6b70;--accent:#1864ab;--soft:#e7f5ff;--paper:#fff}
+@media(prefers-color-scheme:dark){:root{--line:#33353a;--ink:#e8e8e6;--muted:#a3a4aa;--accent:#91caff;--soft:#253749;--paper:#17181a}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.top{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}button{font:inherit;color:inherit;cursor:pointer;background:none;border:1px solid var(--line);border-radius:8px;padding:5px 12px}button[aria-pressed=true]{color:var(--accent);border-color:var(--accent);background:var(--soft)}
+.frame{display:grid;grid-template-columns:165px minmax(0,1fr)}.left{display:flex;flex-direction:column;padding:10px;gap:4px;border-right:1px solid var(--line)}.frame.single{grid-template-columns:minmax(0,1fr)}.frame.single .left{display:none}.left button{text-align:left;border:0;font-size:13px}iframe{width:100%;height:calc(100vh - 55px);min-height:480px;border:0}[hidden]{display:none!important}
+@media(max-width:700px){.frame{display:block}.left{flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid var(--line)}.left button{flex:none;white-space:nowrap}}
+</style></head><body>
+<nav class="top" aria-label="Preview kinds"><button type="button" data-kind="Page" aria-pressed="true">Page</button><button type="button" data-kind="Effect" aria-pressed="false">Effect</button></nav>
+<div class="frame"><nav class="left" aria-label="Previews"><button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j11&amp;mark=jobs-rows%2Cjob-ttopics%2Cjob-subs" data-group="Page" aria-pressed="true">job-rows</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j11&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-main</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j01&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-displays</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j02&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-values</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j03&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-citations</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j21&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-submission</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j31&amp;mark=jsub%3Dmain" data-group="Page" aria-pressed="false">job-review</button>
+<button type="button" data-src="delivery/ui/paper-job-main.html" data-group="Effect" aria-pressed="false" hidden>Paper and Grant Main</button></nav><iframe id="preview" title="Paper Job UI" src="/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&amp;layout=focus&amp;section=jobs&amp;group=j11&amp;mark=jobs-rows%2Cjob-ttopics%2Cjob-subs"></iframe></div>
+<script>
+document.addEventListener('click',function(e){const b=e.target.closest('button');if(!b)return;
+if(b.dataset.kind){document.querySelectorAll('[data-kind]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.querySelectorAll('[data-src]').forEach(x=>x.hidden=x.dataset.group!==b.dataset.kind);document.querySelector('.frame').classList.toggle('single',document.querySelectorAll('[data-src][data-group="'+b.dataset.kind+'"]').length===1);document.querySelector('[data-src][data-group="'+b.dataset.kind+'"]').click();}
+else if(b.dataset.src){document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.getElementById('preview').src=b.dataset.src;}
+});
+</script></body></html>

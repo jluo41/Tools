@@ -36,4 +36,4 @@ returns: the audit receipt
 verify: the person did not see the candidate label first (T1)
 risk: An audit drawn only from easy items flatters the release (ours).
 evidence on ai: No study tests this audit with model-labeled corpora (ours).
-skill: haipipe-labeling-audit
+skill: hai-labeling-audit

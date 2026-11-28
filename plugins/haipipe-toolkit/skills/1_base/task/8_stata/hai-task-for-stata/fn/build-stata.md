@@ -1,0 +1,234 @@
+fn/build-stata — Author Stata pipeline code
+=============================================
+
+Extends `fn/scaffold.md` (which creates the skeleton) into full authoring: write dispatcher branches, worker scripts, configs, and orchestrator logic.
+This is what the creator agent does during Build command.
+
+
+When to call
+------------
+
+As Build command of the `/hai-task` lifecycle on a Stata job folder.
+Also callable standalone: `/hai-task stata build <job-path>`
+
+Prerequisite: `fn/plan-stata.md` has been run (plan.yaml exists).
+
+
+Mode: existing job folder (match-existing)
+-------------------------------------------
+
+When building into a job folder that already has authored code (e.g., adding a new cohort config to an existing data-pipeline task):
+
+1. **Read existing patterns first.** Scan the job folder for:
+   - Resolve-StataExe function presence (if yes, use it in new files)
+   - Config structure (section headers, global naming conventions)
+   - Runner structure (thin delegate vs self-orchestrating)
+   - Precondition check presence (if yes, replicate in new runners)
+   - Manifest/config-snapshot presence (if yes, replicate)
+   - STATATMP setup (if yes, replicate in new orchestrators)
+
+2. **Match, do not override.** New files MUST follow the conventions
+   already established in the job folder, while preserving the canonical hierarchy and receipt contract. Existing legacy trees are read-compatible; do not create new legacy paths.
+
+3. **When to deviate.** Only deviate from existing patterns when:
+   - The existing pattern has a known bug (document in the file header)
+   - The plan explicitly says to refactor
+   - The new file is in a different topology
+
+
+Procedure
+---------
+
+### Step 0 — Read the plan
+
+Read `workflow/plan.yaml` (the only roster) and any `workflow/plan-script-*.yaml` read-only projections that exist.
+These define WHAT to build.
+The plan's Run Specs and internal steps map to:
+- Dispatcher `.do` branches (one `else if` per step)
+- Worker `.do` scripts (one file per step in `scripts/`)
+- Orchestrator `.ps1` blocks (topic grouping + parallelism)
+- Config globals (paths, flags, parameters)
+
+### Step 1 — Author dispatcher (cms/case/data stages)
+
+Read `ref/dispatcher-do-template.do` as the starting template.
+
+For each step in the plan:
+1. Add an `else if` branch to the dispatcher
+2. The branch calls `do "scripts/<subdir>/<worker>.do" <year>`
+3. Add the step's output file to the skip-if-exists map (idempotency)
+
+**Dispatcher contract:**
+```stata
+args config_file step year results_dir ws_root [source]
+// load config
+// mkdir dirs
+// log open
+// skip-if-exists check
+// dispatch by step name
+// log close
+```
+
+For reg stage: NO dispatcher — workers are called directly by .ps1 runners.
+
+### Step 2 — Author worker scripts
+
+For each step, create `scripts/<subdir>/<worker>.do`:
+
+**Worker contract:**
+- Receives year as arg (from dispatcher) + globals (from config)
+- Reads input from `_WorkSpace/` or prior step's output
+- Writes output to `${year_dir}/` or `${temp_dir}/`
+- NO SSC except `rangejoin` (the ONE allowed exception)
+- Uses `egen tag()` for distinct counts (NOT SSC `distinct`)
+- 1-2 line header comment, no banners
+
+**Stage-specific patterns:**
+
+cms workers: extract + clean one CMS file type per year case workers: merge cases with CMS claims within BFAF time windows data workers: filter + join + derive analysis variables (cross-year) reg workers: estimate one model specification (OLS/IV/DID)
+
+### Step 3 — Author orchestrator (cms/case stages only — data is SELF-ORCHESTRATING: the Run's ticket IS the orchestrator, no year axis; see SKILL.md data section)
+
+Read `ref/run-stage-year-template.ps1` as the starting template.
+
+Build the orchestrator (the Job's `src/run_<stage>_year.ps1`, <=30 lines) with:
+1. Param block: `$ConfigPath` (the Run's `runs/<run>/config.do`), optional `$year` consistency assertion; derive run name, year/source and the Result `runs/<run>/result/` (under the resolved OUTPUT_ROOT) from that config
+2. `$ErrorActionPreference = "Stop"`
+3. `$stata` per dialect A5: hardcoded line or Resolve-StataExe, either accepted for any stage
+4. `$dir` = the Task folder, found from the config, never from this file's own folder (it sits in the Job's src/): `runs/<run>/config.do` and a flat Block's `scripts/config/<run>.do` both sit two levels below the Task; then repo root walk-up for `$ws`
+5. Config validation (`Resolve-Path` the config; the Task folder must match `tNN_`)
+6. `$wsRoot` + `$resultsDir` as named variables
+7. `New-Item` for results dir + log/ subdirectory
+8. `$base` + `$tail` for Stata dispatcher args
+9. Step groups: `Start-Process ... -PassThru` for parallel, `-PassThru -Wait` for sequential
+10. Check every child ExitCode before dependent work and print done only after all workers succeed
+
+**CMS server rules (baked in):**
+- NO `Start-Job` (constrained language mode)
+- `$stata` resolution per dialect A5 (hardcoded or Resolve-StataExe, any stage)
+- Bare `Start-Process ... -PassThru` + `Wait-Process`, no helper functions
+- Pure ASCII in .ps1 (no em-dash, no Unicode)
+
+### Step 3b — Author reg runners (reg stage only)
+
+Reg is DISPATCHER-LESS — each `.ps1` runner is self-contained.
+Read `ref/run-ps1-reg-template.ps1` as the starting template.
+
+Build each runner (`runs/rNN_<run>/rNN_<run>.ps1`) with:
+1. `$ErrorActionPreference = "Stop"`
+2. `$TASK_DIR`: if the ticket's folder is `runs`, the ticket is flat and the Task is that folder's parent; else the Task is its folder's grandparent
+3. Repo root walk-up via `pyproject.toml`
+4. `Resolve-StataExe` function (auto-detects edition + version)
+5. `$env:HAIPIPE_WS_ROOT` = `Join-Path $WS_ROOT "_WorkSpace"`
+6. `$env:HAIPIPE_RUN_CONFIG` = the Run's config relative to the Task (`runs/<run>/config.do`; flat: `scripts/config/<run>.do`), with `$env:HAIPIPE_RUN_RESULT` (`runs/<run>/result/`) and `$env:HAIPIPE_PASS_DIR` (`runs/<run>/passes/pNN-<MMDD>/`)
+7. `$workers = @(...)` — list of worker .do filenames for this estimator family
+8. `Push-Location $TASK_DIR` + `foreach ($w in $workers) { & $stata /e do "scripts/$w" }`
+
+**Reg runner rules:**
+- Resolve-StataExe IS allowed (auto-detects; matches data-stage pattern)
+- Direct `& $stata /e do` — NOT `Start-Process` (sequential workers)
+- Each worker reads its own config via `$env:HAIPIPE_RUN_CONFIG`
+- STATATMP: only needed if any worker uses `preserve` (add if so)
+
+### Step 4 — Author configs
+
+**Shared config** (`scripts/config/<Cohort>.do`):
+- All globals that don't change per run
+- ICD codes, BFAF windows, topic flags, output paths
+- Uses `${ws_root}` and `${cms_source}` (set by source selector / dispatcher)
+
+**Source selectors** (case stage only):
+- `scripts/config/_source_synth.do`: sets `cms_source`, `cms_asset_name`, `cms_asset_version` for synth
+- `scripts/config/_source_full.do`: same for full/real
+
+**Per-run configs** (thin wrappers):
+- `runs/rNN_<run>/config.do`: loads source selector + shared config + pins year
+- Generated from `ref/config-seed-run.do`
+
+**Reg configs** (two-layer chain, from `ref/config-seed-reg.do` + `ref/config-seed-reg-run.do`):
+- Shared: `scripts/config/<Cohort>_<Pairing>.do` — data path + version
+- Shared synth: `scripts/config/<Cohort>_<Pairing>_synth.do` — same but synth data version
+- Per-run: `runs/rNN_<run>/config.do` — loads shared config + pins `outcome_bfaf_window` + `res_dir` (+ `pass_dir`)
+- DID per-run: same + adds `global file_policy "${ws_root}/0-External-Store/Policy/Policy-State-Year.dta"`
+- Controls, outcomes, treatment, instruments live in worker .do scripts (NOT config) because different workers within the same run have different RHS.
+
+### Step 5 — Author thin runners + sbatch
+
+Each Run folder `runs/rNN_<run>/` gets its ticket, its `config.do` and its card `run.yaml` (`role:` make, trial or describe).
+
+**cms/case thin runners** (`runs/rNN_<run>/rNN_<run>.ps1`) — data has no thin runner (self-orchestrating):
+- 2 lines: comment + `& "$PSScriptRoot\..\..\..\src\run_<stage>_year.ps1" "$PSScriptRoot\config.do"`
+- From `ref/run-ps1-template.ps1` (its lines make the same call in either layout)
+
+**Reg runners** (`runs/rNN_<run>/rNN_<run>.ps1`):
+- Self-contained (~30-38 lines): from `ref/run-ps1-reg-template.ps1`
+- NOT thin delegates — each runner IS its own orchestrator
+- Or, once the Job has a shared `src/0-libs/run-regression-pipeline.ps1`, the two-line caller that hands it `config.do`
+
+**Sbatch batchers** (`sbatch/run_all_*.ps1` or `sbatch/run-<cohort>-<est>-all.ps1`):
+- Reg: per-estimator and per-source batchers using `& powershell -File`
+- cms/case/data: multi-year batchers
+
+**Optional independently requested describe Run** (`runs/rNN_describe_<cohort>/`, `role: describe`):
+- Standalone (doesn't go through orchestrator)
+- Has its own Stata exe resolution + STATATMP
+- Calls dispatcher with `describe` step
+
+### Step 6 — Author describe/QC script
+
+Stages cms/case/data ship a mandatory describe step:
+- `scripts/d-<Stage>-Describe.do` (or `scripts/d-Case-Describe.do`)
+- Walks output directory, counts rows per file
+- Uses ONLY built-in Stata (`egen tag`, `summarize`, `tabulate`)
+- NO SSC (`distinct`, `ftools`, etc.)
+- Writes human-readable report to the Run's result/
+
+Reg stage: describe is OPTIONAL.
+Stata logs + .tex coefficient tables are self-documenting.
+Skip unless the plan explicitly requests a describe step.
+
+### Step 7 — Validate
+
+Run `fn/audit-stata.md` on the authored code:
+- Four-sister alignment
+- Three-layer config consistency
+- STATATMP present
+- No SSC in describe scripts
+- Pure ASCII in .ps1
+
+### Step 8 — Report
+
+```
+🔨 Build: <task_name>
+   dispatcher: <name>.do (<N> step branches)
+   workers: <M> scripts in scripts/
+   orchestrator: <name>.ps1 (<K> topic blocks)
+   configs: <L> (shared + per-run + source selectors)
+   runners: <P> thin entries + <Q> sbatch
+   describe: scripts/d-<Stage>-Describe.do
+```
+
+
+MUST NOT
+--------
+
+- Use papermill, .ipynb, or Python — this is Stata + PowerShell
+- Use SSC packages in describe scripts
+- Use `Start-Job` in orchestrator (CMS server incompatible)
+- Write heavy .dta to a Run's result/ (they go to _WorkSpace/)
+- Skip STATATMP in orchestrator
+- Use non-ASCII in .ps1 files
+- Add comment banners, ASCII art, or box-drawing to .ps1
+- Skip exit code checking after Start-Process
+
+
+Return contract
+---------------
+
+```yaml
+status: ok | blocked | failed
+files_created: [list of all authored files]
+files_modified: [list of edited existing files]
+audit_result: { from fn/audit-stata.md }
+next: "Run fn/execute-stata.md (mode A: local synth first)"
+```

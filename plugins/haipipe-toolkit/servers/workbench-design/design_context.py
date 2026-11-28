@@ -32,17 +32,17 @@ def skill_rows(folder, root, level, view, selected):
     book = design_reader.is_method_book(folder)
     if book:
         from live import design_book as BK
-    support = {**D.VIEW_SKILLS, **(BK.VIEW_SKILLS if book else {}), 'overview': (('haipipe-mindmap', 'the design ladder'),)}
+    support = {**D.VIEW_SKILLS, **(BK.VIEW_SKILLS if book else {}), 'overview': (('hai-mindmap', 'the design ladder'),)}
     if key is None:
-        names = [name for k, _ in (BK.BOOK_VIEWS if book else D.BLOCK_VIEWS) for name, _ in support[k]] + ['haipipe-mindmap']
+        names = [name for k, _ in (BK.BOOK_VIEWS if book else D.BLOCK_VIEWS) for name, _ in support[k]] + ['hai-mindmap']
         return skills_section.relevant(folder, 'design', level, names, topics=bool(selected['topics']),
                                        inbox=bool(selected['interactions']), limit=None)
     rows = list(support.get(key, ()))
     rows += [(str(card.get('skill') or ''), 'linked Run') for card in selected['cards'].values()]
     if selected['topics']:
-        rows.append(('haipipe-studio', 'linked Topics'))
+        rows.append(('hai-studio', 'linked Topics'))
     if selected['interactions']:
-        rows.append(('haipipe-interaction', 'linked Interactions'))
+        rows.append(('hai-interaction', 'linked Interactions'))
     seen = set()
     return [(name, why) for name, why in rows
             if name in skills_section.catalog() and not (name in seen or seen.add(name))]

@@ -119,7 +119,7 @@ the folder itself                Files         &layout=focus&section=files
 lives on the host rooted at `Tools/`, its path relative to that root.
 
 **Look in both places** (JL 261011). Tool work (a skill, server, workbench or theme)
-points to its page under `Tools/blueprints/bNN_<name>/`; a board's own data, questions
+points to its page under `Tools/examples/bNN_<name>/`; a board's own data, questions
 and results point to their page in the Project.
 
 ```
@@ -417,7 +417,7 @@ A skill runs only when it is invoked or explicitly loaded by another active
 instruction. To make this format always-on, an active global instruction must
 load it; this checkout currently has no root `CLAUDE.md` pointer.
 
-**See:** [b10_project_workbench › Report](<host>/_board/workbench?path=blueprints%2FProject-Ladder%2Fwork%2Fb10_project_workbench&layout=focus&section=report): when a skill applies, as answered there.
+**See:** b10_project_workbench › Report (b10, removed 261126): when a skill applies, as answered there.
 
 ## 2. 🛠️ What I Changed
 

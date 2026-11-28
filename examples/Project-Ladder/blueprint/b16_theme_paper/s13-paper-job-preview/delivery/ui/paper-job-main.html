@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paper Job Main · proposal</title>
+<style>
+:root{color-scheme:light dark;--line:#e3e3e6;--muted:#6b6b70;--ink:#1c1c1c;--accent:#1864ab;--soft:#e7f5ff;--paper:#fff;--wash:#f5f6f8;--you:#b35c00}
+@media(prefers-color-scheme:dark){:root{--line:#33353a;--muted:#a3a4aa;--ink:#e8e8e6;--accent:#91caff;--soft:#253749;--paper:#17181a;--wash:#24262a;--you:#ffb36b}}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,a,input{font:inherit}button{cursor:pointer;color:inherit}a{color:var(--accent)}button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:3px}[hidden]{display:none!important}
+.studio{border-bottom:1px solid var(--line);padding:13px 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap}.studio h1{font-size:17px;margin:0}.studio small{font-size:12px;color:var(--muted);margin-left:auto}.studio nav{display:flex;gap:6px}.studio button,.views button{border:1px solid var(--line);border-radius:8px;background:none;padding:4px 12px;font-size:13px}.studio button[aria-pressed=true],.views button[aria-pressed=true]{color:var(--accent);border-color:var(--accent);background:var(--soft)}
+.stage{display:grid;grid-template-columns:180px minmax(0,1fr);min-height:calc(100vh - 63px)}.stage.folded{grid-template-columns:1fr}.stage.folded>.catalog{display:none}.catalog{border-right:1px solid var(--line);padding:18px 10px;display:flex;flex-direction:column;gap:3px}.catalog button,.left-tabs button{border:0;background:none;text-align:left;padding:7px 10px;border-radius:6px;font-size:14px}.catalog button[aria-pressed=true],.left-tabs button[aria-pressed=true]{background:var(--soft);color:var(--accent);font-weight:600}.catalog .gap{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}
+.viewport{position:relative;min-width:0}.dot{position:absolute;right:3px;top:0;width:22px;height:22px;border:0;background:none;color:var(--muted);font-size:18px;line-height:1;padding:0;text-decoration:none;text-align:center}.dot:hover{color:var(--accent)}.hide-dot{right:auto;left:2px;top:4px}.stage>.viewport>.hide-dot{left:5px;top:9px;z-index:2}
+.page{max-width:1080px;margin:auto;padding:28px 36px 60px;min-height:600px}.crumb{color:var(--muted);font-size:12px;margin:0 0 13px;overflow-wrap:anywhere}.page h1{font-size:25px;margin:0 0 18px;display:flex;align-items:center;gap:18px}.page h1>span{font-size:21px;color:var(--muted);font-weight:600}.tray{margin-left:auto;border:0;background:var(--soft);color:var(--you);border-radius:7px;padding:3px 9px;font-size:14px}
+.row{display:flex;align-items:center;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;white-space:nowrap;padding:2px 2px 5px;margin:0 -2px 5px;scroll-padding:4px;touch-action:pan-x}.row button{flex:none;border:1px solid var(--line);background:none;border-radius:8px;padding:6px 12px;font-size:14px;white-space:nowrap}.row button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}.row.topics{gap:19px}.row.topics button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:2px 0 4px;color:var(--muted);font-weight:600;font-size:13px}.row.topics button[aria-pressed=true]{color:var(--ink);background:none;border-bottom-color:var(--accent)}.code{font-size:12px;color:var(--muted);font-weight:400}.row.tasks{margin-bottom:15px}.old{opacity:.5}.old[aria-pressed=true]{opacity:1}
+.content{position:relative;padding-top:4px}h2.band{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:600;margin:22px 0 10px}h2.band:after{content:"";flex:1;border-top:1px solid var(--line)}h2.band:first-child{margin-top:8px}.band-sec{margin:0 0 8px}.band-sec>summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;border:1px solid var(--line);border-radius:8px;padding:9px 14px;font-size:15px;font-weight:600}.band-sec>summary::-webkit-details-marker{display:none}.band-sec>summary:before{content:"▸";font-size:12px;width:12px;color:var(--muted)}.band-sec[open]>summary:before{content:"▾"}.mark{margin-left:auto;color:var(--you);font-weight:400;font-size:13px}.inside{padding:15px 14px 17px}.views{display:flex;gap:6px;overflow-x:auto;margin:0 0 14px;padding:2px}.views button{white-space:nowrap}.split{display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;position:relative}.split.folded{grid-template-columns:1fr}.split.folded>.left-tabs{display:none}.left-tabs{border-right:1px solid var(--line);display:flex;flex-direction:column;gap:3px;padding:4px 12px 0 0}.right-content{position:relative;min-width:0;padding:2px 24px 8px 0}.right-content p{margin:0 0 12px;max-width:72ch}.right-content p:last-child{margin:0}.lead{font-size:18px;line-height:1.55}.kvs{display:grid;grid-template-columns:110px minmax(0,1fr);gap:9px 18px;margin:0}.kvs dt{color:var(--muted);font-size:13px}.kvs dd{margin:0}.plain{list-style:none;margin:0;padding:0}.plain li{padding:7px 0;border-bottom:1px solid var(--line)}.plain li:last-child{border:0}.task-line,.run-line{display:grid;grid-template-columns:1fr auto;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);align-items:center}.task-line:last-child,.run-line:last-child{border:0}.task-line button{border:0;background:none;color:var(--accent);text-align:left;padding:0;font-size:15px}.task-line small,.run-line small{color:var(--muted);font-size:12px}.result-table{border-collapse:collapse;width:100%;font-size:14px}.result-table th,.result-table td{text-align:left;padding:9px 10px;border:1px solid var(--line);vertical-align:top}.result-table th{font-weight:600;background:var(--wash)}.figure{max-width:100%;display:block;margin:auto}.figure text{fill:var(--ink);font:14px -apple-system,sans-serif}.figure .stroke{stroke:var(--muted)}.figure .fill{fill:var(--soft)}
+.question{border-left:3px solid var(--you);padding:4px 0 4px 14px}.question p{margin:0 0 10px}.choices{display:flex;gap:8px;flex-wrap:wrap}.choices button{border:1px solid var(--line);background:none;border-radius:7px;padding:7px 10px;font-size:14px}.choices button:hover{border-color:var(--accent);color:var(--accent)}.answer{color:var(--accent)}.excerpt{font-family:Georgia,serif;font-size:18px;line-height:1.8;max-width:64ch}.paper-sheet{border:1px solid var(--line);padding:28px;max-width:580px;margin:auto}.paper-sheet h3{font-family:Georgia,serif;font-size:24px;margin:0 0 24px}.paper-sheet p{font-family:Georgia,serif}.live-frame{display:block;width:100%;height:calc(100vh - 65px);min-height:650px;border:0}dialog{border:1px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink);width:min(860px,94vw);max-height:85vh;padding:30px}dialog::backdrop{background:#0006}dialog .close{position:absolute;right:12px;top:8px;border:0;background:none;font-size:22px}.dialog-body{overflow:auto}.dialog-body h3{margin:0 0 18px}
+@media(max-width:700px){.studio{padding:12px;gap:12px}.studio small{width:100%;margin-left:0}.stage{display:block}.catalog{flex-direction:row;overflow:auto;border-right:0;border-bottom:1px solid var(--line);padding:7px}.catalog button{white-space:nowrap}.catalog .gap{margin:0;padding:7px 10px;border:0}.stage.folded>.catalog{display:none}.page{padding:28px 18px 45px}.page h1{font-size:21px;gap:10px}.page h1>span{font-size:18px}.row button{min-height:42px}.split{display:block}.left-tabs{flex-direction:row;border:0;border-bottom:1px solid var(--line);overflow:auto;padding:0 0 8px;margin-bottom:12px}.left-tabs button{white-space:nowrap;min-height:40px}.right-content{padding-right:0}.split>.hide-dot{display:none}.kvs{grid-template-columns:85px minmax(0,1fr);gap:8px}.inside{padding:14px 7px}.result-table{font-size:12px}.result-table th,.result-table td{padding:6px}.lead{font-size:16px}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="studio"><nav aria-label="Paper type"><button data-effect="writing" aria-pressed="true">Paper</button><button data-effect="grant" aria-pressed="false">Grant</button></nav><small id="preview-note">Effect · example content · choices stay in this preview</small></header>
+<div class="stage folded"><section class="viewport"><div id="preview"></div></section></div>
+<dialog id="dialog"><button class="close" aria-label="Close preview">×</button><div class="dialog-body"></div></dialog>
+<script>
+// Effect-only fixture. No write API, no real scientific results, no selection receipt.
+// Navigation, bands, folds and dots follow b17 s11 and the shared Workbench parts.
+const esc=x=>String(x).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const kv=rows=>'<dl class="kvs">'+rows.map(([a,b])=>'<dt>'+esc(a)+'</dt><dd>'+esc(b)+'</dd>').join('')+'</dl>';
+const table=(heads,rows)=>'<table class="result-table"><thead><tr>'+heads.map(x=>'<th>'+esc(x)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+r.map(x=>'<td>'+esc(x)+'</td>').join('')+'</tr>').join('')+'</tbody></table>';
+const task=(id,name,group,goal,mark='',kind='draft')=>({id,name,group,goal,mark,kind});
+const commonEvidence=[
+ {id:'j01',kind:'display',name:'Displays',topic:'Evidence',goal:'Make every figure and table answer its assigned question.',tasks:[task('t01','Population table','Main displays','Who entered the study?','✓','display'),task('t02','Model comparison','Main displays','Where does the model help?','','display'),task('t51','Sensitivity analysis','Appendix','Does the pattern survive another specification?','','display')]},
+ {id:'j02',kind:'value',name:'Values',topic:'Evidence',goal:'Trace each printed estimate to its returned source.',tasks:[task('t01','Population values','Value groups','Which source supports each population number?','✓','value'),task('t02','Model estimates','Value groups','Which estimate can the manuscript print?','🙋','value'),task('t99','Whole-paper check','Whole-paper check','Does every printed number have a valid binding?','','value')]},
+ {id:'j03',kind:'cite',name:'Citations',topic:'Evidence',goal:'Keep each claim within what its sources establish.',tasks:[task('t01','Prior work','Claim groups','What do the closest studies establish?','🙋','cite'),task('t02','Methods','Claim groups','Which sources support the method?','✓','cite'),task('t99','Whole-paper check','Whole-paper check','Do all printed citations resolve to their sources?','','cite')]}
+];
+const writing={id:'j12',kind:'writing',name:'Revised manuscript',topic:'Writing',goal:'Explain when the model helps and where the evidence stops.',tasks:[task('t00','Summary','Main text','What can a reader conclude from this study?'),task('t01','Introduction','Main text','Why is this question still open?','🙋'),task('t02','Methods','Main text','Could a reader reproduce the comparison?','✓'),task('t03','Results','Main text','What changed across populations?'),task('t21','Sensitivity analyses','Appendix','How stable is the finding?'),task('t31','Cover letter','Letters','Why does this paper fit the journal?'),task('t32','Response','Letters','How did the revision answer each concern?')]};
+const submission={id:'j21',kind:'submission',name:'Journal submission',topic:'Submission',goal:'Prepare the exact upload set for this send.',tasks:[task('t01','Cover letter','Submission','Which writing-version letter will be uploaded?','','submission'),task('t02','Portal walk','Submission','What does the portal require?','✓','submission'),task('t03','Portal fill','Submission','Do the portal fields agree with the manuscript?','🙋','submission')]};
+const review={id:'j31',kind:'review',name:'Reviewer comments',topic:'Review',goal:'Answer the bounded comments batch against the named build.',tasks:[task('t01','Population scope','Review Items','How should the manuscript bound the population claim?','🙋','review'),task('t02','Baseline comparison','Review Items','Which comparison resolves the reviewer’s concern?','','review'),task('t11','Reply verification','Response checks','Does the reply point to the exact checked change?','','review')]};
+const ideas=[{id:'j01',kind:'idea',name:'Calibration under change',topic:'Ideas',goal:'Can calibration survive a shift in population?',tasks:[task('t01','Frame the claim','Framing','What would distinguish this candidate?','✓','idea'),task('t11','Closest work','Assessment','What does the closest work already establish?','🙋','idea'),task('t12','Refutation','Assessment','Which result would refute the proposed claim?','','idea'),task('t13','Minimum experiment','Assessment','What is the smallest informative experiment?','','idea'),task('t21','Paper decision','Decision','Is the evidence sufficient to develop a paper?','','idea')]},{id:'j02',kind:'idea',name:'Missingness as a signal',topic:'Ideas',goal:'When does missingness carry useful information?',tasks:[task('t01','Frame the claim','Framing','Which testable claim defines this candidate?','','idea')]}];
+let effect='writing',block='paper',jobs=[],jobId='j12',selected='main',subview='Page',left='Question',step='Plan';
+const remember=new Map(),lastJobs=new Map(),answers=new Map();
+function fixture(which){
+ block=which==='idea'?'idea':which==='grant'?'grant':'paper';
+ jobs=block==='idea'?structuredClone(ideas):structuredClone([...commonEvidence,{...writing,id:'j11',name:'Initial manuscript',old:true},writing,submission,review]);
+ if(block==='grant'){
+  jobs.filter(j=>j.kind==='writing').forEach(j=>{j.name=j.id==='j11'?'Letter of intent':'Full application';j.goal='Test whether the proposed study can resolve the funding call’s research question.';j.tasks=[task('t00','Summary','Application','What will this study establish?'),task('t01','Specific aims','Application','Which aims can the proposed study answer?','🙋'),task('t02','Significance','Application','Why does this research matter?'),task('t03','Approach','Application','How will each aim be tested?'),task('t21','Team and resources','Attachments','Does the team have the required capability?'),task('t22','Budget justification','Attachments','What does each requested resource enable?'),task('t31','Cover letter','Letters','How does the application fit the call?')];});
+  jobs.find(j=>j.kind==='submission').name='Application submission';
+ }
+ jobId=which==='grant'?'j12':jobs.find(j=>j.kind===which&&!j.old)?.id||'j12'; selected='main'; subview='Page';left='Question';step='Plan';
+}
+const current=()=>jobs.find(j=>j.id===jobId),picked=()=>current().tasks.find(t=>t.id===selected);
+const boardName=()=>block==='idea'?'Idea-Example':block==='grant'?'Grant-Example':'Paper-Example';
+const btn=(text,attrs,on,extra='')=>'<button '+attrs+' aria-pressed="'+on+'" '+extra+'>'+text+'</button>';
+function catalog(){
+ document.querySelectorAll("[data-effect]").forEach(b=>b.setAttribute("aria-pressed",b.dataset.effect===effect));
+}
+function askKey(){return block+'/'+jobId+'/'+(picked()?.id||current().tasks.find(t=>t.mark==='🙋')?.id||'main');}
+function question(){
+ const k=current().kind;
+ return k==='idea'?['Should this candidate advance to a pilot?',['Develop the pilot plan','Keep evaluating']]:k==='submission'?['Which document matches this portal field?',['Use the selected writing version','Review the field mapping']]:k==='review'?['How should this concern be resolved?',['Narrow the claim','Request another analysis']]:k==='value'?['Which source should support this estimate?',['Use the linked result','Review the binding']]:k==='cite'?['How should this claim be bounded?',['Use the supported wording','Seek another source']]:block==='grant'?['Does this aim fit the scope of the call?',['Keep this aim','Revise the scope']]:['How far should this claim extend?',['Limit it to the studied population','Request broader evidence']];
+}
+function questionHTML(){
+ const [q,choices]=question(),a=answers.get(askKey());
+ return '<div class="question"><p>'+esc(q)+'</p>'+(a?'<p class="answer">✓ '+esc(a)+'</p>':'<div class="choices">'+choices.map(c=>'<button data-answer="'+esc(c)+'">'+esc(c)+'</button>').join('')+'</div>')+'</div>';
+}
+const fold=(id,title,body,mark='')=>'<details class="band-sec" id="'+id+'"><summary>'+title+(mark?'<span class="mark">'+mark+'</span>':'')+'</summary><div class="inside">'+body+'</div></details>';
+const band=(title,html)=>'<h2 class="band">'+title+'</h2>'+html;
+function overviewItems(){
+ const j=current();
+ if(picked())return ['Question','Requirements','Sources'];
+ return {writing:['Question',block==='grant'?'Call requirements':'Requirements','Narrative'],display:['Question','Display plan','Examples'],value:['Question','Value bindings','Sources'],cite:['Question','Claim coverage','Sources'],submission:['Question','Upload set','Portal fields'],review:['Question','Review Items','Builds'],idea:['Question','Claim','Assessments','Paper link']}[j.kind];
+}
+function pageContent(){
+ const j=current(),t=picked();
+ if(left==='Question')return '<p class="lead">'+esc(t?t.goal:j.goal)+'</p>';
+ if(left==='Requirements'||left==='Call requirements')return kv([['Target',block==='grant'?'Example funding call':'Example journal'],['Boundary',block==='grant'?'Separate preliminary findings from proposed outcomes.':'Keep conclusions within the studied population.'],['Close',t?'The output answers the Task question and its evidence can be inspected.':'Every section and required artifact refers to the selected version.']]);
+ if(left==='Narrative')return table(['Section','Reader question'],j.tasks.filter(t=>!['Letters','Appendix','Attachments'].includes(t.group)).map(t=>[t.name,t.goal]));
+ if(left==='Display plan')return table(['Display','Answers'],j.tasks.map(t=>[t.name,t.goal]));
+ if(left==='Examples')return '<p>Example journal</p><ul class="plain"><li>Population table — grouping and denominators</li><li>Comparison figure — common axes and uncertainty</li></ul>';
+ if(left==='Value bindings')return table(['Printed item','Source','Scope'],[['Population size','Population Result · n','Main text'],['Model estimate','Comparison Result · estimate','Results']]);
+ if(left==='Claim coverage')return table(['Claim','Source','Boundary'],[['Population shift affects calibration','Closest-work reading','Population and outcome examined'],['The selected comparison is appropriate','Methods reading','Assumptions must be stated']]);
+ if(left==='Sources')return '<ul class="plain"><li>Source Result — its owning Work Task and Run</li><li>Closest-work reading — its Discovery inquiry</li><li>Current authored assessment — its input revision</li></ul>';
+ if(left==='Upload set')return table(['Slot','Artifact'],[[block==='grant'?'Application':'Manuscript','Paper-Latex'],['Supplement','Supplement-Latex'],['Letter','Cover-Letter']]);
+ if(left==='Portal fields')return table(['Field','Reads'],[['Title','Selected writing version'],['Summary','t00 · Summary'],['Correspondence','Submission records']]);
+ if(left==='Review Items')return table(['Concern','Work','Reply'],[['R1.1 · Population scope','t01 · Population scope','Writing version · Response'],['R2.1 · Baseline comparison','t02 · Baseline comparison','Writing version · Response']]);
+ if(left==='Builds')return kv([['Sent','Initial manuscript · frozen delivery'],['Feedback','Received reviewer letters'],['Answering version','Revised manuscript'],['Released','The build checked against the response']]);
+ if(left==='Claim')return '<p class="lead">Calibration may remain stable when the inputs change within a defined range.</p><p>The admissible range and the falsifying result must be established.</p>';
+ if(left==='Assessments')return table(['Question','Owner'],j.tasks.filter(t=>t.group==='Assessment').map(t=>[t.goal,t.name]));
+ return '<p>A reviewed selection links this Idea Job to its Paper Block. The candidate, assessments and decision history stay here.</p>';
+}
+function drawing(){
+ const labels=current().kind==='idea'?['Candidate','Assessment','Decision','Paper']:current().kind==='review'?['Concern','Routed work','Checked reply','Release']:block==='grant'?['Research gap','Specific aims','Approach','Evidence']:['Question','Evidence','Claim','Sections'];
+ return '<svg class="figure" viewBox="0 0 640 160" role="img" aria-label="'+esc(labels.join(' to '))+'">'+labels.map((x,i)=>'<rect class="fill" x="'+(i*160+3)+'" y="45" width="135" height="60" rx="6"/><text x="'+(i*160+70)+'" y="81" text-anchor="middle">'+esc(x)+'</text>'+(i<3?'<path class="stroke" d="M'+(i*160+141)+' 75h18m-6 -4l6 4 -6 4" fill="none"/>':'')).join('')+'</svg>';
+}
+function delivery(){return '<div class="paper-sheet"><h3>'+esc(block==='grant'?'Application narrative':'Paper-Latex')+'</h3><p>'+esc(current().goal)+'</p><hr><p>'+esc(block==='grant'?'Specific aims · Significance · Approach':'Summary · Introduction · Methods · Results')+'</p></div>';}
+function overview(){
+ const names=overviewItems();if(!names.includes(left))left=names[0];
+ const views=['Page','Draw',...(!picked()&&['writing','submission','review'].includes(current().kind)?['Delivery']:[])];if(!views.includes(subview))subview='Page';
+ const tabs='<div class="views" aria-label="Overview views">'+views.map(v=>btn(v,'data-subview="'+v+'"',v===subview)).join('')+'</div>';
+ const content=subview==='Page'?'<div class="split"><button class="dot hide-dot" data-hide-list title="Hide list" aria-label="Toggle content list">•</button><nav class="left-tabs" aria-label="Overview items">'+names.map(n=>btn(esc(n),'data-left="'+esc(n)+'"',n===left)).join('')+'</nav><div class="right-content"><button class="dot" data-open-content title="Open '+esc(left)+'" aria-label="Open content">•</button>'+pageContent()+'</div></div>':'<div class="right-content"><button class="dot" data-open-content title="Open '+esc(subview)+'" aria-label="Open content">•</button>'+(subview==='Draw'?drawing():delivery())+'</div>';
+ return fold('overview','1 · '+esc(picked()?.name||current().name),tabs+content);
+}
+function tasksHTML(){
+ const j=current(),groups=[...new Set(j.tasks.map(t=>t.group))];
+ return groups.map((g,i)=>fold('tasks-'+i,(i+1)+' · '+esc(g),j.tasks.filter(t=>t.group===g).map(t=>'<div class="task-line"><button data-task="'+t.id+'" title="'+esc(t.goal)+'">'+t.id+' · '+esc(t.name)+'</button><span>'+esc(t.mark)+'</span></div>').join(''),j.tasks.some(t=>t.group===g&&t.mark==='🙋')?'🙋':'')).join('');
+}
+function steps(){return {draft:['Plan','Write','Evidence','Display','Revise'],display:['Display','Source','Method'],value:['Values','Sources','Check'],cite:['Claims','Sources','Check'],submission:['Fields','Documents','Check'],review:['Concern','Change','Reply'],idea:['Assessment','Sources','Decision']}[picked()?.kind||'draft'];}
+function stepContent(){
+ const t=picked();
+ if(step==='Plan')return table(['Paragraph','Reader move'],[['Opening','State the bounded problem'],['Evidence','Explain the comparison'],['Closing','State the supported conclusion']]);
+ if(step==='Write')return '<p class="excerpt">The question is whether the comparison remains informative when the population changes. The manuscript must identify the studied population and keep its conclusion within that scope.</p>';
+ if(step==='Evidence'||step==='Sources'||step==='Source')return table(['Item','Owner'],[['Population definition','Work · cohort preparation · Result'],['Closest comparison','Discovery · prior-work inquiry'],['Claim boundary','Current assessment']]);
+ if(step==='Display')return drawing();
+ if(step==='Revise'||step==='Check'||step==='Decision')return questionHTML();
+ if(step==='Values')return table(['Item','Returned field','Printed binding'],[['Population size','cohort.n','Methods · population'],['Model estimate','comparison.estimate','Results · primary comparison']]);
+ if(step==='Claims')return table(['Claim','Support'],[['The comparison addresses population change','Source passage and study scope'],['The result generalizes beyond that population','Requires further evidence']]);
+ if(step==='Method')return kv([['Input','Linked source Result'],['Transform','Declared plotting or table method'],['Output','Display artifact and its caption']]);
+ if(step==='Fields')return table(['Field','Value source'],[['Title','Writing version'],['Summary','t00 · Summary'],['Upload','Selected delivery artifact']]);
+ if(step==='Documents')return delivery();
+ if(step==='Concern')return '<p class="lead">R1.1 · The population claim extends beyond the sampled group.</p><p>Keep the received wording with its original source and route the change to the Introduction and Discussion.</p>';
+ if(step==='Change')return kv([['Concern','R1.1'],['Owner','Writing version · Introduction'],['Change','Bound the population statement'],['Evidence','Named sample and comparison']]);
+ if(step==='Reply')return '<p class="excerpt">We have bounded the population statement to the sampled group and identified the corresponding change in the revised manuscript.</p>';
+ return '<p class="lead">'+esc(t.goal)+'</p>'+table(['Reading','Implication'],[['Closest work overlaps part of the claim','Define the remaining novelty precisely'],['Population boundary remains unresolved','Keep the candidate provisional']]);
+}
+function taskWork(){
+ const tabs=steps();if(!tabs.includes(step))step=tabs[0];
+ const work=fold('task-work','1 · '+esc(picked().name),'<div class="views" aria-label="Task workflow">'+tabs.map(s=>btn(s,'data-step="'+s+'"',s===step)).join('')+'</div><div class="right-content" id="step-content">'+stepContent()+'</div>');
+ const runName={draft:'run-write-section',display:'run-draw-display',value:'run-check-values',cite:'run-check-citations',submission:'run-prepare-submission',review:'run-response-review',idea:'run-assess-claim'}[picked().kind];
+ const runs=fold('task-runs','2 · Runs','<div class="run-line"><span>'+runName+'</span><span>✓</span></div><div class="run-line"><span>p02 · Refine the boundary</span><small>Current input revision</small></div><div class="run-line old"><span>p01 · Initial assessment</span><span>✓</span></div>');
+ return work+runs;
+}
+function draw(){
+ catalog();
+ const j=current(),t=picked(),topics=[...new Set(jobs.map(x=>x.topic))],groups=[...new Set(j.tasks.map(x=>x.group))];
+ const waiting=(t?t.mark==='🙋':j.tasks.some(x=>x.mark==='🙋'))&&!answers.has(askKey());
+ let rows='<nav class="row topics" aria-label="Job topics">'+topics.map(x=>btn(esc(x),'data-topic="'+x+'"',x===j.topic)).join('')+'</nav>';
+ rows+='<nav class="row" aria-label="Jobs">'+jobs.filter(x=>x.topic===j.topic).map(x=>btn(x.id+' · '+esc(x.name),'data-job="'+x.id+'"',x.id===jobId,'title="'+esc(x.goal)+'"'+(x.old?' class="old"':''))).join('')+'</nav>';
+ rows+='<nav class="row topics" aria-label="Task topics">'+btn('Main','data-main',selected==='main')+groups.map(g=>btn(esc(g),'data-task-topic="'+esc(g)+'"',t?.group===g)).join('')+'</nav>';
+ rows+='<nav class="row tasks" aria-label="Tasks"'+(!t?' hidden':'')+'>'+ (t?j.tasks.filter(x=>x.group===t.group).map(x=>btn(x.id+' · '+esc(x.name)+(x.mark?' '+x.mark:''),'data-task="'+x.id+'"',selected===x.id,'title="'+esc(x.goal)+'"')).join(''):'')+'</nav>';
+ const findings=waiting?band('🔎 Findings',fold('finding','1 · '+esc(t?.name||j.tasks.find(x=>x.mark==='🙋')?.name||'Scope'),questionHTML(),'🙋')):'';
+ document.getElementById('preview').innerHTML='<main class="page"><p class="crumb">Project-Ladder / paper / '+boardName()+'</p><h1>'+boardName()+' <span>💼 Jobs</span>'+(waiting?'<button class="tray" title="Open the question at its source" aria-label="Open waiting question">🙋 1</button>':'')+'</h1><div class="rows">'+rows+'</div><div class="content">'+band('🧭 Overview',overview())+(t?band('📊 Plan + Results',taskWork()):band('📊 Tasks',tasksHTML()))+findings+'</div></main>';
+}
+function selectTask(id){selected=id;subview='Page';left='Question';step='Plan';remember.set(block+'/'+jobId+'/'+picked().group,id);draw();}
+function openDialog(html,title){const d=document.getElementById('dialog');d.querySelector('.dialog-body').innerHTML='<h3>'+esc(title)+'</h3>'+html;d.showModal();}
+document.addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;
+ if(b.id==='catalog-dot'){document.querySelector('.stage').classList.toggle('folded');return;}
+ if(b.classList.contains('close')){document.getElementById('dialog').close();return;}
+ if(b.hasAttribute('data-effect')){effect=b.dataset.effect;fixture(effect);draw();return;}
+ if(b.hasAttribute('data-topic')){jobId=lastJobs.get(block+'/'+b.dataset.topic)||jobs.find(j=>j.topic===b.dataset.topic&&!j.old)?.id||jobs.find(j=>j.topic===b.dataset.topic).id;selected='main';left='Question';draw();return;}
+ if(b.hasAttribute('data-job')){jobId=b.dataset.job;lastJobs.set(block+'/'+current().topic,jobId);selected='main';left='Question';draw();return;}
+ if(b.hasAttribute('data-main')){selected='main';left='Question';draw();return;}
+ if(b.hasAttribute('data-task-topic')){selectTask(remember.get(block+'/'+jobId+'/'+b.dataset.taskTopic)||current().tasks.find(t=>t.group===b.dataset.taskTopic).id);return;}
+ if(b.hasAttribute('data-task')){selectTask(b.dataset.task);return;}
+ if(b.hasAttribute('data-subview')||b.hasAttribute('data-left')){if(b.dataset.subview)subview=b.dataset.subview;if(b.dataset.left)left=b.dataset.left;const box=document.getElementById('overview');box.outerHTML=overview();document.getElementById('overview').open=true;return;}
+ if(b.hasAttribute('data-hide-list')){b.closest('.split').classList.toggle('folded');return;}
+ if(b.hasAttribute('data-open-content')){const c=b.closest('.right-content').cloneNode(true);c.querySelector('.dot')?.remove();openDialog(c.innerHTML,subview==='Page'?left:subview);return;}
+ if(b.hasAttribute('data-step')){step=b.dataset.step;document.querySelectorAll('[data-step]').forEach(x=>x.setAttribute('aria-pressed',x===b));document.getElementById('step-content').innerHTML=stepContent();return;}
+ if(b.hasAttribute('data-answer')){answers.set(askKey(),b.dataset.answer);const t=picked()||current().tasks.find(x=>x.mark==='🙋');if(t)t.mark='✓';const foldId=b.closest('details')?.id;draw();if(foldId&&document.getElementById(foldId))document.getElementById(foldId).open=true;return;}
+ if(b.classList.contains('tray')){const f=document.getElementById('finding');f.open=true;f.scrollIntoView({behavior:'smooth',block:'center'});return;}
+});
+fixture(effect);draw();
+</script>
+</body></html>

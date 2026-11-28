@@ -226,6 +226,6 @@ if __name__ == "__main__":
     ap.add_argument("--file", required=True, help="one Page Face relative to the Board root")
     ap.add_argument("--save", required=True)
     ap.add_argument("--diff", dest="diff_against")
-    ap.add_argument("--workdir", default="/tmp/haipipe-gate")
+    ap.add_argument("--workdir", default="/tmp/hai-gate")
     a = ap.parse_args()
     sys.exit(run(a.serve, a.fixture, a.file, a.save, a.diff_against, a.workdir))

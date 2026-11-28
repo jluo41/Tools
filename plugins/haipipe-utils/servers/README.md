@@ -56,7 +56,7 @@ takes one meal as it arrives, `{"raw": {"type": "app_log" | "text" | "photo" | "
 `input` wins: a photo row and the photo API's names). It answers `{"raw", "input", "output",
 "step"}`: the input JSON the preprocess step made (start, end, logged_at, meal_type, the meal's
 own total, items, timeline) and the output by local hour, each item enriched (its match, serving,
-FatSecret's 14 nutrients, GI and GL). The code is `skills/haipipe-norm/eventnorm`; describe-food
+FatSecret's 14 nutrients, GI and GL). The code is `skills/hai-norm/eventnorm`; describe-food
 still reads only the items. A lane with an event door shows it on its try page: the box takes
 typed foods (one a line, with the time eaten), a raw JSON or an input JSON, and shows raw, input
 and output by hour; its gallery is `GET /try/<noun>/events`, real meals of every kind of raw

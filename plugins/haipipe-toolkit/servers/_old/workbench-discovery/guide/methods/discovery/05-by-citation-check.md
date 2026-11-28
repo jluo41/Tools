@@ -27,10 +27,10 @@ limitations: A paper with no DOI cannot be matched this way and goes to a person
 Applied to AI
 -------------
 
-agent: haipipe-discovery-reviewer-agent checks the card and the .bib; the person signs what stays unmatched.
+agent: hai-discovery-reviewer-agent checks the card and the .bib; the person signs what stays unmatched.
 steps: 1. Read the card and the .bib. 2. Look the paper up. 3. Write the verification line. 4. Stop for the person.
 returns: a verification line on each card.
 verify: No card says verified without a matching database record (T3).
 risk: An agent may copy the DOI from the card instead of looking it up; the check reads the database (ours).
 evidence on ai: A model-written citation was often fabricated [Walters 2023].
-skill: haipipe-discovery-search
+skill: hai-discovery-search

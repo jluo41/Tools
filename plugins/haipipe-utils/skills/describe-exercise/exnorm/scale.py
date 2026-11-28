@@ -35,7 +35,7 @@ computed the calories. Apple and FitBit disagree by 68% on the same activity.
 That part needs no personal history and no cold start, which is why it ships
 first.
 
-THE FENCE (haipipe-norm rule 11)
+THE FENCE (hai-norm rule 11)
 ================================================================================
 A bank built from the board is a second path to the label. The device factors
 are fit on TRAIN patients and scored on patients the fit never saw. When the

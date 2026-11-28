@@ -29,7 +29,7 @@ A fresh-agent test (261101) passed; it added two rules: material kept elsewhere 
 **[0.23.0] · 2026-10-11 · Look in the Tools blueprint Blocks too**
 
 JL 261011: "Please also refer to the blocks in the Tools/blueprint as well, when we do
-it." A Studio match now checks both the Project's Blocks and `Tools/blueprints/bNN_*/studio/`;
+it." A Studio match now checks both the Project's Blocks and `Tools/examples/bNN_*/studio/`;
 tool work (a skill, server, workbench or theme) takes a blueprint topic, and a project
 board's own content stays in its Project. A blueprint link uses the host rooted at `Tools/`.
 
@@ -46,7 +46,7 @@ it was **Related studio:**. Related question keeps its name.
 
 **[0.20.1] · 2026-10-10 · Shared Workbench Block**
 
-The shared-Studio example now opens b10_project_workbench with a Block topic
+The shared-Studio example now opens b10_project_workbench (removed 261126) with a Block topic
 anchor, following the promotion of the former b01/j03 area.
 
 **[0.20.0] · 2026-10-10**
@@ -83,7 +83,7 @@ Shorter description (792 -> 331 characters): what it does, when to use it, its t
 
 - A Job's question links the shared workbench on the Job's Audience Report
   (`/_board/workbench?path=<job folder>&space=Audience+Report#question-QNN`): the toolkit's
-  blueprint Blocks became Jobs of `Tools/blueprints/Project-Packages/work/b01_haipipe-toolkit/` (one Block per
+  blueprint Blocks became Jobs of `Tools/examples/Project-Packages/work/b01_haipipe-toolkit/` (one Block per
   package, JL 261009), and a Job has no `board.md`.
 
 ## [0.18.1] — 2026-10-06

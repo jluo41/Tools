@@ -1,0 +1,85 @@
+# ==============================================================================
+# Source Pipeline Configuration Template
+# ==============================================================================
+# Converts raw data files into a standardized SourceSet.
+#
+# Replace all <Placeholders> with actual values.
+#
+# Usage:
+#   source .venv/bin/activate
+#   source env.sh
+#   python -m scripts.haistepcli.source --config <this_file>.yaml
+# ==============================================================================
+
+# Fn version (optional). Set it to load the Fns from code/haifn/fn_<stage>/<fn_version>/
+# instead of the flat folders. One version is shared by fn_source, fn_record and fn_case,
+# and every b01-b03 Run of one dataset uses the same one
+# (hai-data/ref/0-overview.md § Fn Versions).
+# fn_version: "vDfExt260923"
+
+# External data release used by SourceFn (ZIP/NPI/NDC/NCPDP/engagement)
+external_version: "@v1215"
+
+SourceArgs:
+  # -------------------------------------------------------------------
+  # raw_data_name  (REQUIRED)
+  #   Name of the cohort directory in the SourceStore.
+  #   Must match a directory under _WorkSpace/0-RawDataStore/
+  #   or _WorkSpace/1-SourceStore/.
+  #
+  #   To find available cohorts:
+  #     ls _WorkSpace/0-RawDataStore/
+  # -------------------------------------------------------------------
+  raw_data_name: "<CohortName>"
+
+  # -------------------------------------------------------------------
+  # SourceFnName  (REQUIRED)
+  #   Name of the SourceFn to use for processing.
+  #   Must match a file in code/haifn/fn_source/ (without .py).
+  #
+  #   To find available SourceFns:
+  #     ls code/haifn/fn_source/
+  # -------------------------------------------------------------------
+  SourceFnName: "<SourceFnName>"
+
+  # Optional, resolved by the SourceFn/builder contract. Each dependency must
+  # pin a ProcessName/key mapping and preserve release/vector metadata.
+  external_inputs:
+    # zip5:
+    #   process_name: Ptt
+    #   process_column: zipcode5
+    #   external_key: zip5_original
+    #   representation:
+    #     dtype: float32
+    #     ordering: "zip5-v1"
+    #     emit_missing_mask: true
+
+  # -------------------------------------------------------------------
+  # raw_data_path  (OPTIONAL)
+  #   Path to the raw data directory.
+  #   - null / omitted: auto-discover from SourceStore
+  #   - Local path: absolute or relative path to raw data folder
+  #   - S3 path: "s3://bucket/path/to/data"
+  #   If given, overrides auto-discovery and cleans old @SourceFn caches.
+  # -------------------------------------------------------------------
+  raw_data_path: "_WorkSpace/0-RawDataStore/<CohortName>"
+
+  # -------------------------------------------------------------------
+  # Cache settings  (OPTIONAL)
+  #   use_cache:  If true, skip processing and load from cached SourceSet
+  #   save_cache: If true, save processed output to disk
+  # -------------------------------------------------------------------
+  use_cache: true
+  save_cache: true
+
+
+# ==============================================================================
+# Output location:
+#   _WorkSpace/1-SourceStore/<raw_data_name>/@<SourceFnName>/
+#     <ProcName1>.parquet
+#     <ProcName2>.parquet
+#     ...
+#     manifest.json
+#
+# NOTE: Structure is FLAT (one parquet per ProcName at root level)
+# ==============================================================================

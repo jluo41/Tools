@@ -1,6 +1,0 @@
-schema: haipipe-project/v1
-id: Project-RandomThoughts
-profile: research
-git_mode: workspace
-state: active
-mission: "The one inbox of Tools: a loose thought or a meeting note lands here first, kept by topic and by date, and points to the Block it feeds."

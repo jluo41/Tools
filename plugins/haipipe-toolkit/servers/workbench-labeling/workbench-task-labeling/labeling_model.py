@@ -435,12 +435,12 @@ def _md_inline(text: str) -> str:
 
 
 def _space_mapping_ref() -> Path | None:
-    """haipipe-labeling-building/ref/ref-space-mapping.md, found next to the engine the Board already loads."""
+    """hai-labeling-building/ref/ref-space-mapping.md, found next to the engine the Board already loads."""
     job_module = _canonical_job_module()
     if job_module is None:
         return None
-    labeling = Path(job_module.__file__).resolve().parents[1]      # skills/2_theme/labeling
-    for path in (labeling / "haipipe-labeling-building" / "ref" / "ref-space-mapping.md",
+    labeling = Path(job_module.__file__).resolve().parents[1]      # skills/3_theme/labeling
+    for path in (labeling / "hai-labeling-building" / "ref" / "ref-space-mapping.md",
                  labeling / "ref" / "ref-space-mapping.md"):
         if path.is_file():
             return path

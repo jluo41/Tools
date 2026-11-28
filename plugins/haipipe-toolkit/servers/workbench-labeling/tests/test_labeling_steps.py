@@ -46,14 +46,14 @@ class StepsPageTest(unittest.TestCase):
         self.assertIn('Preferences<span class="vw fd-you" title="waits for you">🙋</span>', html)   # a mark, only here
         self.assertNotIn('class="vw fd-ok"', html)
         self.assertIn(">Delivery<", html)                                          # its releases, last (Paper's shape)
-        self.assertIn("🧭 Around the Work", html)                                   # the shared frame (Work, Paper)
+        self.assertNotIn("🧭 Around the Work", html)                                # the side pane holds it (hai-block A01)
 
     def test_work_opens_where_the_person_is_needed(self):
         self.assertEqual(S.default_view(self.meaning), "preferences")          # Loop 2's form waits
         self.assertEqual(S.default_view(self.expression), "release")            # e01 ran Rewrite, Run, Evaluate
 
     def test_the_job_names_one_next_thing_by_the_same_rule_the_page_opens_on(self):
-        """engine/two_loops.py is the one rule: the page opens a Task on task_step, and /haipipe-labeling <Job>
+        """engine/two_loops.py is the one rule: the page opens a Task on task_step, and /hai-labeling <Job>
         (start.py) opens the Task job_now names. A waiting form comes first."""
         now = S.TWO.job_now(self.job)
         self.assertEqual((now["task"], now["kind"], now["who"]), (self.meaning, "meaning", "person"))
@@ -78,7 +78,7 @@ class StepsPageTest(unittest.TestCase):
             self.assertIn("<h3 class=fd-h>1 · ", P.step(report))                 # the step itself leads the list
             self.assertTrue(P.made(report))                                         # then what it made
             self.assertNotIn("⚙️ Process", report)                                  # one list, no group headings
-            self.assertLess(report.index("📋 Review Content"), report.index("🧭 Around the Work"))
+            self.assertNotIn("🧭 Around the Work", report)
 
     def test_report_step_leads_with_the_mind_map_then_the_report_and_its_cases(self):
         html = self.page(self.meaning, "work", "prepare")
@@ -92,7 +92,7 @@ class StepsPageTest(unittest.TestCase):
         self.assertNotIn(">Q5</span>", results.split("Typical cases")[0])        # no tag for the card that set a rule
         self.assertIn("waiting for you", html)
         self.assertIn("hidden until you judge it", html)
-        self.assertIn("Use /haipipe-labeling-interaction on t03_example_meaning, Loop 2: prepare interaction report-02", html)
+        self.assertIn("Use /hai-labeling-interaction on t03_example_meaning, Loop 2: prepare interaction report-02", html)
 
     def test_preferences_embeds_the_waiting_form_and_sends_answers_with_the_prompt(self):
         html = self.page(self.meaning, "work", "preferences")
@@ -124,7 +124,7 @@ class StepsPageTest(unittest.TestCase):
         self.assertIn("Round report e01", html)
         self.assertIn("wrong label", html)
         self.assertIn("small model A", html)
-        self.assertIn("Use /haipipe-labeling-expression on t04_example_expression", self.page(self.expression, "work", "rewrite"))
+        self.assertIn("Use /hai-labeling-expression on t04_example_expression", self.page(self.expression, "work", "rewrite"))
 
     def test_expression_waits_without_a_signed_meaning(self):
         signed = self.meaning / "meaning" / "m01.approved.yaml"
@@ -223,7 +223,7 @@ class StepsPageTest(unittest.TestCase):
             findings = L.render(self.theme, self.root, self.job, "report", "findings")
             self.assertIn("r90_collect_release_choices", findings.split("🙋 Interaction", 1)[1])
             standing = L.render(self.theme, self.root, self.job, "report", "standing")
-            self.assertNotIn("r90_collect_release_choices.html", standing.split("🧭 Around the Work", 1)[1])
+            self.assertNotIn("r90_collect_release_choices.html", P.asks(standing))
             work = L.render(self.theme, self.root, self.job, "work", "standing")
             self.assertNotIn("View BJTR", work)
             self.assertNotIn("🚧 Next steps", work)
@@ -238,7 +238,7 @@ class StepsPageTest(unittest.TestCase):
         html = L.render(self.theme, self.root, self.job, "report", "findings")
         bars = re.findall(r"<h3 class=fd-h>\d+ · ([^<]*)", html)
         self.assertTrue(bars[0].startswith("🏷 Final labels"), bars)
-        self.assertIn("🧭 Around the Work", html)
+        self.assertNotIn("🧭 Around the Work", html)
         self.assertIn("🙋 Interactions", html)
 
     def test_every_step_holds_its_prompt_inside_its_closed_bar(self):

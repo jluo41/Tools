@@ -39,4 +39,4 @@ verify: predictions are sealed before the person's first label (T1)
 risk: If the person sees model labels first, they anchor on them (ours).
 evidence on ai: Models beat crowd workers on several tasks [Gilardi 2023]; verifying their
   labels raises quality [Wang 2024].
-skill: haipipe-labeling-rounds
+skill: hai-labeling-rounds

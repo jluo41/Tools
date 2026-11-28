@@ -22,7 +22,7 @@ Procedure
 1. Locate the endpoint.
    - live URL given -> use it.  else: is a local server up? (predict_cli.py ping)
    - if not, offer to start one (the study project's serve_endpoint task, or
-     /haipipe-end deploy local) and wait for /ping healthy.
+     /hai-end deploy local) and wait for /ping healthy.
 
 2. Deterministic build (Bash):
      python3 scripts/build_bundle.py \

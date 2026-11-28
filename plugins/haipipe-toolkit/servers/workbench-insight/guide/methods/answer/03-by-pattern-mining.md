@@ -54,4 +54,4 @@ risk: An agent may report a pattern that only looks strong because thousands wer
   [Webb 2007].
 evidence on AI: No study tests an LLM agent mining patterns with false discovery control
   yet (ours).
-skill: haipipe-insight-by-pattern-mining (proposed)
+skill: hai-insight-by-pattern-mining (proposed)

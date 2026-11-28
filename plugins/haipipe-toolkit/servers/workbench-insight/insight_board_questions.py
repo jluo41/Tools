@@ -57,7 +57,7 @@ def report(snap: dict, qid: str, pid: str) -> dict | None:
         return None
     # An old page's Opening says what the page does, not what was found, so it shows
     # only its headline.  A Page Face page (`folder-kind:` declared,
-    # haipipe-insight ref/report.md § Shape) has an objective title and answers in
+    # hai-insight ref/report.md § Shape) has an objective title and answers in
     # its Opening's first paragraph, so that answer is shown under the title.
     head = _header(page["text"])
     strength = _STRENGTH.search(page["state"])

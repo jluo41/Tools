@@ -269,7 +269,7 @@ def spaces(level, folder, root, sub):
     return {}
 
 
-# each button's Run (haipipe-run rule 6); reading a paper is a hard Run with its own name
+# each button's Run (hai-run rule 6); reading a paper is a hard Run with its own name
 RUN_NAMES = {"Add a resource": "run-add-resource-<slug>", "Ask a Question": "run-ask-<qNN>",
              "Review the questions": "run-review-questions", "Write the report": "run-report-<qNN>",
              "Check a report": "run-check-<qNN>", "Find papers": "run-find-papers-<tNN>",

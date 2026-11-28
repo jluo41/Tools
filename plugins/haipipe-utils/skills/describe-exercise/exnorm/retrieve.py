@@ -23,7 +23,7 @@ Tightening the scorer would move that one case and leave the class of case
 intact, because the query genuinely does not identify an activity. The class is
 only fixable by a person adding a line to alias_dict.py, so the ladder is built
 to ASK for that line rather than to paper over its absence. This is rule 3 of
-haipipe-norm: a confidently wrong MET is worse than a missing one, because
+hai-norm: a confidently wrong MET is worse than a missing one, because
 nothing downstream can tell it from a measurement.
 
 WHY GOOD IS UNREACHABLE

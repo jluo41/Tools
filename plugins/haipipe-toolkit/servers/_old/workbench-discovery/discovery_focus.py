@@ -15,7 +15,7 @@ Results) and asks this module, live.discovery_focus, for what discovery adds:
 
 Each part is (title, word, html, waits): a title in plain words with its emoji, the closed bar's state word, the body,
 and the one line that waits on the person (""). Carries over the old Discovery page's Papers, Tasks and BibTeX
-(discovery_views.py). Reads the folder contract of haipipe-discovery (ref/paper-run-contract.md). Read-only.
+(discovery_views.py). Reads the folder contract of hai-discovery (ref/paper-run-contract.md). Read-only.
 """
 from __future__ import annotations
 
@@ -49,11 +49,11 @@ CSS = """<style>
 
 # the skills each view's work calls on (focus_page.page_skills reads it: the rail's Skills, 261106)
 VIEW_SKILLS = {
-    "findings": (("haipipe-discovery", "admits a paper as one numbered Run and builds the Evidence Bib"),
-                 ("haipipe-discovery-review", "reads one paper into its Card, facts and Bib entry"),
-                 ("haipipe-discovery-synthesize", "writes a Task's synthesis from its Results")),
-    "standing": (("haipipe-discovery-inquiry", "moves a Task through scope, acquire, synthesize and close"),),
-    "mindmap": (("haipipe-search", "finds the papers a Task may admit"),),
+    "findings": (("hai-discovery", "admits a paper as one numbered Run and builds the Evidence Bib"),
+                 ("hai-discovery-review", "reads one paper into its Card, facts and Bib entry"),
+                 ("hai-discovery-synthesize", "writes a Task's synthesis from its Results")),
+    "standing": (("hai-discovery-inquiry", "moves a Task through scope, acquire, synthesize and close"),),
+    "mindmap": (("hai-search", "finds the papers a Task may admit"),),
 }
 
 
@@ -144,7 +144,7 @@ def bib_path(task: Path) -> Path:
 
 
 def handed_over(task: Path) -> list:
-    """The .bib files this Task handed over: under its address in its Block's delivery/ (haipipe-delivery)."""
+    """The .bib files this Task handed over: under its address in its Block's delivery/ (hai-delivery)."""
     part = task.parent.parent / "delivery" / task.parent.name / task.name
     return sorted(part.rglob("*.bib")) if part.is_dir() else []
 

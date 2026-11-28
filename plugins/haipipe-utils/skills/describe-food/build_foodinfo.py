@@ -38,7 +38,7 @@ import pandas as pd
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[4]
-sys.path[:0] = [str(HERE), str(HERE.parent / "haipipe-norm")]
+sys.path[:0] = [str(HERE), str(HERE.parent / "hai-norm")]
 
 from foodnorm import normalize                                       # noqa: E402
 from xinfo import CohortStats, copy_api_examples, link_reference, write  # noqa: E402

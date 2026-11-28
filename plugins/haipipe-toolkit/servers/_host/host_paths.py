@@ -10,9 +10,9 @@ that resolves back into it.
 
 Dependency arrow: servers import skills. Skills never import servers, except
 that the Page engine reads the served asset bundle through
-``skills/1_base/draft/haipipe-draft/src/assets.py`` and ``src/page_assets.py``.
+``skills/1_base/draft/hai-draft/src/assets.py`` and ``src/page_assets.py``.
 
-Skills sit in three layers (``skills/0_utils``, ``skills/1_base``, ``skills/2_theme``), so a
+Skills sit in four layers (``skills/0_utils``, ``skills/1_base``, ``skills/2_work``, ``skills/3_theme``), so a
 server finds a skill or a family by its folder name (``skill_dir``), never by a fixed layer path.
 """
 import functools
@@ -28,7 +28,7 @@ SKILLS = TOOLKIT / "skills"
 
 @functools.lru_cache(maxsize=None)
 def skill_dir(name):
-    """The folder named ``name`` under ``skills/``: a skill (``haipipe-draft``) or a family
+    """The folder named ``name`` under ``skills/``: a skill (``hai-draft``) or a family
     (``design``), nearest first, so moving a family to another layer breaks no path.
     Folders starting with ``.`` or ``_`` are skipped. When none exists the path
     ``skills/<name>`` is returned, so a missing skill fails where it is read, not at import."""
@@ -52,7 +52,7 @@ def skill_dir(name):
 
 def part_dir(name):
     """A skill that became a part of its door, `<door>/_parts/<part>/` (PART.md): found as `<door>-<part>` or as
-    `<part>` (haipipe-insight-check → haipipe-insight/_parts/check). None when no part has that name."""
+    `<part>` (hai-insight-check → hai-insight/_parts/check). None when no part has that name."""
     for parts in sorted(SKILLS.rglob("_parts")):
         if not parts.is_dir() or "node_modules" in parts.parts:
             continue
@@ -69,7 +69,7 @@ def skill_file(name):
     return folder / "SKILL.md" if (folder / "SKILL.md").is_file() else folder / "PART.md"
 
 
-PAGE_ENGINE = skill_dir("haipipe-draft")            # cli/page.py and the src/ grammar every server reads
+PAGE_ENGINE = skill_dir("hai-draft")            # cli/page.py and the src/ grammar every server reads
 
 
 def bootstrap():

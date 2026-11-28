@@ -18,7 +18,7 @@ def complete_run(folder: Path, run: str, started_at: str = "") -> dict:
     record is malformed. It never edits the Result.
     """
     import importlib.util
-    checker = skill_dir("haipipe-design-unit") / "scripts" / "check_unit.py"
+    checker = skill_dir("hai-design-unit") / "scripts" / "check_unit.py"
     spec = importlib.util.spec_from_file_location("design_unit_gate", checker)
     gate = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(gate)

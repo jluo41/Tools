@@ -11,7 +11,7 @@ make them work"). It is made by the same tools a real Job uses, so the pages and
 Loop 1 is answered, applied and signed; Loop 2's form waits for the person; the expression Task has one round, e01.
 Every chat is synthetic and benign; Tools is public.
 
-    python labeling_example.py <Block folder>     e.g. blueprints/Project-Ladder/labeling/b01_labeling_example
+    python labeling_example.py <Block folder>     e.g. examples/Project-Ladder/labeling/b01_labeling_example
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-ENGINE = Path(__file__).resolve().parents[3] / "skills" / "2_theme" / "labeling" / "engine"
+ENGINE = Path(__file__).resolve().parents[3] / "skills" / "3_theme" / "labeling" / "engine"
 
 
 def _load(name: str):
@@ -145,7 +145,7 @@ def _answer(run: Path, picks: list[tuple[str, str]]) -> None:
     """The person's paste, as the form copies it: one line per question, a note under some."""
     stamp = collect.form_built((run / f"{run.name}.html").read_text(encoding="utf-8"))
     spec = collect.parse((run / collect.QUESTIONS).read_text(encoding="utf-8"))
-    lines = [f"haipipe-interaction answers · {run.name} · {spec['title']} · {T0:%Y-%m-%d %H:%M}", f"built: {stamp}"]
+    lines = [f"hai-interaction answers · {run.name} · {spec['title']} · {T0:%Y-%m-%d %H:%M}", f"built: {stamp}"]
     for q, (key, note) in zip(spec["questions"], picks):
         opt = next((o for o in q["options"] if o["key"] == key), None)
         lines.append(f"{q['id']} · {q['title']}: " + (f"{key} · {opt['text']}" if opt else "my own decision"))

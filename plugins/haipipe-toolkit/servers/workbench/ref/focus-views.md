@@ -52,15 +52,18 @@ inferred. Skills in a view come from its declared support skills, assigned Tasks
 selected Runs and linked sections; rail Skills include all page support skills
 without the former ten-item cap. Pending-question counts use the filtered items.
 
-View Files uses selected Topic/Run directories and assigned page faces, never
-falls back to the whole Block or SPACE stores. Its Tools · Skills uses the same
-selected skills as Skills; Tools · UI links the source files implementing the
-view and its authored view assets. The rail retains the full folder browser.
-No records are moved, copied, or relabeled to fill an empty view.
+On a Work Block, Files starts with the Block's real folder, already expanded.
+Its child folders remember their expansion in the browser tab across Workbench
+views. This fixed tree is separate from contextual sources: the Blocks branch
+in a view still uses only selected Topic/Run directories and assigned page faces.
 
-Files uses five folder-type tabs: Workspace, Blocks, Code, Tools · Skills,
-and Tools · UI. Only types with existing, accessible directories appear. The right
-panel shows expandable folder trees rooted at SPACE-relative paths. Expanding a
+Files groups related sources in expandable branches. Tools contains Skills and
+UI, which can be expanded independently. Skills uses the same selected skills
+as the view's Skills section; UI links its renderer and authored view assets.
+The rail retains page-wide sources. The floating Files button opens that same browser
+without navigating away. On narrow screens, Pages and Sections sit behind small left and right
+edge handles rather than taking up a row above the title. Hover or keyboard focus shows the
+label; tapping a handle opens its drawer. Empty source branches do not appear. Expanding a
 folder loads one directory level and keeps its ancestors visible. Selected source
 paths share their actual parent branches; intermediate groups include only relevant
 paths, while each selected folder can be browsed normally. Clicking a file
@@ -84,25 +87,25 @@ paper Topic ownership and skills to the shared renderers; old Board Work links
 open the matching Report view. Paper versions and draft Tasks, Labeling and
 specialized Question Book pages keep their existing workflows.
 
-A theme blueprint may keep an authored type/view comparison in `ui/block-views.md`,
-`ui/job-views.md`, or `ui/task-views.md`. Its matching UI view reads the Markdown
+A theme blueprint may keep an authored type/view comparison in `delivery/page-spec/block-views.md`,
+`delivery/page-spec/job-views.md`, or `delivery/page-spec/task-views.md`. Its matching UI view reads the Markdown
 as a closed **Type × View Button** section.
 Blueprints without that file retain their existing sections.
 The Project blueprint can declare `ui-project: <Project path>` to add **Project UI**,
-with its comparison in `ui/project-views.md`. Any configured UI view may also
-provide `ui/<level>-preview.html`: a separate **Proposed UI** section, served only
+with its comparison in `delivery/page-spec/project-views.md`. Any configured UI view may also
+provide `delivery/page-spec/<level>-preview.html`: a separate **Proposed UI** section, served only
 from inside the current root. This never replaces the current live example.
-An optional `ui/structure.md` adds a preceding **Work Structure** section.
+An optional `delivery/page-spec/structure.md` adds a preceding **Work Structure** section.
 Its `##` headings select structure tabs; `###` headings select nested
 topic examples. These authored examples are explanatory, not live execution state.
-An optional `ui/view-guide.json` supplies section definitions, expected outputs,
+An optional `delivery/page-spec/view-guide.json` supplies section definitions, expected outputs,
 layouts, examples by type, and skills by view. Matching section names become
 buttons opening a read-only dialog; Close, Escape, or a click outside dismisses it.
 Set `proposed: true` in the guide to omit links from these explanations to current
 pages that do not yet implement the proposed views. Live examples remain separate.
 Live UI examples use the shared left-tab/right-content component even when only
 one example is configured. The tabs select actual example pages; their right
-panels embed the page and offer an Open action. Optional `ui/example-types.json`
+panels embed the page and offer an Open action. Optional `delivery/page-spec/example-types.json`
 maps each `block`, `job`, or `task` example path to its display type. That type
 names the left tab in both the preview and its walkthrough; the actual example
 name remains in the preview and Open link. Unmapped examples retain their labels.
@@ -117,7 +120,7 @@ outputs retain their source identity under it: `delivery/jNN_<job>/`,
 `delivery/<lane>/`. Job and Task Delivery views select their source subtree
 and link to the whole Block Delivery; they never create local delivery folders.
 Runs and Results remain with their source. Every writer and reader uses the
-shared `haipipe-draft/src/common.py` Delivery helpers. Standalone Pages without
+shared `hai-draft/src/common.py` Delivery helpers. Standalone Pages without
 a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
 
 In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree

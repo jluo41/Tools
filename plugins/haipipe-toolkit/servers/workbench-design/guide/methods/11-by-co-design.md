@@ -64,4 +64,4 @@ risk: A simulated panel is not the people themselves: it cannot share power, and
 evidence on AI: A language model conditioned on real backstories reproduced the answers of
   human subgroups [Argyle 2023]. No study tests an AI co-designing with simulated users
   yet (ours).
-skill: haipipe-design-by-co-design (future)
+skill: hai-design-by-co-design (future)

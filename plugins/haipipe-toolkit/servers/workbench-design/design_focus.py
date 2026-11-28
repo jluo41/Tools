@@ -1,5 +1,5 @@
 """The design theme on the focus page (b12 j01, s51 to s59): a design Block, a Job and a Task, each Report
-and Work in the cells' letters, on the shared page rules every theme's page follows (haipipe-ui "The person's page
+and Work in the cells' letters, on the shared page rules every theme's page follows (hai-ui "The person's page
 rules", 261106; insight_focus is the model):
 
   every section a numbered bar, closed until opened, its state word on its right, read from its content; what waits

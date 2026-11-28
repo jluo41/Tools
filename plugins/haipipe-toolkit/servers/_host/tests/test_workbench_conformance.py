@@ -128,7 +128,7 @@ class EmbeddedPageTest(unittest.TestCase):
         # Guide's frame takes the embedded page's height; a canvas sized by vh grows the frame,
         # which grows the canvas, without end (JL 261003: "quickly zoom and zoom out").
         posters = [p for p in SERVERS.rglob("*.py") if not {"__pycache__", "tests"} & set(p.parts)
-                   and "postMessage({kind:'haipipe-explain-height'" in p.read_text(encoding="utf-8")]
+                   and "postMessage({kind:'hai-explain-height'" in p.read_text(encoding="utf-8")]
         self.assertTrue(posters)
         for page in posters:
             with self.subTest(page=page.name):

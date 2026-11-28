@@ -148,18 +148,18 @@ class DesignLadderTest(unittest.TestCase):
         """Named as its Run, each entry takes its skill, agent, sign and prompt from the ladder run cards (b12 s21)."""
         kinds = {k["label"]: k for k in frame.spaces_for(THEME, "Job", self.job, self.root, "Conduct & review")["Runs"].run_types}
         ver = kinds["run-verify-dNN-v1"]
-        self.assertEqual(ver["skills"], ["haipipe-design-unit"])
-        self.assertTrue(ver["prompt"].startswith("Run with haipipe-design-reviewer-agent."))
+        self.assertEqual(ver["skills"], ["hai-design-unit"])
+        self.assertTrue(ver["prompt"].startswith("Run with hai-design-reviewer-agent."))
         goal = {k["label"]: k for k in frame.spaces_for(THEME, "Block", self.block, self.root, "Goals")["Description"].run_types}
-        self.assertEqual(goal["run-add-goal-<goal>"]["skills"], ["haipipe-design-goal"])
+        self.assertEqual(goal["run-add-goal-<goal>"]["skills"], ["hai-design-goal"])
         self.assertIn("I sign the goal", goal["run-add-goal-<goal>"]["prompt"])
         method = {k["label"]: k for k in frame.spaces_for(THEME, "Block", self.block, self.root, "Methods")["Description"].run_types}
-        self.assertEqual(method["run-propose-method-<slug>"]["skills"], ["haipipe-design-method"])
+        self.assertEqual(method["run-propose-method-<slug>"]["skills"], ["hai-design-method"])
         for label in ("run-reason-t00", "run-generate-d04", "run-rank-t99", "run-setup-method-j03", "run-release-j03"):
             self.assertIsNotNone(V.card_for(label), label)
 
     def test_the_method_types_come_from_the_registry(self):
-        self.assertTrue(R.REGISTRY, "the registry haipipe-design-method/methods/ is read")
+        self.assertTrue(R.REGISTRY, "the registry hai-design-method/methods/ is read")
         self.assertEqual(R.METHODS["M04"], ("Actionable insights", "By insight"))
         self.assertIn("m2", R.REGISTRY["M04"]["versions"])
 

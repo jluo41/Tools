@@ -112,7 +112,7 @@ COPY is the fallback, used only where no record store is mounted.
 
 ─§ Adding a new dataset (the checklist) ──────────────────────────
 
-  1. 🍳 cook the RecSet    → 2-RecStore/<Name>          (/haipipe-data record)
+  1. 🍳 cook the RecSet    → 2-RecStore/<Name>          (/hai-data record)
   2. 🔧 it auto-appears    → INLAB_RECORD_STORE lists every record set
   3. 📌 (optional) cook a case set → 3-CaseStore/<Name>/@v0CaseSet-<Trigger>
   4. ✏️ (optional) map a label store in INLAB_LABEL_STORES[<dataset>]

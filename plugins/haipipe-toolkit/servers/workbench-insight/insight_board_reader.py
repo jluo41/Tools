@@ -74,7 +74,7 @@ def is_insight_board(board_root: Path) -> bool:
     board_root = Path(board_root)
     text = _read(board_root / "board.md")
     declared = _field(text, "board-kind").lower()
-    if declared == "task-block":                 # an Insight Block (haipipe-insight ref/block-contract.md)
+    if declared == "task-block":                 # an Insight Block (hai-insight ref/block-contract.md)
         return _field(text, "workbench").lower() == "insight"
     return declared in {"insight", "insight-board"} \
         or bool(_INSIGHT_BOARD.search(board_root.name)) \
@@ -534,8 +534,8 @@ def _workflow_runtimes(board: Path) -> list[dict]:
             data = yaml.safe_load(path.read_text(encoding="utf-8"))
             if not isinstance(data, dict) or data.get("schema") != "haipipe.workflow-runtime/v1":
                 raise ValueError("unsupported workflow record schema")
-            if data.get("workflow_id") != "haipipe-insight-workflow":
-                raise ValueError("workflow owner is not haipipe-insight-workflow")
+            if data.get("workflow_id") != "hai-insight-workflow":
+                raise ValueError("workflow owner is not hai-insight-workflow")
             if data.get("workflow_runtime_id") != path.parent.name:
                 raise ValueError("workflow runtime id does not match its record directory")
             runs, frontier = data.get("runs"), data.get("frontier", [])

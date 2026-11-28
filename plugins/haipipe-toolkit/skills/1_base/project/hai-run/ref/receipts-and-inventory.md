@@ -1,0 +1,232 @@
+# Run receipts and inventory
+
+Read when scaffolding, settling, presenting or auditing Runs. Resolve the
+selected [profile](run-catalog.md) and [identity](identity-and-history.md).
+
+## run.yaml · the card
+
+Every Run folder holds one `run.yaml` (JL 261006), the same fields for hard and soft Runs.
+It is the lookup card: inventories, workbench views and the hai-project audit read it
+first, and open the ticket or a receipt only to check it. Tools write it (the scaffolder,
+the ticket at each pass, the soft-Run writer, hai-project `update`), never a person.
+
+```yaml
+run: r03_<slug>                 # = the folder name = the ticket stem
+kind: hard                      # hard | soft
+type: [fit, evaluate]           # one or more Run types; one close rule settles them all
+role: make                      # its one job in its Task: trial make fix check describe figures evidence publish
+scope: <block>/<job>/<task>     # SPACE-relative folder holding this runs/
+target: <data-version> / <config>
+ticket: r03_<slug>.sh
+skill: <skill that owns the type>
+agent: <agent that does it>
+signs: [agreed, checked]        # the signs its workbench row needs
+status: planned                 # planned | running | waiting | done | failed | held | superseded
+passes: [p01-<MMDD>]            # its history, oldest first
+writes: [result/]               # soft: the items it touched, e.g. [draft/<section>.md]
+feeds: [sNN-<topic>]            # who reads its output
+reads: [<task>/rNN_<run>]       # the Runs whose output it read (else an rNN_ name in its goal)
+moved_from: []                  # only after hai-project update moved an older layout
+```
+
+`finds:` names the files this Run made that a reader should see, each with its kind (b17 trace 261127/0045):
+
+```yaml
+finds:
+  - file: result/ranges.csv        # relative to the Run folder
+    kind: value                    # value (a table) · display (a figure) · report (a text or a page)
+    name: Value ranges             # optional; the tab's name, else the Task's
+    from: [../../../t01_schema_check/runs/run-check-02-name/result/example.csv]   # optional: the raw file(s) it was made from
+    how: [read example.csv, min and max of each number column]                   # optional: how it was made
+```
+
+A work Job's 🔎 Findings draws one fold per kind (🔢 Values, 🖼️ Displays, 📄 Reports) from each Task's newest Run
+that names a file, a left tab per file and the file on the right (one file takes the full width, no left tab); its
+open dot opens the file itself. Under it, each `from:` file (relative to the Run folder, like `file:`) shows with its
+own open dot and a mark: ✅ when the finding was made after the raw file last changed, ❗ when the raw file changed
+since (run it again) or is gone; the reason is the mark's hover (b17 trace 261127/1215). `how:` shows as a "How this
+table is made" fold. Freshness is by time, not by a copy: a work Run reads the raw file where it lies. To freeze a
+version, copy it into the Run's `result/` with a `SOURCE.txt` naming where it came from, as a paper Board does
+(workbench-paper `board_evidence.source_status`). The file stays
+where the Run wrote it: Findings is an index, never a copy. A file no Run names is not a finding; a hard Run's
+`result/tables.json` with no `finds:` still reads as a value.
+
+`role:` groups a Task's Runs in the workbench, in that order (JL 261020: "各司其职"). `scripts/run_roles.py`
+proposes it from the Run's name (first match: evidence, check, publish, figures, describe, fix, trial; else make)
+and writes it after `kind:`; a ticket generator imports its `propose()` so a new card has one.
+
+Unknown values stay null; never fill a field by guessing. `run.yaml` indexes the Run;
+the receipt (`runtime.yaml`, in each pass and in a hard `result/`) stays the record of
+what happened. When they disagree, the receipt wins and the disagreement is a finding.
+
+## Required facts and write ownership
+
+Each allocated Run has an authored Ticket, a deterministic Result address and
+a machine-readable lifecycle receipt, conventionally `runtime.yaml`. The
+Result payload can be a decision or truthful non-success, not necessarily a
+substantial artifact. Allocate the planned receipt before expensive work.
+
+| Fact | Authoritative source |
+|---|---|
+| Owner, native identity, type/operation and target | profile + frozen Ticket; identity on receipt must agree |
+| Actor, action, inputs/dependencies and close rule | commissioned Spec/Ticket and inherited profile |
+| State, events/times, actual outcome and failure | native lifecycle receipt |
+| Attempts / feedback / Versions | native append-only history or referenced journals |
+| Output, provenance and checks | Result envelope/artifacts and required validation receipts |
+| Gate decision, route taken | native Run records; Runtime may index them |
+| Evidence admission, release and promotion | separately authorized owner records |
+
+These are semantic requirements, not a universal replacement YAML schema.
+Existing profiles can store facts in different fields or linked records.
+Do not fabricate duplicate actor/type/route fields just to resemble an example.
+Conversely, a required fact that cannot be resolved is an explicit contract gap.
+
+The owner defines who writes which records. For Task, the scaffolder creates
+planned state and the Ticket owns execution updates. Design workers write
+Results while their caller owns runtime. Interactive Pages preserve the human
+actor and journal. A read-only presenter cannot repair any of these on read.
+Use the native atomic-write method and preserve prior history before updates.
+
+## States, outcomes, and times
+
+`status`, `terminal_outcome`, gate verdict, and promotion describe different
+facts. A completed decision may choose hold; a completed evaluation may return
+a negative verdict if its gate permits that. A failed process alone never
+implies a valid Result, and process success alone never establishes acceptance.
+Use the native profile to decide completion and permissible retries.
+
+| Native meaning | Display meaning |
+|---|---|
+| Planned, allocated, not started | Ready |
+| Executing | Running |
+| Waiting for scoped human feedback/decision | Waiting |
+| Complete with required owner evidence | Done |
+| Failed | Failed |
+| Blocked, unresolved, missing/invalid required records | Held / Needs attention |
+| Superseded | Replaced; pruned once nothing in use reads it (SKILL.md, Keep only meaningful Runs) |
+
+This is a projection, not another persisted state ledger. Preserve native
+state detail. Missing receipts do not imply Ready; claimed complete records
+with missing artifacts are findings. Structural display checks do not replace
+semantic review or independent verification.
+
+New non-null timestamps use RFC 3339 with an explicit UTC offset. Record
+allocation using the owner's created/queued field where supported; leave
+`started_at` null until work starts and `finished_at` null while unfinished.
+Waiting does not establish a finish time. A pre-start failure can truthfully
+have null start plus recorded terminal time/reason. Actual instantaneous work
+may start and finish within one second; scaffolding alone cannot prove it did.
+Legacy date-only timestamps remain readable with limited temporal precision.
+
+### Coherent example: Task receipt lifecycle
+
+Use the [Task schema](../../../task/hai-task/ref/runtime-yaml-schema.md)
+for its complete schema and provenance fields. These are lifecycle excerpts
+from the same native receipt, not standalone valid receipts or new schemas:
+
+```yaml
+# Allocated; the frozen Ticket/profile supplies worker and close semantics.
+run: r01_execution_fit-model
+family: Execution
+operation: fit-model
+target: model-a / frozen-data-v1 / config-v1
+ticket: t01_model/runs/r01_execution_fit-model/r01_execution_fit-model.sh
+result: t01_model/runs/r01_execution_fit-model/result/
+status: planned
+started_at: null
+finished_at: null
+failure: null
+```
+
+```yaml
+# After launch; identity, inputs and other fields remain in this receipt.
+status: running
+started_at: "2026-09-20T12:00:00-04:00"
+finished_at: null
+failure: null
+```
+
+```yaml
+# After the declared artifact/metric gate passes.
+status: complete
+started_at: "2026-09-20T12:00:00-04:00"
+finished_at: "2026-09-20T12:08:00-04:00"
+failure: null
+```
+
+An unsuccessful attempt instead records the owner's failed/blocked status
+and reason. Its evidence stays recoverable before any retry. Interactive
+writing uses [RP journals](../../../draft/hai-draft-workflow/ref/interactive-writing-run.md),
+not this Task example or delegated paragraph fields.
+
+## Inventory procedure
+
+1. State owner scope, historical/current scope and counting grain. A request
+   for kinds uses the catalogue; actual execution needs native records.
+2. Resolve each owner/profile and its physical Ticket/Result/receipt stores:
+   `runs/<run>/` folders (read `run.yaml` first) and, until moved, the older
+   `runs/<run>.*` + `results/<run>/` pairs. Enumerate their union so orphan
+   Tickets, Results and runtimes remain visible.
+3. Join by full logical identity; validate stems, resolved paths and stored
+   identity. Multiple aliases/views of one execution produce one row. Two
+   owners may legitimately have the same local `r01` or `rd01`.
+4. Separate valid allocated records from plans and incomplete allocations.
+   Report duplicates, missing pairs/receipts, unknown ownership and unresolved
+   storage without inferring completed work or fabricating history.
+5. Check required facts, frozen inputs, actor/worker, state/timestamps and
+   history continuity through the selected native schema.
+6. Resolve the owner's acceptance evidence before endorsing `complete`.
+   Report discrepancies between a stored claim and available evidence.
+7. Inspect reuse, evidence admission and promotion separately. An accepted
+   Result does not become invalid merely because a consumer has not selected it.
+8. Present active/recovery-needed work first, with exact next action/owner.
+
+Use columns appropriate to the question, for example:
+
+```text
+Owner · Run · Type/profile · Target · Native state · Outcome ·
+Ticket · Result · Receipt · Participation · Findings
+```
+
+A Workflow report joins each managed instance to its Spec. Existing accepted
+Results can appear as reused dependencies with exact version and date; report new
+allocation count separately. Cardinality belongs to the definition. Controller
+receipts, Cells, Steps, calls, retries, passes, Result files, Cards, Labels,
+and supporting aliases do not create additional logical Run rows.
+
+Insight has a logical RI binding and version-qualified executions. Count
+bindings in Run inventory; list exact executions separately when requested.
+Do not collapse two different bindings because they share a base recipe, or
+claim two new RI allocations because one binding has two publications.
+
+## Audit boundaries
+
+An orphan record stays visible even if a profile cannot be loaded. State
+which invariants could not be checked. Do not turn a partial inventory into a
+claim of complete coverage. Never execute workers merely to answer a read-only
+inventory request. Repair goes through the owner with its existing authority.
+Keep safe pointers and summaries in shared views; never copy protected raw
+artifacts or credentials into a receipt or presentation layer.
+
+## Rebuilt receipts
+
+A Run that ran before its ticket wrote a receipt keeps only a stand-in: a migration's `status: blocked` with a
+`repair:` note (the workbench's 📦 "ran, no receipt"; `hai-project audit --today` counts them). Rebuild it from
+the files the Run left, never from memory: what it counted from its own outputs (a fetch log's asked and answered,
+a summary's rows, a metrics file), its times from its logs, else from its output files' own times, and its gate
+from its supervisor log when it has one. LLMRec b01 rebuilt 25 from fetch, supervisor and builder logs (261021); b02
+rebuilt an analysis Run's from its summary.md. What to read differs per Project, so the tool is the Project's. The rebuilt receipt keeps the stand-in under `earlier:` and says how it was made:
+
+```yaml
+status: complete
+headline: 19,549 of 19,790 searches answered
+receipt:
+  rebuilt_on: 2026-10-21
+  rebuilt_by: work/_tools/rebuild_receipts.py      # the Project's tool: what to read differs per Project
+  read_from: [<the files it read>]
+  why: its ticket wrote no receipt; this one is read from the files the Run left
+earlier: <the stand-in's repair: note>
+```
+
+A Run that left nothing to read keeps its stand-in and stays 📦. A receipt another tool owns (a binder's) is
+never rebuilt here; send its owner the list.

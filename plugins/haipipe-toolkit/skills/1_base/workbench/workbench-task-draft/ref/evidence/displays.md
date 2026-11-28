@@ -41,21 +41,21 @@ skill, and the renderer owns `recipe/` end to end.
 ```text
 driven by   kind             renderer                          recipe holds
 ──────────────────────────────────────────────────────────────────────────────
-data        📊 table         haipipe-display table             the build script
-data        📈 figure        haipipe-display figure            the python + receipts
-concept     📐 diagram       haipipe-display diagram           the FigureSpec JSON → SVG
-concept     ✒️ tex           haipipe-display tex               the .tex source
-concept     🎨 illustration  haipipe-display illustration      the prompt + review log
+data        📊 table         hai-display table             the build script
+data        📈 figure        hai-display figure            the python + receipts
+concept     📐 diagram       hai-display diagram           the FigureSpec JSON → SVG
+concept     ✒️ tex           hai-display tex               the .tex source
+concept     🎨 illustration  hai-display illustration      the prompt + review log
 ```
 
 The ✒️ row is named after the MECHANISM, not after one package (JL 260816): tikz, an
 `algorithm2e` block, and a display equation are one kind, because they share the writer (a
 person), the recipe (a hand-authored `.tex` that `float.tex` inputs), and now one skill.
 Three names for one mechanism would be the drift.
-`haipipe-display tex` holds that kind's craft, including the rule that such a unit still owes
+`hai-display tex` holds that kind's craft, including the rule that such a unit still owes
 `assets/figure.pdf`, since a consumer's master rarely carries the author's preamble.
 
-`haipipe-display` is the DOOR over that table (JL 260816): say what you want shown and it picks the renderer, or name the renderer directly when the kind is already clear.
+`hai-display` is the DOOR over that table (JL 260816): say what you want shown and it picks the renderer, or name the renderer directly when the kind is already clear.
 The family retired its poster and slides renderers the same day; a page's talk is the slide workbench's deck, never a display unit.
 
 Data-driven kinds take their numbers ONLY through `intake/` citing the task bank by id — ask once, cite twice (QPf5 §4); a render never invents a value.
@@ -131,7 +131,7 @@ not authorize any other generated output inside the Job.
 
 ## 🖼 Evidence segment · the strip that shows everything and writes nothing
 
-`POST /_board/display` (`servers/workbench/workbench-task-draft/plugview.py`) remains the compatibility route
+`POST /_board/display` (`servers/workbench/workbench-task-draft/run_views/plugview.py`) remains the compatibility route
 that writes the derived `<stem>-view.html` shown inside the 🖼 Displays segment
 of the 📃 Page workbench's Evidence Space. It is not a standalone Workbench surface.
 Units lay as a horizontal strip, one filling the pane, snap-shifted right to the next; a chip row names every unit and clicking a chip shifts the strip to it.
@@ -192,7 +192,7 @@ packet and never become new write targets.
 
 - `../../../../display/ref/display-unit-output-contract.md`
   The unit's internal shape; adopted verbatim, never forked.
-- `../../../../../../servers/workbench/workbench-task-draft/evidence.py`
+- `../../../../../../servers/workbench/workbench-task-draft/evidence_steps/evidence.py`
   The Evidence Space DISPLAY card and preview: read-only.
 - `<page>/results/<re-run>/result.yaml`
   The Result index: typed manifest → Evidence card.

@@ -18,7 +18,7 @@ servers/
 │       │                bibex exports), folder status, plugview; exporters/ holds the md2tex,
 │       │                md2docx and docx2pdf writers (md2tex and md2docx keep their parts beside them)
 │       └── reader/      the standalone Page server and the reader appearance (page.css, css/);
-│                        once servers/haipipe-page (JL 261014)
+│                        once servers/hai-page (JL 261014)
 ├── workbench-paper/     📄 the Paper workbench
 ├── workbench-work/      🧪 the work theme (once task): Questions as Logic / Work / Report, Studio
 ├── workbench-insight/   🔎 InsightBoard and its Run Specs
@@ -38,14 +38,14 @@ every workbench reuses and so is served from `workbench/`:
 | skill (`skills/`) | workbench (`servers/`) |
 |---|---|
 | `1_base/workbench/workbench-task-draft` (Outline · Run Space · Delivery · Folder) | `workbench/workbench-task-draft/` (the base's Task level) |
-| `1_base/project/haipipe-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench/` |
-| `2_theme/design/workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
-| `2_theme/paper/workbench-paper` | `workbench-paper/` |
-| `2_theme/work/workbench-work` | `workbench-work/` (the work theme) |
-| `2_theme/cowork/workbench-cowork` | `workbench/` (the shared frame) |
-| `2_theme/discovery/workbench-discovery` | `workbench/` (the shared frame) |
-| `2_theme/insight/workbench-insight` (+ `ref/insight-board.md`, the Board grain) | `workbench-insight/` |
-| `2_theme/labeling/workbench-labeling` | `workbench-labeling/` |
+| `1_base/project/hai-studio` (Draw · Chat · Terminal · ✨ pens; shared by every workbench) | `workbench/` |
+| `3_theme/design/workbench-design` (+ `ref/design-board.md`, the Board grain) | `workbench-design/` |
+| `3_theme/paper/workbench-paper` | `workbench-paper/` |
+| `2_work/work/workbench-work` | `workbench-work/` (the work theme) |
+| `2_work/cowork/workbench-cowork` | `workbench/` (the shared frame) |
+| `2_work/discovery/workbench-discovery` | `workbench/` (the shared frame) |
+| `3_theme/insight/workbench-insight` (+ `ref/insight-board.md`, the Board grain) | `workbench-insight/` |
+| `3_theme/labeling/workbench-labeling` | `workbench-labeling/` |
 
 ## Two URLs, one DOMAIN
 
@@ -63,7 +63,7 @@ and they take the same two words:
 `<board>` is the folder's slug (`01-topic-260722` → `topic`), `<page>` the
 Board's page id (`QA1`, `S-Label-1`). `home.py` resolves both against the Boards
 Home already discovers and fills in `path=`, `file=` (and `page=` for labeling) itself.
-A Board opens in the base frame (`workbench/page/frame.py`, JL 261007), in its theme; every theme is
+A Board opens in the base frame (`workbench/page/block_index_page/frame.py`, JL 261007), in its theme; every theme is
 on the frame. The page carries no band line and no link to a theme's older page (JL 261007). An
 `--only <workbench>` host serves no frame, so there `/w/<board>` and `/b/<board>` still open
 the theme's own page. The
@@ -131,9 +131,9 @@ Every folder here (and every `plugins/*/servers/workbench-*`) may hold:
 | Boards, a project, or a SPACE root | `python servers/_host/serve.py --root <root>` |
 | One workbench only, own port and DOMAIN, no terminal, chat or Board writes | `python servers/_host/serve.py --root <root> --only <workbench>` |
 | The labeling host, for annotators | `python plugins/haipipe-toolkit/servers/_host/serve.py --only labeling --root <root>` |
-| One standalone Page Folder | `python skills/1_base/draft/haipipe-draft/cli/page.py serve <page>` (imports `servers/workbench/workbench-task-draft/reader/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
-| One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page/page_reader.py`) |
-| Start or restart this SPACE's host | `/wb restart` (`skills/1_base/workbench/workbench/cli/wb.py restart`, from inside the SPACE) |
+| One standalone Page Folder | `python skills/1_base/draft/hai-draft/cli/page.py serve <page>` (imports `servers/workbench/workbench-task-draft/reader/standalone_server.py`; its workbench is `<DOMAIN>/w`) |
+| One Page in the reader | `<DOMAIN>/_board/page?path=/<page .md or folder>`: the Page engine's `render_page`, the same document `page.py export --lane web` writes (`workbench/page/parts_and_map/page_reader.py`) |
+| Start or restart this SPACE's host | `/wb restart` (`skills/1_base/workbench/hai-workbench/cli/wb.py restart`, from inside the SPACE) |
 | Start it by hand, from the SPACE root | `<python> Tools/plugins/haipipe-toolkit/servers/_host/serve.py --root . --host <ip> --port <PORT> --no-terminal --daemon /tmp/<space>-<PORT>.log` |
 | Prove a refactor changed no response | `python servers/_host/tests/gate_live.py --fixture <board> --file <page-rel> --save … --diff …` |
 
@@ -166,7 +166,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
      `test | asks | when | source` rows of its own steps; then Why it works; then Reference,
      folded (terms and people with checked links, coined Chinese marked as ours). Every part
      is a fold, open at first except Reference. One made-up
-     example throughout; no file notes on screen. `blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/method-canvas.py`
+     example throughout; no file notes on screen. `b10_project_workbench/s31-guide/method-canvas.py (removed 261126)`
      draws the canvas's first version from the document; after that the canvas is the source;
    - `table`: the Workbench Table, `ref/workbench-table.md` beside its skill
      (Space · View · Run type · Agent · Skill · Person signs; `skills/0_utils/table-workbench`);
@@ -176,14 +176,14 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    - `papers_table` (or the family's own papers page as a `related-paper` explain): its
      papers in `ref/<name>-papers.md`, checked by `skills/0_utils/table-papers`.
 3. **Inside Guide, no window-sized heights.** A page shown in Guide (one that posts
-   `haipipe-explain-height`) gives every canvas and PDF frame a fixed pixel height; a
+   `hai-explain-height`) gives every canvas and PDF frame a fixed pixel height; a
    `vh` height grows the frame without end and the canvas keeps zooming.
 4. **Short address.** A Board's workbench answers at `<DOMAIN>/w/<board>`; a route row
    in `host_registry.WORKBENCH_ROUTES` and the folder name `workbench-<name>` are enough.
 5. **No icon of its own.** The host answers `/favicon*` only for the Excalidraw app, so
    every workbench tab shows the browser's default icon. Do not add one.
 6. **Runs on the right.** Every working Space, Guide included, puts its runs in the shared
-   Runs panel to the right of its content: `workbench/page/runs_panel.py` (`panel_markup`,
+   Runs panel to the right of its content: `workbench/page/job_task_views/runs_panel.py` (`panel_markup`,
    `PANEL_CSS`, `PANEL_JS`, and `SPLIT_CSS` for the layout), fed by the family's run cards or
    Workbench Table. It stays on the right at every width and folds to a vertical "◂ Runs"
    tab. Guide's panel lists the Workbench Table rows whose Space is Guide.
@@ -191,10 +191,10 @@ Families older than a rule are listed in that test's `GAPS` with what they still
 ## Rules
 
 1. **Arrow one way.** Servers import the Page engine's grammar
-   (`skills/1_base/draft/haipipe-draft/src/`) and its `cli/` helpers (`check.py`, the Board
+   (`skills/1_base/draft/hai-draft/src/`) and its `cli/` helpers (`check.py`, the Board
    checker; `draw.py`; `refs.py`). The Board skill is retired (JL 261005): its live
    parts moved into the Page skill, the rest was deleted. Skills import nothing from here, with one
-   declared bridge: `skills/1_base/draft/haipipe-draft/src/page_assets.py` reads the Page
+   declared bridge: `skills/1_base/draft/hai-draft/src/page_assets.py` reads the Page
    look from `workbench/workbench-task-draft/reader/assets`, so the reader and the web delivery agree.
 
    **One reader (JL 261004).** A Page is shown in exactly one way, the Page engine's
@@ -206,7 +206,7 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    Labeling workbench binds to the Page in the live reader too.
 2. **Routes are the contract.** `/_board/<name>` URLs did not change in the
    move; `/b/` and `/w/` are short forms that redirect to them, and
-   `haipipe-draft/fn/serve-host.md` returns `board-url` and
+   `hai-draft/fn/serve-host.md` returns `board-url` and
    `workbench-url` in that short form. (The retired 🛠 skill map routes are
    the one removal: `/_board/skill*`, `/_board/skillview`, `/_board/mdview`.)
 3. **A workbench owns its files.** Python, JS, CSS and vendor files for one
@@ -214,6 +214,6 @@ Families older than a rule are listed in that test's `GAPS` with what they still
    `WORKBENCH_ROUTES` row; the host discovers the rest.
 4. **A theme's server is a sibling folder.** The labeling theme, once its own
    plugin, is `workbench-labeling/` here; its engine and skills are
-   `skills/2_theme/labeling/` (see `workbench-labeling/README.md`).
+   `skills/3_theme/labeling/` (see `workbench-labeling/README.md`).
 5. **Nothing personal.** Settings keys, defaults and printed examples are
    generic; a deployment's names live in its own `settings.env`.

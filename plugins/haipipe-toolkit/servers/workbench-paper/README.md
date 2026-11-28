@@ -61,10 +61,10 @@ other Paper tests and the shared frame tests:
 ```sh
 PYTHONPATH=plugins/haipipe-toolkit/servers/_host python -B -m pytest -q \
   plugins/haipipe-toolkit/servers/workbench-paper/tests \
-  plugins/haipipe-toolkit/servers/workbench/tests/test_work_frame.py \
-  plugins/haipipe-toolkit/servers/workbench/tests/test_focus_page.py
+  plugins/haipipe-toolkit/servers/workbench/page/job_task_views/tests/test_work_frame.py \
+  plugins/haipipe-toolkit/servers/workbench/page
 ```
 
 Use a Python environment with the host dependencies. Inspect the live
-Paper-Example Board in `blueprints/Project-Ladder/paper/`, including each view,
+Paper-Example Board in `examples/Project-Ladder/paper/`, including each view,
 the eight rail destinations, a legacy Work link, and desktop/narrow layouts.

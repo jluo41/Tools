@@ -164,7 +164,7 @@ def groom_snapshot(board_root: Path, snapshot: dict | None = None) -> dict:
     """Read-only audit: the mechanical checker plus the partial registers."""
     board_root = Path(board_root)
     if snapshot and snapshot.get("layout") == "instance":
-        # an Insight Block: haipipe-insight-check ref/check_block.py, problems FAIL, notes WARN
+        # an Insight Block: hai-insight-check ref/check_block.py, problems FAIL, notes WARN
         checks = ([{"level": "FAIL", "code": "instance", "where": board_root.name, "message": m}
                    for m in snapshot["instance_problems"]]
                   + [{"level": "WARN", "code": "instance-note", "where": board_root.name, "message": m}

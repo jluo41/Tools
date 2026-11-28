@@ -23,7 +23,7 @@ from live.insight_theme import THEME, spaces  # noqa: E402
 import plan_c_fixture as F  # noqa: E402
 
 # (Space, subspaces, run types), as b11's s11 · s12 · s13 SCREENS draw them and the run cards
-# (haipipe-insight-workflow/ref/run-cards.md) name them; a "?" design run is left out
+# (hai-insight-workflow/ref/run-cards.md) name them; a "?" design run is left out
 BOARD = {"Description": (["Map", "Question Book", "Dataset", "Partitions"], ["Add a data version", "Add a Job"]),
          "Idea Studio": ([], ["Draw the question map", "Add a topic"]),
          "Audience Report": (["Full", "part-a", "part-b", "Cross"], ["Update the coverage", "Propose questions"]),

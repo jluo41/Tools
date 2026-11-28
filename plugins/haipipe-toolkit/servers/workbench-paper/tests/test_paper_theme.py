@@ -105,14 +105,14 @@ class PaperThemeTest(unittest.TestCase):
         (story / "s02-story-demo.excalidraw").write_text("{}", encoding="utf-8")
         work = spaces("Block", self.board, self.root, "Story")["Work Details"]
         self.assertEqual((work.open, work.subspaces), ("Story", ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")))
-        for needle in ("Operation", "Result", "📖 Story", "/haipipe-paper story", "s02-story-demo",
+        for needle in ("Operation", "Result", "📖 Story", "/hai-paper story", "s02-story-demo",
                        "one telling of the paper.", "s02-story-demo.excalidraw", "🙋 Open · 1", "Which venue first?",
                        "✅ Decided", "🔶 asked"):
             self.assertIn(needle, work.html)
         self.assertNotIn("More.", work.html)
         idea = spaces("Block", self.board, self.root, "Idea")["Work Details"]
         self.assertIn("none yet in the Ideation group", idea.html)
-        self.assertIn("/haipipe-paper ideate", idea.html)
+        self.assertIn("/hai-paper ideate", idea.html)
         # a bare link opens the first step with no topic yet; an old tab name opens Jobs
         self.assertEqual(spaces("Block", self.board, self.root, "")["Work Details"].open, "Idea")
         self.assertEqual(spaces("Block", self.board, self.root, "Evidence")["Work Details"].open, "Jobs")
@@ -287,8 +287,8 @@ class PaperThemeTest(unittest.TestCase):
         self.assertIn("&lt;the one question this Section answers&gt;", scope)
         self.assertIn("SUB-INTRO-01", spaces("Task", section, self.root, "1 · Plan")["Work Details"].html)
         evidence = spaces("Task", section, self.root, "3 · Evidence")["Work Details"].html
-        self.assertIn("/haipipe-paper-evidence ", evidence)                  # the paper's rules on its Sections
-        self.assertNotIn("/haipipe-evidence ", evidence)
+        self.assertIn("/hai-paper-evidence ", evidence)                  # the paper's rules on its Sections
+        self.assertNotIn("/hai-evidence ", evidence)
         self.assertNotIn("◆ form", spaces("Task", section, self.root, "Table")["Audience Report"].html)
         delivery = spaces("Task", section, self.root, "LaTeX")["Delivery"].html
         self.assertNotIn("0 of 1", delivery)                                 # the lamp is the state, no tally

@@ -76,7 +76,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
         "Delivery": Space(html=delivery_view(jdir, root, themes()["insight"]) + _job_delivery(j, b, root),
                           run_types=(), page=True,
                           note="Nothing to run here: the Board's Delivery holds the handoff; the Overall Report's one "
-                               "page is printed by haipipe-insight ref/overall_report.py."),
+                               "page is printed by hai-insight ref/overall_report.py."),
     }, "Job", {"Audience Report": "overall-report" if a_part == OVERALL else "cross" if _part_key(a_part) == "cross" else a_period,
                "Work Details": STEP_KEY[w_open],
                "Runs": r_open},

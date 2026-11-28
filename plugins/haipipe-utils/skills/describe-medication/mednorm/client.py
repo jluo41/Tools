@@ -11,7 +11,7 @@ describe-exercise's doors are.
 
 WHY THE DOOR TAKES MORE THAN A LIST OF STRINGS
 ================================================================================
-haipipe-norm's contract is `normalize(items: list[str])`. Food obeys it exactly
+hai-norm's contract is `normalize(items: list[str])`. Food obeys it exactly
 because a meal string is self-contained. A medication row is not:
 
     doses      the Dose column. A quantity, never an identity.

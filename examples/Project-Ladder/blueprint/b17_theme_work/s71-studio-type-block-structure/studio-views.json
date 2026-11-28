@@ -1,0 +1,165 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/structure--folder.html"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/structure--job-task.html"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/structure--studio.html"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "〈Job group type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/job-types--job-group-type-1.html"
+        },
+        {
+          "name": "〈Job group type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/job-types--job-group-type-2.html"
+        },
+        {
+          "name": "〈Job type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/job-types--job-type-1.html"
+        },
+        {
+          "name": "〈Job type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/job-types--job-type-2.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "〈Task group type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/task-types--task-group-type-1.html"
+        },
+        {
+          "name": "〈Task group type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/task-types--task-group-type-2.html"
+        },
+        {
+          "name": "〈Task type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/task-types--task-type-1.html"
+        },
+        {
+          "name": "〈Task type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/task-types--task-type-2.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/requirements/draw.html"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-block",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/SKILL.md"
+        },
+        {
+          "name": "hai-job",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/SKILL.md"
+        },
+        {
+          "name": "hai-task",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/SKILL.md"
+        },
+        {
+          "name": "hai-studio",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Structure › Folder",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Structure › Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Structure › Studio",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Job types › 〈Job group type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Job types › 〈Job group type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-4"
+        },
+        {
+          "name": "Job types › 〈Job type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-5"
+        },
+        {
+          "name": "Job types › 〈Job type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-6"
+        },
+        {
+          "name": "Task types › 〈Task group type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-7"
+        },
+        {
+          "name": "Task types › 〈Task group type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-8"
+        },
+        {
+          "name": "Task types › 〈Task type 1〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-9"
+        },
+        {
+          "name": "Task types › 〈Task type 2〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-10"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-11"
+        },
+        {
+          "name": "Skills",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/delivery/check.html",
+          "fragment": "check-12"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure",
+  "check_layout": "elements"
+}

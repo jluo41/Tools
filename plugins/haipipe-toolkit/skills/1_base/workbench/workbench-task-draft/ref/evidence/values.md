@@ -125,4 +125,4 @@ bound       Result → item → Bullet → Content all resolve
   Run/Result.
 
 The common item and graph laws are in `../item-table.md`; LAND/EMBED authority
-is in `haipipe-evidence (ref/page-evidence.md)`. This reference owns no scripts or writer.
+is in `hai-evidence (ref/page-evidence.md)`. This reference owns no scripts or writer.

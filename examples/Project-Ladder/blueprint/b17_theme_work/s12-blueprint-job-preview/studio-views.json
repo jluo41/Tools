@@ -1,0 +1,181 @@
+{
+  "views": [
+    {
+      "name": "Page-Job",
+      "items": [
+        {
+          "name": "job-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&mark=jobs-rows,job-ttopics,job-subs"
+        },
+        {
+          "name": "job-overview",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&mark=view=overview"
+        },
+        {
+          "name": "job-tasks",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&mark=view=standing"
+        },
+        {
+          "name": "job-findings",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&mark=view=findings"
+        }
+      ]
+    },
+    {
+      "name": "Page-Task",
+      "items": [
+        {
+          "name": "task-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&task=t03&mark=job-ttopics,job-subs"
+        },
+        {
+          "name": "task-overview",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&task=t03&mark=view=overview"
+        },
+        {
+          "name": "task-runs",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&task=t03&mark=view=standing"
+        },
+        {
+          "name": "task-findings",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fblueprint%2Fb17_theme_work&layout=focus&section=jobs&group=j12&task=t03&mark=view=findings"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Group · 🧰 Workbench",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-group-1.html"
+        },
+        {
+          "name": "Group · 🗄️ Earlier design",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-group-0.html"
+        },
+        {
+          "name": "Type · no type",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/job-type-none.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Group · Pane components",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-group-0.html"
+        },
+        {
+          "name": "Type · tool",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-tool.html"
+        },
+        {
+          "name": "Type · ui",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-ui.html"
+        },
+        {
+          "name": "Type · no type",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/types/task-type-none.html"
+        }
+      ]
+    },
+    {
+      "name": "QuickHtml",
+      "items": [
+        {
+          "name": "〈quick page〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/draw.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Page-Job › job-rows",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Page-Job › job-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Page-Job › job-tasks",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Page-Job › job-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Page-Task › task-rows",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-4"
+        },
+        {
+          "name": "Page-Task › task-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-5"
+        },
+        {
+          "name": "Page-Task › task-runs",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-6"
+        },
+        {
+          "name": "Page-Task › task-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-7"
+        },
+        {
+          "name": "Job types › 〈Job group type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-8"
+        },
+        {
+          "name": "Job types › 〈Job type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-9"
+        },
+        {
+          "name": "Task types › 〈Task group type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-10"
+        },
+        {
+          "name": "Task types › 〈Task type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-11"
+        },
+        {
+          "name": "QuickHtml",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-12"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s12-blueprint-job-preview/delivery/check.html",
+          "fragment": "check-13"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_layout": "elements"
+}

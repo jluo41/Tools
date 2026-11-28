@@ -86,7 +86,7 @@ def _control(folder: Path, reference: dict, key: str, page_pin: dict) -> dict:
         raise ValueError(f"{key} has no passed owner receipt")
     if not record.get("actor") or not record.get("workflow_runtime_id"):
         raise ValueError(f"{key} lacks its actor or Runtime binding")
-    expected_owner = "haipipe-insight-wisdom" if key == "GI5" else "haipipe-insight-question"
+    expected_owner = "hai-insight-wisdom" if key == "GI5" else "hai-insight-question"
     if record.get("authority") != expected_owner:
         raise ValueError(f"{key} has the wrong resource owner")
     # Page addresses in receipts are resolved relative to the Wisdom Folder,

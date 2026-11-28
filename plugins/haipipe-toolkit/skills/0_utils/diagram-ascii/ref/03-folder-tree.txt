@@ -30,24 +30,24 @@ Folder tree variants
 
   plugins/haipipe-toolkit/skills/
   └── task/
-      ├── haipipe-task/SKILL.md
+      ├── hai-task/SKILL.md
       │
       ├── 1_data/
       │  (umbrella)
-      │   ├── haipipe-data/SKILL.md
-      │   ├── haipipe-data/_parts/source/PART.md
-      │   ├── haipipe-data/_parts/record/PART.md
-      │   ├── haipipe-data/_parts/case/PART.md
-      │   └── haipipe-data/_parts/aidata/PART.md
+      │   ├── hai-data/SKILL.md
+      │   ├── hai-data/_parts/source/PART.md
+      │   ├── hai-data/_parts/record/PART.md
+      │   ├── hai-data/_parts/case/PART.md
+      │   └── hai-data/_parts/aidata/PART.md
       │
       ├── 2_nn/
-      │   └── haipipe-nn/SKILL.md
+      │   └── hai-nn/SKILL.md
       │
       ├── 3_end/
-      │   └── haipipe-end/SKILL.md
+      │   └── hai-end/SKILL.md
       │
       └── 4_individual/
-          └── haipipe-individual/SKILL.md
+          └── hai-individual/SKILL.md
 
 
   Variant 4 — annotated + grouped  (full decoration)

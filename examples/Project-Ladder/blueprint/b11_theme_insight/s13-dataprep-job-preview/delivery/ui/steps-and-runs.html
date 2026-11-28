@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s13 Steps and Runs</title>
+<style>
+/* the look of s11's insight-job-view.html (b17's frame), so the three Job previews agree */
+:root{--line:#e3e3e6;--muted:#8a8a86;--ink:#1c1c1c;--accent:#1864ab;--soft:#e7f5ff;--bg:#fff;--wash:#f1f3f5}
+@media (prefers-color-scheme:dark){:root{--line:#2c2e33;--muted:#8e8e8a;--ink:#e8e8e6;--accent:#91caff;--soft:#253749;--bg:#161719;--wash:#25262b}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:960px;margin:auto;padding:20px 24px}
+h1{font-size:22px;margin:0 0 14px;display:flex;align-items:baseline;gap:14px}h1 span{font-size:18px;color:var(--muted);font-weight:600}
+.row{display:flex;align-items:center;gap:6px;margin:0 0 6px;overflow-x:auto;scrollbar-width:none}
+.row button{flex:none;border:1px solid var(--line);background:none;color:inherit;border-radius:8px;padding:6px 12px;font:inherit;font-size:13.5px;cursor:pointer;white-space:nowrap}
+.row button[aria-pressed=true]{border-color:var(--accent);background:var(--soft);color:var(--accent)}
+.row button.old{opacity:.55}.row button.old:hover,.row button.old[aria-pressed=true]{opacity:1}
+.row.topics{gap:16px}
+.row.topics button{border:0;border-bottom:2px solid transparent;border-radius:0;padding:2px 0 3px;font-weight:600;color:var(--muted)}
+.row.topics button[aria-pressed=true]{background:none;color:var(--ink);border-bottom-color:var(--accent)}
+.code{color:var(--muted);font-size:12px;font-weight:400}
+.row.tasks{margin-bottom:14px}
+@media (pointer:coarse){.row button{min-height:44px}}
+h2{display:flex;align-items:center;gap:12px;font-size:17px;font-weight:600;margin:22px 0 10px}h2:first-child{margin-top:6px}
+h2::after{content:'';flex:1;border-top:1px solid var(--line)}
+.band-sec{margin:0 0 8px}
+.band-sec>summary{display:flex;align-items:center;gap:10px;list-style:none;cursor:pointer;font-size:15px;font-weight:600;border:1px solid var(--line);border-radius:8px;padding:8px 14px}
+.band-sec>summary::-webkit-details-marker{display:none}
+.band-sec>summary::before{content:"▸";width:12px;color:var(--muted);font-size:12px}.band-sec[open]>summary::before{content:"▾"}
+.ai-star{font-weight:400;color:var(--muted)}
+.band-jobs{padding:6px 0 4px 14px}
+.goal{font-size:16px;margin:4px 0 8px}
+.pair{display:flex;align-items:center;gap:10px;font-size:14px;flex-wrap:wrap}.pair b{border:1px solid var(--line);border-radius:6px;padding:4px 10px}
+.pair small{color:var(--muted)}
+.map{display:flex;align-items:center;gap:28px;padding:8px 0}.map .node{border:1px solid var(--ink);border-radius:6px;padding:4px 10px;font-weight:600;font-size:13px}
+.map .kids{display:flex;flex-direction:column;gap:4px}.map .kids .node{border-color:var(--line);font-weight:400}
+.job-row{border-bottom:1px solid var(--line)}.job-row:last-child{border-bottom:0}
+.job-row>summary{display:flex;align-items:center;gap:8px;list-style:none;cursor:pointer;padding:7px 15px 7px 2px}
+.job-row>summary::-webkit-details-marker{display:none}
+.job-row>summary::before{content:"▸";width:12px;color:var(--muted);font-size:11px}.job-row[open]>summary::before{content:"▾"}
+.job-row b{flex:1;font-weight:600}
+.ans{margin:0 0 6px 22px;font-size:13.5px}
+.rows{padding:0 15px 6px 22px}.rr{display:grid;grid-template-columns:22px 110px 1fr;gap:10px;align-items:baseline;padding:5px 0;border-top:1px solid var(--line);font-size:13.5px}
+.rr:first-child{border-top:0}.rr small{color:var(--muted);font-size:12px}
+.cmp{width:100%;border-collapse:collapse;font-size:13px}.cmp td{border-top:1px solid var(--line);padding:5px 8px;vertical-align:top}.cmp td:first-child{white-space:nowrap;font-weight:600}
+.sure{color:var(--muted);font-size:12.5px}
+[hidden]{display:none!important}
+/* Effect shows only the part this view is about (as b17's Task states shows only its Tasks band) */
+#title,#rows{display:none!important}#body>:not(.focus){display:none!important}#body>.focus{outline:0;margin-top:0}
+
+.focus{outline:2px solid #e03131;outline-offset:6px;border-radius:6px}#rows.focus{margin-bottom:16px}#body.focus{margin-top:16px}
+</style></head><body><main>
+<h1 id="title"></h1>
+<div id="rows">
+  <div class="row topics" data-row="job-topic" role="group" aria-label="Prep versions"></div>
+  <div class="row" data-row="job" role="group" aria-label="Jobs"></div>
+  <div class="row topics" data-row="task-topic" role="group" aria-label="Steps"></div>
+  <div class="row tasks" data-row="task" role="group" aria-label="Steps" hidden></div>
+</div>
+<div id="body"></div>
+</main>
+<script src="prep-job-view-data.js"></script>
+<script>
+// Steps and Runs: a DataPrep Job's Main with its steps in order and the Board Jobs that ran the version, outlined
+// red. Topic rows on a DataPrep Block: row 1 a prep version, row 2 its Job (the version itself), row 3 Main and its steps,
+// row 4 the steps in order. A step's Runs are the Board Jobs that pinned this version. Everything is read from disk.
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const rows = Object.fromEntries([...document.querySelectorAll('#rows [data-row]')].map(r => [r.dataset.row, r]));
+const btn = (attr, on, label, old, hover) => `<button type="button" ${attr} aria-pressed="${on}" class="${old ? 'old' : ''}" title="${esc(hover)}">${label}</button>`;
+const band = (n, title, inner, open) => `<details class=band-sec${open ? ' open' : ''}><summary>${n} · ${title}<span class=ai-star title="AI readability: not read yet">☆</span></summary><div class=band-jobs>${inner}</div></details>`;
+const rr = (a, b, c, hover) => `<div class=rr title="${esc(hover)}"><span>${a}</span><span>${esc(b)}</span><small>${esc(c)}</small></div>`;
+const D = window.PREP;
+let job = D.jobs[0].id, view = 'main';
+const sname = s => `${s.id} · ${esc(s.name)}`;
+const amark = s => s.agreed ? '✅' : '⬜';
+const kv = o => Object.entries(o || {}).map(([k, v]) => rr('', k, typeof v === 'object' ? Object.entries(v).map(([a, b]) => `${a} ${typeof b === 'object' ? JSON.stringify(b) : b}`).join(' · ') : v, '')).join('');
+
+function draw() {
+  const J = D.jobs.find(j => j.id === job), S = J.steps;
+  const s = S.find(x => x.id === view);
+  document.getElementById('title').innerHTML = `${esc(D.block)} <span>💼 Jobs</span>`;
+  rows['job-topic'].innerHTML = D.jobs.map(j => btn(`data-job="${j.id}"`, j.id === job, esc(j.prep), j !== D.jobs[0], '')).join('');
+  rows.job.innerHTML = btn(`data-job="${J.id}"`, true, `${J.id} · ${esc(J.folder.split('_').slice(2).join(' ').replace(/-/g, ' '))}`, false, J.goal);
+  rows['task-topic'].innerHTML = btn('data-view="main"', !s, 'Main', false, J.goal)
+    + btn(`data-view="${S[0]?.id}"`, !!s, '🔧 Steps', false, '');
+  rows.task.hidden = !s;
+  rows.task.innerHTML = s ? S.map(x => btn(`data-view="${x.id}"`, x.id === view, `${sname(x)} ${amark(x)}`, false, x.goal)).join('') : '';
+  if (!s) {
+    // Job Main: what this version is, its steps in order, and the Board Jobs that ran it
+    const overview = `<h2>🧭 Overview</h2>`
+      + band(1, '🎯 Goal', `<p class=goal>${esc(J.about || J.goal)}</p>`, false)
+      + band(2, '🔗 The version', `<div class=pair><b>${esc(J.prep)}</b>${J.signed ? `<small>${esc(J.signed)}</small>` : ''}`
+          + `<small>· serves ${D.serves.map(esc).join(', ')}</small></div>`, true);
+    const steps = `<h2>📊 Steps</h2>` + band(1, '🔧 In order', S.map(x =>
+      `<details class=job-row><summary><b>${sname(x)}</b><span>${amark(x)}</span></summary><p class=ans>${esc(x.goal)}</p>`
+      + `<div class=rows>${rr('📥', 'reads', x.reads, '')}${rr('📤', 'writes', x.writes, '')}</div></details>`).join(''), true);
+    const runs = J.used.length ? `<h2>🔎 Runs</h2>` + band(1, '🏭 On Boards', `<div class=rows>${J.used.map(u =>
+      rr(u.mark, `${u.board} ${u.job} · ${u.data}`, u.ready, u.folder)).join('')}</div>`, true) : '';
+    document.getElementById('body').innerHTML = overview + `<div class=focus id=mark>` + steps + runs + `</div>`;
+  } else {
+    // a Task: one step; its spec, its checks, and its line in each Board Job that ran this version
+    const ran = J.used.filter(u => u.steps[s.folder]);
+    document.getElementById('body').innerHTML = `<h2>📊 Plan + Results</h2>`
+      + band(1, '🎯 Goal', `<p class=goal>${esc(s.goal)}</p><p class=sure>${esc(s.about)}</p>`, true)
+      + band(2, '📥 Reads · 📤 Writes', `<div class=rows>${rr('📥', 'reads', s.reads, '')}${rr('📤', 'writes', s.writes, '')}</div>`, true)
+      + band(3, '✅ Checks', `<div class=rows>${s.checks.map(c => rr('', c, '', '')).join('')}</div>`, true)
+      + (ran.length ? band(4, '🧪 Runs', ran.map(u => { const r = u.steps[s.folder];
+          return `<details class=job-row open><summary><b>${esc(u.board)} ${u.job} · ${esc(u.data)}</b><span>${r.mark}</span></summary>`
+            + `<div class=rows>${kv(r.metrics)}</div></details>`; }).join(''), false) : '');
+  }
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('#rows button'); if (!b) return;
+  if (b.dataset.job) { job = b.dataset.job; view = 'main'; }
+  else if (b.dataset.view) view = b.dataset.view;
+  draw();
+});
+draw();
+</script>
+</body></html>

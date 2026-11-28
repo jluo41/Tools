@@ -9,7 +9,7 @@ split answers a real question -- does this resolver hold up on a different set
 of people. It cannot answer the other one. A test patient has ZERO training
 rows by construction, so a factor personal to them could only ever be fit on the
 very rows it is scored on. That is not a weak measurement; it is the same
-circularity that once read as r 0.988 in describe-food, and haipipe-norm rule 11
+circularity that once read as r 0.988 in describe-food, and hai-norm rule 11
 exists to stop it.
 
     by patient   does it hold on people we have never seen?
@@ -47,7 +47,7 @@ sys.path.insert(0, str(HERE.parent))
 # The SPACE root. Tools is shared by every SPACE, so a written-out path is
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
-# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+# the resolver. Same walk as hai-norm/paths.py:space_root().
 ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SOURCE_STORE = ROOT / "_WorkSpace/1-SourceStore"

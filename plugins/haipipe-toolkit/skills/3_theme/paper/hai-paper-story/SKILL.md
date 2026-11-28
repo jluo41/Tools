@@ -1,0 +1,555 @@
+---
+name: hai-paper-story
+description: "Draft, review, revise or draw one paper's Story: its Seed, research questions (hypotheses, claims, the work that tests them), Roadmaps and Section Narrative. Use to plan a telling or check that it holds. Trigger: story, research question, hypothesis, claim, RoadMap Draw, /hai-paper-story."
+metadata:
+  version: "0.33.0"
+  last_updated: "2026-11-08"
+  group-token: "sNN-story-<desk>-<idea-slug>"
+  outline:
+    mode: fixed
+    title-match: exact
+    source: "this SKILL.md"
+    shape: "Identity → Pitch → Research Questions → Stakes → Evidence Basis and Boundaries → Discovery Roadmap → Task Roadmap → Section Narrative"
+---
+
+# /hai-paper-story · the prospective blueprint for one paper
+
+For a discussion or content-structure sketch, apply this contract directly.
+For a Page edit or build, load `hai-draft`, `hai-draft-workflow`, the
+current Run Workflow/Spec owner, `hai-paper-workflow`, then this semantic
+contract and relevant references. Their lifecycle records describe
+how the Story is authored; this skill defines what the Story says.
+For workflow, Section, or compiler integration, also read
+[ref/integration.md](ref/integration.md).
+
+## Shared narrative across Views
+
+Section Narrative (§ 8) is authored once on the selected Story topic: the title, story, explanation and claims every
+version shares, with no per-Section rows. The focused workbench renders it as Story by Section in both Story and
+Displays: the same section, in Displays the last one, after the displays and their examples (JL 261109). The
+Displays entry connects the argument to its figures; it does not own another narrative.
+Each version's layout (one row per Section, claims to displays, compile order) remains on the writing Job's
+`## Narrative` and with assembly.
+
+Related appears in both Idea and Story, reading the same Board records. Closest-
+work positioning remains with hai-paper-related and reference storage with
+hai-related.
+
+Grant is a type within Paper and uses this same narrative contract: connect the
+research gap, specific aims, significance, approach and supporting evidence.
+Keep proposed outcomes distinct from established results and obtain the exact
+section requirements from the funding call. Grant-specific workbench behavior
+is still proposed; do not infer implementation from the design matrix.
+
+## 🪜 Where a Story lives on the ladder (b16 Q04, JL 261007)
+
+The Story is not a Page on the ladder (`hai-paper/ref/paper-ladder.md`). Its eight parts are spread over
+the folders that show them, and this skill writes each one there:
+
+| Story part | lives in | shows in |
+|---|---|---|
+| §1 Identity · §2 Pitch · §4 Stakes | the telling's studio topic face, `sNN-story-<desk>-<idea>/sNN-story-<desk>-<idea>.md` beside the Jobs | focused Report › Story: Identity and Pitch; §4 Stakes stays in the file (no Story section since 261111: the RQ table's Why we ask column says why each question matters) |
+| the telling's drawings | the same topic, one `build_*.py` per drawing | Block › Idea Studio |
+| §3, one research question each | `board.md ## Questions` (`group:` the telling) + `reports/qNN_<question>/` | focused Report › Story: one table, a row per question (Question · Why we ask · Asked before · New here · Expected, the report link at its end) |
+| §5 · §6 · §7 | the topic face, and each report's Work as the work lands | §5 stays in the file (no Story section since 261111); §6 · §7 in focused Report › Data + Paper Plan, Roadmaps (Work is retired) |
+| version layout: one row per Section, claims to displays, compile order | each version face's `## Narrative` (points at § 8, copies no claim); before a version, `s04-paper-workflow/`'s Sections table (hai-paper-plan) | the version Job's Report › Structure · the build |
+| § 8 Section Narrative: title, story, explanation, claims C1..Cn | the selected Story topic face (`story-current:`) | focused Report › Story and Displays, the same Story by Section; the version's Structure view beside its Narrative |
+| related papers | `related/related.md` | focused Report › Idea and Story; classic Studio › Related |
+
+The topic face keeps the studio marks every topic has (hai-studio `ref/topic-contract.md`: `**Tags:**`,
+`**Stage:**` explore · shaping · agreed · closed, moved only by a person, `**Topic:**`, `**Feeds:**` its
+Questions' `qNN_` folders, Files, Decided, Open) and adds §1 · §2 · §4 under them; `board.md`'s `story-current:` names the telling the paper tells now,
+and every version face says `tells:` which one it tells. An earlier telling stays as an ended topic. An older
+Board's Story Page (`A1-Story/Story<Letter>-…/`, `page-type: story`) is still read; `hai-paper/scripts/
+carry_over/topics_paper.py` moves it onto the ladder once, keeping its words.
+
+## 🔤 The Story id (JL 260908; on the ladder 261007)
+
+A telling's topic is `sNN-story-<desk>-<idea-slug>`: its studio number, then the desk and the idea, each part
+read by a stranger who never opened the folder (`s04-story-misq-phytrait-discretion`). An older Board names it
+as a Story Page, three words joined by hyphens:
+
+```text
+Story<Letter>-<desk>-<idea-slug>
+  Letter      A, B, C … orders the Stories beside Story00-ideation (the pool);
+              JL ruled letters, not numbers ("Story A, not Story 01", 260907)
+  desk        the venue this Story is told to, lowercase: misq · jama · isr
+  idea-slug   what the idea IS, two or three plain words: phytrait-discretion
+
+StoryA-misq-phytrait-discretion     ✅ the MISQ telling of physician trait × discretion
+StoryA-jama-<idea-slug>             ✅ the JAMA telling, its own idea slug
+Story-A                             ⛔ a bare letter says nothing (JL: "why this is just A? really silly")
+Story01-<idea-slug>                 ⛔ numbers were rejected 260907
+```
+
+The folder, the page `.md`, every `draft/` stem and every `story-row:` path
+carry the full id. The board parser accepts the bare `Story-A` form only to read
+grandfathered boards; a new Story never mints one.
+
+## 🧭 What the Story page IS
+
+The Story is the shortest complete account of the paper the team intends to
+make. A person reading it from top to bottom should understand:
+
+1. what the paper is about and what it will not claim;
+2. which questions organize the study and why answering them matters;
+3. what is already known, supported, uncertain, or absent;
+4. what external discovery must still clarify;
+5. what study work must still produce;
+6. what claims the resulting paper can make; and
+7. how those claims will unfold, section by section, for the reader.
+
+The Story is therefore a **prospective guide to the paper**, not a work
+manual. It may exist before all evidence lands, but it must distinguish an
+anticipated answer from an established finding. Its job is to make the future
+paper legible while the work is still being planned.
+
+```text
+SEED · §1–§5
+what the paper is, asks, values, already has, and refuses
+        │
+        ▼
+DISCOVERY ROADMAP · §6
+what the paper must learn from literature and external sources
+        │
+        ▼
+TASK ROADMAP · §7
+what evidence the study itself must produce
+        │
+        ▼
+SECTION NARRATIVE · §8
+how questions, claims, and evidence become a reader-ordered paper
+```
+
+The diagram is a reading order. Discovery and Task work may inform each other
+and proceed in parallel; new evidence can revise any affected part of the
+Story. The Story remains useful on day one, with unknowns explicitly named.
+
+This page does not execute Discovery or Task work, mirror task folders, store
+raw results, or write final manuscript prose. Operational identifiers, states,
+paths, and receipts may appear as compact traceability fields only when they
+help the reader understand whether a planned part of the paper is grounded.
+They must not become the Story's organizing logic.
+
+## 🌱 One Story, four integrated views
+
+There is one Story for one paper idea. The former Seed, Roadmap, and Narrative
+contracts are integrated here as four views of the same paper rather than as
+separate planning pages:
+
+```text
+Seed                  defines the paper and its starting evidence boundary
+Discovery Roadmap     plans knowledge the paper must obtain from outside itself
+Task Roadmap          plans evidence the paper must generate through the study
+Section Narrative     plans the title, story and claims every version of the paper shares
+```
+
+The first five divisions are the Seed. They should remain comparatively stable
+under a venue change. The Section Narrative may change substantially for a new
+target; Discovery and Task plans change only when the new telling exposes a
+real knowledge or evidence gap. A retarget must not silently turn the Story
+into a different paper.
+
+## 📐 Fixed Content outline
+
+Use these eight divisions in order. The coverage bullets below describe the
+content to include, not a fixed list of subsection names. Name instance
+subsections for this paper's actual subjects, inquiries, analytical blocks,
+and manuscript units. For example, a Discovery subsection can be “Prior work
+on review-derived signals and <outcome>”; its prose explains that inquiry's
+question, scope, synthesis, and significance for this paper.
+
+**Names (JL 260930).** A Story part is written `§N` or by its name (§7, the Task
+Roadmap; a Task Roadmap row), as the file's own `### 7 · Task Roadmap` headings
+are, never `C7`. `C1`, `C2` … are claim ids only (`- **1a** · C1 · from 1a`), and
+`C1.P1.B1` stays the Page's Bullet address. The Paper Workbench shows none of these
+codes: it shows Question N, Hypothesis 1a, Claim 1a, and each work row's name.
+
+Each division opens with a short connected account of its role in the paper.
+Tables compress the account and keep references inspectable; a table of
+generic fields alone is insufficient. §6–§8 should make the planned study and
+argument concrete enough to understand without opening an execution folder.
+Keep row details in compact tables or subsection records rather than forcing
+every field into an unreadably wide table.
+
+### 1 · Identity
+
+Cover:
+
+- **Working title** — a concrete name for the paper being planned.
+- **One-sentence identity** — phenomenon, relationship, or intervention and
+  the paper's intended contribution in one sentence.
+- **Study object and unit** — who or what is observed, at what level, in what
+  setting and period.
+- **Scope** — the population, construct, outcome, design family, and boundaries
+  that make this paper one coherent object.
+- **Theory** — one `**Theory**:` line: the theory this paper speaks to, and what
+  it says back. Required for an information systems journal (MISQ, ISR, JMIS,
+  JAIS), where the workbench flags it when missing (JL 261105: "espeically for
+  the IS"); a longer one gets its own `### Theory` division.
+
+After §1, a reader should be able to say what paper this is without describing
+its workflow or target venue.
+
+### 2 · Pitch
+
+Give the whole paper in one minute:
+
+1. the tension or puzzle;
+2. what the study examines or does;
+3. the current or anticipated answer; and
+4. who should care and why.
+
+The Pitch is honest about time. An established answer cites an established
+Evidence row. An anticipated answer is visibly marked `⟦pending E<n>⟧` or
+written as a conditional expectation. A hoped-for result is never narrated as
+if it already exists.
+
+### 3 · Research Questions
+
+Cover:
+
+- **Primary Research Question** — the one question whose answer defines the
+  paper's center.
+- **Supporting Research Questions** — mechanism, consequence, heterogeneity,
+  validity, or boundary questions needed to complete the primary answer.
+- **Answer form** — what kind of evidence would answer each question, without
+  presuming that the answer will be favorable.
+- **Question logic** — which questions depend on others and how their answers
+  jointly resolve the paper's puzzle.
+
+Writing §3 (the story question by question, why we ask it, one block per question, Question 0): [ref/research-questions.md](ref/research-questions.md)
+
+### 4 · Stakes
+
+Explain why this particular paper deserves to exist:
+
+- **Practical stakes** — the real decision, population, institution, or harm
+  affected by the unanswered question.
+- **Intellectual gap** — what current theory, evidence, or method cannot yet
+  explain.
+- **Contribution promise** — what becomes newly knowable if the paper succeeds.
+- **Why this study** — why this setting, data, design, or combination can close
+  the gap.
+- **Why it is worth finishing** — what remains informative if expected results
+  fail, and under which outcomes the paper must be narrowed, redesigned, or
+  abandoned. A null result does not automatically establish a publishable
+  contribution.
+
+### 5 · Evidence Basis and Boundaries
+
+State the paper's current evidence position, beginning with the starting
+material and updating it as findings become available:
+
+- **Source Pages and provenance** — the bounded pages, datasets, prior outputs,
+  and ideation origin the Story is allowed to read.
+- **Existing evidence basis** — what is already supported and the evidence on
+  which that support rests.
+- **Evidence gaps** — what remains provisional or absent and therefore creates
+  a need in §6 or §7.
+- **Novelty basis** — closest prior work and the proposed delta at claim level,
+  with unresolved verification made visible.
+- **Assumptions and open tensions** — unresolved choices that could change the
+  interpretation or final arc.
+- **Hard boundaries and non-claims** — causal, construct, population,
+  generalization, ethical, or venue claims the paper will not make. The face writes them as
+  the `**We will not claim**:` list, one line each.
+
+Use an E-row for each consequential proposition the paper may eventually
+defend. Name each row by where its support comes from, never a bare number (JL 261020: "what is the
+E18? I don't want to have the name like this ... call it E-cite or E-work"): `Ework01` when it rests on the study's
+own data or Runs, `Ecite01` when it rests on a published paper; a hypothesis is then `tested by Ework03, Ecite01`.
+The drawers (hai-draw story, hai-draw workflow) read both forms and the older `E3`:
+
+```text
+E | RQ | proposition | support state | basis or missing evidence | interpretation boundary
+```
+
+The E-board contains propositions, not errands such as “add three references.”
+Unfinished work belongs in §6/§7 or the relevant Section's open needs. Link
+one or more RQs and claims as appropriate; do not force one E-row per RQ.
+Separate evidence support (established / provisional / absent / contradicted /
+inconclusive) from execution progress. A completed, accepted analysis can
+contradict a proposition. Keep that result and its implication visible.
+
+The **P-board** (JL 260930) is the papers this study stands beside, one row each,
+each held as a Discovery Paper Run (a §6 row names the Discovery Task that holds
+them). Its rows live once, at the Board, in `related/related.md` (b10 s01-D27, D34,
+s04-D01): a row of kind `paper`, read by every telling and by the build's
+`reference.bib`. The Novelty basis names its closest rows by `key` and states the
+delta; it keeps no table of its own. A paper row's columns:
+
+```text
+kind | date | item | link | feeds | group | key | role | venue | why here | keep | bears on | read
+```
+
+`item` is the paper; `group` the RQ it bears on most, or `all`; `role` is `closest`,
+`question`, `background` or `caution`; `read` is the Paper Run's address
+(`b01.j02.t01.r01`); `feeds` the reports and topics it feeds. An older telling that
+still holds its own `P | paper | role | question | …` table is read until its rows
+move to `related.md`. Search the
+venue the paper is written for first (JL 260930: "我们选 paper 一定要选一个 venue 的"),
+then add papers from other venues (JL 260930: "this is not limited to NMI"). The why
+line says in plain words what the paper shows for this study, from what was read (its
+abstract, or the PDF when the row says so). The Paper Workbench draws the rows in the
+Studio's Related part (grouped by `related/` subfolder) and in Report › Related Papers (grouped by question), one card per
+row with the Run's `paper.pdf` inside.
+
+`keep` and `bears on` are optional (JL 261002: "make the related works be something we
+should keep"). `keep` says why THIS study keeps the paper: what it takes from it, or
+what it must answer. It is about this study, not a summary of the paper, and the card
+shows it as "Why we keep it" in place of the why line. `bears on` marks this study's
+questions, separated by `;`, each with one verdict: `supports`, `limits`,
+`contradicts`, `method` (a method borrowed) or `frames`, as in `RQ1 limits; RQ2
+supports`. The paper's own logic and work is not written here: it is the Paper Run's
+`logic-work.yaml` (hai-discovery 0.21.0), so every Story that cites the Run shows
+the same reading.
+
+“Established” requires inspected evidence with adequate scope. User-reported
+availability is a labeled planning input until verified; a path or receipt
+alone establishes neither validity nor the substantive conclusion. Do not
+invent missing sources, units, coefficients, methods, or novelty verdicts.
+Name design choices as proposed when the supplied material does not decide
+them. §5 summarizes the finding and limitation with a source reference; it
+does not reproduce raw tables. These Story proposition ids are distinct from
+typed Page Evidence Item ids such as `E01-VALUE-...`.
+
+The E-board is a map of the paper's support, not a run log. Every provisional
+or absent central E-row must point forward to a Discovery or Task need. Every
+established row must point backward to a real source. A null or contradictory
+result may limit, redirect, or defeat a proposition; the Story must show that
+branch rather than assume success.
+
+### 6 · Discovery Roadmap
+
+The question-first Roadmap, D rows and what discovery must settle: [ref/roadmaps.md](ref/roadmaps.md)
+
+### 7 · Task Roadmap
+
+T rows in run order, stages, the short Run table, and §9 · Venues: [ref/roadmaps.md](ref/roadmaps.md)
+
+### 8 · Section Narrative
+
+§ 8 holds what every version of the paper shares, and nothing that changes with the venue (JL 261111: two layers,
+one source each): the title, the story, its explanation, and the claims C1..Cn with their numbers. It holds **no
+per-Section rows**. Each version Job face's `## Narrative` lays that venue's paper out: claims to displays, the
+display Runs, one row per Section, the compile order. The version face points at this § 8 and never copies a claim.
+
+```text
+Story Section Narrative (every version)            version face ## Narrative (one venue)
+title · story arc · explanation  ─▶  points at § 8, copies nothing
+claims C1..Cn and their numbers  ─▶  claim → display → display Run
+                                     one row per Section · compile order
+```
+
+Write § 8 in four parts, in this order.
+
+**Title.** The title every version prints, one line (`**Title:** <words>`), settled from §1's working title. A
+version may shorten it for its venue on its face; the words here are the source.
+
+**Story arc.** The whole paper's story, under its own heading, before any table (JL 261109: "at the top of the tab,
+to describe the narrative of this paper, what is the story arc of it"); the workbench shows it as the first tab of
+Story by Section:
+
+```markdown
+#### Story arc
+
+1. **Puzzle**: what the reader expects, and what does not fit.
+2. **Gap**: why prior work cannot settle it.
+3. **What we do**: the design, in one line.
+4. **What we find**: the headline claim and the claims that set it up (C-ids).
+5. **Where it stops**: the boundary the paper will not cross.
+6. **So what**: what changes for the reader.
+```
+
+One move per line, in reader order, each naming its claims; a telling may rename or add moves, never drop the order.
+Without it the workbench falls back to the ```text block that opens § 8, else asks for the arc.
+
+**Explanation.** Plain prose under the arc: who the paper is for and the question that reader brings; the argument's
+dependency order (puzzle, gap, mechanism, evidence, boundary, contribution, implication); what the reader believes,
+asks and may conclude at each turn; how the paper changes when a planned evidence item does not land; and a
+whole-paper reading: why the sequence is necessary, how the primary answer accumulates, where the strongest boundary
+enters, and what the reader should carry away. When §3 Research Questions holds the hypotheses, name their roles and
+point to §3 instead of restating each statement.
+
+**Claims.** One table, one row per claim, its id stable across versions:
+
+```markdown
+| claim | proposition | answers | numbers | evidence | boundary | lands in |
+|---|---|---|---|---|---|---|
+| C1 | <the exact proposition> | <RQ> | <the value ids or numbers it states> | <E-rows> | <its limit> | <Results, Discussion> |
+```
+
+`numbers` names the values the claim states (value ids of the value Job, hai-paper-evidence), so every version
+quotes the same numbers. `lands in` names the kind of Section that carries the claim; the version's rows fix the
+exact Section, its display and the display's Run. Planned claims stay conditional where support is missing. One
+claim may appear in several Sections for different reader purposes.
+
+**Story by Section** (focused Report › Story and Displays) reads this § 8 as the shared narrative: its first tab is
+the Story arc, and each claim shows under the Section its `lands in` names. Each Section's tab tells that Section's
+part of the arc from the newest writing version's `## Narrative` row (JL 261109: "not just the claims ... the
+narratives, the arc, how to make it smooth"; JL 261111: "I want the left tab right content"): what the reader asks,
+comes in with, the moves as a numbered list (1, 2, 3, one per line; JL 261111: "the 1, 2, 3, 4 for the narrative
+follow"), leaves with, how it hands on, what it must not say, its displays. The workbench reads the per-Section table
+whose first header is `Section` (columns `reader question`, `entry`, `ordered moves`, `must refuse`, `displays`,
+`exit`) and completes each row from the Section face (`reader-question`, `entry-state`, `exit-state`,
+`transition-in`, `transition-out`). Each tab's small line is its `exit`, so the left column reads as the arc. A move
+list may use `→` or `;`. An older Story whose § 8 still holds that table is read first; move it to the version face
+when that version is next touched.
+
+**Before a version exists**, the Section rows are planned on `s04-paper-workflow/` (hai-paper-plan): one row per
+Section with the questions it answers, its job, displays, evidence and words, then the displays with the Run that
+makes each and the dated steps to the send. The first version's `## Narrative` is seeded from that table, never from
+§ 8.
+
+**On the ladder, each layer has one source.** § 8 owns the title, story, explanation and claims. Each writing
+version's `## Narrative` owns that venue's layout: which claim goes to which display and Section, the display Runs,
+one row per Section, and the compile order between `<!-- haipipe:compile-order:start -->` and `end`. Existing
+Section `story-row:` anchors keep their version-row bindings. A revision copies its version Narrative from the
+version it follows (`paper_ladder.py next`) and updates its rows and order there. A change to a claim belongs here
+and is then reconciled with the affected version rows; neither layer copies the other. The person signs the
+version's Narrative (`page.py sign-narrative`, hai-draft § The Plan gate), which keeps this § 8 as text; when
+§ 8 changes after that sign, each Section's health shows `narrative`. The whole-paper structure is a view on the
+version Job page (Report › Structure, workbench-paper), never a Task.
+
+The selected target/category and its binding Venue contract belong to the version. An unselected target stays open;
+no target selection is inferred from a sample outline. Later rebindings record the user's decision. Scope, data and
+prior evidence survive retargeting unless a substantive change is explicitly made.
+
+A planned Section can have a row on the version before its Page exists; distinguish its proposed identity from a real
+file path. An execution release is a separate workflow decision, never implied by including the Section in the
+layout. Preserve exact existing Section ids when repairing an established paper. A version row should be rich enough
+that a fresh Section writer can understand its job without inventing the paper's logic; neither layer holds final
+prose.
+
+## 🧵 Evidence is the through-line
+
+Evidence is not a separate ninth division and not synonymous with execution:
+
+```text
+§5  states the evidence the paper starts with and the limits it already knows
+§6  identifies outside knowledge needed to interpret and position the paper
+§7  identifies study evidence needed to answer the paper's questions
+§8  assigns both kinds of evidence to claims (each version places them in displays and Sections)
+```
+
+Every central claim should therefore be readable as one continuous line:
+
+```text
+RQ → starting E-row → Discovery need and/or Task need → interpreted claim → Section landing
+```
+
+If that line breaks, the Story has exposed a real paper gap. It should show the
+gap rather than fill it with operational detail or aspirational prose.
+
+## 🖼 Drawings of the Story · the Idea Studio
+
+A telling's drawings are studio topics, shown in Block › Idea Studio. Each drawing is written by its own script
+in its topic, `sNN-<topic>/build_*.py` → `sNN-<topic>/<name>.excalidraw`. The script reads the
+telling when it runs (its Questions and their reports, the §6 and §7 tables, the version's Narrative) and reads
+numbers from the files that hold them, so the drawing follows the Story instead of copying it. **draw** mode
+reruns each `build_*.py` and looks at the result in the Idea Studio (the `Redraw` card,
+`hai-paper-workflow/ref/run-cards.md`). The scripts write through the studio's canvas writer, so a mark a
+person adds on the canvas survives the next run; the builder's own boxes are never moved by hand.
+
+**The story drawing comes first** (JL 261019: "In the story studio s02-story, I think we might need to list the
+research questions, and how could we support them"; "please make the story, I think it should be composed a list of
+the questions to answer, and the quesiton can be the narrative as well"). The story is the list of research
+questions it answers, and read in order the questions are its narrative. `hai-draw story`
+(`1_base/draw/hai-draw/gallery/story/`) draws it from the telling's face: the paper's question, each research
+question as a step titled by its narrative question, beside it the answer so far, its claim and the E rows and T
+rows behind it (✅ answered, 🔶 partly, ⬜ nothing yet, red and dashed), the pitch, what we will not claim, and the
+Runs still to make. Run `story_drawing.py make <topic>` once for the forwarding builder, then the builder after
+every change to the face. First users: Project-Example-B's two Boards, `Paper-Example-B`
+(`s02-story-jamaim-agent-google-unseen-physicians`) and its MIS Quarterly companion (`s02-story-misq-agent-physician-visibility`).
+
+**The plan comes next, two topics owned by `hai-paper-plan`** (JL 261019: "plan for the data flow and plan for
+the paper flow"; "please think about to make the s03 to be the paper-dataflow, and s04 to be the s04-paper-workflow"):
+`s03-paper-dataflow` is the paper's building map, data → the study's tasks → the answer, then one row per question:
+analysis → hypothesis and claim → where the answer lands; `s04-paper-workflow` is the paper flow, the Sections in
+reader order with their displays and the dated steps to the send. Both are drawn by `hai-draw workflow`
+(`1_base/draw/hai-draw/gallery/workflow/`): `workflow_drawing.py make <topic>` writes the map's forwarding builder and
+a `<topic>-drawing.yaml` holding only the foundation cards and their links; every other word is read from the telling,
+the Board Questions' reports, the Task folders and s04's displays on every build; `paperflow_drawing.py` draws s04. When a version has a comments
+report whose Review Items fill `hits` and `fixed by` (hai-paper-comments), the map marks in red what the
+reviewers asked to change and in green the work that fixes it (JL 261014: "highlight that which part the reviewers
+wanted us to change, and how will our new field experiment and analsysis will fix it"). Never copy an older paper's
+`make_paper_workflow.py` again; move it to the topic's `history/` and draw through the skill.
+
+## 🧲 Narrative · will the story attract its readers?
+
+The Block's Audience Report › Narrative is one view in four parts (JL 261007: "for the spine and design, they
+should be merged with one thing, Narrative … will this story attract the editor or reviewer or public"): what
+the story says (N1), how it is drawn (N2), how it is told (N3), and whether it attracts each reader (N4). Read
+[`ref/narrative.md`](ref/narrative.md) for each part and for the audience review, `run-review-audience-<who>`.
+
+## 🎯 Aims · what the Story must make clear
+
+Use the shared Page Aim form: `Target`, `Done when`, and factual `Now`.
+A1–A8 map to §1–§8 with matching names. Their tests judge the Story's explanatory
+content, not whether the future study has finished.
+
+| Aim | Read-through test |
+|---|---|
+| A1 Identity | The paper's object, unit, scope, and identity are clear. |
+| A2 Pitch | The whole paper is understandable in one minute, with honest uncertainty. |
+| A3 Research Questions | Questions and answer forms form one coherent inquiry. |
+| A4 Stakes | The practical problem, intellectual gap, and conditional contribution are clear. |
+| A5 Evidence Basis and Boundaries | Sources, support, gaps, and non-claims are distinguishable. |
+| A6 Discovery Roadmap | Needed knowledge, source coverage, synthesis, and story consequences are concrete. |
+| A7 Task Roadmap | Study design, contrasts, outputs, dependencies, and outcome branches are concrete. |
+| A8 Section Narrative | Title, story arc, explanation and claims fit together; no per-Section rows sit in § 8. |
+
+An Aim may be satisfied by clearly describing an unresolved research need;
+that does not answer the RQ or establish its E-row. CHECK remains the shared
+Page controller check, not a ninth Content division or automatic approval.
+
+## ✅ Story CHECK · does the paper read clearly from start to finish?
+
+CHECK the built Story as a prospective paper, not as a record of finished work:
+
+- Can a new reader state the paper's identity, primary RQ, answer form, and
+  stakes after §1–§4?
+- Does §5 distinguish established, provisional, absent, contradicted, and
+  inconclusive evidence as applicable and state
+  the paper's non-claims?
+- Does every consequential external knowledge gap appear in §6 with a clear
+  synthesis and story consequence?
+- Does every consequential evidence gap appear in §7 with an analysis design,
+  result form, interpretation branches, and paper destination?
+- Can every central claim be traced from RQ and E-row through Discovery/Task
+  evidence into exactly the Sections that use it?
+- Does §8 explain the paper's title, story arc, claim order, reader journey,
+  and ending, with each claim's numbers? Section jobs, display allocation,
+  transitions and cut rules are checked on the version's `## Narrative`.
+- Are anticipated results visibly distinguished from established findings?
+- Could the Story remain intellectually coherent under a null or adverse
+  result, or does it state exactly which claim and Section would change?
+- Has runbook material stayed in the owner layer rather than displacing the
+  paper logic on this page?
+
+The Page still uses the generic `CONTEXT → OUTLINE ⇄ EVIDENCE → CONTENT →
+CHECK` lifecycle. Those records document how this Page was built; they are not
+additional Story Content divisions.
+
+## 🛑 Draft and human version gate
+
+This Story skill remains a `v0.x` design draft (its number is the metadata `version` above). Both the skill contract and
+new Story outlines remain `v0.x` until the user explicitly authorizes the
+respective promotion. Preserve existing genuine approvals; never copy them
+onto a changed structure. New or structurally revised outlines carry
+`approved: ⬜`. Approval to edit, a passing CHECK, successful tests, another
+agent's recommendation, or a router's version is not permission to label this
+skill or an outline `v1` or “current approved law.” Record approval only for
+the exact artifact/version the user approved.
+
+On an existing Story, inspect the current content, outline, Aims, and source
+bindings before revising. Preserve research facts, ids, provenance, and prior
+decisions. Carry old Seed, Roadmap and Narrative content into the relevant
+divisions without reinterpreting findings from their status symbols. Do not
+recreate deleted planning pages or compatibility registries. Do not rename or archive whole
+paper trees merely because this contract changed.
+
+This variant owns no execution scripts. Discovery, Task, Run, Section, and
+Compile owners keep their detailed artifacts; the Story keeps the prospective
+paper logic that connects them.

@@ -1,4 +1,4 @@
-"""Page words on rendered pages (haipipe-ui CONSTITUTION.md A01-A03): the scanner's rules, and the shared SPACE Home
+"""Page words on rendered pages (hai-ui CONSTITUTION.md A01-A03): the scanner's rules, and the shared SPACE Home
 rendered on a small SPACE shows none of the banned words."""
 import importlib.util
 import tempfile
@@ -9,7 +9,7 @@ from host_paths import bootstrap
 bootstrap()
 from live.space_home import space_home  # noqa: E402
 
-SCAN = Path(__file__).resolve().parents[5] / "skills/1_base/workbench/haipipe-ui/scripts/page_words.py"
+SCAN = Path(__file__).resolve().parents[5] / "skills/1_base/workbench/hai-ui/scripts/page_words.py"
 spec = importlib.util.spec_from_file_location("page_words", SCAN)
 PW = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(PW)

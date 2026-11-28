@@ -1,14 +1,14 @@
-"""The labeling theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
+"""The labeling theme on the base frame (servers/workbench/page/block_index_page/frame.py): only what differs from vanilla.
 
 A labeling Job is one dataset × one label (`jNN_<dataset>_<label>/`, its `schema.yaml`); each of its Tasks
-is one of five types, read from the face's `task-type:` line (Tools/blueprints/Project-Ladder/work/b15_theme_labeling,
-s13-labeling-task): items · ground truth · building · scanning · score. Today's one labeling Page
+is one of five types, read from the face's `task-type:` line (Tools/examples/Project-Ladder/blueprint/b15_theme_labeling,
+s13-labeling-task, removed 261127): items · ground truth · building · scanning · score. Today's one labeling Page
 (`task-type: labeling`) is building and scanning at once; the engine's own Labeling workbench (labeling.py:
 Data · Labeling · Quality · Delivery) stays the one place a person labels: it is the write door, gated by
 the engine. This theme shows each Task's type and state, the types a Job still lacks, and opens that workbench
 at the right view. An items Task is the exception (b15 s41): its tabs show the real rows and items (s41-D07), and
 a person's Sign, Agree and Draw again go through LabelingMixin's two narrow routes (/_board/labeling/items and
-/_board/labeling/sample), which call haipipe-labeling-preparation's engine (items_task.py).
+/_board/labeling/sample), which call hai-labeling-preparation's engine (items_task.py).
 
     Block  Description: Scope · Schema (schema.yaml)
            Work Details: Jobs (vanilla) · Labeling (one status row per labeling job, labeling.board_jobs)
@@ -41,7 +41,7 @@ from urllib.parse import quote
 
 from live.frame import Space, Theme, children, esc, face, rel, table
 
-try:                                            # the optional haipipe-labeling package (labeling.py)
+try:                                            # the optional hai-labeling package (labeling.py)
     from live import labeling as L
 except Exception:                               # absent or broken: the frame shows vanilla
     traceback.print_exc()
@@ -55,24 +55,24 @@ except ImportError:                               # a Run's manifest then shows 
 # (old Space id, view id, frame subspace, what it is, the skill that works it)
 VIEWS = (
     ("data", "preparation", "Preparation", "the corpus prepared for labeling: items, sealed test split",
-     "haipipe-labeling-preparation"),
+     "hai-labeling-preparation"),
     ("data", "contract", "Contract", "the job's contract: the label, the person who decides, the corpus",
-     "haipipe-labeling-contract"),
+     "hai-labeling-contract"),
     ("data", "embedding", "Embedding", "the items embedded, for drawing rounds and audits",
-     "haipipe-labeling-embedding"),
+     "hai-labeling-embedding"),
     ("labeling", "definition", "Definition", "what each label means, confirmed by the person (G0)",
-     "haipipe-labeling-definition"),
+     "hai-labeling-definition"),
     ("labeling", "rounds", "Rounds", "the calibration rounds with the person; item text shows only there",
-     "haipipe-labeling-rounds"),
+     "hai-labeling-rounds"),
     ("labeling", "guideline", "Guideline", "the guideline that grows from the rounds, then frozen",
-     "haipipe-labeling-guideline"),
-    ("quality", "test", "Test", "the executors qualified on the sealed test", "haipipe-labeling-test"),
-    ("quality", "evaluation", "Evaluation", "the scores against the person's gold", "haipipe-labeling-evaluation"),
-    ("quality", "audit", "Audit", "the labels audited after the scan", "haipipe-labeling-audit"),
+     "hai-labeling-guideline"),
+    ("quality", "test", "Test", "the executors qualified on the sealed test", "hai-labeling-test"),
+    ("quality", "evaluation", "Evaluation", "the scores against the person's gold", "hai-labeling-evaluation"),
+    ("quality", "audit", "Audit", "the labels audited after the scan", "hai-labeling-audit"),
     ("delivery", "handoff", "Handoff", "the signed Label Handoff: guideline, gold and its versions",
-     "haipipe-labeling-handoff"),
-    ("delivery", "scan", "Scan", "the corpus scanned under the frozen guideline", "haipipe-labeling-scan"),
-    ("delivery", "final", "Final labels", "the final labels delivered", "haipipe-labeling-final-labels"),
+     "hai-labeling-handoff"),
+    ("delivery", "scan", "Scan", "the corpus scanned under the frozen guideline", "hai-labeling-scan"),
+    ("delivery", "final", "Final labels", "the final labels delivered", "hai-labeling-final-labels"),
 )
 VIEW = {v[1]: v for v in VIEWS}
 BY_SUB = {v[2]: v for v in VIEWS}
@@ -81,26 +81,26 @@ BUILD_WORK = ("preparation", "embedding", "definition", "rounds", "guideline")
 SCAN_WORK = ("test", "evaluation", "scan", "audit")
 DELIVER = (VIEW["handoff"], VIEW["final"])
 
-# ── the Task types of a labeling Job (b15 s13-labeling-task, JL 261014: "for the design, we have three types of
+# ── the Task types of a labeling Job (b15 s13-labeling-task, removed 261127, JL 261014: "for the design, we have three types of
 # design task, How do you think we can propose the labeling's task type?"). Read from the face's `task-type:`
 # line, never from the number: ground truth and score are optional, so the numbers shift ("keys" until JL 261014:
 # "could we do not use the term of key").
 # (type, icon, what it does, the `task-type:` lines that make it, the skill that runs it)
 TYPES = (
     ("items", "📦", "the corpus as items, the sealed test held back by the labeling job", ("data", "items"),
-     "haipipe-labeling-preparation"),                       # its one main skill (b15 s41-D11)
+     "hai-labeling-preparation"),                       # its one main skill (b15 s41-D11)
     ("ground_truth", "📏", "the dataset's own labels, never read by building or scanning", ("raw",),
-     "haipipe-task-for-raw"),
+     "hai-task-for-raw"),
     # the two loops, one Task each (b15 s13-D12, 261101): meaning asks the person, expression never does
     ("meaning", "🧭", "what the label means, loop by loop: Frame → Prepare → Preferences → Update; the only Task that "
-     "asks you", ("labeling-meaning",), "haipipe-labeling-interaction"),
+     "asks you", ("labeling-meaning",), "hai-labeling-interaction"),
     ("expression", "🛠", "the wording the models follow under one approved meaning: Rewrite → Run → Evaluate → "
-     "Release", ("labeling-expression",), "haipipe-labeling-expression"),
+     "Release", ("labeling-expression",), "hai-labeling-expression"),
     ("building", "🏗", "Contract → Rounds → G0 → Freeze → the signed Label Handoff", ("labeling-building", "labeling"),
-     "haipipe-labeling-building"),
+     "hai-labeling-building"),
     ("scanning", "🔍", "the Handoff carried out: Test → Scan → Audit → final labels", ("labeling-scanning", "labeling"),
-     "haipipe-labeling-scanning"),
-    ("score", "📊", "the final labels against the experts' gold and the raters' spread", ("eval",), "haipipe-task-for-eval"),
+     "hai-labeling-scanning"),
+    ("score", "📊", "the final labels against the experts' gold and the raters' spread", ("eval",), "hai-task-for-eval"),
 )
 TYPE = {t[0]: t for t in TYPES}
 NOTES = {"items": "📦 items: it makes the items; the labeling job holds back the sealed test from them.",
@@ -247,10 +247,10 @@ def _block_spaces(folder: Path, root: Path, sub: str) -> dict:
     else:
         html = ""                                   # Jobs: the vanilla list of jNN_ folders
     out["Work Details"] = Space(html=html, subspaces=("Jobs", "Labeling"), open=w_sub, run_types=(
-        {"label": "Prepare a corpus", "prompt": "/haipipe-labeling-preparation {folder}",
-         "skills": ["haipipe-labeling-preparation"]},
-        {"label": "Open a labeling job", "prompt": "/haipipe-labeling open a labeling job in {folder}",
-         "skills": ["haipipe-labeling"]}))
+        {"label": "Prepare a corpus", "prompt": "/hai-labeling-preparation {folder}",
+         "skills": ["hai-labeling-preparation"]},
+        {"label": "Open a labeling job", "prompt": "/hai-labeling open a labeling job in {folder}",
+         "skills": ["hai-labeling"]}))
     return out
 
 
@@ -279,10 +279,10 @@ def _job_spaces(folder: Path, root: Path, sub: str) -> dict:
     cards = "".join(_missing_card(folder, t, top + i + 1) for i, t in enumerate(need))
     cards += "".join(_missing_card(folder, t, top + len(need) + i + 1, optional=True) for i, t in enumerate(optional))
     adds = tuple({"label": f"Add {t.replace('_', ' ')}", "prompt": f"Add a {t.replace('_', ' ')} Task to {{folder}}: a tNN_ folder whose face says "
-                  f"`task-type: {TYPE[t][3][0]}` ({TYPE[t][2]}); {TYPE[t][4]} runs it.", "skills": ["haipipe-job"]}
+                  f"`task-type: {TYPE[t][3][0]}` ({TYPE[t][2]}); {TYPE[t][4]} runs it.", "skills": ["hai-job"]}
                  for t in need + optional)
     out["Work Details"] = Space(html=work_tree("Job", folder, root, THEME) + cards, run_types=adds + (
-        {"label": "Add a Task", "prompt": "Add a Task to {folder}.", "skills": ["haipipe-job"]},))
+        {"label": "Add a Task", "prompt": "Add a Task to {folder}.", "skills": ["hai-job"]},))
     return out
 
 
@@ -352,7 +352,7 @@ def claims(block):
     return board_workbench_route(block) == "labeling-board"
 
 
-# each button's Run (haipipe-run rule 6): the labeling skills' run-labeling-<operation>-<target>, the
+# each button's Run (hai-run rule 6): the labeling skills' run-labeling-<operation>-<target>, the
 # day dropped from the name (JL 261007), a round its own Run
 RUN_NAMES = {"Prepare a corpus": "run-labeling-corpus-<corpus>", "Open a labeling job": "run-labeling-open-<job>",
              "Contract": "run-labeling-contract-<job>", "Preparation": "run-labeling-preparation-<job>",

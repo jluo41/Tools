@@ -1,0 +1,41 @@
+{
+  "views": [
+    {
+      "name": "hai-trace",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/0_utils/hai-trace/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/0_utils/hai-trace/CONSTITUTION.md"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/0_utils/hai-trace/scripts"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/0_utils/hai-trace/tests"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-trace",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s61-skill-trace/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s61-skill-trace/delivery/check.html",
+          "fragment": "check-1"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+}

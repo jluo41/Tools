@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
-PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "haipipe-draft"
+PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "hai-draft"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR.parent))                      # workbench-task-draft: the Page Task views
 sys.path[:0] = [str(d) for d in sorted(SERVER_DIR.parent.iterdir()) if d.is_dir() and any(d.glob("*.py"))]   # its module folders
@@ -48,9 +48,9 @@ class RunsPanelTest(unittest.TestCase):
         # The studio drawing's order puts Context in the Table view (JL 260929).
         self.assertEqual(views["Context"], "table")
         skills = {t["label"]: t["skills"] for t in types}
-        # one skill per button (2026-10-03); haipipe-display loads the evidence skill it needs
-        self.assertEqual(skills["Build figure / table"], ["haipipe-display"])
-        self.assertEqual(skills["Bind / update value"], ["haipipe-evidence"])
+        # one skill per button (2026-10-03); hai-display loads the evidence skill it needs
+        self.assertEqual(skills["Build figure / table"], ["hai-display"])
+        self.assertEqual(skills["Bind / update value"], ["hai-evidence"])
         # Each view lists only its own run types (JL 260927).
         self.assertEqual(views["Paragraph revise"], "revise")
         self.assertEqual(views["Scratch"], "scratch")

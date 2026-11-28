@@ -1,0 +1,10 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Design workbench</title>
+<style>body{margin:0;font:14px system-ui;color-scheme:light dark}nav{display:flex;gap:8px;padding:10px}button{font:inherit;cursor:pointer}button[aria-pressed=true]{font-weight:bold}iframe{width:100%;height:calc(100vh - 55px);border:0;display:block}</style>
+</head><body><nav aria-label="Previews"><button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesign-Example&amp;layout=focus&amp;section=jobs&amp;group=j03&amp;mark=jobs-rows%2Cjob-ttopics%2Cjob-subs" aria-pressed="true">Navigation</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesign-Example&amp;layout=focus&amp;section=jobs&amp;group=j03&amp;mark=jsub%3Dmain" aria-pressed="false">Main</button>
+<button type="button" data-src="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesignMethodBook-Example&amp;layout=focus&amp;section=jobs&amp;group=j02&amp;mark=jsub%3Dmain" aria-pressed="false">Method</button></nav>
+<iframe title="Design example" src="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesign-Example&amp;layout=focus&amp;section=jobs&amp;group=j03&amp;mark=jobs-rows%2Cjob-ttopics%2Cjob-subs"></iframe>
+<script>document.querySelector('nav').addEventListener('click',function(e){var b=e.target.closest('[data-src]');if(!b)return;document.querySelectorAll('[data-src]').forEach(function(x){x.setAttribute('aria-pressed',String(x===b));});document.querySelector('iframe').src=b.dataset.src;});</script>
+</body></html>

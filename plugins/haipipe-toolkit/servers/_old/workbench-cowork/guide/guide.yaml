@@ -1,6 +1,6 @@
 # The CoWork family's Guide (servers/workbench-cowork). Loaded by servers/workbench/guide_families.py.
 # Paths: guide/… related/… or a module are relative to servers/workbench-cowork; skill:<name>/<rest>
-# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in Tools/blueprints/Project-Ladder/work/b13_theme_cowork).
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in Tools/examples/Project-Ladder/work/b13_theme_cowork).
 family: cowork
 label: CoWork
 presenter: coworkboard.py
@@ -17,9 +17,9 @@ description: 'The CoWork Workbench reads one CoWork Block: one coordination topi
   files on every open and stores nothing; each run is a prompt the person copies, and only the person
   sends a message.'
 skills:
-- skill: haipipe-cowork
+- skill: hai-cowork
   role: The Block, its Jobs and their folders
-- skill: haipipe-report
+- skill: hai-report
   role: A Block's Questions, their register and report folders
 - skill: workbench-cowork
   role: Scope, Work, Check and Delivery over the Block's files
@@ -90,7 +90,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b13_theme_cowork/s02-cowork-workbench/cowork-workbench-design.excalidraw
+  - board: Tools/examples/Project-Ladder/work/b13_theme_cowork/s02-cowork-workbench/cowork-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One CoWork Block owns this workbench: Scope, Work, Check and Delivery Spaces, each with the

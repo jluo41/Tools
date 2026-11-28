@@ -56,4 +56,4 @@ risk: An agent may write rivals it can easily dismiss and miss the one that matt
   (ours).
 evidence on AI: No study tests an AI agent's rival explanations against known truth yet
   (ours).
-skill: haipipe-insight-knowledge
+skill: hai-insight-knowledge

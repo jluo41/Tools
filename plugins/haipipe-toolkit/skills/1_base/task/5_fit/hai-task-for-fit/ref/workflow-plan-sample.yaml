@@ -1,0 +1,119 @@
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
+# Schema: project/hai-run/ref/plan-schema.md
+name: train-<ALGO>-<VARIANT>
+purpose: Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore
+input:
+  args:
+    config: runs/rNN_<run>/config.yaml
+    aidata_path: <_WorkSpace path to AIData>
+    algo: <algorithm class name>
+  files_in: &id001
+  - scripts/<worker>.py
+  - runs/rNN_<run>/config.yaml
+  - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
+owner: hai-task-for-fit
+workbench:
+  id: <owning-workbench>
+  workspace_roster_ref: <workbench-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Train <ALGO> with full hyperparams; checkpoint to ModelInstanceStore
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: hai-task-for-fit
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+      model_path: _WorkSpace/5-ModelInstanceStore/<MODEL>
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: hai-task-for-fit
+    worker_skill_chain:
+    - hai-task-for-fit
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Configure
+    label: configure:load-aidata
+    required: true
+    prompt: Load AIDataSet, materialize train/val splits
+    files_in:
+    - _WorkSpace/4-AIDataStore/<ParentSetName>/@v<N>AIData-<aidata_name>
+    files_out: []
+  - section: Configure
+    label: configure:build-model
+    required: true
+    prompt: Instantiate model class + optimizer from config hyperparams
+    files_in:
+    - runs/rNN_<run>/config.yaml
+    files_out: []
+  - section: Train
+    label: train:sweep
+    required: true
+    prompt: Run XGBoostTuner / Optuna / training loop for N trials/epochs
+    files_in: []
+    files_out: []
+  - section: Train
+    label: train:select-best
+    required: true
+    prompt: Select best trial/epoch, extract config + checkpoint
+    files_in: []
+    files_out: []
+  - section: Checkpoint
+    label: checkpoint:save
+    required: true
+    prompt: Serialize ModelInstance to _WorkSpace/5-ModelInstanceStore/
+    files_in: []
+    files_out:
+    - _WorkSpace/5-ModelInstanceStore/<MODEL>
+  - section: Checkpoint
+    label: checkpoint:pointer
+    required: true
+    prompt: Write model_path.txt pointer in $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/model_path.txt
+  - section: Validate
+    label: validate:eval
+    required: false
+    prompt: Score model on val split, write metrics.json
+    files_in:
+    - _WorkSpace/5-ModelInstanceStore/<MODEL>
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  returns: *id002
+  files_out:
+  - _WorkSpace/5-ModelInstanceStore/<MODEL>
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/model_path.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/metrics.json
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/runtime.yaml

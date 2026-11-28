@@ -1,0 +1,68 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Where you start",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/01-where-you-start.md"
+        },
+        {
+          "name": "1. Choose the catalog",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/02-1-choose-the-catalog.md"
+        },
+        {
+          "name": "2. Generate the skill and add it to the prompt",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/03-2-generate-the-skill-and-add-it-to-the-prompt.md"
+        },
+        {
+          "name": "3. Compile the model's output",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/04-3-compile-the-model-s-output.md"
+        },
+        {
+          "name": "4. Send the messages",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/05-4-send-the-messages.md"
+        },
+        {
+          "name": "5. Render in the app",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/06-5-render-in-the-app.md"
+        },
+        {
+          "name": "6. Handle actions",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/07-6-handle-actions.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/page/08-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "From a Text Chatbot to A2UI, Step by Step",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/s22-chatbot-to-a2ui.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "From a Text Chatbot to A2UI, Step by Step",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/s22-chatbot-to-a2ui.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "From a Text Chatbot to A2UI, Step by Step",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s22-chatbot-to-a2ui/delivery/deck/s22-chatbot-to-a2ui.slides.html"
+        }
+      ]
+    }
+  ]
+}

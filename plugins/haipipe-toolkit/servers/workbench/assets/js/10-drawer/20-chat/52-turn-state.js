@@ -115,7 +115,7 @@
 
   /* R1 · HOW FAR THIS READER GOT IN THE TURN'S RING.
      The server now keeps every turn's events in a ring with a monotonic cursor
-     (`servers/workbench/studio/turnring.py`), so the only thing a returning drawer needs in order to
+     (`servers/workbench/chat_drawer/turnring.py`), so the only thing a returning drawer needs in order to
      rejoin is the number of the last event it saw. It lives in storage rather
      than in a variable precisely because the thing it has to survive is the
      page that was reading — a reload, a navigation, a phone locking. */

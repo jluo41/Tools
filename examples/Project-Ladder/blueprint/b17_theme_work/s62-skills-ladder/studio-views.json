@@ -1,0 +1,190 @@
+{
+  "views": [
+    {
+      "name": "hai-ladder",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-ladder/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-ladder/CONSTITUTION.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-project",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/scripts"
+        },
+        {
+          "name": "feedback/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/feedback"
+        },
+        {
+          "name": "fn/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/fn"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/CHANGELOG.md"
+        },
+        {
+          "name": "README.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/README.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-block",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/CONSTITUTION.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/agents"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/constitution"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-job",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/agents"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-task",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/agents"
+        },
+        {
+          "name": "feedback/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/feedback"
+        },
+        {
+          "name": "fn/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/fn"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/CHANGELOG.md"
+        },
+        {
+          "name": "PREFERENCES.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/PREFERENCES.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-run",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/agents"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/CHANGELOG.md"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Candidate landscape",
+          "path": "examples/Project-Ladder/paper/Idea-Example/s01-candidate-landscape/s01-candidate-landscape.md"
+        }
+      ]
+    }
+  ]
+}

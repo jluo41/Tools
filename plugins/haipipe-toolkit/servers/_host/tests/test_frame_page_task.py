@@ -45,7 +45,7 @@ class PageTaskTest(unittest.TestCase):
             self.assertEqual(work.open, "1 · Plan")                              # nothing written: the plan is next
             self.assertIn("Operation", work.html)
             self.assertIn("Result", work.html)
-            self.assertIn("/haipipe-draft ", work.html)                          # the prompt, with its notes box
+            self.assertIn("/hai-draft ", work.html)                          # the prompt, with its notes box
             self.assertIn('data-field="your notes"', work.html)
             self.assertIn("Why now?", work.html)                                # Input, read from the face
             self.assertIn("at most 900 words", work.html)                       # the Requirement, a card of 1 · Plan

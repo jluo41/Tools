@@ -65,11 +65,11 @@ class DesignBookTest(unittest.TestCase):
         self.assertEqual(f.page_type('design', 'Block', self.board, self.root, {}), '🎨 Design Board')
 
     def test_the_example_book_serves_the_example_board(self):
-        book = REPO / 'blueprints/Project-Ladder/design/DesignMethodBook-Example'
+        book = REPO / 'examples/Project-Ladder/design/DesignMethodBook-Example'
         b = R.method_book(book)
         self.assertEqual({r['id']: [j['id'] for j in r['jobs']] for r in b['releases']},
                          {'M01 m2': ['j01', 'j02'], 'M02 m1': ['j03']})
-        self.assertEqual(R.book_of(REPO / 'blueprints/Project-Ladder/design/Design-Example'), book)
+        self.assertEqual(R.book_of(REPO / 'examples/Project-Ladder/design/Design-Example'), book)
 
 
 if __name__ == '__main__':

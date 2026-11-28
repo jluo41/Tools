@@ -18,16 +18,16 @@ BOARD_STEPS = ("Idea", "Story", "DataFlow", "PaperFlow", "Jobs")
 OLD_BOARD_SUBS = {"Main": "Jobs", "Appendix": "Jobs", "Evidence": "Jobs"}     # the old Work Details tabs still open
 # step → (emoji, the Studio group whose topics it reads, a word the topic's name must hold, its prompt)
 BOARD_STEP = {
-    "Idea": ("💡", "Ideation", "", "/haipipe-paper ideate {b}: read {t} and the related work (s10 to s14) and my "
+    "Idea": ("💡", "Ideation", "", "/hai-paper ideate {b}: read {t} and the related work (s10 to s14) and my "
              "notes; add or test ideas, each with its question, its novelty against the closest work and a verdict; "
              "then redraw the topic."),
-    "Story": ("📖", "Story", "", "/haipipe-paper story {b}: read the ideas that went to a story and my notes; tell the paper "
+    "Story": ("📖", "Story", "", "/hai-paper story {b}: read the ideas that went to a story and my notes; tell the paper "
               "in {t} (the tension, what we do, the answer so far, who cares) and its research questions, one "
               "Board Question each; then redraw the topic."),
-    "DataFlow": ("🔀", "Plan", "dataflow", "/haipipe-paper-plan {b} dataflow: read the Story's research questions and the "
+    "DataFlow": ("🔀", "Plan", "dataflow", "/hai-paper-plan {b} dataflow: read the Story's research questions and the "
                  "Runs on disk; draw in {t} how the data becomes each answer (inputs, the Runs, what each feeds), "
                  "with what is still to run; then redraw."),
-    "PaperFlow": ("🗺", "Plan", "workflow", "/haipipe-paper-plan {b} paperflow: read the Story, the DataFlow and my notes; "
+    "PaperFlow": ("🗺", "Plan", "workflow", "/hai-paper-plan {b} paperflow: read the Story, the DataFlow and my notes; "
                   "draw in {t} how the answers become the paper (the Sections, the displays and the Run behind "
                   "each, the dates to the send); then redraw."),
 }

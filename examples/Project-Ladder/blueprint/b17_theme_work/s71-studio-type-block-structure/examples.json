@@ -1,0 +1,67 @@
+{
+  "Structure / Folder": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Structure",
+    "item": "Folder"
+  },
+  "Structure / Job-Task": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Structure",
+    "item": "Job-Task"
+  },
+  "Structure / Studio": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Structure",
+    "item": "Studio"
+  },
+  "Job types / 〈Job group type 1〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Job types",
+    "item": "〈Version〉"
+  },
+  "Job types / 〈Job group type 2〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Job types",
+    "item": "〈Ideas〉"
+  },
+  "Job types / 〈Job type 1〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Job types",
+    "item": "〈code〉"
+  },
+  "Job types / 〈Job type 2〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Job types",
+    "item": "〈check〉"
+  },
+  "Task types / 〈Task group type 1〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Task types",
+    "item": "〈Make〉"
+  },
+  "Task types / 〈Task group type 2〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Task types",
+    "item": "〈Show〉"
+  },
+  "Task types / 〈Task type 1〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Task types",
+    "item": "〈code〉"
+  },
+  "Task types / 〈Task type 2〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Task types",
+    "item": "〈display〉"
+  },
+  "Draw": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Draw",
+    "item": "Draw"
+  },
+  "Skills": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder",
+    "view": "Skills",
+    "item": "hai-work"
+  }
+}

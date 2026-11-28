@@ -40,4 +40,4 @@ verify: no group appears on both sides (T3)
 risk: A test seen by any agent while writing the guideline is no longer a test; only
   counts are shown (ours).
 evidence on ai: Leaked tests overstate models [Kapoor 2023].
-skill: haipipe-labeling-preparation
+skill: hai-labeling-preparation

@@ -1,0 +1,68 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "The question",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/01-the-question.md"
+        },
+        {
+          "name": "Short answer",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/02-short-answer.md"
+        },
+        {
+          "name": "On the agent's server",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/03-on-the-agent-s-server.md"
+        },
+        {
+          "name": "In your app",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/04-in-your-app.md"
+        },
+        {
+          "name": "The smallest first step",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/05-the-smallest-first-step.md"
+        },
+        {
+          "name": "Follow-up: does the agent now return JSON?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/06-follow-up-does-the-agent-now-return-json.md"
+        },
+        {
+          "name": "Follow-up: streaming, and broken output",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/07-follow-up-streaming-and-broken-output.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/page/08-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "If My Agent Only Returns Text, What Changes?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/s41-agent-text-to-a2ui.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "If My Agent Only Returns Text, What Changes?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/s41-agent-text-to-a2ui.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "If My Agent Only Returns Text, What Changes?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s41-agent-text-to-a2ui/delivery/deck/s41-agent-text-to-a2ui.slides.html"
+        }
+      ]
+    }
+  ]
+}

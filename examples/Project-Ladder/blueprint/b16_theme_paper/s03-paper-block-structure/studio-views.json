@@ -1,0 +1,181 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/structure/jobs.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/structure/jobs.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/structure/jobs.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Story",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-group-type--story.html"
+        },
+        {
+          "name": "Evidence",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-group-type--evidence.html"
+        },
+        {
+          "name": "Display",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-group-type--display.html"
+        },
+        {
+          "name": "Writing",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-group-type--writing.html"
+        },
+        {
+          "name": "Presentation",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-group-type--presentation.html"
+        },
+        {
+          "name": "〈Story〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-type--story.html"
+        },
+        {
+          "name": "〈Evidence〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-type--evidence.html"
+        },
+        {
+          "name": "Display",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-type--display.html"
+        },
+        {
+          "name": "Writing Version",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-type--writing-version.html"
+        },
+        {
+          "name": "〈Presentation〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/job-type--presentation.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "〈Content〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-group-type--content.html"
+        },
+        {
+          "name": "〈Checks〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-group-type--checks.html"
+        },
+        {
+          "name": "Review",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-group-type--review.html"
+        },
+        {
+          "name": "Submission",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-group-type--submission.html"
+        },
+        {
+          "name": "draft",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--draft.html"
+        },
+        {
+          "name": "value",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--value.html"
+        },
+        {
+          "name": "evidence",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--evidence.html"
+        },
+        {
+          "name": "description",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--description.html"
+        },
+        {
+          "name": "〈Display asset〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--display-asset.html"
+        },
+        {
+          "name": "〈Presentation asset〉",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/delivery/types/task-type--presentation-asset.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/structure/type.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Examples",
+      "items": [
+        {
+          "name": "Folder",
+          "url": "/_board/workbench?view=focus-folder&path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example"
+        },
+        {
+          "name": "Job-Task",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&layout=focus&section=jobs"
+        },
+        {
+          "name": "Studio",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fpaper%2FPaper-Example&layout=focus&section=studio"
+        },
+        {
+          "name": "Paper-Example",
+          "block": "examples/Project-Ladder/paper/Paper-Example"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-paper",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper/SKILL.md"
+        },
+        {
+          "name": "hai-paper-story",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-story/SKILL.md"
+        },
+        {
+          "name": "hai-paper-evidence",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-evidence/SKILL.md"
+        },
+        {
+          "name": "hai-paper-draft",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md"
+        },
+        {
+          "name": "hai-paper-comments",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-comments/SKILL.md"
+        },
+        {
+          "name": "hai-paper-assemble",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-assemble/SKILL.md"
+        },
+        {
+          "name": "workbench-paper",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/paper/workbench-paper/SKILL.md"
+        },
+        {
+          "name": "hai-job",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-job/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

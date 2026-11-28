@@ -107,7 +107,7 @@ async function main() {
       navigator.clipboard.writeText = t => { window.__copied = t; return Promise.resolve(); };
       document.querySelector('details.items-step .run-copy').click(); setTimeout(() => r({ text: window.__copied,
         btn: document.querySelector('details.items-step .run-copy').textContent }), 300); })`);
-  ok('A9 Copy gives the card prompt', /^Run with haipipe-task-orchestrator-agent\. \/haipipe-insight run the Job /.test(copied.text || ''), (copied.text || '').slice(0, 90));
+  ok('A9 Copy gives the card prompt', /^Run with hai-task-orchestrator-agent\. \/hai-insight run the Job /.test(copied.text || ''), (copied.text || '').slice(0, 90));
   ok('A10 the prompt names the Job folder', (copied.text || '').includes(j04));
   ok('A11 your note goes with it', (copied.text || '').includes('user feedback: ' + note));
   ok('A12 the session line ends it', /\nRun this in the Claude session "b01_topic: j04-prototype-p2-data-demov3"; start it if it is not running\.$/.test(copied.text || ''), (copied.text || '').split('\n').pop());

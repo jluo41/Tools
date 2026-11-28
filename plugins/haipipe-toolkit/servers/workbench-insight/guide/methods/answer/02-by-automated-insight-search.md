@@ -58,4 +58,4 @@ risk: Ranking by surprise rewards noise; a long search finds a striking pattern 
 evidence on AI: On 100 datasets with planted insights, an end-to-end analysis agent did
   better than agents that answer single queries [Sahu 2024]. A user study and a
   case study show an LLM exploration system helping users find insights [Ma 2023].
-skill: haipipe-insight-by-automated-insight-search (proposed)
+skill: hai-insight-by-automated-insight-search (proposed)

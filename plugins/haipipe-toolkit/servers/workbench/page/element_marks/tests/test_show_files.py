@@ -16,7 +16,7 @@ class ShowFilesTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name).resolve()
-        self.block = self.root / "blueprints" / "P" / "work" / "b01_x"
+        self.block = self.root / "examples" / "P" / "work" / "b01_x"
         self.task = self.block / "j01_a" / "t01_files"
         self.task.mkdir(parents=True)
         (self.root / "plugins" / "k" / "servers" / "files").mkdir(parents=True)

@@ -23,8 +23,8 @@ from insnorm import FIELDS, __version__, normalize
 from insnorm.pk_table import ALIASES, COMBINATIONS, PK
 
 for _base in (Path(__file__).absolute(), Path(__file__).resolve()):      # eventnorm, beside describe-insulin
-    if (_base.parents[2] / "skills" / "haipipe-norm" / "eventnorm").is_dir():
-        _sys.path.insert(0, str(_base.parents[2] / "skills" / "haipipe-norm"))
+    if (_base.parents[2] / "skills" / "hai-norm" / "eventnorm").is_dir():
+        _sys.path.insert(0, str(_base.parents[2] / "skills" / "hai-norm"))
         break
 from eventnorm import insulin as insulin_events  # noqa: E402
 

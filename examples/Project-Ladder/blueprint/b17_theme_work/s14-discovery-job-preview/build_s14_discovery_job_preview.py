@@ -1,0 +1,41 @@
+"""s14 · Discovery Block view: s14-discovery-job-preview.excalidraw, drawn by this builder.
+
+How it looks and reads: /hai-draw, its principles and scripts/draw.py (frames, a map, the key point,
+the density badge, acts). The topic, its face and sessions: /hai-studio. A rebuild keeps whatever a person drew
+on the canvas (canvas.write, a seed snapshot beside the drawing). Check it: hai-draw's scripts/check.py.
+
+    python build_s14_discovery_job_preview.py
+"""
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str((HERE / "../../../../../plugins/haipipe-toolkit/skills/1_base/draw/hai-draw/scripts").resolve()))
+from draw import Drawing, canvas  # noqa: E402  (hai-draw's helpers; canvas.write keeps a person's marks)
+
+# every change to this drawing: (date YYMMDD, what changed). Each gets a green note where it changed
+# (canvas.change_note beside the changed thing) and a line in the title frame
+CHANGES = []
+
+
+def main():
+    out = HERE / "s14-discovery-job-preview.excalidraw"
+    d = Drawing()
+    f1 = d.frame("① Discovery Block view")                                    # one idea, one screen-sized frame
+    d.heading("s14 · Discovery Block view", "<one line: what this frame says>")
+    d.key(40, 196, 1400, 140)                                     # the frame's key point, the one slight colour
+    d.para(64, 220, "<the key point, in one line>", 1350, 30)
+    d.flow([{"title": "<step 1>", "lines": ["<a fact read from disk>"]},     # inside: a workflow map, or d.mind_map
+            {"title": "<step 2>", "lines": ["<a fact>"]},
+            {"title": "? <an open question, in red>", "lines": []}], 40, 400, 2480, labels=["<leads to>", "<then>"])
+    for i, (date, what) in enumerate(CHANGES):                    # the title frame's list of changes
+        e = canvas.change_note(1480, 220 + i * 26, what, date, f1["id"])
+        e["id"] = f"c{i}"
+        d.els.append(e)
+    d.badge(f1)                                                   # its density, measured
+    d.acts([{"name": "Act 1 · <what the topic is about>", "frames": [f1["id"]]}])
+    d.write(out, "build_s14_discovery_job_preview.py")
+
+
+if __name__ == "__main__":
+    main()

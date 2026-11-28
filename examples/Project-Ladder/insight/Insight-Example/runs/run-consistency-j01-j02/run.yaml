@@ -1,0 +1,15 @@
+run: run-consistency-j01-j02
+kind: soft
+type: consistency
+scope: Tools/examples/Project-Ladder/insight/Insight-Example
+target: j01-j02
+ticket: run-consistency-j01-j02.md
+skill: hai-insight-knowledge
+agent: hai-insight-reviewer-agent
+signs:
+- none
+status: waiting
+passes:
+- p01-1106
+writes: []
+feeds: []

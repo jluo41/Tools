@@ -1,0 +1,63 @@
+{
+  "views": [
+    {
+      "name": "hai-cowork",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork/scripts"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/hai-cowork/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "workbench-cowork",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/workbench-cowork/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/cowork/workbench-cowork/ref"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/cowork/workbench-cowork/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-cowork",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s53-skills-cowork/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "workbench-cowork",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s53-skills-cowork/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s53-skills-cowork/delivery/check.html",
+          "fragment": "check-2"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+}

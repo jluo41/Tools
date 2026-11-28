@@ -43,10 +43,10 @@ def short_board_name(name, board=None):
     """A compact, human label for the clickable line.
 
     The BOARD'S OWN TITLE wins (JL 260802: of `boardform · QB/QB4`, "I think it
-    should be haipipe-block · QB4"). `board.md`'s first heading is what the
+    should be hai-block · QB4"). `board.md`'s first heading is what the
     board calls itself, and the folder name is an accident of the day it was
     created: `01-boardform-260722` says nothing a reader wants, while its title
-    line says `/haipipe-block`. This is the same rule the pages follow, that a
+    line says `/hai-block`. This is the same rule the pages follow, that a
     name states what the thing IS.
 
     Falls back to the folder name with its `NN-` ordinal and `-YYMMDD` date
@@ -250,7 +250,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
 
     marker = MARKERS[status]
     # `QB/QB4` repeats itself: the page id already carries its group letter
-    # (JL 260802 wrote it as `haipipe-block · QB4`). Keep the group only when
+    # (JL 260802 wrote it as `hai-block · QB4`). Keep the group only when
     # the id does not already start with it.
     if "/" in location:
         grp, _, pg = location.partition("/")
@@ -262,7 +262,7 @@ def render(board, focus="board", mode="status", status="ready", next_action="",
     # three different things a reader looks for in three different moments, and
     # the link belongs on the name because the name is what it points at.
     # The address rides INSIDE the name, on whichever surface this lands on
-    # (JL 260802: "embed this to the haipipe-paper · QA").
+    # (JL 260802: "embed this to the hai-paper · QA").
     #
     # A terminal has a real hyperlink escape, OSC 8, so the label is clickable
     # with the URL never drawn. A chat reply renders markdown, where `[a](b)`

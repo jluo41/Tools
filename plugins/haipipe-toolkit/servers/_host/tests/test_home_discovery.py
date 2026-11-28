@@ -22,7 +22,7 @@ def test_a_nested_space_is_not_listed(tmp_path: Path):
     own = tmp_path / "examples-5-design" / "Project-Application-SMSDesign" / "insight" / "Insight-SMSR2v1"
     nested = tmp_path / "platforms" / "SMSDesign-SPACE"
     for folder in (own, nested / "examples-5-design" / "Project-Application-SMSDesign" / "insight" / "Insight-SMSR2v1",
-                   nested / "Tools" / "blueprints" / "b01_haipipe-toolkit"):
+                   nested / "Tools" / "examples" / "b01_haipipe-toolkit"):
         folder.mkdir(parents=True)
         (folder / "board.md").write_text("# A Board\nboard-kind: insight-board\nspine: s\n")
     (nested / "env.sh").write_text("")

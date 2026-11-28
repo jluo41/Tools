@@ -10,7 +10,7 @@ shapes alone do not establish CMS. Home repo: `<Project-SPACE>`, project
 profile or the generic method.
 
 Two skills own the other half of this environment and should be read alongside:
-`haipipe-task-for-stata` (scaffold a task folder, run the pre-flight gate, write
+`hai-task-for-stata` (scaffold a task folder, run the pre-flight gate, write
 `SERVER_CHECK.md`), and its `ref/cms-server-checklist.md` (the three-gate model
 and the full register naming rules).
 
@@ -157,7 +157,7 @@ the .done marker is the      never `$proc.ExitCode -ne 0`. Start-Process
                              in PowerShell, so a GOOD run reports as failed.
 cite as [ID] in the code     `// [C01-02] ...` at the causing line
 no paste, no file upload     every character is typed by hand (since 261025: the
-  (261025)                   CRD on-screen keyboard, /remote-keyboard-typist), so
+  (261025)                   CRD on-screen keyboard, /remote-typist), so
                              server commands stay short: a Run by its address,
                              never its 200-character path
 gci <wild*>\x -r finds      Windows PowerShell 5.1 reads a wildcard path with -r as a

@@ -37,7 +37,7 @@ class HomeMixin:
         target = Path(self.root) / (query.get("project") or [""])[0]
         if set(query) <= {"section", "group", "project"} and target.resolve().is_dir() \
                 and Path(self.root).resolve() in [target.resolve(), *target.resolve().parents]:
-            # the SPACE's page, or `?project=<Project>`'s page, like every level's (haipipe-ui, JL 261029)
+            # the SPACE's page, or `?project=<Project>`'s page, like every level's (hai-ui, JL 261029)
             from live import focus_page, frame as _frame
             body = focus_page.render(_frame.VANILLA, Path(self.root), target,
                                      (query.get("section") or [""])[0], (query.get("group") or [""])[0]).encode("utf-8")

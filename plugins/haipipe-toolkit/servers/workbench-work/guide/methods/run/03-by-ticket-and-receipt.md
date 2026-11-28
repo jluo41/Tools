@@ -39,7 +39,7 @@ limitations: A receipt records what ran, not whether it was right; that is the r
 Applied to AI
 -------------
 
-agent: haipipe-task-orchestrator-agent runs the Ticket; it does not edit the Result.
+agent: hai-task-orchestrator-agent runs the Ticket; it does not edit the Result.
 steps: 1. Run the Ticket. 2. Read its receipt. 3. On a failure, route to Build, not to the
   Result.
 returns: the Result folder and its complete receipt.
@@ -47,4 +47,4 @@ verify: The receipt is complete and every required Result file exists (T3); no R
   file changed after the Ticket wrote it (T4).
 risk: An agent may patch a wrong number in a Result to save a rerun (ours).
 evidence on ai: No study tests receipt-gated runs by agents (ours).
-skill: haipipe-task
+skill: hai-task

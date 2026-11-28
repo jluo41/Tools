@@ -1,0 +1,17 @@
+run: run-build-01-name
+kind: soft
+type: build
+scope: null
+target: 01-name
+ticket: run-build-01-name.md
+skill: hai-task
+agent: claude
+signs: null
+status: waiting
+passes:
+- p01-1124
+writes: []
+feeds: []
+finds:
+- file: result/report.html
+  kind: report

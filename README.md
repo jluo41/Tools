@@ -8,7 +8,7 @@ upstream projects in `references/`.
 
 | Package | Focus | Guide |
 |---|---|---|
-| **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, subjective labeling (the labeling theme, [guide](plugins/haipipe-toolkit/skills/2_theme/labeling/README.md)), and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
+| **haipipe** | Research and ML workflows across evidence, task Runs, first-class Insight and Design, papers, subjective labeling (the labeling theme, [guide](plugins/haipipe-toolkit/skills/3_theme/labeling/README.md)), and the data → model → endpoint pipeline | [HAI-Pipe guide](plugins/haipipe-toolkit/README.md) |
 | **haipipe-utils** | Normalization skills that turn cohort-specific food, exercise, medication and insulin text into typed measurements with provenance, plus the `servers/` API host that serves them; also the personal-data connectors meal-cam-logger and whoop-connect | [Utilities guide](plugins/haipipe-utils/README.md) |
 | **inlab-human** | Clinician studies of deployed prediction endpoints, including blind-then-assisted review | [In-Lab Human guide](plugins/inlab-human/README.md) |
 
@@ -19,7 +19,7 @@ This table covers the three package directories directly under `plugins/`. The H
 | Path | Purpose |
 |---|---|
 | `plugins/` | First-party packages. The installers discover skills recursively under these package roots. |
-| `blueprints/` | Shared foundation and independent Theme Blocks, with questions, reports, studio topics and Runs. [Project-RandomThoughts](blueprints/Project-RandomThoughts/project.md) is the inbox: loose thoughts and meeting notes land there first, by topic. |
+| `examples/` | Shared foundation and independent Theme Blocks, with questions, reports, studio topics and Runs. [Project-RandomThoughts](examples/Project-RandomThoughts/project.md) is the inbox: loose thoughts and meeting notes land there first, by topic. |
 | `references/` | Upstream projects, reference material, and Git submodules. The installers do not install skills from this tree. |
 | `references/sources.yaml` | Source, origin, and license notes for the reference collection. |
 | `.claude-plugin/marketplace.json` | Claude Code marketplace catalog for this repository. |
@@ -28,9 +28,9 @@ This table covers the three package directories directly under `plugins/`. The H
 | `diagnostics/` | Skill tooling: `skill_report.py` (sizes, installs, problems, use from transcripts, recommendations), `md_to_html.py` (sortable, filterable HTML) and `merge_parts.py` (fold helper skills into `<main>/_parts/<name>/PART.md`). Reports land in the gitignored `diagnostics/reports/`. |
 
 For HAI-Pipe workflows, see its [package guide](plugins/haipipe-toolkit/README.md)
-and [skill and server layout](blueprints/Project-Packages/work/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
+and [skill and server layout](examples/Project-Packages/work/b01_haipipe-toolkit/j04_skill_folder/j04_skill_folder.md).
 For the shared Workbench, Run Type, and Skill relationship, see
-[the shared project workbench blueprint](blueprints/Project-Ladder/work/b10_project_workbench/board.md).
+[the shared project workbench blueprint](examples/Project-Ladder/work/b10_project_workbench/board.md).
 
 ## Blueprints
 
@@ -41,17 +41,17 @@ board.md records its questions and links its reports, studio topics and Runs.
 
 | Block | Area |
 |---|---|
-| [b01_haipipe-toolkit](blueprints/Project-Packages/work/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
-| [b02_haipipe-utils](blueprints/Project-Packages/work/b02_haipipe-utils/board.md) | Utilities |
-| [b03_inlab-human](blueprints/Project-Packages/work/b03_inlab-human/board.md) | Human studies |
-| [b10_project_workbench](blueprints/Project-Ladder/work/b10_project_workbench/board.md) | Shared project ladder and Workbench |
-| [b11_theme_insight](blueprints/Project-Ladder/work/b11_theme_insight/board.md) | Insight Theme |
-| [b12_theme_design](blueprints/Project-Ladder/work/b12_theme_design/board.md) | Design Theme |
-| [b13_theme_cowork](blueprints/Project-Ladder/work/b13_theme_cowork/board.md) | Cowork Theme |
-| [b14_theme_discovery](blueprints/Project-Ladder/work/b14_theme_discovery/board.md) | Discovery Theme |
-| [b15_theme_labeling](blueprints/Project-Ladder/work/b15_theme_labeling/board.md) | Labeling Theme |
-| [b16_theme_paper](blueprints/Project-Ladder/work/b16_theme_paper/board.md) | Paper Theme |
-| [b17_theme_work](blueprints/Project-Ladder/work/b17_theme_work/board.md) | Work Theme |
+| [b01_haipipe-toolkit](examples/Project-Packages/work/b01_haipipe-toolkit/board.md) | Shared toolkit foundations |
+| [b02_haipipe-utils](examples/Project-Packages/work/b02_haipipe-utils/board.md) | Utilities |
+| [b03_inlab-human](examples/Project-Packages/work/b03_inlab-human/board.md) | Human studies |
+| [b10_project_workbench](examples/Project-Ladder/work/b10_project_workbench/board.md) | Shared project ladder and Workbench |
+| [b11_theme_insight](examples/Project-Ladder/blueprint/b11_theme_insight/board.md) | Insight Theme |
+| [b12_theme_design](examples/Project-Ladder/blueprint/b12_theme_design/board.md) | Design Theme |
+| [b13_theme_cowork](examples/Project-Ladder/work/b13_theme_cowork/board.md) | Cowork Theme |
+| [b14_theme_discovery](examples/Project-Ladder/work/b14_theme_discovery/board.md) | Discovery Theme |
+| [b15_theme_labeling](examples/Project-Ladder/blueprint/b15_theme_labeling/board.md) | Labeling Theme |
+| [b16_theme_paper](examples/Project-Ladder/blueprint/b16_theme_paper/board.md) | Paper Theme |
+| [b17_theme_work](examples/Project-Ladder/blueprint/b17_theme_work/board.md) | Work Theme |
 
 ## Installation
 
@@ -70,8 +70,8 @@ git submodule update --init --recursive
 ```
 
 Both installers discover skills recursively under first-party package
-`skills/` trees, at any depth: haipipe-toolkit nests them in three layers
-(`skills/0_utils/`, `skills/1_base/<family>/`, `skills/2_theme/<theme>/`), and each
+`skills/` trees, at any depth: haipipe-toolkit nests them in four layers
+(`skills/0_utils/`, `skills/1_base/<family>/`, `skills/2_work/<theme>/`, `skills/3_theme/<theme>/`), and each
 skill is linked flat under its folder name. Both skip any folder whose name starts
 with `_` (`_old/`, `_archive/`, `_todo/`, `_legacy/`, ...) and `node_modules/`, on
 macOS/Linux and Windows alike; retired skills parked there stay in the repository

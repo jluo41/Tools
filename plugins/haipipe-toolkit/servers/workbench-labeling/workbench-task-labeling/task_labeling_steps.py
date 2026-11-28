@@ -21,7 +21,7 @@ ITEM_STEPS = (
     ("make", "🧱 Step 2 · Items", "items", _items_cards),
     ("embed", "🗺 Step 3 · Embedding", "embed", _embedding_cards),
 )
-SKILL = "haipipe-labeling-preparation"
+SKILL = "hai-labeling-preparation"
 
 
 def _step_states(task: Path, root: Path, job: dict | None, block: Path | None) -> dict:

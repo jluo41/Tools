@@ -1,0 +1,14 @@
+run: r01_full
+kind: hard
+type: partition
+partition: full
+target: t05_I02_outcome-by-day
+question: I02
+release: question-v1
+data: data-v2
+status: ok
+passes: 1
+script: b6c6765d35e7
+n: 960
+power: ok
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t05_I02_outcome-by-day/runs/r01_full/run.sh

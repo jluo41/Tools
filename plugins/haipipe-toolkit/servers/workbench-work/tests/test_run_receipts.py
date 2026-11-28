@@ -49,7 +49,7 @@ def test_a_selftest_seed_is_still_planned(tmp_path):
 
 
 def test_a_run_in_its_own_folder_pairs_with_its_result(tmp_path):
-    """One folder per Run (haipipe-run 0.31.0): runs/<run>/<run>.cmd beside runs/<run>/result/."""
+    """One folder per Run (hai-run 0.31.0): runs/<run>/<run>.cmd beside runs/<run>/result/."""
     from live.runs import _run_folder_receipt, _ticket_files
     run = tmp_path / "runs" / "r01_table"
     (run / "result").mkdir(parents=True)

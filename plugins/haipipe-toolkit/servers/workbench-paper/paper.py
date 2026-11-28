@@ -173,7 +173,7 @@ def collect(board, path_param, version=None):
                           "text": read(board / rel) if rel else ""})
     story00 = next((p for p in pages if p["stem"].startswith("Story00")), None) or ideation_topic(board)
     # Story<Letter> is the current form; legacy numbered Stories (Story01-seed, Story02-roadmap,
-    # Story03-narrative-MISQ) stay readable per haipipe-paper-ideation, so they are Stories too;
+    # Story03-narrative-MISQ) stay readable per hai-paper-ideation, so they are Stories too;
     # with no Story Page, the telling topics are read as Stories (b16 Q04)
     stories = [p for p in pages if STORY_STEM.match(p["stem"])] or assembled_stories(board, version)
     sections = [p for p in pages if is_section(p["stem"])]
@@ -287,7 +287,7 @@ def _pairs_for(root_cwd):
 
 def session_rows(d):
     """One session per Section Page (JL 260916; Claude sessions via
-    `/haipipe-paper sessions`, JL 260928). The page header's `session:` line
+    `/hai-paper sessions`, JL 260928). The page header's `session:` line
     binds its Claude session; a pair manifest joins by that exact id, else by
     exact pair name. Ideation, Story and Supporting work stay in the current
     session, so only S- pages get rows."""

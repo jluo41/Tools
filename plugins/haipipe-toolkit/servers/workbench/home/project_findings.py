@@ -56,7 +56,7 @@ def find_part_document(folder: Path, root: Path, key: str) -> str:
 def data_stores(block: Path) -> list:
     """The stores a Block reads or writes, from the ```yaml block in its board.md whose top key is `data:`, so a reader
     sees where the data is. A person writes the rows; a count is never typed but points at a Result (`file:` under the
-    Block, a JSON or YAML file, and a dotted `key:`), so it stays live as haipipe-evidence VALUEs do. None when the
+    Block, a JSON or YAML file, and a dotted `key:`), so it stays live as hai-evidence VALUEs do. None when the
     block is there but does not parse, [] when there is none."""
     face = block / "board.md"
     text = face.read_text(encoding="utf-8", errors="replace") if face.is_file() else ""
@@ -242,8 +242,8 @@ def work_findings(folder: Path, root: Path) -> str:
     """A work Block's, Job's or Task's Findings. A Block leads with 🗄️ Data, where its data is (`data:` in board.md);
     then, at every level, 🔢 Values and 🖼️ Displays, drawn
     as the paper Board's Evidence › Values and Displays. Values is one section for the page, from its value
-    Jobs' newest tables.json with the numbers its values.json lets the text quote (haipipe-evidence); Displays its
-    display Tasks' preview.pdf (haipipe-display). A section with nothing in it is not drawn (JL 261114: "if this is
+    Jobs' newest tables.json with the numbers its values.json lets the text quote (hai-evidence); Displays its
+    display Tasks' preview.pdf (hai-display). A section with nothing in it is not drawn (JL 261114: "if this is
     empty, why you still list them here"), and the rest renumber. Last, 🧠 Maps, only when the page or its
     Tasks' newest Runs drew maps (result/maps/); Studio topics are Around the Work's Studio, not Findings."""
     level = page_level(folder)

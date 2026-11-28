@@ -17,8 +17,8 @@ Styles and rubrics are NOT authored here — they are the persona folders shippe
 by the haipipe individual-inference skills, so a new style is a new folder and
 never a code change:
 
-    …/skills/1_base/task/4_individual/haipipe-individual-inference-report/personas/*
-    …/skills/1_base/task/4_individual/haipipe-individual-inference-judge/personas/*
+    …/skills/1_base/task/4_individual/hai-individual-inference-report/personas/*
+    …/skills/1_base/task/4_individual/hai-individual-inference-judge/personas/*
 
 Config:
     INLAB_PERSONA_ROOT   dir holding the two skills. Unset ⇒ walk up for Tools/.
@@ -39,8 +39,8 @@ from fastapi.responses import JSONResponse
 
 router = APIRouter(prefix="/api")
 
-REPORT_SKILL = "haipipe-individual-inference-report"
-JUDGE_SKILL = "haipipe-individual-inference-judge"
+REPORT_SKILL = "hai-individual-inference-report"
+JUDGE_SKILL = "hai-individual-inference-judge"
 
 
 # ── where the personas live ──────────────────────────────────────────────────

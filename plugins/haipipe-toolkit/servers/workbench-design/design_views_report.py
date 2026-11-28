@@ -30,7 +30,7 @@ def _report_page(q: dict, b: dict) -> Path | None:
 
 
 def _q_status(q: dict, b: dict) -> str:
-    """Where a question stands: the register's answer-status, else its report's header (haipipe-report: the report's
+    """Where a question stands: the register's answer-status, else its report's header (hai-report: the report's
     writer moves it), else open."""
     if q.get("answer-status"):
         return str(q["answer-status"])
@@ -44,7 +44,7 @@ def _q_asks(q: dict) -> str:
 
 
 def _q_evidence(q: dict) -> list:
-    """The Jobs a question rests on: `evidence:` (the design register), else `work:` (haipipe-report's)."""
+    """The Jobs a question rests on: `evidence:` (the design register), else `work:` (hai-report's)."""
     return [str(e).split("_")[0] for e in (q.get("evidence") or q.get("work") or [])]
 
 
@@ -208,7 +208,7 @@ def _summary(b: dict, root: Path, href, jobs_table: bool = True) -> str:
                f'{inr} of {len(scores)} <span class=mut>(Predicted vs observed)</span></p>' if scores else "")
             + (f'<p class=mut>Done when: {esc(b["close"])}</p>' if b["close"] and jobs_table else "")
             + (f'<p>{pop("/" + rel(pdf, root), "summary.pdf", "One-page PDF ↗")} <span class=mut>for readers outside the '
-               f'workbench (haipipe-design-delivery summary.py)</span></p>' if jobs_table and (pdf := b["path"] / "delivery" / "summary.pdf").is_file()
+               f'workbench (hai-design-delivery summary.py)</span></p>' if jobs_table and (pdf := b["path"] / "delivery" / "summary.pdf").is_file()
                else ""))
 
 

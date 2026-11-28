@@ -1,0 +1,14 @@
+run: run-check-terminal
+kind: soft
+type: check
+scope: null
+target: terminal
+ticket: run-check-terminal.md
+skill: hai-ui
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1125
+writes: []
+feeds: []

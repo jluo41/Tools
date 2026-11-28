@@ -1,0 +1,17 @@
+run: run-propose-j02
+kind: soft
+type: propose
+scope: Tools/examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2
+target: j02
+ticket: run-propose-j02.md
+skill: hai-insight-question
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- insight/InsightQuestionBook-Example/proposals/gap-over-the-window.md
+- insight/InsightQuestionBook-Example/proposals/second-and-third.md
+feeds: []

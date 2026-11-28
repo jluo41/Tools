@@ -1,0 +1,16 @@
+run: run-triage-proposals-question-v2
+kind: soft
+type: triage-proposals
+scope: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example
+target: question-v2
+ticket: run-triage-proposals-p2.md
+skill: hai-insight-question
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- proposals/gap-over-the-window.md
+feeds: []

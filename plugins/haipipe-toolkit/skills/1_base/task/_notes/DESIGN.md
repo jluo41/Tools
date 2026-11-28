@@ -1,7 +1,7 @@
 > History note, moved to `task/_notes/` on 2026-11-15 from `task/`. Relative paths below resolve from `task/`.
 
-> Historical design snapshot. Current authority: `haipipe-task/SKILL.md`,
-> `../project/haipipe-run/ref/plan-schema.md` (haipipe-workflow until 2026-10-21), and this family's README.
+> Historical design snapshot. Current authority: `hai-task/SKILL.md`,
+> `../project/hai-run/ref/plan-schema.md` (hai-workflow until 2026-10-21), and this family's README.
 > Workflow units are Runs; P-B-E-R are commands. Insight and Design are independent families; Application is retired as their parent.
 
 task — Task-Type Specialist Series (DESIGN)
@@ -10,7 +10,7 @@ task — Task-Type Specialist Series (DESIGN)
 Status: v5.1.0 (2026-06-21). 4-phase code lifecycle (Plan/Build/Execute/Report); 13 type specialists aligned; three-axes mental model documented.
 Owner:  <maintainer>
 Scope:  job lifecycle (Plan/Build/Execute/Report) + per-type scaffolding,
-        mirroring the /haipipe-data and /haipipe-nn pattern.
+        mirroring the /hai-data and /hai-nn pattern.
 
 
 Conceptual Layering
@@ -20,7 +20,7 @@ A `project` is the umbrella for one cohesive research effort. Inside it live
 the core Narrative / Probe / Task stack plus downstream export layers:
 
 For a concrete end-to-end project shape, see
-`../../../blueprints/end-to-end-sandwich-run.md`.
+`../../../examples/end-to-end-sandwich-run.md`.
 
 ```
 📦 examples/Proj{Series}-{Cat}-{Num}-{Name}/    <- project (umbrella)
@@ -34,15 +34,15 @@ For a concrete end-to-end project shape, see
 Each core layer has its own specialist family — different sections, no overlap:
 
 ```
-project umbrella     /haipipe-project              project/ (sibling)
+project umbrella     /hai-project              project/ (sibling)
 
 ⚙️ THE EXECUTORS — the evidence bank; neither knows a consumer exists
-discovery/         /haipipe-discovery            discover/
-work/               /haipipe-task-*               task/    <- THIS SECTION
+discovery/         /hai-discovery            discover/
+work/               /hai-task-*               task/    <- THIS SECTION
 
 📄 THE CONSUMERS — they ask; each owns its own evidence questions, privately
-paper/               /haipipe-paper-*              paper/
-applications/        /haipipe-insight, /haipipe-design   insight/ + design/
+paper/               /hai-paper-*              paper/
+applications/        /hai-insight, /hai-design   insight/ + design/
 ```
 
 The executors answer questions through the same Run/Result contract as every
@@ -63,12 +63,12 @@ Current State (v6.0.0 — Phase 1 landed 2026-06-21)
 ====================================================
 
 Phase 1 of the Target Architecture migration has landed: the nine
-`haipipe-task-for-xxx` specialists are now NESTED under their numbered domain
-folders (skill `name:` fields unchanged, so all `/haipipe-*` commands and
-`Skill("haipipe-task-for-xxx")` calls still resolve). Phase 2 (renaming the
+`hai-task-for-xxx` specialists are now NESTED under their numbered domain
+folders (skill `name:` fields unchanged, so all `/hai-*` commands and
+`Skill("hai-task-for-xxx")` calls still resolve). Phase 2 (renaming the
 skills) is REJECTED by decision (2026-06-21): the names stay
-`haipipe-task-for-xxx` ON PURPOSE, because the `haipipe-task-` prefix keeps each
-specialist clearly part of the haipipe-task family. The migration is COMPLETE.
+`hai-task-for-xxx` ON PURPOSE, because the `hai-task-` prefix keeps each
+specialist clearly part of the hai-task family. The migration is COMPLETE.
 
 ```
 task/                                 <- task-scope skills (THIS SECTION)
@@ -77,12 +77,12 @@ task/                                 <- task-scope skills (THIS SECTION)
 |-- CHANGELOG.md
 |
 |-- agents/                             🤖 shared orchestrator/creator/reviewer triad
-|   |-- haipipe-task-orchestrator-agent.md  dispatch target, coordinates the pair
-|   |-- haipipe-task-creator-agent.md   produces artifacts (plan, code, report)
-|   |-- haipipe-task-reviewer-agent.md  evaluates artifacts (IPO, bugs, accuracy)
+|   |-- hai-task-orchestrator-agent.md  dispatch target, coordinates the pair
+|   |-- hai-task-creator-agent.md   produces artifacts (plan, code, report)
+|   |-- hai-task-reviewer-agent.md  evaluates artifacts (IPO, bugs, accuracy)
 |   |-- README.md
 |
-|-- haipipe-task/                       🧭 task orchestrator (v5.3.0)
+|-- hai-task/                       🧭 task orchestrator (v5.3.0)
 |   |-- SKILL.md                        scope resolution + 4-phase code lifecycle dispatch
 |   |-- ref/
 |   |   |-- task-lifecycle.workflow.js  Workflow tool script for the 4-phase loop
@@ -108,33 +108,33 @@ task/                                 <- task-scope skills (THIS SECTION)
 |   |-- diagram/
 |       |-- 01-architecture.txt
 |
-|-- (haipipe-workflow/ moved to project/haipipe-run/ref/workflow.md, 2026-10-21)
+|-- (hai-workflow/ moved to project/hai-run/ref/workflow.md, 2026-10-21)
 |
 |-- 1_data/                             📊 domain 1 — data
-|   |-- haipipe-data + _parts/             run library (7 parts)
-|   |-- haipipe-task-for-data/             task-author leg
-|   |-- haipipe-task-for-raw/              raw-extraction task-author leg
+|   |-- hai-data + _parts/             run library (7 parts)
+|   |-- hai-task-for-data/             task-author leg
+|   |-- hai-task-for-raw/              raw-extraction task-author leg
 |-- 2_nn/                               🧠 domain 2 — nn (algorithm design + smoke)
-|   |-- haipipe-nn + _parts/              run library (4 parts, shared with fit)
-|   |-- haipipe-task-for-algo/             task-author leg
+|   |-- hai-nn + _parts/              run library (4 parts, shared with fit)
+|   |-- hai-task-for-algo/             task-author leg
 |-- 3_end/                              🚀 domain 3 — endpoint
-|   |-- haipipe-end + _parts/             run library (13 parts)
-|   |-- haipipe-task-for-endpoint/         task-author leg
+|   |-- hai-end + _parts/             run library (13 parts)
+|   |-- hai-task-for-endpoint/         task-author leg
 |-- 4_individual/                       🧍 domain 4 — individual
-|   |-- haipipe-individual + sub-skills    run library
-|   |-- haipipe-task-for-individual/       task-author leg
-|-- 5_fit/                              🏋️ domain 5 — fit (train); shares 2_nn's /haipipe-nn lib
-|   |-- haipipe-task-for-fit/               task-author leg + fit-owned GPU execution parts
+|   |-- hai-individual + sub-skills    run library
+|   |-- hai-task-for-individual/       task-author leg
+|-- 5_fit/                              🏋️ domain 5 — fit (train); shares 2_nn's /hai-nn lib
+|   |-- hai-task-for-fit/               task-author leg + fit-owned GPU execution parts
 |   |   |-- _parts/gpu/                      shared fit queue, preflight, and receipt rules
 |   |   |-- _parts/gpu-training/             checkpoint, resume, and training fallback rules
 |-- 6_eval/                             📈 domain 6 — eval / statistical analysis
-|   |-- haipipe-task-for-eval/              task-author leg
+|   |-- hai-task-for-eval/              task-author leg
 |-- 7_display/                          🖼️ domain 7 — display (figures / tables)
-|   |-- haipipe-task-for-display/           task-author leg
+|   |-- hai-task-for-display/           task-author leg
 |-- 8_stata/                            🔩 domain 8 — stata (engine; cms/case/data/reg internal)
-|   |-- haipipe-task-for-stata/             task-author leg (unified)
+|   |-- hai-task-for-stata/             task-author leg (unified)
 |-- 9_agent/                            🤖 domain 9 — agent (LLM-driven compute)
-|   |-- haipipe-task-for-agent/             task-author leg
+|   |-- hai-task-for-agent/             task-author leg
 |   |   |-- _parts/llm-engine/               LLM call engine (shared runner)
 ```
 
@@ -157,7 +157,7 @@ A. Lifecycle      process stages a folder runs    yes (time)  yes: 1 Plan ... 4 
 B. Task domains   pipeline layers (the engine)    yes (DAG)   yes: 1_data 2_nn 3_end 4_individual
    1_data / 2_nn / 3_end / 4_individual
 C. Type spokes    classification of a folder      no (enum)   no: for-data, for-eval, ...
-   haipipe-task-for-xxx
+   hai-task-for-xxx
 ```
 
 A and B carry numbers because their position carries meaning:
@@ -189,10 +189,10 @@ are two LAYERS, not duplicates:
 
 ```
 domain (B): pipeline engine          type spoke (C): how to author a job
-1_data       /haipipe-data       <->  for-data
-2_nn         /haipipe-nn         <->  for-algo, for-fit
-3_end        /haipipe-end        <->  for-endpoint, for-eval
-4_individual /haipipe-individual <->  for-individual
+1_data       /hai-data       <->  for-data
+2_nn         /hai-nn         <->  for-algo, for-fit
+3_end        /hai-end        <->  for-endpoint, for-eval
+4_individual /hai-individual <->  for-individual
 (no domain)                      <->  for-display, for-agent, for-stata
 ```
 
@@ -219,13 +219,13 @@ Target Architecture: B as the Unified Domain Family (v6.0.0, LANDED 2026-06-21)
 Decided 2026-06-21; Phase 1 landed the same day (see Current State above).
 SUPERSEDED the hub-and-spoke "for-xxx type spoke" model.
 
-Decision: dissolve axis C (the `haipipe-task-for-xxx` spokes) into axis B. B
+Decision: dissolve axis C (the `hai-task-for-xxx` spokes) into axis B. B
 becomes the single, flat, NUMBERED family of task DOMAINS. There is no parallel
 type-spoke family. Each domain owns both legs:
 
-  - run / library leg   the pipeline capability (e.g. /haipipe-data)
+  - run / library leg   the pipeline capability (e.g. /hai-data)
   - task-author leg     how to scaffold/build/lint a job of this kind
-                        (the content that used to live in haipipe-task-for-xxx)
+                        (the content that used to live in hai-task-for-xxx)
 
 Numbering rule (APPEND-ONLY)
 ----------------------------
@@ -260,11 +260,11 @@ pipeline-order attribute, not the id.
 ```
 id  domain      flow         role                         output                     run library / engine
 --  ----------  -----------  ---------------------------  -------------------------  -------------------------
-1   data        flow         build data                   AIData -> store 1-4        /haipipe-data · python
-2   nn          flow         algorithm design + smoke     runs + 1 loss (no durable) /haipipe-nn (algo side) · python
-3   endpoint    flow         package + deploy             endpoint -> store 6        /haipipe-end · python
-4   individual  flow         per-subject inference        inference                  /haipipe-individual · python
-5   fit         flow         real train + sweep           checkpoint -> store 5      /haipipe-nn (tuner/instance) · python
+1   data        flow         build data                   AIData -> store 1-4        /hai-data · python
+2   nn          flow         algorithm design + smoke     runs + 1 loss (no durable) /hai-nn (algo side) · python
+3   endpoint    flow         package + deploy             endpoint -> store 6        /hai-end · python
+4   individual  flow         per-subject inference        inference                  /hai-individual · python
+5   fit         flow         real train + sweep           checkpoint -> store 5      /hai-nn (tuner/instance) · python
 6   eval        flow         eval / statistical analysis  metrics / tables           (new; none yet) · python
 7   display     flow         figures / tables             figure / table             (none; reads results/) · python
 8   stata       cross-cut    full Stata-engine work       by internal stage          standalone (no python lib) · stata
@@ -276,14 +276,14 @@ Pipeline-flow order (independent of id):
   cross-cutting (no flow position): stata(8), agent(9)
 
 nn (2) and fit (5) are the ONLY two domains sharing one underlying library
-(/haipipe-nn): nn draws on the algo side, fit on the tuner+instance side. This
+(/hai-nn): nn draws on the algo side, fit on the tuner+instance side. This
 is the concrete meaning of "fit belongs to nn." agent (9) is scoped to LLM
 compute that produces task evidence (results/metrics); audience-facing delivery
 stays in the application family, not here.
 
 for-xxx -> domain mapping
 -------------------------
-Each `haipipe-task-for-xxx` becomes the task-author leg of one domain:
+Each `hai-task-for-xxx` becomes the task-author leg of one domain:
 ```
 for-data       -> 1 data          for-display    -> 7 display
 for-algo       -> 2 nn            for-stata      -> 8 stata
@@ -306,19 +306,19 @@ Phase 1 (low-risk: folders only, skill names UNCHANGED, append-only)
   1. Existing run-library folders are LEFT UNCHANGED: 1_data, 2_nn, 3_end,
      4_individual keep their numbers (they are domains 1-4). No renumber.
   2. Append 5 NEW domain folders: 5_fit, 6_eval, 7_display, 8_stata, 9_agent.
-  3. git mv each haipipe-task-for-xxx into its domain folder (NO rename):
+  3. git mv each hai-task-for-xxx into its domain folder (NO rename):
      for-data->1_data, for-algo->2_nn, for-endpoint->3_end,
      for-individual->4_individual, for-fit->5_fit, for-eval->6_eval,
      for-display->7_display, for-stata->8_stata, for-agent->9_agent.
   4. Fix folder-PATH references only (DESIGN, STRUCTURE, orchestrator prose,
-     agents, diagram). /haipipe-* command + Skill("haipipe-task-for-xxx") calls
+     agents, diagram). /hai-* command + Skill("hai-task-for-xxx") calls
      keep working untouched.
   5. Update the orchestrator to think in "domain id" terms for routing.
 
-Phase 2 (REJECTED 2026-06-21: names stay haipipe-task-for-xxx)
-  Renaming was considered and dropped. The skills KEEP the haipipe-task-for-xxx
-  names on purpose: the haipipe-task- prefix signals membership in the
-  haipipe-task family, and a rename buys zero functional gain for a risky atomic
+Phase 2 (REJECTED 2026-06-21: names stay hai-task-for-xxx)
+  Renaming was considered and dropped. The skills KEEP the hai-task-for-xxx
+  names on purpose: the hai-task- prefix signals membership in the
+  hai-task family, and a rename buys zero functional gain for a risky atomic
   sweep of ~40 references. The migration ends at Phase 1.
 ```
 
@@ -326,9 +326,9 @@ Phase 2 (REJECTED 2026-06-21: names stay haipipe-task-for-xxx)
 Backbone + Add-on Architecture
 =================================
 
-The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists are spokes. The hub is the recommended entry point, but any spoke can be entered directly and it reaches back to the hub for shared resources.
+The relationship is **hub-and-spoke** — hai-task is the hub, specialists are spokes. The hub is the recommended entry point, but any spoke can be entered directly and it reaches back to the hub for shared resources.
 
-**haipipe-task (hub)** owns everything that is type-agnostic:
+**hai-task (hub)** owns everything that is type-agnostic:
 
 - The 4-phase code lifecycle (Plan / Build / Execute / Report)
 - The creator-reviewer agent loop (`task-lifecycle.workflow.js`)
@@ -336,7 +336,7 @@ The relationship is **hub-and-spoke** — haipipe-task is the hub, specialists a
 - Scope resolution, routing, AUTO_MODE detection
 - Shared conventions (`ref/authoring-conventions.md`, `ref/run-sh-template.sh`, `ref/task-folder.md`)
 
-**haipipe-task-for-xxx (spokes)** provide type-specific knowledge:
+**hai-task-for-xxx (spokes)** provide type-specific knowledge:
 
 - Phase templates for this type (`ref/workflow-plan-sample.yaml`)
 - Type constraints and MUST NOT rules (`SKILL.md`)
@@ -347,7 +347,7 @@ The arrows go **both ways**. The hub reads spokes for type knowledge; spokes rea
 
 ```
                    +------------------------------------------+
-                   |         haipipe-task (hub)                |
+                   |         hai-task (hub)                |
                    |                                          |
                    |  4-phase lifecycle engine                |
                    |  creator-reviewer agent loop             |
@@ -368,14 +368,14 @@ Three ways to enter
 --------------------
 
 ```
-Path 1 — Via hub (lifecycle):   /haipipe-task <existing-path>
+Path 1 — Via hub (lifecycle):   /hai-task <existing-path>
   hub detects type -> reads spoke's ref/ as reference -> runs 4-phase lifecycle
 
-Path 2 — Via hub (scaffold):    /haipipe-task job eval
-  hub resolves type -> Skill("haipipe-task", args="eval") -> spoke runs fn/scaffold.md
+Path 2 — Via hub (scaffold):    /hai-task job eval
+  hub resolves type -> Skill("hai-task", args="eval") -> spoke runs fn/scaffold.md
 
-Path 3 — Direct call:           /haipipe-task stata <args>
-  spoke runs on its own -> reads ../haipipe-task/ref/ for shared conventions
+Path 3 — Direct call:           /hai-task stata <args>
+  spoke runs on its own -> reads ../hai-task/ref/ for shared conventions
   (run-sh-template.sh, task-folder.md, authoring-conventions.md, etc.)
 ```
 
@@ -474,7 +474,7 @@ Phase 4: REPORT — summarize (what happened vs the plan)
   agents:    creator drafts -> reviewer checks accuracy -> loop if revise
 ```
 
-Stages 1-4 are orchestrated by `haipipe-task/ref/task-lifecycle.workflow.js` via the Workflow tool. The creator and reviewer agents in `agents/` are paired at each stage — creator never reviews, reviewer never creates.
+Stages 1-4 are orchestrated by `hai-task/ref/task-lifecycle.workflow.js` via the Workflow tool. The creator and reviewer agents in `agents/` are paired at each stage — creator never reviews, reviewer never creates.
 
 What a finished task leaves behind
 -----------------------------------
@@ -509,7 +509,7 @@ ref/config-seed.yaml            config template (read by SCAFFOLD path)
 fn/scaffold.md                  scaffold procedure (run by SCAFFOLD path, read by BUILD stage)
 ```
 
-Shared content stays in `haipipe-task/ref/` (the backbone) and is read by all specialists. The Stata specialist keeps its `.do` config templates and workflow samples in `haipipe-task-for-stata/ref/` (including `stata-dialect.md`).
+Shared content stays in `hai-task/ref/` (the backbone) and is read by all specialists. The Stata specialist keeps its `.do` config templates and workflow samples in `hai-task-for-stata/ref/` (including `stata-dialect.md`).
 
 
 Critical Distinction: algo-dev vs training
@@ -524,7 +524,7 @@ Critical Distinction: algo-dev vs training
 | Config scale    | minimal (1-batch / tiny)      | full hyperparam grid             |
 | Runtime         | minutes                       | hours-to-days                    |
 | Outputs         | "didn't crash" + 1 loss val   | checkpoint -> _WorkSpace/5       |
-| Pipeline skill  | /haipipe-nn algo              | /haipipe-nn tuner + instance     |
+| Pipeline skill  | /hai-nn algo              | /hai-nn tuner + instance     |
 +-----------------+-------------------------------+----------------------------------+
 ```
 
@@ -532,10 +532,10 @@ Critical Distinction: algo-dev vs training
 Stata Sub-Family
 =================
 
-Any engine=Stata request is delegated to `/haipipe-task stata`, a unified specialist that owns stage disambiguation and the shared engine contract. It handles all 4 stages internally:
+Any engine=Stata request is delegated to `/hai-task stata`, a unified specialist that owns stage disambiguation and the shared engine contract. It handles all 4 stages internally:
 
 ```
-haipipe-task-for-stata           unified (handles all 4 stages internally)
+hai-task-for-stata           unified (handles all 4 stages internally)
   stages: cms (A) / case (B) / data (C) / reg (D)
   ref/config-seed-{stage}.do     Stata config templates (.do is source of truth)
   ref/workflow-plan-sample-{stage}.yaml
@@ -548,13 +548,13 @@ Cross-Skill References
 =======================
 
 ```
-task-data         <->  /haipipe-data (source / record / case / aidata parts)
-task-algo         <->  /haipipe-nn algo (Layer 1)
-task-fit          <->  /haipipe-nn tuner + /haipipe-nn instance (Layer 2+3)
-task-eval         <->  /haipipe-end (or future eval skill)
-task-inference    <->  /haipipe-end endpointset (profile verb)
+task-data         <->  /hai-data (source / record / case / aidata parts)
+task-algo         <->  /hai-nn algo (Layer 1)
+task-fit          <->  /hai-nn tuner + /hai-nn instance (Layer 2+3)
+task-eval         <->  /hai-end (or future eval skill)
+task-inference    <->  /hai-end endpointset (profile verb)
 task-display      <->  (none — independent; pulls from results/<run>/)
-task-individual   <->  /haipipe-individual
+task-individual   <->  /hai-individual
 task-agent        <->  /claude-api (adjacent; overlap with application — see TODO.md)
 task-stata        <->  (project-local .do files; no pipeline skill)
 ```
@@ -576,14 +576,14 @@ Orchestrator Routing (v5.0.0)
 ==============================
 
 ```
-/haipipe-task plan <path>              Stage 1 only
-/haipipe-task build <path>             Stage 2 only
-/haipipe-task execute <path>           Stage 3 only
-/haipipe-task report <path>            Stage 4 only
-/haipipe-task <existing-path>          full lifecycle (all 4 stages)
-/haipipe-task job <type>               scaffold NEW folder via specialist
+/hai-task plan <path>              Stage 1 only
+/hai-task build <path>             Stage 2 only
+/hai-task execute <path>           Stage 3 only
+/hai-task report <path>            Stage 4 only
+/hai-task <existing-path>          full lifecycle (all 4 stages)
+/hai-task job <type>               scaffold NEW folder via specialist
 block scope                            -> iterate child task folders
-project scope                          -> use /haipipe-project
+project scope                          -> use /hai-project
 ```
 
 
@@ -595,12 +595,12 @@ Phase 2 — Skeleton (7 specialist directories)                 DONE (2026-05-24
 Phase 3 — Per-type content (scaffold + config-seed)           DONE (2026-05-24)
 Phase 4 — Cleanup                                             DONE (2026-06-08)
   - removed legacy fn/task-folder.md from orchestrator
-  - moved fn/project.md + fn/task-group.md to project/haipipe-project/fn/
+  - moved fn/project.md + fn/task-group.md to project/hai-project/fn/
 Phase 5 — 4-phase lifecycle                                   DONE (2026-06-09)
   - task-lifecycle.workflow.js with creator-reviewer loop
   - workflow-plan-sample.yaml in all 13 specialists
-  - haipipe-task-batch removed (batch = multiple configs in one Build)
-  - haipipe-task-logging removed (superseded by Report stage)
+  - hai-task-batch removed (batch = multiple configs in one Build)
+  - hai-task-logging removed (superseded by Report stage)
 Phase 6 — Consistency alignment                               DONE (2026-06-09)
   - all 13 specialists: unwrap prose, fix agent names, add lifecycle paragraph
   - Stata children: add workflow-plan-sample.yaml + Workflow plan section
@@ -629,7 +629,7 @@ File                          Guarantee
 results/<RUN>/metrics.json    the measured numbers under STABLE KEYS. Scalar, or
                               {point, ci_lower, ci_upper, N}. Keys are the contract —
                               a renamed key silently breaks every reader.
-                              (schema: haipipe-task/ref/metrics-json-schema.md)
+                              (schema: hai-task/ref/metrics-json-schema.md)
 results/<RUN>/runtime.yaml    machine facts: status (ok|failed|running), git_sha, exit_code
 configs/<RUN>.yaml            frozen parameters + _meta.git_sha — what this run actually ran
 workflow/report*.yaml         the plan, mirrored, filled with what happened
@@ -641,7 +641,7 @@ Supporting Run / Local Run    consumer-side lineage: full immutable source Run i
 WRITER RULE — every one of these files has exactly ONE writer: THIS LAYER. Nothing outside
 the task layer writes anything under `work/`. Not a config, not a run script. A caller
 that needs work done here DISPATCHES it —
-`Agent(haipipe-task-orchestrator-agent)`, clean context, one question or one spec — and
+`Agent(hai-task-orchestrator-agent)`, clean context, one question or one spec — and
 reads the result afterwards. It does not reach in.
 
 The reverse direction remains explicit and narrow: the executor returns its full
@@ -653,16 +653,16 @@ Decision Log
 
 2026-05-24  Approved: split into 7 type specialists; group letters A-F + X.
 2026-06-08  Approved: 4-phase lifecycle (Plan/Build/Execute/Report) with creator-reviewer agents.
-2026-06-08  Approved: move project/block scope to project/haipipe-project.
-2026-06-09  Approved: remove haipipe-task-batch (batch = multiple configs in one Build, not a separate skill).
-2026-06-09  Approved: remove haipipe-task-logging (superseded by Report stage).
+2026-06-08  Approved: move project/block scope to project/hai-project.
+2026-06-09  Approved: remove hai-task-batch (batch = multiple configs in one Build, not a separate skill).
+2026-06-09  Approved: remove hai-task-logging (superseded by Report stage).
 2026-06-09  Approved: add Stata specialist (1 unified specialist handling all 4 stages internally).
 2026-06-09  Aligned: all 13 specialists consistent with orchestrator v3 (agent names, lifecycle paragraph, IPO samples).
 2026-06-11  Added: "Downstream Consumer Contract (probe)" section — makes the metrics.json / runtime.yaml / configs contract visible from C's side.
-2026-06-11  Proposed: Stage 5 (Insight) after Report, filing D_data via /haipipe-insight-data.
+2026-06-11  Proposed: Stage 5 (Insight) after Report, filing D_data via /hai-insight-data.
 2026-06-19  Superseded: Stage 5 removed from task. Sandwich model adopted: probe open dispatches discovery/tasks, discover and task do their own work, probe post resumes and judges the claim. Insights deferred while focusing on Narrative/Probe/Discovery/Task.
 2026-06-21  Documented: three orthogonal axes (lifecycle / task domains / type spokes). Type spokes stay an unnumbered enum by design; only lifecycle stages and pipeline domains are numbered, because only they are sequenced.
-2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /haipipe-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
+2026-06-21  Approved (supersedes the line above): dissolve C (for-xxx spokes) into B. B becomes a single flat NUMBERED domain family of 9 domains; every task kind gets a stable domain id. Coverage over clean boundaries: overlap is fine, every task type must fall into exactly one domain. nn and fit split but share /hai-nn. stata and agent are their own domains. Migration staged: Phase 1 folder move with skill names unchanged, Phase 2 optional rename. See "Target Architecture" section.
 2026-07-14  Historical probe/answer-bank design recorded (R1-R18). Retired on 2026-09-08: Task questions now use the shared Run/Result contract, and consumers bind Supporting/Local Runs. The old question command, answer-bank folder, and digest are no longer live.
-2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay haipipe-task-for-xxx by design; the haipipe-task- prefix keeps each specialist clearly inside the haipipe-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
+2026-06-21  Decided: Phase 2 (rename for-xxx skills) REJECTED. Names stay hai-task-for-xxx by design; the hai-task- prefix keeps each specialist clearly inside the hai-task family. Migration is complete at Phase 1 (folder nesting). No skill rename.
 2026-06-21  Refined (per "we will keep adding domains"): numbering is APPEND-ONLY, never renumbered. id = creation order, permanent; pipeline-flow order is a separate documented attribute, not the id. Founding assignment keeps existing folders fixed (data=1, nn=2, endpoint=3, individual=4) and appends fit=5, eval=6, display=7, stata=8, agent=9. New domains take the next integer; Phase 1 touches zero existing folders. Rejected the one-time tidy renumber as inconsistent with append-only.

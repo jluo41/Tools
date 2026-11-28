@@ -1,0 +1,14 @@
+run: r01_collect_next_test_arm
+kind: hard
+type: collect
+scope: Tools/examples/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2
+target: Design-Example.j03-s02:release_choices @ next_test_arm
+ticket: r01_collect_next_test_arm.html
+skill: hai-interaction
+agent: null
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

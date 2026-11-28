@@ -105,7 +105,7 @@ def render_theory_embed(snapshot: dict, view: str = "methods", only=None) -> str
     theory · Design methods (the method cards) · Methods studio · Papers, one view at a time.
     Read-only; it tells its frame how tall it is."""
     theory_html = theory_page(Path(snapshot["board"]), Path(snapshot["root"]), view, only)
-    height = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
+    height = ("<script>(function(){function post(){parent.postMessage({kind:'hai-explain-height',"
               "height:document.documentElement.scrollHeight},location.origin)}"
               "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"
               "addEventListener('load',post);document.addEventListener('toggle',post,true);"

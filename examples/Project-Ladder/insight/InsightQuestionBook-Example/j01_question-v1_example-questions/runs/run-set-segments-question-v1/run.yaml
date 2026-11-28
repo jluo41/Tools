@@ -1,0 +1,18 @@
+run: run-set-segments-question-v1
+kind: soft
+type: set-segments
+scope: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions
+target: question-v1
+ticket: run-set-segments-p1.md
+skill: hai-insight
+agent: hai-insight-agent
+signs:
+- a person (the segments)
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- partitions.md
+- thresholds.yaml
+feeds: []

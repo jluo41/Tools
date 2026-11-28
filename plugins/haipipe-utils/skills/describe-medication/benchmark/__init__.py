@@ -1,8 +1,8 @@
 """
 The describe-medication benchmark: what is noun-specific about grading a drug.
 
-The harness is shared -- `haipipe-norm/bench` runs B1 CONTRACT over every
-member, `haipipe-norm/xbench` owns splits, circularity and weighting. What is
+The harness is shared -- `hai-norm/bench` runs B1 CONTRACT over every
+member, `hai-norm/xbench` owns splits, circularity and weighting. What is
 HERE is the three things only this noun can say: where its gold comes from,
 what counts as the same drug, and at which granularities to answer.
 

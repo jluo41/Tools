@@ -13,9 +13,9 @@ SHOW = 12                                    # rows a case table shows; the rest
 
 
 def _engine(name: str):
-    """haipipe-labeling's engine/<name>.py, found from this file; None when the skill is absent."""
+    """hai-labeling's engine/<name>.py, found from this file; None when the skill is absent."""
     for base in Path(__file__).resolve().parents:
-        path = base / "skills" / "2_theme" / "labeling" / "engine" / f"{name}.py"
+        path = base / "skills" / "3_theme" / "labeling" / "engine" / f"{name}.py"
         if path.is_file():
             spec = importlib.util.spec_from_file_location(f"labeling_{name}", path)
             mod = importlib.util.module_from_spec(spec)

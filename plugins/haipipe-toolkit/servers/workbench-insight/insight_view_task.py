@@ -93,7 +93,7 @@ def _task_parts(t: dict, root: Path) -> str:
 
 
 def _run_report(rundir: Path) -> str:
-    """The Run's report, an agent's reading of its result (runs/rNN_<segment>/report.md; haipipe-insight
+    """The Run's report, an agent's reading of its result (runs/rNN_<segment>/report.md; hai-insight
     ref/run_report.py), first on its page: the headline, its sentences each with the file it cites, the caveat. A mark
     beside the heading: ✅ checked, ❗ returned or written before the result changed."""
     rep = P.run_report(rundir)

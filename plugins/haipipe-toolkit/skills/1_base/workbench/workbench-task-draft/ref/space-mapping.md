@@ -17,11 +17,11 @@ All-runs view     no button; opened by a ?run=<id> link
 The implementation keeps stable internal names for compatibility:
 
 ```text
-data-space=bullet  · lens=div       · servers/workbench/workbench-task-draft/outline.py
-data-space=evidence· lens=evidence  · servers/workbench/workbench-task-draft/space_views.py (Card view: evidence.py)
-data-space=delivery· lens=delivery  · servers/workbench/workbench-task-draft/space_views.py
-lens=run (no button)                · servers/workbench/workbench-task-draft/runs.py
-Runs panel (each Space)             · servers/workbench/page/runs_panel.py
+data-space=bullet  · lens=div       · servers/workbench/workbench-task-draft/plan_outline/outline.py
+data-space=evidence· lens=evidence  · servers/workbench/workbench-task-draft/page_shell/space_views.py (Card view: evidence.py)
+data-space=delivery· lens=delivery  · servers/workbench/workbench-task-draft/page_shell/space_views.py
+lens=run (no button)                · servers/workbench/workbench-task-draft/run_views/runs.py
+Runs panel (each Space)             · servers/workbench/page/job_task_views/runs_panel.py
 ```
 
 `Bullet`, `div`, and `/_board/evidence` or `/_board/runs` are implementation
@@ -209,7 +209,7 @@ symlink the external ticket, Result, or protected payload.
 Browser
   │ click Draft / Evidence / Delivery Space
   ▼
-Page outer page: servers/workbench/workbench-task-draft/outline.py
+Page outer page: servers/workbench/workbench-task-draft/plan_outline/outline.py
   │ Draft, Evidence, Delivery: render in place (space_views.py), each with runs_panel.py
   │ Evidence Card view: lazy iframe → /_board/evidence
   │ Delivery previews: lazy iframes of the built files, each folded until opened
@@ -219,10 +219,10 @@ Page server adapter: servers/workbench/workbench-task-draft/reader/standalone_se
   │ resolves the Page source and dispatches the route
   ▼
 Space renderer
-  ├── servers/workbench/workbench-task-draft/outline.py  → plan / logic / preview Markdown
-  ├── servers/workbench/workbench-task-draft/evidence.py → Result manifests + payload metadata
-    ├── servers/workbench/workbench-task-draft/runs.py     → tickets, Results, registry references
-    └── servers/workbench/workbench-task-draft/delivery.py → source/artifact consistency receipt
+  ├── servers/workbench/workbench-task-draft/plan_outline/outline.py  → plan / logic / preview Markdown
+  ├── servers/workbench/workbench-task-draft/evidence_steps/evidence.py → Result manifests + payload metadata
+    ├── servers/workbench/workbench-task-draft/run_views/runs.py     → tickets, Results, registry references
+    └── servers/workbench/workbench-task-draft/delivery_export/delivery.py → source/artifact consistency receipt
   ▼
 HTML projection returned to the browser
 ```

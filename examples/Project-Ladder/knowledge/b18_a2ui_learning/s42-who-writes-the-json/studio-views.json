@@ -1,0 +1,64 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "The question",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/01-the-question.md"
+        },
+        {
+          "name": "Short answer",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/02-short-answer.md"
+        },
+        {
+          "name": "What the model writes",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/03-what-the-model-writes.md"
+        },
+        {
+          "name": "What the compiler does",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/04-what-the-compiler-does.md"
+        },
+        {
+          "name": "The three JSON messages, in full",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/05-the-three-json-messages-in-full.md"
+        },
+        {
+          "name": "What the client receives",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/06-what-the-client-receives.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/page/07-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Who Writes the JSON?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/s42-who-writes-the-json.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "Who Writes the JSON?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/s42-who-writes-the-json.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "Who Writes the JSON?",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s42-who-writes-the-json/delivery/deck/s42-who-writes-the-json.slides.html"
+        }
+      ]
+    }
+  ]
+}

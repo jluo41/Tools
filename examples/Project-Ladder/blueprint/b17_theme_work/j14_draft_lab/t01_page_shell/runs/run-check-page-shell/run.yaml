@@ -1,0 +1,14 @@
+run: run-check-page-shell
+kind: soft
+type: check
+scope: null
+target: page-shell
+ticket: run-check-page-shell.md
+skill: hai-ui
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1125
+writes: []
+feeds: []

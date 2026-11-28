@@ -35,4 +35,4 @@ returns: scorecards and the selection
 verify: the scorer produced nothing it scores (T4)
 risk: Changing the metric after seeing scores (ours).
 evidence on ai: Self-preference [Panickssery 2024].
-skill: haipipe-labeling-evaluation
+skill: hai-labeling-evaluation

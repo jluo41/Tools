@@ -165,7 +165,7 @@ def _mark(lp: dict | None) -> dict:
 def m_frame(task: Path, root: Path) -> tuple[str, str]:
     rec = MV.frame_record(task)
     prompt = _prompt(task, root, "frame", "Frame", "your rough idea", (
-        f"Use /haipipe-labeling-interaction on {task.name}, step Frame: read the items and the old labels' sources this "
+        f"Use /hai-labeling-interaction on {task.name}, step Frame: read the items and the old labels' sources this "
         "Job names, surface the assumptions in my idea below, then ask me the three frame questions (what to judge, "
         "which standard, who decides) as a frame form; record my answers as the frame."),
         (("Goal", "what the labels are for"), ("Use cases", "where they will be used"), ("Constraints", "data, time, who decides")))
@@ -193,12 +193,12 @@ def m_report(task: Path, root: Path, loops: list) -> tuple[str, str]:
     lp = next((x for x in loops if x["n"] == n), None)
     collect = lp.get("collect") if lp else None
     prompt = _prompt(task, root, "prepare", "Prepare", f"Loop {n}'s report", (
-        f"Use /haipipe-labeling-interaction on {task.name}, Loop {n}: prepare interaction report-{n:02d} from my sources, "
+        f"Use /hai-labeling-interaction on {task.name}, Loop {n}: prepare interaction report-{n:02d} from my sources, "
         "earlier decisions and any round report, its cases grouped typical, hard and random. Flags are hypotheses: no "
         "rule or label changes until I answer."))
     process = _step(f"🔍 Prepare Loop {n}'s report", _flow(          # the loop's words, not the file's (round 4)
         ("Human sources + reports", "ideas · notes · decisions", "earlier round reports · cases"),
-        ("🤖 Alignment Agent", "/haipipe-labeling-interaction", collect.name if collect else f"rNN_collect_report_m{n:02d}"),
+        ("🤖 Alignment Agent", "/hai-labeling-interaction", collect.name if collect else f"rNN_collect_report_m{n:02d}"),
         (f"Loop {n}'s report", "cards with evidence", "for you to decide")) + prompt, states(task)["prepare"],
         f"🙋 Press {lp['draw'].name}: its ticket is ready" if lp and lp.get("draw") is not None else "", "next")
     maps = _maps(task, root, mark=_mark(lp))
@@ -229,8 +229,8 @@ def m_preferences(task: Path, root: Path, loops: list) -> tuple[str, str]:
     st, form = MV.state(run), run / f"{run.name}.html"
     if st == "waiting" and form.is_file():            # the form itself is this view's 🙋 Interaction (settled 3): the
         part = _prompt(task, root, "preferences", "Preferences", "send my answers", (   # prompt sends its answers
-            f"Use /haipipe-labeling-interaction on {task.name}, Loop {n}: save my answers to report-{n:02d} ({run.name}: "
-            "the block at the end, from its 'haipipe-interaction answers' line) with my notes, then start Update."),
+            f"Use /hai-labeling-interaction on {task.name}, Loop {n}: save my answers to report-{n:02d} ({run.name}: "
+            "the block at the end, from its 'hai-interaction answers' line) with my notes, then start Update."),
             (("your notes", "optional: context for the decision record"),), cls="ls-send",
             attrs=f' data-form="{esc(frame._file_url(form, root))}"')
     elif st == "done":
@@ -333,7 +333,7 @@ def m_update(task: Path, root: Path, loops: list) -> tuple[str, str]:
         part = _bar(f"✍️ Your sign: approve {v} once Update has written it", f'<button type=button class=fd-btn disabled>'
                     f'Approve {esc(v)}</button>', "wait")
     part += _prompt(task, root, "update", "Update", "apply my answers", (
-        f"Use /haipipe-labeling-interaction on {task.name}, step Update, Loop {n}: read "
+        f"Use /hai-labeling-interaction on {task.name}, step Update, Loop {n}: read "
         f"{run.name if run else 'the form'}'s answer_collection.md; write meaning {v} and labels l{n:02d}, each rule "
         f"naming its card; recheck affected items; anything unclear becomes a card for Loop {n + 1}, never a guess. "
         "Then wait for my sign."))

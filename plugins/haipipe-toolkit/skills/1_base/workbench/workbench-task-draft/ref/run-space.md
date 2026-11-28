@@ -4,7 +4,7 @@
 > each Space (`../SKILL.md` § Runs panel). This older, fuller presenter has no button: it opens
 > at `lens=run` from a `?run=<exact run id>` link, and nothing else in the workbench depends on it.
 
-**LOAD `workbench`, `../SKILL.md` (`workbench-task-draft`), and `haipipe-run`
+**LOAD `workbench`, `../SKILL.md` (`workbench-task-draft`), and `hai-run`
 FIRST.** This reference is one lane contract of `workbench-task-draft`: the
 read-only Run Space presenter. It owns no folder and has no top-level Workbench
 registration. It is mounted inside `📃 Page` at `lens=run`. `/_board/runs`
@@ -273,7 +273,7 @@ human's rough-thinking capture card; Section is the section-writing card;
 Paragraph is the paragraph-writing card; Revise is the change ledger card. Review
 feedback on a candidate is input to the Section or Paragraph Run, expressed as
 `Paragraph (Review & Modify)`. Revise is its own Run (`run-revise-<slug>`,
-`haipipe-draft-writing (ref/revise.md)`) with two doors: the person edits the paragraph's Draft
+`hai-draft-writing (ref/revise.md)`) with two doors: the person edits the paragraph's Draft
 in one box in Draft Space → Revise, and every Save appends one Step whose
 ledger holds one red/green card per changed Bullet with Decision `accept`; or an
 agent compares two frozen texts of one target and writes the same ledger with
@@ -358,7 +358,7 @@ WRITER    person/chat authors tickets; the ticket writes its paired Result
 
 ## Native inventory integrity
 
-Follow `haipipe-run/ref/receipts-and-inventory.md` for the counting grain.
+Follow `hai-run/ref/receipts-and-inventory.md` for the counting grain.
 A Ticket without a receipt is Held with a missing-receipt finding, not Ready.
 Ready requires an allocated planned receipt. Inspect the union of native
 Tickets and Result/receipt stores; keep orphan and conflicting records visible.
@@ -381,7 +381,7 @@ Adopt records remain historical evidence. None of these views allocates work.
 
 ## 🗺 Status · 🟢 live 260912
 
-`servers/workbench/workbench-task-draft/runs.py` serves the read-only standalone and Board-hosted view.
+`servers/workbench/workbench-task-draft/run_views/runs.py` serves the read-only standalone and Board-hosted view.
 The surface resolves Page writing history plus Folder-local, Supporting
 Discovery, and canonical Job-backed Task Results, groups the reader-facing
 areas into semantic cards, and shows the actual Result first when a card opens;
@@ -390,11 +390,11 @@ allocation surfaces. The 📂 Folder tab remains the raw filesystem inventory.
 
 ## 📂 Files
 
-- `../../../project/haipipe-run/SKILL.md` · the neutral Level-4 identity, pairing,
+- `../../../project/hai-run/SKILL.md` · the neutral Level-4 identity, pairing,
   receipt, and audit contract this surface presents
 - `../../workbench/ref/roster.md` · lane and presenter roster
-- `../../../task/haipipe-task/ref/task-folder.md` · Task Run address/dialect
-- `../../../../2_theme/discovery/haipipe-discovery/ref/paper-run-contract.md` ·
+- `../../../task/hai-task/ref/task-folder.md` · Task Run address/dialect
+- `../../../../2_work/discovery/hai-discovery/ref/paper-run-contract.md` ·
   Discovery Folder-local dialect
-- `../../../../2_theme/labeling/haipipe-labeling-building/ref/ref-run.md` · Labeling operations,
+- `../../../../3_theme/labeling/hai-labeling-building/ref/ref-run.md` · Labeling operations,
   authority-owned resolver, gates, and protected surface boundary

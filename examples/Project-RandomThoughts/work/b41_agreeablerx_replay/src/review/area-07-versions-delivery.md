@@ -1,0 +1,111 @@
+# 📦 Versions & delivery
+
+- Submit the PDF from the journal's official LaTeX template, within 55 pages.
+- Changes show as a LaTeX diff against the previous round, with margin notes.
+- Each round's OneDrive folder holds the Word file, the PDF and the diff.
+- **📜 The decisions**
+- **11-10 15:10** · Update the paper Block with /hai-paper
+  - Decided: run the `/hai-paper` update on the paper Block, then check evidence values and citations.
+  - JL asked: "use the /hai-paper to update this paper block, esepcally for the Evidence values, and also the citations. Please go ahead for it."
+  - Built: update applied (it only added `use-case:` lines to page faces), then evidence check
+  - Session: Main paper
+- **11-10 23:17** · Edit from the co-authors' current Word
+  - Decided: make changes locally and render a Word file on top of the co-authors' current Word with tracked changes (unclear which option was finally chosen).
+  - JL asked: "how do you think you can copy a current version, and then just modify the changes their directly? Or you want to make the changes locally, and then render a word…"
+  - Built: Word Section split fixed to split on real heading names and skip tables
+  - Session: Main paper
+- **11-10 23:45** · Three deliverables per draft
+  - Decided: each new draft has three files: the paper (PDF), the paper as Word, and the professors' own Word file with their tracked changes plus ours added as tracked changes.
+  - JL asked: "I hope you at least have the version that the The Paper (which is the new draft), and then the Word, … and the Word-Change-Track…"
+  - Built: proposal only at this point
+  - Session: Main paper
+- **11-11 00:08** · Final goal is tracked Word on OneDrive
+  - Decided: the finished file is Ritu's v4 Word file with the accepted rewrites as tracked changes, placed in the OneDrive folder.
+  - JL asked: "I want the final goal is you render the word change track to the onedrive, do you get what I mean?"
+  - Built: tracked Word file built (05:15 UTC status: ready; structural rewrite not started)
+  - Session: Main paper
+- **11-12 19:02** · Render tracked Word to Round2-v1104
+  - Decided: render the tracked Word into the OneDrive Round2-v1104 folder, never overwriting JL's edits; a new version folder follows on JL's OK.
+  - JL asked: "could you please render the tracked word to the v1104 of the … Round2-v1104 … If I say taht is okay, we can have a new version folder"
+  - Built: diff command built; build wired to write into Round2-v1104
+  - Session: Main paper
+- **11-12 19:09** · Make the new round folder now
+  - Decided: "go ahead" read as: create the new round folder now (JL had made 0 edits).
+  - JL asked: "did you have it? go ahead and do it."
+  - Built: tracked file imported as v5 and pushed to `Round3-v1112/`
+  - Session: Main paper
+- **11-12 19:12** · Round3 holds Word and tracked Word only
+  - Decided: Round3-v1112 gets the Word file and the tracked Word file, no Word PDF.
+  - JL asked: "Round3-v1112/...Discretion.docx ⬜ blocked, not made <--- make this, no need to what the word pdf, just the word and tracked word"
+  - Built: Round3-v1112 made; workbench button and `diff` check pointed at the Round3 file
+  - Session: Main paper
+- **11-13 02:29** · Submit the LaTeX PDF, not Word
+  - Decided: submit the PDF built from the MISQ LaTeX template (Word is 63 pages against the 55-page limit); Word stays the co-authors' review copy.
+  - JL asked: "okay, we will just submit the pdf version."
+  - Built: noted so later sessions check the page limit on the PDF
+  - Session: Main paper
+- **11-13 03:03** · Pure LaTeX diff, no Word
+  - Decided: make a pure LaTeX diff (Round 2 LaTeX against the new LaTeX); stop the Word route.
+  - JL asked: "hte pdf of track is based on the latex or what? could you have the latex version of diff? I think we have some latex_diff command"
+  - Built: Word-based diff PDF removed from OneDrive
+  - Session: Main paper
+- **11-13 03:09** · LaTeX diff against previous version
+  - Decided: build the LaTeX diff against the previous (Round 2) version.
+  - JL asked: "plse do ahead and make the paper - latex diff for me, you need to compare with our previous version"
+  - Built: duplicate cite keys (for example `Dowell_2016` and `dowell2016cdc`) resolved by preferring the key Round 2 cites
+  - Session: Main paper
+- **11-13 11:54** · Use the real MISQ LaTeX template
+  - Decided: the build must use MISQ's official LaTeX template, checked against MISQ's site.
+  - JL asked: "I think you need to use the MISQ latex template, is that so???… is this the real MISQ template one?"
+  - Built: page 1 found broken ("Abstract" twice, keywords on page 2); MISQ's LaTeX link is broken on their side, template compiled as downloaded for comparison
+  - Session: Main paper
+- **11-13 12:04** · Accept 55-page limit for both formats
+  - Decided: the template is OK; the 55-page limit (everything included) holds for Word and PDF alike; the LaTeX PDF is 54 pages.
+  - JL asked: "so it should be okay, right? For both word and pdf, they are the same requiremnts of 55 pages?"
+  - Built: proposal only (confirmation)
+  - Session: Main paper
+- **11-13 12:55** · Margin notes in the LaTeX diff
+  - Decided: the LaTeX diff carries margin notes saying what changed.
+  - JL asked: "for the diff, do you think you can add the comments for what you have changed? how do you think about it? will the daoable?"
+  - Built: plain margin notes placed outside the latexdiff-marked text
+  - Session: Main paper
+- **11-13 13:24** · Keep only important and unsolved ones
+  - Decided: keep only the most important and unsolved items (unclear which: likely the margin notes).
+  - JL asked: "maybe just put the most imporatant ones and unsolved ones."
+  - Built: margin-note skill now places a note after a heading, not inside it
+  - Session: Main paper
+- **11-13 23:25** · Pull OneDrive changes into cards
+  - Decided: align each Section with the OneDrive Round 3 Word file the way t00 and t01 did, one card per change naming who made it (By: RA, JL or AI).
+  - JL asked: "read them and think what you should do, pull the changes from the OneDrive to make things to be aligned."
+  - Built: t02 and t07 turned Round 3 changes into cards; t03 fixed a citation printed as plain text; Appendix compared drafts with the Word text (file unchanged)
+  - Session: t02 Literature review, t03 Theory, t04 Empirical strategy, t05 Results, t06 Discussion, t07 Conclusion, Appendix
+- **11-14 01:41** · Conclusion text confirmed final
+  - Decided: the Conclusion text is final; next is the page CHECK, then LaTeX and Word builds.
+  - JL asked: "okay, I confirmed all of them, what is next?"
+  - Built: CHECK started
+  - Session: t07 Conclusion
+- **11-14 03:06** · Accept does not update the page
+  - Decided: bug report; accept only writes the draft, not page text or web, LaTeX and Word files.
+  - JL asked: "I approved the changes, but it is not updated, why?"
+  - Built: 4 approved sentences copied and rebuilt by hand
+  - Session: t05 Results
+- **11-14 03:31** · Compile PDF and diff, then Word
+  - Decided: compile the LaTeX PDF and diff once Theory and Literature Review close small gaps; Word comes after; stop editing and send to Ritu.
+  - JL asked: "is it the time to compile the latex pdf, the latex pdf diff, the word,? How do you think?"
+  - Built: proposal only at this point
+  - Session: Main paper
+- **11-14 03:32** · Add newer choices and rebuild
+  - Decided: add S93bx and S98 to the edits file and ask the main session to rebuild.
+  - JL asked: "okay, check my feedback again"
+  - Built: edits file updated; main session told
+  - Session: t06 Discussion
+- **11-14 03:45** · Close Theory after final checks
+  - Decided: S64 kept; nothing open; run final checks before closing.
+  - JL asked: "okay, I provide my feedback, could we close it now? Do we still have huge errors now?"
+  - Built: health, writing-pattern and citation checks started
+  - Session: t03 Theory
+- **11-14 03:48** · Round3 folder gets Word, PDF, diff
+  - Decided: the OneDrive Round3-v1112 folder holds the Word version, the PDF and the diff PDF.
+  - JL asked: "Round3-v1112 <--- I think we want to update things here, could we put the word version and the pdf version, and the pdf version with diff?"
+  - Built: the two PDFs placed in the shared folder; Word next
+  - Session: Main paper

@@ -1,0 +1,9 @@
+run: r01_check_values
+status: completed
+exit_code: 0
+started_at: '2026-11-11T05:22:32Z'
+finished_at: '2026-11-11T05:22:32Z'
+started_by: 'gen_value_runs.py: the value Job’s Runs, made from its value maps'
+ticket: runs/r01_check_values/r01_check_values.sh
+worker: hai-paper-evidence scripts/values_ledger.py check
+host: jluo41s-Mac-Studio/jluo41

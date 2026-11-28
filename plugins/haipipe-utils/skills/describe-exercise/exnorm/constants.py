@@ -46,7 +46,7 @@ def _find_bank() -> Path:
 DEFAULT_BANK = _find_bank()
 
 # ------------------------------------------------------------- what a row IS --
-# Rule 2 of haipipe-norm: TYPE, DO NOT DELETE. Every input leaves the dialect
+# Rule 2 of hai-norm: TYPE, DO NOT DELETE. Every input leaves the dialect
 # layer wearing exactly one of these. Only `session` may reach the bank.
 SESSION = "session"            # a bounded bout of activity. resolvable.
 DAILY_ROLLUP = "daily_rollup"  # a device's once-a-day summary posted at midnight.

@@ -16,13 +16,13 @@ description: 'The Task Workbench reads one Task Block: its Jobs, Tasks and Runs,
   reads every receipt and report; Delivery holds the answered reports. Runs and their status sit in the Runs
   panel; a Run, a Task Page, a report and a drawing open in one pop-out.'
 skills:
-- skill: haipipe-work
+- skill: hai-work
   role: 'The work theme''s door: which skill owns each part of the work'
-- skill: haipipe-task
+- skill: hai-task
   role: Block / Job / Task / Run ownership and execution
-- skill: haipipe-report
+- skill: hai-report
   role: A Block's Questions, their register and report folders
-- skill: haipipe-draft-workflow
+- skill: hai-draft-workflow
   role: Task Page reasoning, evidence and readings
 - skill: workbench-work
   role: Scope, Task, Check and Delivery over the Block's native records
@@ -96,7 +96,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
+  - board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   - Workbench design
   - first
 boundary: 'One Block owns this workbench: Scope, Task, Check and Delivery Spaces, each with the shared Runs
@@ -125,12 +125,12 @@ roadmap:
   Block:
   - title: the work ladder
     shows: a work Project, from its Theme down to one Run
-    board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s01-work-ladder/s01-work-ladder.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s01-work-ladder/s01-work-ladder.excalidraw
   - title: the work workbench before the frame
     shows: the old Task Workbench page, the old page the band links
-    board: Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw
   Job: []
   Task:
   - title: what a Run is
     shows: a Run, what it leaves (hard or soft), its passes, and the Runs Space
-    board: Tools/blueprints/Project-Ladder/work/b10_project_workbench/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw
+    board: b10_project_workbench/s06-run-workbench-skill/s06-run-workbench-skill.excalidraw (removed 261126)

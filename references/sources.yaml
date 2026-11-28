@@ -342,6 +342,27 @@ references:
     license: PolyForm-Noncommercial-1.0.0
     notes: "Source-available visual annotation and layout-feedback tool, not unrestricted open source. Commercial use requires separate authorization under upstream licensing. Preserve LICENSE and NOTICE. Reference for screenshot-linked human feedback, stable page IDs, review snapshots, and structured Agent handoff; not installed or integrated. See references/edithere-review.md."
 
+  - name: dsh-remote
+    path: references/dsh-remote
+    type: git-submodule
+    url: https://github.com/flymysql/dsh-remote
+    license: MIT
+    notes: "Pinned to v1.4.1 to match the inspected DSH Desktop profile. Reference only; see references/dsh-remote-guide.md for the Tools-SPACE workspace and mirror model."
+
+  - name: dsh-a2ui
+    path: references/dsh-a2ui
+    type: git-submodule
+    url: https://github.com/ChimeSky/dsh-a2ui
+    license: MIT
+    notes: "Answer-first A2UI 1.0 for DSH: protocol JSON, progressive previews, and self-contained snapshots. See references/dsh-a2ui-comparison.md."
+
+  - name: dsh-genui-a2ui
+    path: references/dsh-genui-a2ui
+    type: git-submodule
+    url: https://github.com/Geekhyt/dsh-genui-a2ui
+    license: MIT
+    notes: "A2UI Express for DSH: reactive surfaces, live docks, and blocking forms. See references/dsh-a2ui-comparison.md."
+
 candidates_from_screenshots:
   - name: CCFA-Skill
     status: unresolved
@@ -426,3 +447,10 @@ candidates_from_screenshots:
     license: unknown
     notes: "No LICENSE file upstream (checked 2026-10-08, commit 1cabdca): read as a reference only; copy no code or text into the skills. A transcript-to-deck agent: two skills (onboarding, deck-progress-update: a five-slide client update from a meeting transcript, extract then outline then slides) and deck-kit (HTML template, brand tokens, puppeteer layout check, PDF export). Compared with excalidraw-slide's slide draft and deck writer."
 
+
+  - name: Excalidraw public libraries (four kept for Studio drawings)
+    path: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/icons/libraries
+    type: downloaded-files
+    url: https://libraries.excalidraw.com
+    license: MIT (the excalidraw-libraries repository)
+    notes: "Downloaded 2026-11-27, unchanged: xxxdeveloper/icons, xxxdeveloper/system-icons, gabrielamacakova/basic-ux-wireframing-elements, gianpaima/stick-figures-collaboration. Drawn by name through hai-studio scripts/icon_library.py; how to add one: hai-studio ref/icon-libraries.md. Shapes and lines only, no embedded images or code."

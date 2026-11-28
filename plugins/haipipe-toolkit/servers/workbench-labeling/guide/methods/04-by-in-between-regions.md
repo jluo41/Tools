@@ -37,4 +37,4 @@ returns: regions per item and candidate rules
 verify: the person accepts each rule before it enters the guideline
 risk: An agent may resolve ambiguity itself; only the person settles it (ours).
 evidence on ai: No study tests regions in agent-assisted labeling (ours).
-skill: haipipe-labeling-rounds
+skill: hai-labeling-rounds

@@ -17,7 +17,7 @@ from live.paper_story_tree import story_tree
 
 # ---------------------------------------------------------------- render
 # The Page workbench's grammar (JL 260927; the drawing is
-# Tools/blueprints/Project-Ladder/work/b16_theme_paper/_archive/20261010/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
+# Tools/examples/Project-Ladder/blueprint/b16_theme_paper/_archive/20261010/s02-paper-workbench/paper-workbench-design.excalidraw): four Spaces,
 # each with its tabs and views, the content on the left and its own Runs panel on
 # the right. Nothing on screen explains itself: no source lines, counts or hints.
 SPACES = (("ideation", "Ideation"), ("story", "Story"),               # plain names, as every
@@ -30,7 +30,7 @@ SECTION_VIEWS = (("table", "Table"), ("narrative", "Narrative"), ("evidence", "E
 DELIVERY_TABS = (("latex", "LaTeX"), ("word", "Word"), ("cover", "Cover letter"), ("rounds", "Rounds"))
 DELIVERY_VIEWS = (("preview", "Preview"), ("artifacts", "Artifacts"), ("checks", "Checks"))
 
-_CARDS = skill_dir("haipipe-paper-workflow") / "ref" / "run-cards.md"
+_CARDS = skill_dir("hai-paper-workflow") / "ref" / "run-cards.md"
 _BUTTON = re.compile(r"^🔘 BUTTON\s+(?P<label>.+?)\s+·\s+(?P<space>[A-Z][^·]*?)\s+·\s+"
                      r"(?P<pattern>\S.*?)(?:\s+·\s+views\s+(?P<views>[\w -]+?))?\s*$")
 _PROMPT = re.compile(r"^💬 PROMPT\s+(?P<prompt>.+?)\s*$")

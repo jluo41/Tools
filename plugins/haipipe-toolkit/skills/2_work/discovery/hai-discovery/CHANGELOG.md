@@ -1,0 +1,837 @@
+haipipe-discovery — Changelog
+=============================
+
+Skill-scoped changelog (lives INSIDE the skill folder so it is never loaded at
+invocation; read on demand). Versions match SKILL.md frontmatter `version:`.
+Layer-wide structural events (bucket renames, folder moves) also land here,
+since this orchestrator owns the layer contract. Newest first. Rollup lives in
+the plugin-level `CHANGELOG.md`. The type specialists keep their own
+`CHANGELOG.md` in their own folders.
+
+## [0.23.3] — 2026-11-06
+
+A Paper Run's headline.
+
+- `paper_result_build.py` writes `headline:` in each receipt, the readout's first sentence, as every receipt carries
+  it (haipipe-run); the workbench's Status and Findings read it. An older Run's headline is read from its Card.
+
+## [0.23.2] — 2026-10-26
+
+Links, commands and companions repointed at the helper skills merged into `haipipe-ideation`, `haipipe-search`, `haipipe-evidence`, `inlab-human`, `haipipe-draft-review`, `haipipe-display` (now `_parts/<name>/PART.md`). (merge-parts 261026)
+
+Third pass (same day): the review originals research-lit, comm-lit-review and academic-researcher became parts of this skill (`_parts/<name>/PART.md`); `2_review/` is gone.
+
+## [0.23.1] — 2026-10-26
+
+Shorter description (641 -> 408 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
+## 0.23.0 · 2026-10-11 · Machine-learning venues without a DOI; the one-folder Bib fix
+
+Found by building a 24-paper sweep of six 2026 conferences.
+- Fix: `scripts/paper_bib_fetch.py --result-dir runs/<run>/result/` wrote `result.bib`, because it
+  named the Bib after the folder; since 0.22.0 every DOI Paper Run in the one-folder layout then
+  failed in `paper_result_build.py`, which reads `<run>.bib`. It now takes the Run's name.
+- `scripts/paper_bib_fetch.py --publisher-url` also reads a PMLR paper page, whose BibTeX is the
+  page's own citation block (`<code id="bibtex">`); PMLR has no `.bib` endpoint.
+- `scripts/paper_result_build.py --pmlr-url <page>` builds a whole Result for an ICML or AISTATS
+  paper, which has no DOI: identity, abstract and PDF from the citation block, `subject.pmlr` in
+  the receipt. `--doi` is no longer required; exactly one of the two is.
+- `--accepted-venue` and `--accepted-url` record a paper accepted before its proceedings record
+  exists (NeurIPS before December, ICLR on OpenReview): the Bib is the arXiv preprint, the receipt
+  says so, and a superseding Run cites the venue record later.
+- `scripts/paper_source_access.py::build_venue_record` gives a DOI-less venue record the links the
+  checker requires; `source-access.md` shows OpenReview and the accepted page when known.
+- `ref/paper-run-contract.md` § Machine-learning venues without a DOI. `ref/discovery-yaml-schema.md`:
+  `sources.candidate_ledger` for a sweep too broad for YAML. The Source map is a block in Content
+  division 1, as the Page frame (Opening, Content) requires; it was still written as `## Source map`.
+- The one-folder-per-Run layout now reads the same in every ref, `DESIGN.md`, the agents and the
+  workbench docs (17 files still described `runs/<run>.sh` + `results/<run>/`). The family tree
+  names Search where it lives, `1_base/search/haipipe-search/` with `1_search/`.
+- A fresh-context check (a new agent building two Results from the docs alone) found more, now fixed:
+  the accepted page was missing from `source-access.md`; the accepted flags were unchecked (now both or
+  neither, and only with an arXiv identity); `--result-dir .` wrote `.bib` (the path is resolved
+  first); any host's HTML with a citation block passed as a publisher export (now only
+  `proceedings.mlr.press`); PMLR titles and names kept raw LaTeX (`plain()` resolves accents for the
+  Card; the `.bib` stays verbatim); a PMLR Run asked OpenAlex for an empty DOI; a new Task without
+  `runs/<run>/` fell back to `results/`. Docs: the checker's Page grammar in `ref/page-types.md`, the
+  planned receipt's `trigger:` and `subject:` blocks, a PMLR ticket, and the RUNNAME year for an
+  accepted preprint. Six more old-layout lines (the builder's `--help`, the migration Page text, the
+  inquiry TICKET line, the orchestrator description, the Search skill's ADMIT step).
+- Tests: 98 (11 new).
+
+## 0.22.1 · 2026-10-09 · Theme folders are singular
+
+- `scripts/paper_runs.py` accepts a Task under `discovery/` (or the older `discoveries/`). Docs name `discovery/`.
+
+## 0.22.0 · 2026-10-09 · One folder per Run
+
+- `scripts/paper_result_build.py` writes `runs/<run>/result/` when the Run folder exists;
+  `scripts/paper_runs.py` pairs both layouts. `SKILL.md`, `ref/paper-run-contract.md` updated.
+
+## 0.21.0 · 2026-10-02 · Logic-and-work readout; PubMed reads only the article's own ids
+
+- New optional Result file `logic-work.yaml`: the paper's own question, data, method, findings and contribution, written from an authored readout at `<task>/scripts/readouts/<run>/logic-work.yaml` that `scripts/paper_result_build.py` validates and copies when the ticket runs. Consumer-side reasons (why a paper is kept, which questions it bears on) stay with the consumer. Contract: `ref/paper-run-contract.md` § Logic and work readout. The Paper Workbench draws it inside each related-paper card (haipipe-workbench-paper 0.21.0).
+- `scripts/paper_source_access.py::_pubmed`: identifiers now come only from the article's own `PubmedData/ArticleIdList`. A bare `.//ArticleIdList` also matched every cited reference, so a paper picked up its reference list's PMC id as its full-text link. A search hit whose DOI differs from the paper's (`10.1086/699976[AID]` matching `10.3389/fpsyg.2021.699976`) is `doi-mismatch`; a hit that cannot be fetched to check is dropped as `unverified-record` instead of kept.
+- `scripts/paper_result_build.py`: the arXiv BibTeX year guard compares against the arXiv record's latest version (`<updated>`), because `arxiv.org/bibtex` dates its entry by that version; a revised preprint was blocked as `bib-year-mismatch`. The arXiv id stays the identity check.
+- `scripts/paper_result_build.py`: `source-access.md` now repeats the retrieval state the Run settled (reading depth, claim support, locator), which it used to leave at `pending` while `source-access.json` said `supported`; a metadata-only Card's Limits says no content claim is supported instead of "Abstract depth only".
+
+## 0.20.2 · 2026-10-02 · OpenAlex by DOI, not by search; a boilerplate abstract is no abstract
+
+- `scripts/paper_source_access.py::_openalex` asked OpenAlex with a filtered search (`/works?filter=doi:...`). OpenAlex now charges searches against a daily budget shared by the whole network and answers 429 once it is spent, and `_get_json` turned that into a silent miss: 15 Paper Runs in a row came out `metadata-only` with no open-access link while their abstracts were one request away. It now reads the one work by DOI (`/works/doi:<doi>`), which still answers.
+- The same function took any OpenAlex abstract, so a repository's boilerplate (`International audience`) or a one-line teaser became the Run's abstract and its `facts.md`. Under `MIN_ABSTRACT_WORDS` (30) words it is now no abstract, and the Run stays `metadata-only`.
+- `scripts/paper_result_build.py --set-aside-abstract REASON`: for a retrieved text a person read and found is not the paper's (an OpenAlex abstract that is a co-author's repository note). The Run drops `abstract.md`, stays `metadata-only`, and the receipt's `scope_note` says why.
+- `scripts/paper_result_build.py::save_pdf`: after OpenAlex's open-access links and arXiv, a paper held in PubMed Central is fetched from Europe PMC (`europepmc.org/api/getPdf?pmcid=<PMCID>`, where the article page's `?pdf=render` redirects). Publishers such as Science Advances answer a script with 403 while their PMC deposit is free. The article page's `?pdf=render` route answers a script with 403 at random; `api/getPdf` does not.
+- `scripts/paper_result_build.py::crossref`: the title now joins Crossref's `subtitle` (`Frame Innovation: Create New Thinking by Design`). With only the two-word `title`, the fetcher's title guard refused the publisher's own BibTeX entry (similarity 0.52) and the Run was blocked.
+- `scripts/paper_result_build.py::is_the_paper`: a listed free copy must be the paper. OpenAlex listed a library's one-page table of contents as the open copy of `The Sciences of the Artificial`, and the builder saved it as `paper.pdf`. A copy now needs at least two pages and 60 percent of the title's longer words on its first three pages (pypdf, else pdftotext); otherwise the builder tries the next location.
+- `scripts/paper_bib_fetch.py --key` and `scripts/paper_result_build.py --bib-key`: a key that collides with another Result's in the same Task (Crossref gives both of O'Cathain's 2019 papers `O_Cathain_2019`, and `build-bib` refuses the conflict) is renamed; only the key changes, and the receipt keeps the exporter's as `bib.key_from`. Contract: `ref/paper-run-contract.md` § Bib authority.
+- Tests: `tests/test_paper_source_access.py::test_openalex_reads_one_work_by_doi_and_drops_boilerplate_abstracts`, `tests/test_paper_result_build.py::test_a_one_page_table_of_contents_is_not_the_book`, `tests/test_paper_bib_fetch.py::test_a_colliding_key_is_renamed_and_every_field_stays_verbatim`; 87 passed.
+
+## 0.20.1 · 2026-10-01 · A `"` inside a braced Bib value is literal
+
+- `scripts/paper_runs.py::_balanced_entry`: a straight `"` toggled quote mode at any depth, so PMLR's own entry for `pmlr-v32-gentile14` (abstract `(“bandit")`) was refused as "unbalanced" by both `paper_bib_fetch.py` and `check`. A quote now delimits a value only at field level; inside braces it is a character, as in BibTeX.
+- Test: `tests/test_paper_runs.py::test_quote_inside_braced_value_is_literal`; 84 passed.
+
+## 0.20.0 · 2026-10-01 · Discovery Pages drop `## Aims` (Page Face is Opening → Content)
+
+- Aligns Discovery with `haipipe-draft` 0.121: the reader Page is Opening → Content, and Aims are backstage records, never Page sections (JL 261001: "we have no more Aims").
+- `scripts/paper_runs.py`: `page-aims-missing` is gone. A Page without `## Aims` passes; a legacy Page that still carries one is checked as before (Aim set, Aim/division name agreement, `page-done-with-open-aim`). Content now runs to the next `##` heading or end of file (`CONTENT_RE`), so division-diagram checks work with or without Aims.
+- `scripts/migrate_bjtr.py`: migrated Pages are written without an Aims block (the migration signature is the `method:` line, unchanged).
+- Docs: `ref/page-types.md` (Page Face, one-division-per-run rule 4), `SKILL.md` (CLOSE and migration notes), `haipipe-discovery-inquiry` SKILL and `ref/workflow-table.md`, `haipipe-discovery-synthesize` SKILL say Aims are backstage.
+- Checked: `tests/` 83 passed (3 new: Page without Aims in both layouts; diagram rule still enforced without Aims; 2 migration tests now assert no `## Aims`).
+- Also: frontmatter `version:` was left at 0.19.0 by the 0.19.1 entry; it now reads 0.20.0.
+
+## 0.19.3 · 2026-09-30 · Accepted venue and dblp Bib preference
+
+- Prefer the accepted conference/journal record. For computer-science papers, inspect the exact dblp venue record and import its one-record BibTeX export through `--dblp-bib-file --dblp-record`; CoRR/arXiv remains a separate preprint. When dblp is missing or the venue has no stable record yet, use the venue/publisher or publication DOI. Google Scholar is a manually reviewed last resort.
+- The fetcher binds the dblp export's citation key and `biburl` to the named venue record, checks title/year/DOI where available, blocks first-author discrepancies for review, and stamps `curated-index-export`. The DOI-driven Result builder can select a confirmed dblp export with `--bib-from dblp`.
+- `bibtex-verifier` may precheck the derived Task Bib, but its Crossref/DataCite/OpenAlex coverage does not supersede a checked dblp venue record or the person-only `bib.verification` receipt.
+
+## 0.19.2 · 2026-09-30 · Machine-learning papers through arXiv
+
+- `scripts/paper_result_build.py` takes `--arxiv <id>` and reads the id from a `10.48550/arXiv` DOI. When Crossref
+  has no record (an arXiv-only DOI), identity comes from the arXiv API and the BibTeX from arXiv's export, because
+  DataCite keys the entry by its URL, which `\cite` cannot take. When PubMed has no abstract, the arXiv abstract is
+  used; when OpenAlex has no free copy, the arXiv PDF is saved. The receipt names the real sources. Found on
+  2026-09-30: an ICML 2024 paper (PMLR issues no DOI) failed with HTTP 404, and a KDD 2026 paper was built at
+  metadata depth with no PDF.
+- The card and receipt title drop LaTeX case braces a publisher deposits in Crossref (`{GS-Fuse}` reads GS-Fuse);
+  the BibTeX entry keeps them verbatim.
+- An arXiv-only paper whose authors' comment says "Accepted by ICLR 2026" gets that venue, marked
+  `venue from the authors' comment`, instead of `arXiv preprint`.
+- `scripts/paper_bib_fetch.py` retries the arXiv BibTeX export twice (after 5 s, then 15 s): arXiv throttles it right
+  after the same Run's abstract and PDF downloads, which failed two of seven Runs on 2026-09-30.
+- `--bib-from arxiv` takes the verbatim BibTeX from arXiv's export when the DOI's entry key collides with another
+  Result's in the same Task (two NeurIPS 2024 entries both keyed `Wang_2024`); no entry is ever re-keyed by hand.
+- A failed BibTeX fetch now leaves `status: blocked` and a `blocked_reason` in `runtime.yaml` and exits non-zero;
+  before, the receipt said `complete` with no `.bib` beside it.
+
+## 0.19.1 · 2026-10-01 · An abstract comes from OpenAlex when PubMed has none
+
+- `scripts/paper_source_access.py`: when PubMed has no abstract, the abstract is rebuilt from OpenAlex's `abstract_inverted_index`, and `abstract.source` names the OpenAlex record. PubMed does not index the business, OR and IS journals (Management Science, ISR, MISQ, Marketing Science, JMR), so 16 of 17 UTD-24 Paper Runs for Paper-MessageTradeOffEgm (`discoveries/b01_sms_engagement_evidence/j05_.../t01_utd_related_papers`) came out metadata-only. A sibling Task had patched the same gap inside each Ticket.
+- `scripts/paper_result_build.py`: with no abstract, `claim_support` and `locator_status` are `pending`, the values `paper_runs.py check` accepts; it wrote `not-assessed` and `metadata-only`, which the checker rejected on every such Result. The depth and scope notes say "retrieved abstract" and name its source instead of "PubMed abstract".
+- Checked: `tests/test_paper_source_access.py` and `tests/test_paper_runs.py` pass (42); the 17 Runs rebuilt at abstract depth and `paper_runs.py check` reports STRUCTURE_OK.
+
+## 0.19.0 · 2026-09-30 · A Paper Run's Ticket rebuilds its Result from the DOI
+
+- `scripts/paper_result_build.py` (new): one DOI plus the readout and reuse lines → the whole Paper Result the Paper Workbench's Related Papers cards read: `runtime.yaml` (identity, venue string from Crossref, reading depth), the one-entry Bib (through `paper_bib_fetch.py`), `source-access.json`/`.md` and `abstract.md` (through `paper_source_access.py`), `facts.md` (identity plus one fact per abstract sentence), the Result card, and `paper.pdf` when a free copy exists (`--pdf-from` a file already on disk, else OpenAlex's open-access PDF; `local_pdf.version` is published, accepted or preprint). A Ticket calls it, so rerunning the Ticket rebuilds the Result (JL 260930: Paper-CGMtoHbA1c's Related Papers tab was empty). PubMed Central and publisher sites answer scripts with a bot check; the script does not try to get past it, and such a card links the free full text instead.
+- Crossref markup is cleaned: `&amp;` becomes `&`, and `HbA<sub>1C</sub>` becomes `HbA1C`. The venue year is the issue's (`published-print`), not the online-first date.
+- First used on Proj21-CGM-Pred `discoveries/b01_hba1c_estimation_literature/` (20 Paper Runs; `paper_runs.py check` 0 errors).
+
+## 0.18.1 · 2026-09-29 · outline/ to draft/ (JL 260929)
+
+- `scripts/paper_runs.py`: a Topic with a root `evidence/` is told to use `draft/evidence/` (it said `outline/evidence/`).
+
+## 0.18.0 · 2026-09-29 · Bib fetching becomes a receipt, not an honor system
+
+- `scripts/paper_bib_fetch.py` (new): fetch ONE verbatim entry and stamp `bib.source`, `bib.mode: verbatim_copy`, `bib.source_class`, `channel` and `fetched_at`. Ladder per identity: `--doi` tries Crossref REST transform, then doi.org content negotiation, then DataCite; `--arxiv` uses `arxiv.org/bibtex/<id>`. It reuses `paper_runs.py`'s `BIB_START_RE`/`_balanced_entry`/`DOI_RE`, so an entry the writer accepts is an entry the checker accepts.
+- IDENTITY BEFORE ENTRY. A title is not a Subject: Crossref's top bibliographic hit for "Large Language Models are Zero-Shot Rankers for Recommender Systems" is `LLM-BL: ... for Bug Localization` (`10.1109/icpc66645.2025.00064`), and the correct `10.1007/978-3-031-56060-6_24` ranks third. `--resolve-title` therefore only PROPOSES candidates with a similarity score and exits 2 without writing.
+- Crossref is tried before doi.org because a publisher may ignore `Accept: application/x-bibtex`: `10.1038/s41746-026-03117-z` answers `302 text/html` at doi.org while Crossref returns the correct entry. An HTML body is rejected rather than written.
+- REFUSES: an entry count other than one, a DOI disagreeing with the requested DOI, a title below `--min-title-similarity` (0.90). WARNS without blocking (`--strict` makes warnings refuse; off by default because an arXiv preprint has no DOI): no DOI in the entry, a URL-shaped key `\citep{}` cannot use, and a title matching the expected one only after case folding. Sentence-case venue titles such as npj Digital Medicine do not warn.
+- `bib.source_class` is new: `authoritative-export` for crossref/doi.org/datacite/arxiv/publisher, `person-export` for a person's own export including `google-scholar-export`. Google Scholar is never fetched by a script (`403` on the first request, export omits the DOI); it enters only through `--bib-file --source-url`, and the weaker class stays on the receipt.
+- Refetching the SAME entry preserves an existing `bib.verification`; a DIFFERENT entry resets it to `pending`, since a person's reading of the old entry does not carry over.
+- A RESOLVED DOI IS NOT PROOF OF IDENTITY, found by a fresh-context agent run: a DOI passed on the command line agrees with itself, and a different paper with an IDENTICAL title scores 1.0 on similarity. `10.65215/2q58a426` is a real 2025 `posted-content` posting by the Shenzhen Medical Academy of Research and Translation reusing the exact title "Attention Is All You Need", and it passed both guards with zero findings. `--expected-year` (with `--year-tolerance`, default 1) is now the load-bearing guard; the fetcher also always reads the Crossref record, reports `type`/`publisher`/`year`/`venue`/landing page, writes them to `bib.record` in the receipt, and raises `subject-is-a-posting` on `posted-content`.
+- `--publisher-url` (new channel): a venue's own `.bib` endpoint, requiring an `application/x-bibtex` body, stamped `authoritative-export` + `channel: publisher`. Previously the contract listed `publisher` as authoritative while the only route in was `--bib-file`, which hard-stamps `person-export`: following the contract's own NeurIPS example forced a FALSE receipt.
+- `--resolve-title` now queries Crossref, OpenAlex and arXiv, since Crossref indexes DOIs and can miss an arXiv-native or pre-2022 proceedings record entirely. Each row carries channel/DOI/arXiv/year/type/publisher plus `identifier_conflict`, which flags a row whose ids disagree with its year: OpenAlex's top hit for that title merges arXiv `1706.03762` (2017) with the 2025 posting's DOI under one 2025 work.
+- A DEAD IDENTITY CHANNEL IS NO LONGER SILENT, found by a second fresh-context agent run: OpenAlex answers `503 Anonymous search is paused while the search cluster recovers from heavy load`, and `_openalex_candidates` returned `[]` on any non-200, so the JSON was identical whether a channel was down or simply empty. The three-channel defence could collapse to one ply while reading as three. `--resolve-title` now reports `channels` (one state each), `degraded`, `strong_matches`, and plain-language `notes`. This is the silent-cap failure `ref/source-format.md` already forbids for Page coverage; it now holds for identity resolution too.
+- `strong_matches` counts candidates at or above 0.80 similarity, so a NON-unique title is visible: more than one strong hit means publisher and year decide, and exactly one across every live channel is evidence of uniqueness.
+- `bib.record` keeps `landing_page`. The contract sells the record as "so a reviewer sees the publisher without re-querying anything", and the landing page is the first thing a reviewer clicks; `build_bib_block` was dropping it.
+- `ref/paper-run-contract.md` gives the fetcher's path FROM THE REPOSITORY ROOT and warns that `Tools/` is a symlink, so `find Tools -name paper_bib_fetch.py` returns nothing and the tooling reads as absent. It also documents that `--resolve-title` exits 2 by design, which kills a `set -euo pipefail` ticket, with the `|| [ $? -eq 2 ]` guard.
+- A registered SHORT title is a match, not a mismatch, found by a read-only audit of the 384 real Discovery Result bibs in this repository: publishers drop the subtitle, so SAGE holds "The Face of Success" for the entry titled "The Face of Success: Inferences From Chief Executive Officers' Appearance Predict Company Profits". Three of the audit's four title "mismatches" were this. The prefix counts only when the shorter title has >=3 words and >=15 characters, and it warns rather than passing silently.
+- Warning text is channel-aware: "the Google Scholar export signature" is named only when the bytes actually came from Scholar, never on a publisher or Crossref fetch.
+- `ref/paper-run-contract.md`: new "Identity before entry", "A resolved DOI is not proof of identity" and "Bib source classes" sections under Bib authority. It states plainly that neither the fetcher's other guards nor `paper_runs.py check` compares an entry against the `subject:` block it describes.
+- `tests/test_paper_bib_fetch.py` (new): 16 offline tests, including the single-line Crossref entry whose title a lazy regex swallowed, and the wrong-paper rejection.
+
+## 0.17.2 · 2026-09-28 · No content hashes (JL 260928)
+
+- `ref/discovery-yaml-schema.md`, `ref/paper-run-contract.md`, `ref/source-format.md`: the candidate rule is identified by `candidate_rule_version` and `candidate_rule_frozen_at`; `candidate_rule_sha256`, `candidate_decisions_sha256`, candidate-snapshot `sha256`, and the `report.assessment` scope/page/decision snapshot hashes are removed. An outside source is recorded by URI and access date; instruments by path and version. A closing assessment is stale when the Page or `discovery.yaml` changes after `assessed_at`.
+
+## 0.17.1 · 2026-09-27
+
+- Page layout 0.118: a Discovery Task Page's plan folder is `draft/`, so its derived Bib is `draft/evidence/bibex/<task>.bib`. `paper_runs.default_bib_path` uses `draft/` (an unmigrated Page with only `outline/` keeps it); the family's docs, agent briefs and test fixtures now name `draft/`.
+
+## 0.17.0 · 2026-09-22
+
+- Family layout: every skill we wrote (door, inquiry controller, search, review, synthesize) sits flat at the family root; `1_search/` and `2_review/` hold vendored originals only, each stamped with LICENSE and `metadata.haipipe.vendored_from` (nine from ARIS @0472e53, two from nature-paper-skills @44cff42). `3_synthesize/` and `workflow-phases/` are gone. `ref/external-skill-map.md` lists the vendored table and the call-or-read rule.
+
+## 0.16.0 · 2026-09-21
+
+- Make the Block a live `discovery-block` Board from `open-block` onward.
+- Add `scripts/board_sync.py` to form or repair `board.md`, refresh the managed
+  Job/Group roster, and optionally rebuild/check the derived Board site.
+- Document the Block → Board, Job → Group, Task Folder → Page mapping and the
+  structural, Run-batch, Page-CHECK, and close checkpoints across Discovery
+  references and agents.
+
+## 0.15.2 · 2026-09-20
+
+- Bind Task and typed-record confidence to type-specific evidence anchors,
+  basis, and the closing assessment receipt; keep source-map coverage factual.
+- Distinguish type-specific `report.outcome` from terminal Task `status`, and
+  name the Page-body location for factual retrieval coverage.
+
+## 0.15.1 · 2026-09-20
+
+- Require broad candidate retrieval to carry a frozen, question-specific
+  admission rule and an explicit coverage boundary. Separate retrieval order
+  and bibliographic metadata from relevance, evidence, and quality judgments.
+- Attach candidate decisions and Task close confidence/outcomes to evaluator,
+  criteria version, timestamp, and frozen input or immutable Run identities.
+
+## 0.15.0 · 2026-09-20
+
+- Require broad candidate retrieval to carry a frozen, question-specific
+  admission rule and an explicit coverage boundary. Separate retrieval order
+  and bibliographic metadata from relevance, evidence, and quality judgments.
+
+## 0.14.0 · 2026-09-19
+
+- Add the opt-in `layout: one-division-per-run` Page layout for Pages that
+  file one source per Run: division 1 `Concept`, one `rNN · <gist>` division
+  per Run in Run order, a last `Limits` division, and Aims that mirror them.
+  Written in `ref/page-types.md`; `paper_runs.py` checks it
+  (`page-run-division-*`, `page-run-aim-set-invalid`,
+  `page-run-table-row-missing`, `page-layout-invalid`), with five tests.
+  Pages without the field keep the four-division contract.
+
+## 0.13.0 · 2026-09-13
+
+- Align Discovery with the current Page contract: generated Outline plus the
+  four on-stage Page areas, with writing rules owned by Outline records rather
+  than a `## Writing Style` section.
+- Separate Page-owned `rp00_mermaid-structure` and `rpNN_pNN[-pNN]` interaction
+  Runs from D1's native `rNN` paper/source inventory.
+- Allow Page-owned `rpNN` records/results to share a Page Folder's `runs/` and
+  `results/` lanes without being paired, counted, or checked as D1 Runs.
+- Make the Page release barrier explicit: Page interaction and required Task
+  Results must be ready before CONTENT adoption; Discovery does not mint a
+  division-writing or umbrella Run.
+
+## 0.12.0 · 2026-09-08
+
+- Retire the Discovery question/QA channel and its bank-owned folders/digests.
+  Questions now reuse or create a bounded Discovery Run and publish its paired
+  Result; consumers bind Supporting and Local Runs in their Evidence Workspace.
+- Remove the former probe collector from the live Discovery route.
+
+## 0.11.0 · 2026-09-08
+
+- Add the external capability registry for Search, Review, and Synthesize
+  reference procedures.
+- Define normalized external packets and keep provider, tracing, genealogy,
+  citation, and claim-support workers below HAI Run/Result/Page authority.
+- Link the registry from the public Discovery door and architecture notes.
+
+## 0.10.0 · 2026-09-07
+
+- Delete the Discovery Idea family and remove its compatibility route and Page
+  types; unsupported Idea manifests now fail validation.
+- Add live `haipipe-discovery-synthesize` for cross-Result integration and Page CONTENT,
+  separating it from `2_review` per-Subject source inspection.
+- Align the D1 workflow table, BJTR addendum, migration helper, and agents with
+  Search → Review → Synthesize.
+
+## 0.9.7 · 2026-09-07
+
+- Add the BJTR alignment addendum and crosswalk old numbered descriptions
+  against the canonical Block -> Job -> Task Page -> Run work address.
+- Clarify that capability families, D1 cycles, and Page 00-04 records are
+  orthogonal views; historical Idea remains compatibility-only and semantic
+  ideation belongs to sibling `haipipe-ideation`.
+
+## 0.9.6 · 2026-09-07
+
+- Split semantic direction and idea synthesis into sibling `haipipe-ideation`;
+  Discovery remains the external search/read/review executor and retains the
+  old Idea route only for historical compatibility.
+- Add a novelty-verdict typed-record template and document the compatibility
+  checker's historical `paper-source-v2` exception.
+
+## 0.9.5 · 2026-09-07
+
+- Clarify cross-Task source provenance: load-bearing papers are re-admitted as
+  local paper-analysis Runs, while non-paper Subjects retain source-analysis.
+
+## 0.9.4 · 2026-09-07
+
+- Pin the external ARIS reference at `0472e53` and document its Discovery
+  compatibility map.
+- Promote HAI adapters for optional Gemini recall and OpenAlex metadata while
+  keeping D1/Page/Run/Result/Bib authority local.
+
+## [0.9.3] — 2026-09-06
+
+- Restore the source-card requirement for an exact-title Google Scholar link
+  and add matching Google, DOI/publisher, PubMed, BibTeX, and lawful full-text
+  routes to every new `paper-source-v2` Result.
+- Separate technical Result completion from reading depth, claim support, and
+  locator completion so a metadata/Bib retrieval cannot masquerade as a
+  full-paper evidence reading.
+- Add `scripts/paper_source_access.py` for deterministic source-link and
+  abstract-access receipts without scraping Google.
+
+## [0.9.2] — 2026-09-05
+
+- Make the Discovery Block's Board identity explicit: every canonical `bNN_`
+  Block carries `board.md` with the shared BJTR `discovery-block` projection, and
+  SPACE Home presents each such Block as one Discovery Board.
+
+## [0.9.1] — 2026-09-04
+
+- Keep `1_search`, `2_review`, and `3_idea` as numbered skill-family groups,
+  parallel to the organization of `haipipe-task`; explicitly distinguish them
+  from executable D1 phases and reject a duplicate `routes/` hierarchy.
+
+## [0.9.0] — 2026-09-04
+
+- Retire the redundant standalone `haipipe-discovery-workflow` skill and route
+  `folder-kind: discovery` directly to the D1 Inquiry phase contract.
+- Separate D1's domain/Task workflow from the shared Page `00 CONTEXT` through
+  `04 CHECK` workflow; D1 SYNTHESIZE orchestrates their handoff but does not
+  write through Page-phase authority.
+- Move the canonical full Workflow Table, Runs Overview, Human Actions, and
+  Skill Coverage into the D1 phase's `ref/workflow-table.md`.
+- Fix the Phase × Run map: only D1 ACQUIRE commissions local Runs, one
+  Paper/Source Run per admitted Subject. The D1 root uses direct Result/cite
+  lineage, skips Page EVIDENCE, and records the Page CONTENT no-Run rationale;
+  consumer Pages own any Page-family Runs they commission.
+- Repair the main-door relative links to the shared Outline item and citation
+  contracts.
+- Record the passing fresh-context D1 fixture test: duplicate Subject reuse,
+  one-Subject Run cardinality, and truthful `CLOSURE_HELD` behavior.
+
+## [0.8.1] — 2026-09-04
+
+- Separate technically complete Results from person-verified epistemic Task
+  closure and make the checker expose/reject the corresponding gate.
+- Reconcile report Run counts and canonical Outline-owned Bib paths, reject
+  root `evidence/`, and forbid alternate `build-bib --write` destinations.
+- Reject terminal Task status while the root Page or any Aim remains open.
+- Label a structurally valid but citation-pending check as `CLOSURE_HELD`, and
+  define the harmless whitespace/order normalization allowed in derived Bibs.
+- Clarify that the derived aggregate is not automatically a typed CITE item;
+  only an approved Outline declaration creates one.
+- Clarify that `add`/`run` are orchestration verbs while `paper_runs.py`
+  remains the deterministic check/Bib helper.
+
+## [0.8.0] — 2026-09-03
+
+- Adopt the latest Page contract: Outline owns `outline/evidence/`, typed CITE
+  items, verification, and the derived Discovery Bib.
+- Keep Discovery Paper/Source Runs and Results in their own sibling lanes and
+  treat `haipipe-workbench-evidence` as compatibility-only.
+
+## [0.7.0] — 2026-09-02
+
+- Replace the overloaded Plan/Build/Execute/Report vocabulary with one formal
+  D1 Inquiry Phase and five Cycles: SCOPE, optional PREPARE, ACQUIRE,
+  SYNTHESIZE, and CLOSE.
+- Split one-Subject L4 evidence acquisition from authoritative L3 Page
+  synthesis and publish the full Workflow Table in
+  `haipipe-discovery-workflow`.
+- Route all citation/Bib authority through `haipipe-workbench-evidence`; remove
+  the standalone Bibex Workbench dependency.
+
+## [0.6.2] — 2026-09-01
+
+- Correct the migration altitude: one legacy bank now becomes one Board Block,
+  while each legacy Group becomes a numbered sibling Job under that Block.
+- Preserve Group-level files such as `_index.md` inside the corresponding Job.
+- Add optional `--board-slug` and `--board-title` controls and a regression test
+  preventing the former one-Block-per-Group topology.
+
+## [0.6.1] — 2026-09-01
+
+- Add a deterministic, dry-run-first `scripts/migrate_bjtr.py` for legacy
+  two-level Discovery banks.
+- Migrate each old Group into an explicit Block plus `j01_..._inquiry`, retain
+  leaf numbers as `tNN_`, upgrade manifests, create same-stem Task Pages, and
+  update exact project-local path references.
+- Preserve source/note/synthesis/QA/PDF material without fabricating historical
+  Paper Runs; every migrated Task must pass the BJTR checker.
+- Normalize legacy lifecycle claims against their receipts: Report-level states
+  require `report:`, and an unsupported terminal token reopens as `executing`.
+- Make generated Content and Aim names close exactly, make done Page state agree
+  with Aim ticks, and extend the checker across those two-Face closure gates.
+- Generate the complete migration-state Page frame: bounded four-sentence
+  Opening, Writing Style, four article-promise divisions with face diagrams,
+  and matching A1-A4 groups.
+- Preserve legacy reports as `reported`, never as proof of v6 `ok`; add the
+  dry-run-first `--repair-pages` path for deterministic migration wrappers.
+- Register `folder-kind: discovery` under `haipipe-discovery-workflow` D1 and
+  make the phase contract the single owner of the four-role Page Face and the
+  Paper/Source Run Task Face.
+- Remove the stale `page-type: task` route, enforce four ordered role prefixes
+  with subject-specific titles, and require their complete Writing Style rules.
+
+## [0.6.0] — 2026-09-01
+
+- Make all four Discovery hierarchy segments explicit and uniform:
+  `bNN_` Block -> `jNN_` Job -> `tNN_` Task Page -> `rNN_` Paper/Source Run.
+  `discoveries/` is the unaddressed bank, and bare `01_` folders are invalid.
+- Add readable `bNN.jNN.tNN[.rNN]` and compact `bNNjNNtNN[rNN]` identities to
+  Task manifests and runtime receipts.
+- Extend `paper_runs.py check` to derive BJTR from the path and reject missing
+  levels, mismatched ids/slugs/Page stems, and local-only Run addresses.
+- Update lifecycle, schema, Paper Run, QA, design, and agent contracts to use
+  the same Block–Job–Task–Run grammar.
+
+## [0.5.0] — 2026-09-01
+
+- Promote Discovery type from the old Search/Review/Idea route pair to nine
+  canonical article-shaped `discovery_type` values; keep Search, Review, and
+  Idea as derived specialist routes.
+- Make the root Topic Page universal and classify summary/verdict/landscape/
+  ideas files as optional Task-side typed records, never rival Pages or Runs.
+- Publish the complete Phase × Run Map: only Execute admits Level-4
+  `paper-analysis` or `source-analysis` Runs, one per canonical Subject.
+- Extend `paper_runs.py check` from the Run/Result spine to the Level-3
+  manifest/Page contract and runtime family/operation contract. Legacy
+  `type`/`role` manifests remain readable; new writes use `discovery_type`.
+
+## [0.4.3] — 2026-09-01
+
+- Make the Paper Run contract an explicit specialization of `haipipe-run`;
+  keep canonical Subject, Result Card, facts, and Bib gates Discovery-owned.
+
+## [0.4.2] — 2026-09-01
+
+- Rename the optional presenter from Execution to Runs. Discovery explicitly
+  selects the Folder-local Run/Result dialect; scripts remain optional.
+- Keep Execute in the Discovery lifecycle and leave closure with Discovery.
+
+## [0.4.1] — 2026-09-01
+
+- Bind every materialized Paper Run to the optional
+  `haipipe-workbench-execution` surface: exact Run/Result pairs define it, while
+  Topic `scripts/` remains optional supporting material.
+- Keep Discovery lifecycle ownership in the Discovery workflow; the presenter
+  adds no execution or closure authority.
+
+## [0.4.0] — 2026-09-01
+
+- Replaced the flat one-topic/one-execution model with a Discovery Task Page
+  Folder that owns many Level-4 Paper Runs.
+- Added the exact same-stem spine
+  `runs/<RUNNAME>.sh <-> results/<RUNNAME>/`; one Run resolves one canonical
+  Subject, while Trigger provenance stays distinct.
+- Added `ref/paper-run-contract.md`, Page/Task Face schema v4, per-Result
+  Card/facts/runtime/one-entry Bib gates, and derived Topic Evidence Bib.
+- Added deterministic `scripts/paper_runs.py` check/build-bib commands and
+  positive/negative unit tests.
+- Forward testing closed a provenance hole: complete Results now require
+  `bib.source` + `bib.mode: verbatim_copy`; supplying metadata fields is not
+  equivalent to supplying a complete BibTeX entry.
+- Reclassified `sources.md` and `notes.md` as legacy/derived indexes.
+
+
+## [0.3.5] — 2026-08-27
+
+- Known-dead claim exit added to gate ①: a `working` ticket whose executor is KNOWN to have died before Report (the run ended without completing the file) is reclaimed immediately — fresh `started:`/`by:` on the SAME file, or superseded — with no TTL wait, and a ticket is NEVER deleted. Found in the 260827 paper field test: three executors died mid-lap and the actor's only lawful options were "wait out the TTL" or improvise; it improvised delete-and-remint, which erased claim history.
+
+## [0.3.4] — 2026-07-24
+
+Renumbered under the 0.x policy — the whole haipipe-toolkit is pre-1.0 until JL says otherwise (was 3.4.0; older entries below keep their original numbers).
+
+## [3.4.0] — 2026-07-19
+
+- ⑨ TOMBSTONES erased. Owner ruling (JL): "不需要留退役告示,直接抹除任何痕迹" — a doc states the CURRENT contract and never names the dead thing.
+  `SKILL.md:78` and `ref/discovery-yaml-schema.md`'s `## 💀 DELETED:` section head both restated positively
+  ("The bank is probe-unaware").
+- ⑩ probe files hold `## QX<n>` ENTRIES, not "sections" — wording corrected; the schema's `q-executor:` field notation corrected to `### q-executor`.
+
+
+## [3.3.0] — 2026-07-19
+
+- Owner ruling, 2026-07-19 (JL): "宪法 don't use this name, just use `probe`." The nickname
+  "THE CONSTITUTION" / "the constitution" for `probe/haipipe-probe/SKILL.md` is dropped everywhere;
+  each site now names either `probe` or the actual path.
+  Touched: `fn/qa.md` (the QA-file anatomy pointer), `ref/discovery-yaml-schema.md`, and `../DESIGN.md`.
+
+## [3.2.0] — 2026-07-14 — R19 hardening: the state line is read FIRST
+
+- **Gate ① reads the STATE LINE *before* the literally-answers test.** The order is load-bearing. A `working` file's `## Answer` is EMPTY BY CONSTRUCTION, so the answer test is a guaranteed miss on it — the caller falls through to ③, allocates a NEW `<n>`, `set -C` never fires (different path), and RUNS THE SAME EXPENSIVE JOB a second time next to the one already in flight. A `working` file is matched on its `# Q —` LINE: same question ⇒ return the path + "in progress since <started>", run nothing.
+- **A QA file with NO `- state:` line is MALFORMED, not legacy** (checker: `qa-no-state`). It is THIS layer's own file, so this layer REPAIRS it: tag `answered` if `## Answer` has a body; RECLAIM it as a zombie if the Answer is empty. A consumer may never do either.
+- **The same-`<n>`/different-slug claim race is NON-FATAL BY RULING and is NOT a reviewer REVISE.** `fn/qa.md` said non-fatal in one paragraph and "the reviewer REVISEs it" twelve lines later. The reviewer's FILENAME check now carries the exemption explicitly, and renaming a QA file to "fix" it is forbidden (the body is frozen; a rename orphans a live claim).
+- Reviewer twin (`haipipe-discovery-reviewer-agent` 1.4.0): WRITE-ONCE → BODY FROZEN (it would have REVISEd every gate-③ completion), plus the STATE LINE check; creator (`haipipe-discovery-creator-agent` 1.8.1) return contract gains `qa_file:` / `qa_state:` / `superseded:`.
+- Twin: `haipipe-task` 6.2.0, character-identical.
+
+## [3.1.0] — 2026-07-14 — THE CLAIM: a QA file becomes a TICKET that becomes a RECEIPT
+
+Ruling of record: JL, 2026-07-14 (`Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` PART 3b, the `>> CC0714` block).
+Constitution: `probe/haipipe-probe/SKILL.md` v8.2.0, PART 3a — R19 (the claim) · R20 (supersession) · R21 (the three readers).
+
+**THE HOLE IT CLOSES.** A QA file used to be written ONCE, at Report, complete. Its EXISTENCE meant "answered", and there was NO way to say *"someone is working on this right now."* So: two consumers ask the same question a week apart. The first dispatches an expensive lifecycle run. The second, **while that run is still going**, sees no QA file — and dispatches THE SAME RUN AGAIN. Nothing prevented it.
+
+Added
+- **ONE MUTABLE FIELD — the `state:` line.** A QA file now carries `- state: working | answered | superseded-by: QA/<m>-<slug>.md`, `- started: YYYY-MM-DDTHH:MM` (MANDATORY when `working`), and an optional `- by:`. Everything below the state line — `# Q —` / `## Answer` / `## Caveats` / `## Not-done` — is written once and never touched again.
+- **Gate ③ LIFECYCLE now CLAIMS FIRST.** At the moment it decides to run — before Plan, before any search — it writes the QA file with `state: working` + `started:` + an EMPTY `## Answer`, and COMPLETES it at Report (`state: answered` + the body). Gate ② DIGEST still writes ONCE, complete, `answered` (the artifacts already answered; zero searching happens, so there is nothing to claim and nothing to race). Gate ① writes NOTHING. **Only gate ③ ever produces a `working` file, and only transiently.**
+- **Gate ① SCAN now branches on the STATE LINE, not on existence.** `answered` → return the path · `working` → **DO NOT RE-RUN**, return the path + "in progress since `<started>`" (this is the duplicate-work fix; an expensive run is SAVED at ~0 cost) · `working` past the TTL → 🧟 ZOMBIE, RECLAIM it · `superseded-by: X` → follow the chain (possibly multi-hop) and return the LIVE answer's path.
+- **`QA_CLAIM_TTL_HOURS = 24`** — the named constant. A `working` file whose `started:` is older is STALE: RECLAIMABLE by the next qa call (rewrite the claim with a fresh `started:`, record the abandoned attempt in `## Not-done`) and a HARD FAIL for the checker. **A `working` file with no `started:` can never expire — it is a zombie by construction, and it is INVALID.** Never hard-code the literal `24` anywhere; reference the name.
+- **RACE GUARD: `set -C` (noclobber), and nothing more.** Two qa calls can decide ③ at the same instant and both pick `QA/3-`. The loser sees the file already exists, re-runs gate ① **ONCE**, and DEFERS — it never loops back into ③. This shrinks the race window from THE WHOLE RUN to microseconds. The residual same-instant/different-slug collision is NON-FATAL (gate ① finds both files). **No lock dirs, no lease servers, no ledgers, no flock** — all retired machinery in a new hat.
+- **R20 SUPERSESSION.** A later run whose answer CHANGES writes `QA/<n+1>-<slug>.md` and APPENDS `superseded-by:` to the OLD file's state line (`- state: answered · superseded-by: QA/2-cycle.md`) — the only edit ever permitted to a frozen file, and only by its own owner. Supersede ONLY when the answer changed; a deeper cut or a different source base is just `QA/<n+1>`, and the old file stays live.
+- **A REFUSE RELEASES its claim.** Never leave a `working` file behind a refusal — it tells every future reader that work is underway when nothing is.
+
+Changed
+- **⚠️ THE LOAD-BEARING INVARIANT IS *ONE WRITER*, NOT *WRITE-ONCE*.** The executor writes the file TWICE — the CLAIM at the ③ decision, the COMPLETION at Report. Two writes by the SAME owner, in its OWN folder, is fine. **A CONSUMER (probe/paper/application) must NEVER create, claim, edit, complete, or supersede a QA file.** A consumer-planted `working` file is the retired `_ASK/` stub wearing a `QA/` costume, and it is FORBIDDEN — the same violation as the A03 C6/C7 leak. "Write-once" was never the real rule.
+- **R15 (ENRICH never mutates) still holds — FOR THE BODY.** Only the state line is ever mutable. Two edits in a file's whole life: `working → answered`, and `answered → + superseded-by:`.
+- **STATUS is derived from the state line, not from mere existence.** `ls QA/` is no longer enough — the reader must OPEN THE FILE. No file = not answered · `working` = IN PROGRESS since `<started>` · `answered` = answered · `superseded-by: X` = answered but STALE, the live answer is X.
+- **Protocol Step 4 Report** now spells both entrances: via gate ③ the claim is already on disk and the creator COMPLETES it; via gate ② the creator CREATES it once, complete.
+- `--check-only` now explicitly writes **NO CLAIM** (it already wrote nothing else). A qa call that fell through to ③ during the probe's MATCH step — a FREE detection pass — would otherwise spawn an unbudgeted run AND plant a claim.
+
+Enforced (the checker's new teeth — the whole point is that these become MACHINE-DETECTABLE)
+- `qa-working-no-started` — a `working` QA file with no `started:` → an UNEXPIRABLE claim.
+- `qa-working-expired` — a `working` QA file older than `QA_CLAIM_TTL_HOURS` → a ZOMBIE.
+- `qa-answered-empty` — `state: answered` with an EMPTY `## Answer` → a LYING RECEIPT.
+- (consumer-side, in `check-probe-cards.sh`) `read-target-working` and `read-target-superseded` — a probe section at `state: read` whose `target:` resolves to an UNFINISHED or STALE QA file. **The latter is the day-1/day-40 silent-false-claim bug: every file internally consistent, the claim FALSE, and nothing caught it before.**
+
+Files
+- `fn/qa.md` — rewritten: the state line, the gate-path write contract, the CLAIM (Step 3a, with the `set -C` idiom and what the loser does), the RECLAIM path (Step 3b), SUPERSESSION, the three readers, status derivation, the five checker codes. `qa_state:` added to the return. The depth ladder (0 READ / 1 ENRICH / 2 NEW FOLDER / 3 NEW GROUP) and the artifacts it reads (sources.md / notes.md / verdict.md / landscape.md / ideas.md) are the ONLY things adapted from the task twin.
+- `SKILL.md` — the qa-verb block, the QA/ folder contract, Protocol Step 4 (Report), description + summary.
+- `agents/haipipe-discovery-orchestrator-agent.md` → 2.1.0 (I own the CLAIM; gate ① reads the state line; the loser defers without looping).
+- `agents/haipipe-discovery-creator-agent.md` → 1.8.0 (at Report I COMPLETE the claim on gate ③, CREATE once on gate ②; never a lying receipt; never touch someone else's `working` file).
+
+Twin parity: the task twin (`task/haipipe-task/fn/qa.md`, v6.1.0) states every field name, state value, TTL constant, flag spelling and bash idiom **character-identically**. Verified: all three bash blocks (grep/parse form, the `set -C` claim idiom, the staleness test) diff clean between the twins. They drifted before; they must not again.
+
+## [3.0.0] — 2026-07-14 — PROBE-UNAWARE: the bridge comes out, the `qa` verb goes in
+## 3.0.1 — 2026-07-14
+
+- **`allowed-tools` FIXED: added `Write, Edit`.** The frontmatter allowed only `Bash, Read, Grep, Glob, Skill`, but the new `qa` verb's gate ② DIGEST instructs THIS SKILL to author the file itself ("write the digest, stop" — no Skill() or Agent() delegation is named on that path). DIGEST is the cheap, common outcome of a probe's MATCH (the spec's "most probes should hit T2 REUSE"), so the Write would be denied by the allowlist, the QA file would never be created, the verb would return no path, and the probe's `target:` would stay empty with the section stuck at `commissioned`. Now matches the task twin.
+- `<n>` allocation rule added to fn/qa.md (fail-closed, computed immediately before the write; never clobber). Identical to the task twin — the two banks must not drift.
+
+Spec of record: `Tools/plugins/haipipe-toolkit/diagram/260714-probe-qa/` (v3, APPROVED JL 2026-07-14, rulings R1-R18). Constitution: `probe/haipipe-probe/SKILL.md` v8.0.0 — where this layer and that file disagree, that file wins.
+
+**The one-line version.** v2.7 → v2.8.1 spent three releases building a probe handoff bridge INTO this layer. R2 rules that the bank is **probe-unaware**. So the bridge comes out — both feet — and a door goes in its place: `qa`, which takes a plain question and hands back a file. The layer no longer knows what a probe is, and that is the point: an answer nobody shaped around one paper's story is an answer the next paper can reuse.
+
+### Removed (the whole bridge — do not resurrect)
+- `_ASK/PPNN_<slug>.md` stub folders, the legacy flat `_ASK_*.md`, and the "stub-seeded zeroth state". A discovery folder's zeroth state is an EMPTY folder, not an inbox.
+- The top-level `answers: [PPNN]` field in `discovery.yaml`. It is DELETED, not optional — a missing one is now CORRECT. There is nothing to grep for, because the answer IS a file.
+- Every PP id under `discoveries/`. No consumer id, claim id, or paper reference in any discovery filename or file, ever.
+- The reviewer's "Bridge check — the `answers:` field" gate (its two live concerns moved to the QA-file gate + the new bank-purity check).
+
+### Added — the `qa` verb (R11 · `fn/qa.md` · the task twin is `task/haipipe-task/fn/qa.md`)
+`/haipipe-discovery qa "<question>" [<leaf>] [--check-only]` — ONE question, GENERAL language, no PP id, no paper ref, no stake. The gate, cheapest door first:
+
+```
+① QA SCAN    grep <leaf>/QA/*.md (or all leaves) — already answered? -> return the PATH   ~0
+             MATCH ON THE ANSWER, NEVER THE TOPIC (R14): open it and READ it.
+② DIGEST     sources.md / notes.md / verdict.md / landscape.md / ideas.md already answer it,
+             but no readable digest exists -> write QA/<n>-<slug>.md from EXISTING
+             artifacts. No searching. No new sources. No new conclusions.              cheap
+③ LIFECYCLE  neither -> Plan → Build(opt) → Execute → Report at the SHALLOWEST depth:
+               depth 0 READ · 1 ENRICH (on-topic, same leaf) · 2 NEW FOLDER · 3 NEW GROUP
+             scope test (1 vs 2): does it fit THIS leaf's discovery.yaml question:?
+🚫 REFUSE    task-shaped (code / runs / metrics on our own data) -> /haipipe-task qa
+             claim-shaped ("is C6 supported?") -> not an evidence question; not ours
+```
+
+THREE CALLERS, none special: a consumer's probe DISPATCH (via the orchestrator agent), a HUMAN exploring a direction (R18), and the ORCHESTRATOR itself doing answerability work with nothing pending (R17). The depth is the executor's private business — the caller hands over a question and gets back a path.
+
+### Added — the optional `QA/` folder (R9/R10, on BOTH banks)
+`discoveries/<leaf>/QA/<n>-<slug>.md`. `<n>` = creation order, and **the numbering IS the index** (`ls QA/` is the index; no INDEX file). SLUG ONLY. WRITE-ONCE — a later question ADDS `QA/<n+1>-…`. Anatomy: `# Q —` (self-contained, general) / `## Answer` (plain words + `[→ sources.md#S02]` anchors) / `## Caveats` / `## Not-done`. Three legal reasons to exist, no fourth: **commissioned · digest-only · executor's own**. A `QA/` mirroring every source is noise, not an index.
+
+### THE EXECUTOR HOLDS THE PEN (CC-8 — the rule this release exists for)
+A consumer may CAUSE a QA file. **This layer AUTHORS it.** When a probe meets a bare terminal with no digest, it does not write the digest — it dispatches a digest-only run, and a clean-context agent writes it. The failure that proves the rule is on disk: `tasks/_legacy/v0-task-groups/A03_welldoc_cycle_check/result.md` carries "C6" and "C7" because a consumer session, with the stake in its own context, did bank work INLINE. No stub, no mailbox, no id was involved — which is why the wall cannot be a file rule. It is the orchestrator's clean context, and nothing else.
+
+### Session modes (R17 — "very important", JL-15)
+This layer's PRIMARY mode is its own autonomous Plan → Build → Execute → Report: no question, no ask, nobody asking. `qa` is a SIDE door. **Answerability work** — writing digests, building reusable source bases so future questions are cheap — is native executor work, done without knowing which questions will come. Consequence: in a healthy project most questions are ALREADY ANSWERED before anyone asks, so a commission should be the EXCEPTION, not the norm.
+
+### Survives, untouched
+A Review-type discovery's own **`verdict.md`** is this layer's terminal file and it is ALIVE. It is a different thing from the retired probe "Verdict" (R7, dead). Also unchanged: the two axes, the 3 types, the 3 buckets, the type specialists, ENRICH mode, the Haiku search-worker fan-out, `source-format.md`, and self-contained folders (no parent, no consumed_by).
+
+### Files
+`haipipe-discovery/SKILL.md` 2.8.1 → **3.0.0** · `fn/qa.md` 🆕 · `ref/discovery-yaml-schema.md` (v2.6 → v3.0: `answers:` deleted, `QA/` added to the leaf contract + a terminal template) · `agents/haipipe-discovery-orchestrator-agent.md` 1.7.0 → **2.0.0** (the direct dispatch target; QA mode; the wall) · `agents/haipipe-discovery-creator-agent.md` 1.6.0 → **1.7.0** (authors the QA file at Report) · `agents/haipipe-discovery-reviewer-agent.md` 1.2.0 → **1.3.0** (QA-file gate + bank-purity check) · `agents/README.md` (direct-dispatch diagram; gateway retirement) · `DESIGN.md` (boundary rules + decision log) · `3_idea/idea-creator/SKILL.md` 1.0.1 (composes into `qa`, not the retired gateway).
+
+
+## [2.8.1] — 2026-07-12 — Audit repair: the AGENTS were blind to the bridge
+
+The 2.7/2.8 stub semantics lived only in the interactive SKILL. The discovery AGENTS — which are the gateway's ONLY dispatch path — never mentioned `_ASK/` stubs or `answers:`, so every agent-run discovery silently dropped the ask: Plan ignored the stub, Report emitted no `answers:` field, and the consumer's card sat `dispatched` forever with the work already done. Fixed: orchestrator 1.7.0 (stub-seeded input form; Plan step 0 reads the stub; Step 5 Report requires `answers:`), creator 1.6.0 (new "Probe handoff stubs" section: Plan seeds discovery.yaml from the stub, Report writes `answers: [PPNN]`, never edits the stub, and structures its OWN artifacts around the questions — never around a consumer's framing, which is what contaminated the 2026-07-11 discovery).
+
+Also: `answers:` is a flow list of bare PP ids (schema owned by probe/haipipe-probe/SKILL.md).
+
+
+## [2.8.0] — 2026-07-12 — Ask stubs move into an _ASK/ container
+
+JL ruling 2026-07-12 ("加一个 ask folder，把它们放到一块儿"; pairs with haipipe-probe 7.7.0): stubs live at `<discovery-folder>/_ASK/PPNN_<slug>.md` — one file per ask, the container keeps the folder root clean when several consumers ask. The stub filename mirrors the consumer's `1-probe-plans/PPNN_<slug>.md` card, so `grep -r PPNN` finds both feet of the bridge. Zeroth state re-phrased: a folder whose only content is `_ASK/`. Legacy flat `_ASK_PPNN.md` is read the same way and moved into `_ASK/` on first touch. All v2.7 semantics unchanged: read-only, Plan seeds from it, Report answers with `answers: PPNN`, this layer still references nothing upward.
+
+
+## [2.7.0] — 2026-07-11 — Probe handoff stubs (_ASK_PPNN.md)
+
+### Added (two-footed-bridge ruling, JL 2026-07-11; pairs with haipipe-probe 7.4.0)
+- Plan stage reads an `_ASK_PPNN.md` probe handoff stub when present (READ-ONLY; possibly the folder's only content — its zeroth state): Need → question, Deliverable → expected_outputs, Do-not → scope guards; the stub is never edited by this layer.
+- Report stage: when a stub exists, the report block carries `answers: PPNN` — the disk signal the consumer greps to harvest.
+- Handoff step clarified: an _ASK stub is not an upward reference — the CONSUMER wrote it; this layer only reads it and answers in its own report block, preserving "references nothing upward". Stub anatomy: probe layer (haipipe-probe/SKILL.md "The handoff stub").
+
+## [2.6.0] — 2026-07-03
+
+### Verified (same day)
+- Agents triad synced to v2.6 (1.2.0 each: Execute via type specialists, report appended,
+  self-contained folders, source-format checks in the reviewer gates); CODE_REVIEW.md
+  regenerated as a fresh v2.6 review (old 06-23 review retired). Small fixes: dead
+  .discovery-console.yaml routing signal removed from fn/feedback.md; types x roles table
+  now lives ONLY in the schema doc (lifecycle-map points); S-id scope defined
+  (folder-local default, group-global by declaration).
+- LIVE END-TO-END VALIDATION PASSED: a fresh-context agent ran a real prior-art discovery
+  (ProjB P02.01, review-text traits -> opioid Rx novelty) through the full lifecycle —
+  correct scaffold (new P02 group), Plan, Execute via Skill(haipipe-discovery-review) ->
+  research-lit with real S2/web search, reviewer-agent gate fired and caught one
+  unverified citation (REVISE loop worked), report appended, v2 log events, zero contract
+  violations (no parent/status.yaml/site.md/tables; 11/11 sources with summary + finding).
+
+
+### Changed (JL: "I think this should be Search -> Review -> Idea")
+- Type ordering everywhere is Search -> Review -> Idea — the type names ARE the IPO order
+  (input: gather sources; process: judge/synthesize; output: create). Applied to
+  lifecycle-map Axis-2 heading, SKILL.md, DESIGN.md. In-file comment thread resolved and
+  archived here.
+
+### Added
+- `ref/source-format.md` — THE one home for paper/source presentation (one source = one
+  subsection, never a table; sources.md + notes.md + inline-chat templates + filled
+  example pointer). Schema doc and the search/review specialists now point here instead
+  of restating. Also retro-converted the 6 remaining table-style sources.md on disk
+  (8 tables, cell text preserved verbatim) and deleted the SKILL.md Legacy section
+  (nothing legacy remains on disk to document).
+
+
+### Changed (JL: "内容有点重复" — dedup rewrite)
+- SKILL.md rewritten to say each thing ONCE: Invocation + Dashboard merged into one Verbs
+  block; Two Axes + Three Types collapsed into one Model section (the tables they restated
+  live in ref/lifecycle-map.md and ref/discovery-yaml-schema.md, the declared canonical
+  homes); the feedback contract — previously written THREE times (Routing inline block,
+  Feedback section, tail ## Feedback section) — is now one compact section pointing at
+  fn/feedback.md; Disambiguation merged into routing rule 5/7/9; the Review Output
+  Contract pointer folded into the Buckets line. No rules or verbs were removed, only
+  restatements. ~6,300 -> ~3,300 tokens per invocation.
+- ON-DISK LEGACY FULLY MIGRATED (JL: "不要留旧的符号了"): renamed C01_p0622-threats ->
+  P01_p0622-threats (ids + cross-refs updated); stripped parent:/consumed_by: from all 17
+  remaining discovery.yaml; deleted all 16 status.yaml/site.md; converted the last flat
+  single-file discovery (ProjC L01.01 rank-divergence) into a v2.6 folder (discovery.yaml
+  + sources.md per-source sections + notes.md + verdict.md — group-level references stay
+  valid). The docs' Legacy sections shrank to one line; only the append-only project log
+  keeps old field names. Also fixed a pre-broken unquoted-colon YAML in the PhyPat
+  submodule. 19/19 discovery.yaml parse clean.
+- Group letters collapsed 5 -> 3 (JL approved): `S` source base / `L` landscape (absorbs B
+  benchmark) / `P` proof-prior-art (absorbs C counterevidence). Letters tag the GROUP's
+  purpose, not folder types (a group mixes types), so S/R/I was rejected; letters kept for
+  the task mirror + ls clustering + compact ids. Existing B/C folders keep their names
+  (renaming would break caller-side links); legacy note (f) added.
+- Changelog convention applied toolkit-wide the same day (89 skills): frontmatter carries
+  version + pointer only; history lives in each skill's own ./CHANGELOG.md (this file was
+  git-mv'd here from the layer level, where its entries had always been keyed by this
+  skill's versions).
+
+## [2.5.0] — 2026-07-03
+
+### Added (JL: "I think we should have them")
+- **Type specialist skills**, one per bucket, mirroring the sibling-layer pattern
+  (haipipe-data source etc.):
+  - `haipipe-discovery-search/` — owns the Search Execute (find + read ->
+    sources.md + notes.md), dispatches the six 1_search workers.
+  - `haipipe-discovery-review/` — owns the Review Execute (judge -> verdict.md,
+    synthesize -> landscape.md) and is the new canonical home of the Review Output
+    Contract (moved from the orchestrator, pointer left behind).
+  - `3_idea/haipipe-discovery-idea/` — owns the Idea Execute (generate -> ideas.md,
+    novelty_check -> verdict.md), the ideation loop.
+- Orchestrator Execute now dispatches the type skill instead of raw workers; dashboard
+  and bucket listing updated; three `.claude/skills/` symlinks added.
+- This REVERSES the v2.0.0 "no per-type skill family" decision — its rationale
+  (workers != types) dissolved once buckets became 1:1 with the types.
+
+## [2.4.0] — 2026-07-03
+
+### Changed (JL simplification pass: "we have plan/build/execute/report — why so many other things")
+- **novelty_check re-typed Review -> Idea.** It is the evaluation half of the ideation loop
+  (generate -> check novelty), so `Idea` now branches by role like Review does:
+  `idea_generation -> ideas.md`, `novelty_check -> verdict.md`. Buckets and types are now
+  exactly 1:1; the v2.3.0 exception footnote is deleted everywhere.
+- **`parent:` and `consumed_by:` fields REMOVED — discovery is probe-UNAWARE.** JL
+  principle: task and discovery never know about probes; they run freely against their
+  own question, and ORGANIZING happens at the probe level. References point one way,
+  downward: the probe records which discoveries/tasks it uses in its own files
+  (probe.yaml evidence links); a discovery never tracks who commissioned or consumed it.
+  Group letters are purpose hints (L landscape, P prior-art, B benchmark, C
+  counterevidence, S source base), no longer parent hints. Legacy folders carrying
+  `parent:`/`consumed_by:` are ignored, cleaned on next edit.
+- **Folder contract slimmed to discovery.yaml + evidence files.** `status.yaml` and
+  `site.md` dropped from the contract (progress = discovery.yaml `status:`, human summary
+  = `report.summary`); the `report:` block is APPENDED at Report and absent before
+  (replaces round-2's empty-block convention, resolving JL's open comment on it).
+  `ref/discovery-yaml-schema.md` rewritten lean (~40% shorter); SKILL.md protocol,
+  lifecycle-map, DESIGN.md, and the creator agent updated to match.
+- Feedback keyword map: "novelty"/"查新" now routes to 3_idea (was 2_review).
+- **NEVER tables for papers/sources (JL, third time).** Every paper/source listing in the
+  layer is now one-item-one-subsection with the full title in the heading (+ Scholar link
+  in sources.md): schema sources.md template, arxiv / semantic-scholar / exa-search /
+  deepxiv result presentation, comm-lit-review literature output, novelty-check Closest
+  Prior Work. Feedback items 2026-06-22 (1_search) and 2026-06-29 (fallback) marked fixed;
+  the 06-22 item records the 07-03 recurrence (the v2.4 schema rewrite had reintroduced
+  the table).
+- **Docs are self-contained at the layer level (JL).** SKILL.md / lifecycle-map / schema no
+  longer mention probe or paper as consumers: dropped the "consumer" column, the
+  "-> probe/paper" role glosses, and the cross-layer flow diagram; handoff = "return the
+  terminal to the caller; the caller records the link on its own side". DESIGN.md keeps
+  only the sibling-layer positioning table.
+- **Concrete example slugs (JL).** Doc examples renamed from generic placeholders
+  (L01_initial-landscape) to topical names (L01_personality-prescribing-landscape); rule:
+  the slug names the TOPIC.
+- **SKILL.md frontmatter description shortened ~60% (JL: too long).**
+
+## [2.3.0] — 2026-07-03
+
+### Changed (buckets 4 -> 3, one folder per type; English-only pass)
+- **Merged `2_read/` into `1_search/`** (alphaxiv, deepxiv, paper-analyzer moved). Reading
+  is the second half of the `Search` type and the two buckets were only ever used together.
+- **Renumbered `3_review/` -> `2_review/` and `4_idea/` -> `3_idea/`.** Each type now maps
+  1:1 to its Execute bucket (Search -> 1_search, Review -> 2_review, Idea -> 3_idea).
+  `novelty-check` stays in `3_idea/` by choice (pairs with ideation) while serving
+  Review-judge — the one documented exception. Workspace `.claude/skills/` symlinks repointed.
+- **English-only pass.** Purged residual 搜/析/创 from DESIGN.md (was stale at v2.0.0),
+  the agents/ triad + README, fn/feedback.md, and feedback READMEs. Historical
+  changelog/decision-log entries keep their original wording.
+
+### Fixed
+- **Dangling references removed.** SKILL.md: `0_venue/`, `D_patent/`, `/idea-discovery`,
+  `/research-pipeline`, `/patent-pipeline` (none exist). Orchestrator agent Step 0 no
+  longer points at `fn/plan|build|execute|report.md` (never existed); the per-stage
+  procedure is SKILL.md's Step-by-Step Protocol. Creator/reviewer citation verification
+  now goes through the `/haipipe-search arxiv` + `/haipipe-search semantic-scholar` skills instead of the missing
+  `research-toolkit/*.py` paths.
+- **Deleted the stray dangling self-symlink** `haipipe-discovery/haipipe-discovery`.
+- **Backfilled the missing 2.1.0 / 2.2.0 entries below** (they existed only in SKILL.md
+  frontmatter).
+
+### Round 2 (same day)
+- **Sibling contracts specified** in `ref/discovery-yaml-schema.md` — status.yaml schema,
+  site.md card format, project.log.jsonl event shapes, `id` format, and the
+  empty-report-block-at-Plan convention were all previously unwritten (every author
+  invented a shape; a fresh-context dry-run surfaced this). Live pre-2026-07-03 files
+  migrate-on-next-edit.
+- **Light-Review wording disambiguated** in `ref/lifecycle-map.md` ("dropping sources.md +
+  notes.md as work products" read as either depositing or omitting; now says WRITING them).
+- **Cross-layer glyph stragglers fixed**: `examples/end-to-end-sandwich-run.md` and
+  `skills/paper/2-phase/1-probe/haipipe-paper-probe/SKILL.md` still taught 搜/析/创 types.
+- **ProjC discovery folders migrated** (7 folders under
+  `examples/ProjC-LLMRecPhysicain/discoveries/` — the v2.1.0 "migrated all existing
+  folders" claim had only covered ProjB): `type:` glyph -> English, transitional
+  `type_en:` field dropped, glyph comments in site.md/ideas.md/status.yaml de-CJK'd.
+- **`{CC->JL}` review markers** left at the judgment points (schema conventions,
+  novelty-check exception, bucket defaults, stale CODE_REVIEW handling) for JL's
+  eyeball pass; delete each marker after confirming.
+
+## [2.2.0] — 2026-06-24
+
+### Added
+- **Capture-time feedback ROUTING (mirrors haipipe-paper).** `feedback "<text>"` infers the
+  bucket unit and files into THAT unit's `feedback/`; cross-cutting -> orchestrator
+  fallback. Added `fn/feedback.md` (cross-cutting guard -> keyword -> context -> fallback;
+  merge-or-create; `list` aggregates across inboxes; `move` re-routes). Recast
+  `feedback/README.md` as the fallback inbox.
+
+## [2.1.0] — 2026-06-24
+
+### Changed
+- **Type values renamed from the glyphs 搜/析/创 to the English words Search/Review/Idea.**
+  The type axis is no longer CJK; orthogonality vs the stage axis now comes from
+  non-overlapping word lists (process verbs vs folder kinds). Updated SKILL.md +
+  ref/lifecycle-map.md + ref/discovery-yaml-schema.md and migrated all existing discovery
+  folders. Chinese trigger phrases (查新/找idea) unchanged.
+
+## [2.0.1] — 2026-06-23
+
+### Fixed
+- **4-bucket directory structure created on disk.** Moved alphaxiv/deepxiv/paper-analyzer
+  from `1_search/` to `2_read/`, renamed `2_review/` to `3_review/`, renamed `3_idea/` to
+  `4_idea/`. Now matches DESIGN.md, SKILL.md, and `.claude/skills/` symlinks (which had been
+  broken — 8 of 12 symlinks were dangling).
+- **Cross-layer rename completed.** `haipipe-discover` -> `haipipe-discovery` applied to 12
+  files across paper/probe/application/task/toolkit layers. TODO.md deleted.
+- **Orchestrator Chinese character normalized.** 創 (traditional, U+5275) -> 创 (simplified,
+  U+521B) on line 42, matching all other files.
+- **CODE_REVIEW.md updated.** All 4 WARNs resolved; verdict now PASS.
+- **DESIGN.md `play/` reference removed.** Directory does not exist.
+
+## [2.0.0] — 2026-06-22
+
+### Changed (TWO-AXIS redesign, mirrors task)
+- **Lifecycle is now the uniform `Plan -> Build(opt) -> Execute -> Report`.** Retires the
+  old `open -> search -> read -> review -> post` verb-lifecycle. Build is optional (only
+  for a systematic query string / extraction schema). One execution per folder (no `runs/`
+  multiplicity, unlike task).
+- **`search/read/review/idea` are no longer stage verbs — they are the capability buckets
+  (Execute-stage workers).** The folder TYPE is one of 3 Chinese-char types:
+  - `搜` source = search + read merged -> `sources.md` + `notes.md` (a reusable, accumulating source base).
+  - `析` analyze = judge + synthesize merged -> `verdict.md` (判, role prior_art/counter/novelty -> probe)
+    or `landscape.md` (综, role landscape/benchmark -> paper); `role:` picks the branch.
+  - `创` idea -> `ideas.md` (-> probe-open / paper-seed).
+- **`verdict:` block renamed to `report:`** (report-to-human; generalized across types).
+- **New terminal files** `landscape.md` + `ideas.md` alongside `verdict.md`.
+- Workers (4 buckets) and types (3) are different axes; per-type specialist skills are NOT created.
+- Old folders (`role:` + `verdict:`, no `type:`) remain readable; treat missing `type:` as `析`.
+- Updated: `SKILL.md` (2.0.0), `DESIGN.md` (2.0.0), `ref/lifecycle-map.md`,
+  `ref/discovery-yaml-schema.md`, and the minimal-dry-run fixture.
+
+
+## [Unreleased] — 2026-06-21
+
+### Changed
+- **Skill renamed `haipipe-discover` -> `haipipe-discovery` (1.8.0).** Matches the
+  haipipe-<noun> sibling convention (probe/paper/task/insight/project/application);
+  the verb-named skill was the lone exception. Inner folder `haipipe-discovery/`,
+  the `.claude` symlink, the command `/haipipe-discovery`, and all in-repo refs
+  updated.
+- **Discovery is a FOLDER, not a single file (reverted v1.5).** A discovery is
+  one research topic = its own folder (`discovery.yaml` + `sources.md` /
+  `notes.md` / `verdict.md` + `status.yaml` / `site.md`), mirroring a
+  task-folder; sources/notes/verdict are its `results/`. The dry-run fixture and
+  blueprint already used folders; v1.5's single-file default never landed.
+  `ref/lifecycle-map.md` recast as `open -> search -> read -> review/idea -> post`,
+  each stage filling one IO file (no separate `verdict` verb; review writes
+  `verdict.md`). SKILL.md / DESIGN.md / discovery-yaml-schema.md flipped to
+  match. Version 1.7.0.
+- **Folder renamed `discover/` to `discovery/`.** The layer concept now reads as
+  a noun, matching the `discoveries/` artifact dir and the task/probe/insight
+  sibling layers. (The skill itself was renamed too, see above.) Cross-reference
+  path fixups in `STRUCTURE.md`, the blueprint, and the workbench CHANGELOG are a
+  follow-up.
+- **Narrative layer retired across discovery docs.** A discovery now has exactly
+  two parents: a delivery lifecycle (`paper` / `application`) for L* landscape /
+  novelty work, and a `probe` for claim-level evidence. The story-side dispatch
+  that used to come from `Narrative-open` now comes from `Delivery-open`. Updated
+  DESIGN.md (layer table, project tree, combine-with-probe section, boundary
+  rules), SKILL.md, and `ref/discovery-yaml-schema.md`.
+
+### Added
+- **`feedback/` inbox + `feedback` utility verb (1.9.0, mirrors probe).**
+  `/haipipe-discovery feedback "<text>"` captures a complaint/confusion/wish about
+  the skill into `feedback/<date>_<slug>.md` (capture-only); `feedback list`
+  reviews open items. Fixing is a separate revision pass, so users can improve the
+  skill as they use it.
+- **`ref/lifecycle-map.md`** — the canonical verb-based lifecycle table
+  (Status / Open / Search / Read / Review / Verdict / Post), isomorphic to the
+  probe lifecycle map: per verb, the question, action, reads, writes, external
+  calls, human output, machine state, and stop gate. SKILL.md and DESIGN.md now
+  point here instead of restating the per-verb columns (the lifecycle had been
+  written in two places; it now has one home).
+- This `CHANGELOG.md`, for parity with the task / probe / insight / project
+  layers (discovery previously tracked history only in SKILL.md frontmatter and
+  the DESIGN.md Decision Log).

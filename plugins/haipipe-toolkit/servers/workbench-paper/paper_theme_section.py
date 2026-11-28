@@ -12,7 +12,7 @@ from live.paper_theme import _st
 from live.task_draft import draft_task_spaces
 
 
-READINESS = Path(__file__).resolve().parents[2] / "skills/2_theme/paper/haipipe-paper/ref/submission-readiness.md"
+READINESS = Path(__file__).resolve().parents[2] / "skills/3_theme/paper/hai-paper/ref/submission-readiness.md"
 CONTRACT = ("reader-question", "entry-state", "exit-state", "must-establish", "must-refuse", "transition-in",
             "transition-out", "story-row", "section_kind", "structure-source", "structure-division")
 SUB_PREFIX = {"introduction": "SUB-INTRO", "methods": "SUB-METHOD", "results": "SUB-RESULT", "discussion": "SUB-DISC"}
@@ -31,7 +31,7 @@ def _header(md):
 
 
 def _contract(md):
-    """◆ Scope: the reader contract, read from the face's header (haipipe-paper-draft's fields)."""
+    """◆ Scope: the reader contract, read from the face's header (hai-paper-draft's fields)."""
     head = _header(md)
     rows = [(esc(k), esc(head[k]) if head.get(k) else '<span class=mut>—</span>') for k in CONTRACT]
     return ('<h3>◆ The reader contract</h3><p class=mut>read from the face\'s header; a stale story-row sends '
@@ -79,7 +79,7 @@ def _ready(folder, md):
 
 
 def _round_pages(folder):
-    """The comments of this Section's version (haipipe-paper-comments): a report of type comments in the
+    """The comments of this Section's version (hai-paper-comments): a report of type comments in the
     version's reports/qNN_<kind>-<MMDD>/ (JL 261007: "a special type of report … in the reports/"), and
     the older layouts still read: RD<NN>-… and CM<NN>-… in the Board's B<x>-<desk>-Round/ or the version."""
     board, version = folder.parent.parent, folder.parent
@@ -92,7 +92,7 @@ def _round_pages(folder):
 
 def _review_items(folder):
     """[(round page, row)]: the rows of each Round page's `## Review Items` table whose `lands on` starts
-    with this Section's stem (the Round's table, agreed by JL 261007; haipipe-paper-comments)."""
+    with this Section's stem (the Round's table, agreed by JL 261007; hai-paper-comments)."""
     out = []
     for page in _round_pages(folder):
         text = page.read_text(encoding="utf-8", errors="replace")
@@ -138,8 +138,8 @@ def section_spaces(folder, root, sub):
         out["Description"] = replace(d, html=_contract(md) + (base.html if base else ""))
     if plan.open == "1 · Plan":                   # the Requirement is a card of 1 · Plan (b32 s41 Ⓐ)
         out["Work Details"] = replace(plan, html=plan.html + _sub_rows(md))
-    elif plan.open == "3 · Evidence":             # a Section's evidence follows the paper's rules (haipipe-paper 1.15)
-        out["Work Details"] = replace(plan, html=plan.html.replace("/haipipe-evidence ", "/haipipe-paper-evidence "))
+    elif plan.open == "3 · Evidence":             # a Section's evidence follows the paper's rules (hai-paper 1.15)
+        out["Work Details"] = replace(plan, html=plan.html.replace("/hai-evidence ", "/hai-paper-evidence "))
     if sub == "Comments":                         # ◆ the paper's own view, after the Page's three
         a = Space(html=_reviews(folder, root), open="Comments", run_types=())
     out["Audience Report"] = replace(a, subspaces=tuple(draft_task_spaces(folder, root, "")["Audience Report"].subspaces)

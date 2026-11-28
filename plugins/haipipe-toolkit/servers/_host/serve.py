@@ -298,21 +298,30 @@ class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, Activ
         SimpleHTTPRequestHandler.end_headers(self)
 
     def redirect_moved_block(self):
-        """An old address of a Block that moved into a Project (JL 261028: Tools' blueprints/bNN_* now live at
-        blueprints/Project-<X>/work/bNN_*): send it to the new place, so old links and bookmarks still open.
-        Only when the old path is gone and exactly one `<folder>/*/work/bNN_*` matches it."""
+        """An old address of a Block that moved into a Project (JL 261028: Tools' examples/bNN_* now live at
+        examples/Project-<X>/work/bNN_*): send it to the new place, so old links and bookmarks still open.
+        Only when the old path is gone and exactly one `<folder>/*/work/bNN_*` matches it. Also (JL 261127) Tools'
+        old `blueprints/` folder is `examples/`, and the theme Blocks left `work/` for `blueprint/`: an old address
+        lands on the new folder, or on the one Block of that number under `examples/<Project>/<theme folder>/`."""
         import re as _re
         parts = urllib.parse.urlsplit(self.path)
         root = Path(self.root)
 
         def moved(rel):
             rel = rel.strip("/")
+            if (root / rel).exists():
+                return None
+            renamed = _re.sub(r"(^|/)blueprints(?=/|$)", r"\1examples", rel)
+            if renamed != rel and (root / renamed).exists():
+                return renamed
+            rel = renamed
             m = _re.match(r"^(.*?)(?:^|/)(b\d{2}_[^/]+)(/.*)?$", rel)
-            if not m or (root / rel).exists():
+            if not m:
                 return None
             head, block, tail = m.group(1), m.group(2), m.group(3) or ""
             base = root / head if head else root
-            hits = [h for h in base.glob(f"*/work/{block}") if h.is_dir()]
+            hits = [h for h in base.glob(f"*/work/{block}") if h.is_dir()] \
+                or [h for h in root.glob(f"examples/*/*/{block}") if h.is_dir()]
             return (hits[0].relative_to(root).as_posix() + tail) if len(hits) == 1 else None
 
         new_path = moved(urllib.parse.unquote(parts.path)) if not parts.path.startswith("/_") else None
@@ -565,7 +574,7 @@ class Handler(SlowWatchMixin, PostMixin, ShareMixin, AuthMixin, BaseMixin, Activ
             return self.shared_view(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/workbench":
             return self.workbench_frame_view(head_only=True)
-        if self.path.split("?", 1)[0] == "/_excalidraw/_haipipe-xcal.js":
+        if self.path.split("?", 1)[0] == "/_excalidraw/_hai-xcal.js":
             return self.proxy_excalidraw(head_only=True)
         if self.path.split("?", 1)[0] == "/_board/design-bundle":
             return self.design_bundle_view(head_only=True)

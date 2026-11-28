@@ -77,7 +77,7 @@ class CardGuideTest(unittest.TestCase):
             block = root / "examples-0-cowork" / "Project-A" / "cowork" / "b01_x"
             block.mkdir(parents=True)
             (block / "board.md").write_text("# X\n")
-            shared = root / "blueprints" / "b02_y"
+            shared = root / "examples" / "b02_y"
             shared.mkdir(parents=True)
             nav = lambda path: re.search(r'<nav class="wg-views"[^>]*>(.*?)</nav>', guide_html(
                 "shared", "description", {"path": path, "file": ""}, True, root=root)).group(1)
@@ -85,7 +85,7 @@ class CardGuideTest(unittest.TestCase):
             self.assertEqual(re.findall(r'>([^<]+)</a>', inside)[:2], ["SPACE", "Project"])
             self.assertIn('href="/?project=examples-0-cowork%2FProject-A" target="_top" data-guide-project '
                           'title="Project-A"', inside)
-            self.assertIn('href="/?project=shared%3Aspace"', nav("blueprints/b02_y"))   # outside a Project
+            self.assertIn('href="/?project=shared%3Aspace"', nav("examples/b02_y"))   # outside a Project
             self.assertNotIn("data-guide-project", nav(""))                            # no folder, no link
             self.assertNotIn("data-guide-project", nav("../outside"))
 

@@ -1,0 +1,121 @@
+# Definition template: one independently executable config/Ticket variant.
+# Expand variants as Run Specs only when independently commissioned.
+# Resolve placeholders, catalogue key and every Workbench-owned Workspace Cell before use.
+# Steps and section labels describe internal work; they never allocate Runs.
+# Schema: project/hai-run/ref/plan-schema.md
+name: reg-<COHORT>-<PAIRING>-<WINDOW>-<FAMILY>
+purpose: Estimate <FAMILY> models on <WINDOW> outcome window; produce coef tables
+input:
+  args:
+    run_config: rNN_<run>
+    config: runs/rNN_<run>/config.do
+  files_in: &id001
+  - runs/rNN_<run>/config.do
+  - runs/rNN_<run>/run.yaml
+  - scripts/config/<COHORT>_<PAIRING>.do
+  - scripts/run-*-<FAMILY>-*.do
+  - _WorkSpace/<N>-Data-Store/<COHORT>_<PAIRING>/<VERSION>/ANALYSIS-CMS-Filter.dta
+owner: hai-task-for-stata
+workbench:
+  id: <owning-workbench>
+  workspace_roster_ref: <workbench-definition>#workspace_roster
+  workspace_ids:
+  - <workspace-id>
+run_specs:
+- id: execute
+  run_type: task.execute
+  purpose: Estimate <FAMILY> models on <WINDOW> outcome window; produce coef tables
+  target: work/bNN_<block>/jNN_<job>/tNN_<task>
+  actor:
+    mode: automatic
+    owner: hai-task-for-stata
+  action: execute-ticket
+  input: *id001
+  entry_gate:
+    mode: automatic
+    assertion: config, inputs and current code review resolve
+  exit_gate:
+    mode: automatic
+    assertion: all required Results pass the domain checks and runtime receipt is complete
+  routes:
+    pass: CLOSE
+    fail: HOLD
+    blocked: HOLD
+  result:
+    payload: &id002
+      status: ok
+    receipt: $OUTPUT_ROOT/<task>/runs/rNN_<run>/passes/pNN-<MMDD>/runtime.yaml
+  cardinality: 1
+  cells:
+  - workspace_id: <workspace-id>
+    mode: action
+    owner_skill: hai-task-for-stata
+    worker_skill_chain:
+    - hai-task-for-stata
+    interaction: execute declared Ticket
+    authority_change: create
+    source_projection: authoritative Result
+  steps:
+  - section: Setup+Load
+    label: setup:config
+    required: true
+    prompt: Read HAIPIPE_RUN_CONFIG env var -> do runs/<run>/config.do -> sets ws_root, data_file,
+      outcome_bfaf_window, res_dir
+    files_in:
+    - runs/rNN_<run>/config.do
+    - scripts/config/<COHORT>_<PAIRING>.do
+    files_out: []
+  - section: Setup+Load
+    label: setup:load
+    required: true
+    prompt: use data_file, clear; count; set thresholds
+    files_in:
+    - _WorkSpace/<N>-Data-Store/<ASSET>/ANALYSIS-CMS-Filter.dta
+    files_out: []
+  - section: Policy Merge (DID only)
+    label: policy:merge
+    required: false
+    prompt: merge m:1 state_code year using Policy-State-Year.dta; derive treat/post/treat_post; tab design
+      check
+    files_in:
+    - _WorkSpace/0-External-Store/Policy/Policy-State-Year.dta
+    files_out: []
+  - section: Variable Derivation
+    label: vars:trait
+    required: true
+    prompt: trait_l2 = score >= 0.75 (binary); trait_l5 = continuous; run-5 adds buckets/quadratic
+    files_in: []
+    files_out: []
+  - section: Variable Derivation
+    label: vars:outcomes
+    required: true
+    prompt: derive mme_ttl, mme_daily, is_hdld, is_high_mme_daily, is_high_mme_total from bn_<window>_*
+      columns
+    files_in: []
+    files_out: []
+  - section: Variable Derivation
+    label: vars:controls
+    required: true
+    prompt: encode bene_state; define BENE_DEMO, BENE_VISIT, BENE_CMS, BENE_CONDITION, NPI_DEMO, NPI_REVIEW,
+      FE globals
+    files_in: []
+    files_out: []
+  - section: Estimation
+    label: estimate:run-workers
+    required: true
+    prompt: 'Execute worker .do scripts for <FAMILY> (OLS: progressive/LPM/two-part/windows/traitform/subgroup;
+      IV: main-3SE/grid/overid/subgroup; DID: TWFE/CS-DID)'
+    files_in: []
+    files_out:
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/passes/pNN-<MMDD>/log/run-*-*.txt
+    - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/tables/main-ols_*.{csv,tex}
+entry:
+- execute
+terminal:
+- CLOSE
+- HOLD
+output:
+  returns: *id002
+  files_out:
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/passes/pNN-<MMDD>/log/run-*-*.txt
+  - $OUTPUT_ROOT/<task>/runs/rNN_<run>/result/tables/main-ols_*.{csv,tex}

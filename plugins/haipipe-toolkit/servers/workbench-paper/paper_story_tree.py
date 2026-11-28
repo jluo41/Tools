@@ -18,10 +18,10 @@ _GROUPS = {"tasks": "tasks", "hypotheses": "hypotheses", "potential claims": "cl
 
 
 def question_blocks(text):
-    """§3 written as one block per question (JL 260929; haipipe-paper-story 0.12.0):
+    """§3 written as one block per question (JL 260929; hai-paper-story 0.12.0):
     `#### 3.N · Question N · RQn`, the question's `- **Field**: value` lines, then four
     groups, each a bold label and one `- ` line per item, coded by question (1a, 1b, 2a …;
-    haipipe-paper-story 0.13.0), each a short name, a colon and one plain sentence:
+    hai-paper-story 0.13.0), each a short name, a colon and one plain sentence:
       **Hypotheses**               - **1a** · Name: sentence · tested by E1, E2
       **Potential claims**         - **1a** · C1 · from 1a · Name: sentence   (indented `- **Role**: …`)
       **Potential contributions**  - rests on 1a, 1b · Name: sentence

@@ -1,0 +1,11 @@
+{
+  "style": "sketch-notes",
+  "slides": [
+    {
+      "id": "01",
+      "idea": "Does my agent return the JSON, or is its text turned into JSON afterwards?",
+      "image": "s42-who-writes-the-json.png",
+      "notes": "See Page for the answer, its sources and the learner exercise. This diagram is learning material, not an execution receipt."
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "views": [
+    {
+      "name": "Page-Job",
+      "items": [
+        {
+          "name": "job-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightQuestionBook-Example&layout=focus&section=jobs&group=j02&mark=jobs-rows%2Cjob-ttopics%2Cjob-subs"
+        },
+        {
+          "name": "job-overview",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightQuestionBook-Example&layout=focus&section=jobs&group=j02&mark=view%3Doverview"
+        },
+        {
+          "name": "job-tasks",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightQuestionBook-Example&layout=focus&section=jobs&group=j02&mark=view%3Dstanding"
+        },
+        {
+          "name": "job-findings",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightQuestionBook-Example&layout=focus&section=jobs&group=j02&mark=view%3Dfindings"
+        }
+      ]
+    },
+    {
+      "name": "Page-Task",
+      "items": [
+        {
+          "name": "Question definition",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightQuestionBook-Example&layout=focus&section=jobs&group=j02&task=t09"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Question-set version",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/insight-ladder.md"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Question definition",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/folder-kinds/hai-insight-question/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "QuickHtml",
+      "items": [
+        {
+          "name": "Version changes",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s12-questionbook-job-preview/delivery/ui/version-changes.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "MindMap",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s12-questionbook-job-preview/s12-questionbook-job-preview.mindmap.md"
+        },
+        {
+          "name": "Canvas",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s12-questionbook-job-preview/s12-questionbook-job-preview.excalidraw"
+        }
+      ]
+    }
+  ]
+}

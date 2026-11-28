@@ -41,7 +41,7 @@ class FrameGroupsTest(unittest.TestCase):
         from live.frame_view import _blocks
         with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as away:
             root = project(tmp)
-            outside = Path(away) / "blueprints" / "b01_utils"     # a Tools checkout beside the SPACE
+            outside = Path(away) / "examples" / "b01_utils"     # a Tools checkout beside the SPACE
             outside.mkdir(parents=True)
             (outside / "board.md").write_text("# b01 · Utils\n\nboard-kind: task-block\n")
             (root / "Tools").symlink_to(Path(away), target_is_directory=True)
@@ -73,8 +73,8 @@ class FrameGroupsTest(unittest.TestCase):
                     self.assertNotIn("j01_job", disk_heading)
                     self.assertNotIn("t01_task", disk_heading)
                     self.assertIn("run-draw-s01", page)
-                    self.assertIn("/haipipe-studio a topic of Project/tasks/b01_topic:", page)
-                    self.assertNotIn("/haipipe-studio a topic of Project/tasks/b01_topic/j01_job:", page)
+                    self.assertIn("/hai-studio a topic of Project/tasks/b01_topic:", page)
+                    self.assertNotIn("/hai-studio a topic of Project/tasks/b01_topic/j01_job:", page)
 
     def test_current_groups_keep_repeated_local_topics_distinct_and_skip_external_links(self):
         with tempfile.TemporaryDirectory() as tmp, tempfile.TemporaryDirectory() as away:

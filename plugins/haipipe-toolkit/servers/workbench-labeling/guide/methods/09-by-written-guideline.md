@@ -38,4 +38,4 @@ returns: the guideline version and its diff
 verify: every rule traces to accepted judgments; no test item is cited (T3)
 risk: A rule drafted from model reasoning, not the person's, drifts the meaning (ours).
 evidence on ai: No study tests agent-drafted guidelines (ours).
-skill: haipipe-labeling-guideline
+skill: hai-labeling-guideline

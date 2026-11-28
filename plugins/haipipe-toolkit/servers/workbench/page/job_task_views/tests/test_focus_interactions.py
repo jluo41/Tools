@@ -161,11 +161,11 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertEqual(ui_parts.todo_word([]), ('nothing yet', ''))
 
     def test_paper_numbered_bars_carry_no_tally(self):
-        """The paper and work placeholders in Tools (blueprints/Project-Ladder) are the prototypes every project gets
+        """The paper and work placeholders in Tools (examples/Project-Ladder) are the prototypes every project gets
         (JL 261105): no numbered bar of any Report or Work view carries a check or progress tally, or an empty-state
         word (AGENTS § Page words, JL 261113); "N wait(s) for you" stays, since that count is the answer."""
         tools = Path(__file__).resolve().parents[7]
-        base = tools / 'blueprints' / 'Project-Ladder'
+        base = tools / 'examples' / 'Project-Ladder'
         board, block = base / 'paper' / 'Paper-Example', base / 'work' / 'b90_example_paper_results'
         if not (board.is_dir() and block.is_dir()):
             self.skipTest('the Tools placeholders are not in this checkout')

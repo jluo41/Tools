@@ -1,0 +1,14 @@
+run: r01_collect_what_to_change
+kind: hard
+type: collect
+scope: examples/Project-Replay/work/b42_paper_workbench_review
+target: b42-s01:paper_workbench_review @ what_to_change
+ticket: r01_collect_what_to_change.html
+skill: hai-interaction
+agent: JL
+signs: null
+status: waiting
+passes: []
+writes:
+- result/answer_collection.md
+feeds: []

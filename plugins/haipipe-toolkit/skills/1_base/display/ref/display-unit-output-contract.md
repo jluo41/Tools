@@ -1,8 +1,8 @@
 # Display-Unit Output Contract
 
-Owner: the `display/` family. All five renderer parts of `haipipe-display` (`table`,
+Owner: the `display/` family. All five renderer parts of `hai-display` (`table`,
 `figure`, `diagram`, `illustration`,
-and `tex`, each `haipipe-display/_parts/<kind>/PART.md`) write into a **unit directory** the caller supplies,
+and `tex`, each `hai-display/_parts/<kind>/PART.md`) write into a **unit directory** the caller supplies,
 not into a flat `figures/` directory. The caller supplies a verified `intake/` and, when a
 wrapper is wanted, the approved caption/label/placement fields. The renderer fills `recipe/` and
 `assets/`; it may serialize `float.tex` only from those explicit caller-owned fields, compiles
@@ -28,7 +28,7 @@ authoritative intake record; the JSON file is a consumer projection, never a sec
 
 **This is the shared, source-agnostic renderer contract.** It defines the portable unit, not a
 caller's delivery layout. A caller that has a paper maps this bundle into its own layout through
-the [Paper assembler](../../../2_theme/paper/haipipe-paper-assemble/SKILL.md). A renderer never opens a
+the [Paper assembler](../../../3_theme/paper/hai-paper-assemble/SKILL.md). A renderer never opens a
 paper, resolves a paper root, or creates a lifecycle page.
 
 ## Unit layout for new units
@@ -201,13 +201,13 @@ unchanged caller-owned caption, label, and placement. Do not overwrite `float.te
 
 | Display kind | Renderer |
 |---|---|
-| data plot (line/bar/scatter/heatmap/box) | `haipipe-display figure` |
-| typeset LaTeX table (booktabs) | `haipipe-display table` |
-| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `haipipe-display diagram` |
-| AI concept illustration | `haipipe-display illustration` |
-| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | `haipipe-display tex` (hand-authored: the writer is a person, not a script) |
+| data plot (line/bar/scatter/heatmap/box) | `hai-display figure` |
+| typeset LaTeX table (booktabs) | `hai-display table` |
+| deterministic editable vector diagram (architecture/workflow/pipeline/topology) | `hai-display diagram` |
+| AI concept illustration | `hai-display illustration` |
+| TeX-native unit sharing the paper's fonts and math — tikz, an `algorithm2e` block, or a display equation | `hai-display tex` (hand-authored: the writer is a person, not a script) |
 
-`haipipe-display` is the DOOR over this table: a caller who knows the kind may call a renderer
+`hai-display` is the DOOR over this table: a caller who knows the kind may call a renderer
 directly, and a caller who does not says what they want to the door.
 
 The two data renderers require an aggregated values intake. Concept renderers have no default values
@@ -217,11 +217,11 @@ input; a concept unit that displays verified figures declares a separate `role: 
 
 - The poster and slides renderers retired 2026-08-16 (JL), with the `content-plan-spec.md` that
   fed them; they are no longer on disk (git history), and `_parts/slide/` is a newer, different renderer. A board page's talk is the slide workbench's deck.
-- `haipipe-task-for-display` produces a canonical display-ready aggregate and its provenance.
+- `hai-task-for-display` produces a canonical display-ready aggregate and its provenance.
   It does not own the paper-facing unit or promoted asset. Diagnostic task plots may exist, but
   they are not canonical assets until a display unit accepts and renders them. For a Board Page,
   this aggregate first crosses the Page family's one numeric door through
-  `haipipe-task-for-evidence`; only a non-Page holder consumes it directly.
+  `hai-task-for-evidence`; only a non-Page holder consumes it directly.
 - Split out of the paper skill on 2026-07-26: this half is generic, and the paper-specific half
   (unit placement, paper-root-relative paths, the combined gallery, caption/label/placement
   ownership, and the lifecycle handoff) moved to the paper adapter named above.

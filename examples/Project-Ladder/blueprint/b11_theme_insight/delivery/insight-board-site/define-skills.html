@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skill folders · Insight Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar" id="bar"></header>
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages"></nav>
+  <main class="main" id="main" data-page="define-skills.html">
+    <h2>Skill folders</h2>
+    <p class="intro">The Define Folder: what an agent knows how to do, under <code>plugins/haipipe-toolkit/</code>. A skill folder
+      holds <code>SKILL.md</code>, <code>ref/</code>, <code>scripts/</code>, <code>tests/</code> and agents, never a <code>jNN</code>,
+      <code>sNN</code> or <code>cNN</code>: those are the work's. Pick a folder to see what it holds and which work it makes.</p>
+    <div class="tree-box" data-tree="skills"></div>
+    <footer class="foot">Read from <span class="mono">PRINCIPLE.md</span>, <span class="mono">hai-insight/ref/</span>, <span class="mono">hai-chat/ref/chat-contract.md</span>, <span class="mono">servers/workbench/ref/three-views.md</span> and <span class="mono">servers/workbench-insight/</span>. Names in angle brackets are placeholders.</footer>
+  </main>
+  <aside class="outline" id="outline" aria-label="On this page"></aside>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

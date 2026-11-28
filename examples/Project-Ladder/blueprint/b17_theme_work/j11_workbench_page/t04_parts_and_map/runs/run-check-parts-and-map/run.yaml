@@ -1,0 +1,15 @@
+run: run-check-parts-and-map
+kind: soft
+type: check
+scope: null
+target: parts-and-map
+ticket: run-check-parts-and-map.md
+skill: hai-ui
+agent: claude
+signs: null
+status: waiting
+passes:
+- p01-1125
+- p02-1125
+writes: []
+feeds: []

@@ -36,7 +36,7 @@ after r04 with no pass ─▶ 🙋 stop; hand the person the open problems
 4. **Revise.** The maker fixes what the review names, re-renders and recompiles `preview.pdf`. Each
    fix goes where it lives: a caption, legend, label or folder-name change is the caller's (they are
    caller-owned); a picture change goes to the code that draws the picture. In a paper that code is
-   a Run of the display's Task in the Board's `j01_evidence_display` (haipipe-paper-evidence,
+   a Run of the display's Task in the Board's `j01_evidence_display` (hai-paper-evidence,
    rule 3): fix that Run's script and draw a new Run, never patch a drawn file. The maker
    never scores its own work and never edits a review record.
 5. **Review again** with ANOTHER fresh reviewer (not the round before's), and repeat until the pass
@@ -90,13 +90,13 @@ words). It has two parts, and nothing else:
   one clause, sample sizes already printed in the picture, findings, takeaways, caveats and
   "associations, not causal" (those belong to Methods, Results and Limitations).
 - Count the words before every review round; an over-length caption is a journal-ready finding.
-  Venue limits win when the venue states them (haipipe-paper-venue).
+  Venue limits win when the venue states them (hai-paper-venue).
 
 ## The colour rule
 
 - **One colour scheme for the whole paper (or report).** It is one small file the recipes read
   (`colour-scheme.yaml`: a thing, its hex code, what it means); a recipe never types its own hex
-  codes. A paper keeps one, in its display Job (`j01_evidence_display/colour-scheme.yaml`, haipipe-paper-evidence).
+  codes. A paper keeps one, in its display Job (`j01_evidence_display/colour-scheme.yaml`, hai-paper-evidence).
 - **The same thing gets the same colour in every display**, and **a colour never means two things**:
   the colour of one source or company is not reused for an outcome category, and an outcome's colour
   is not reused for a group.

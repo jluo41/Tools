@@ -18,17 +18,17 @@ description: 'The Paper Workbench follows one paper from idea to submission on o
   paper''s Markdown on every open and stores nothing; each run is a prompt the person copies, and each
   gate is closed by the person.'
 skills:
-- skill: haipipe-paper-workflow
+- skill: hai-paper-workflow
   role: Rules, routing and release gates
-- skill: haipipe-paper-story
+- skill: hai-paper-story
   role: Questions, claims and supporting evidence
 - skill: workbench-paper
   role: Paper Spaces and their native sources
-- skill: haipipe-paper-ideation
+- skill: hai-paper-ideation
   role: Candidate ideas and admission
-- skill: haipipe-paper-assemble
+- skill: hai-paper-assemble
   role: Whole-paper delivery
-- skill: haipipe-paper-comments
+- skill: hai-paper-comments
   role: Review rounds and responses
 # the six steps of guide/method.md § 1 (the RoadMap drawing reads them; the method page shows them)
 method:
@@ -105,7 +105,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
+  - board: Tools/examples/Project-Ladder/blueprint/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - Workbench design
   - first
 # The card Guide (b03 s31-guide, s31-D05 to D08): the base's words are
@@ -128,7 +128,7 @@ levels:
         reads: jNN_v<MMDD>_<desk>/
       Runs:
         is: the paper's run types and the Runs of its Pages
-        reads: haipipe-paper-workflow/ref/run-cards.md
+        reads: hai-paper-workflow/ref/run-cards.md
       Delivery:
         is: the built paper (LaTeX, Word), the cover letter and the review rounds
         reads: jNN_v<N>_<desk>/delivery/ (today delivery/ · Bc-<desk>-Round/)
@@ -141,15 +141,15 @@ roadmap:
   Block:
   - title: the paper ladder and level boundaries
     shows: Board, Job and Task roles, shared Spaces, and the decided Story and Ideation homes
-    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b16_theme_paper/s05-board-job-task-boundary/s05-board-job-task-boundary.excalidraw
   - title: the Board's screens
     shows: the paper Board's tab, one frame per Space, and Guide › Method from it
-    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s11-paper-block/s11-paper-block.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b16_theme_paper/_archive/20261127/s11-paper-block/s11-paper-block.excalidraw
   Job:
   - title: a version's screens
     shows: a version's tab, one frame per Space (proposed)
-    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s12-paper-job/s12-paper-job.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b16_theme_paper/s13-paper-job-preview/s13-paper-job-preview.excalidraw
   Task:
   - title: a Section's screens
     shows: a Section's tab, a Page Task with what the paper adds
-    board: Tools/blueprints/Project-Ladder/work/b16_theme_paper/s13-paper-task/s13-paper-task.excalidraw
+    board: Tools/examples/Project-Ladder/blueprint/b16_theme_paper/_archive/20261127/s13-paper-task/s13-paper-task.excalidraw

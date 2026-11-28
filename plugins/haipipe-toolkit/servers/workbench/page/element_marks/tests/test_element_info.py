@@ -37,6 +37,26 @@ class ElementInfoTest(unittest.TestCase):
         data = json.loads(EI.assets(self.block, self.root).split('window.__elInfo=', 1)[1].split(';</script>', 1)[0])
         self.assertIn('Too long.', data['slots']['el.overview.fold.goal'])
 
+    def test_a_phone_opens_the_same_menu_by_a_long_press_and_the_right_click_stays(self):
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block)
+        self.assertIn("addEventListener('contextmenu'", page)        # the desktop entry
+        self.assertIn("e.pointerType!=='touch'", page)               # the long press is a finger's only
+        self.assertIn('setTimeout(fire,500)', page)
+        for cancel in ("'pointermove'", "'pointercancel'", "'scroll',drop", 'ids.size>1'):
+            self.assertIn(cancel, page)
+        self.assertIn("closest('input,textarea,select,[contenteditable]", page)   # an input keeps its own selection
+        self.assertIn('Date.now()-touchAt<1500', page)               # the browser's own contextmenu: never a second menu
+        self.assertIn('if(p&&!touch)', page)                         # a phone's Files drawer never covers the menu
+        self.assertEqual(page.count('data-el-do=comment'), 1)        # one menu for both entries, no standing button
+
+    def test_a_phone_comment_card_is_a_bottom_panel_above_the_keyboard(self):
+        layer = EI.assets(self.block, self.root)
+        self.assertIn('.el-pop.el-sheet{position:fixed', layer)
+        self.assertIn('bottom:var(--el-kb', layer)
+        self.assertIn('visualViewport', layer)
+        self.assertIn("classList.toggle('el-sheet',touch)", layer)
+        self.assertIn('about(el)', layer)                            # a Studio type's What / Why stays in menu and card
+
     def test_the_files_pane_marks_the_page_folder_and_fades_the_rest(self):
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, panel='files')
         self.assertIn('window.__scopePage="b01_study"', page)   # JL 261125: out of this job's scope, transparent

@@ -80,7 +80,7 @@ def _tracked_word(vdir: Path) -> tuple:
 
 def _latex_diff(vdir: Path) -> tuple:
     """The paper's change since the round the co-authors saw, as one LaTeX diff PDF (JL 261113: "make the paper - latex
-    diff for me"; haipipe-paper-assemble scripts/latex_diff.py): the newest *-latexdiff.pdf in delivery/<writing
+    diff for me"; hai-paper-assemble scripts/latex_diff.py): the newest *-latexdiff.pdf in delivery/<writing
     Job>/latex-diff/; its line, the newest headline.txt of a review Job's latex-diff Run. (name, line, pdf, None)."""
     folder = vdir / "latex-diff"
     pdf = max(folder.glob("*-latexdiff.pdf"), key=lambda x: x.stat().st_mtime, default=None) if folder.is_dir() else None
@@ -222,7 +222,7 @@ PORTAL_WORDS = {"ready": "✅ ready", "draft": "🔶 built, not approved", "stal
 def _portal(vdir: Path, root: Path) -> str:
     """What goes into the venue's portal as it is (JL 261102: "the final delivery content that are ready to submit
     directly in the portal"): the build's portal packet, delivery/<job>/portal/, one row per upload slot with its
-    file and its state, each file opening in the pop-out (haipipe-paper-assemble § The portal packet)."""
+    file and its state, each file opening in the pop-out (hai-paper-assemble § The portal packet)."""
     import json
     try:
         portal = json.loads((vdir / "build-manifest.json").read_text(encoding="utf-8")).get("portal") or {}

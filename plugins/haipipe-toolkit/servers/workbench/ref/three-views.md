@@ -30,11 +30,11 @@ Two keys join the views. Never invent a third.
 
 ## 2. Folder view
 
-Studio > Folder (`page/frame_folders.py`) already draws it. Two additions:
+Studio > Folder (`side_pane/files_tree/frame_folders.py`) already draws it. Two additions:
 
 - A folder outside the Block that the Block names (an Insight extract, a corpus path) is shown as one pointer row,
   never walked.
-- Each row an episode touched, and each folder above it, carries 🧵 (`page/frame_folders.py`); a click opens
+- Each row an episode touched, and each folder above it, carries 🧵 (`side_pane/files_tree/frame_folders.py`); a click opens
   Sessions showing only the episodes that touched it.
 
 ## 3. Element view
@@ -57,14 +57,13 @@ The Element view says, for each folder kind, which page parts draw it. Two relat
 ### 4.1 What an episode is
 
 An episode is one goal worked in one sitting, recorded as one **pass**: `passes/pNN-<MMDD>/pass.md` inside the soft
-Run that served the goal (`runs/run-<verb>-<target>/`, haipipe-run). It may span several Runs and several folders
+Run that served the goal (`runs/run-<verb>-<target>/`, hai-run). It may span several Runs and several folders
 (a Labeling meaning loop is four Runs; a Design sitting walks generate, verify and revise across Tasks). Runs it
 starts, such as 181 Insight segment Runs, are folders it touched, never episodes of their own.
 
-A session that is worth keeping as a conversation, not as one Run's round, is saved at its Block as the next
-`cNN_<slug>/` (haipipe-chat, `scripts/new_chat.py new`); its face carries the same front matter as a pass. When no
-soft Run fits the goal and the session is not kept as a chat, it opens a soft Run at the level it acts on, as
-haipipe-run already allows. So every episode is a pass, and a pass is found the same way at
+Work done on the Block as a whole, not as one Run's round, is kept as a trace in its `trace/` (hai-trace); the
+Files pane draws it. When no soft Run fits the goal and the work is not kept as a trace, it opens a soft Run at the level it acts on, as
+hai-run already allows. So every episode is a pass, and a pass is found the same way at
 every level.
 
 ### 4.2 The record
@@ -92,11 +91,9 @@ cards:                                     # card addresses it changed, when bel
 `run.yaml` keeps `passes:` and its `writes:` list, as Insight and Work already do.
 
 `paths:` is written when the episode happens, by the one writer every session uses,
-`haipipe-run/scripts/soft_run.py pass <run> --title … --changed <files> --session <name> [--cards …]`, from the
+`hai-run/scripts/soft_run.py pass <run> --title … --changed <files> --session <name> [--cards …]`, from the
 files the session itself wrote (its Edit and Write calls; `git diff` shows other sessions' work too).
-A Claude session file (`~/.claude/projects/<slug>/*.jsonl`) carries its Edit and Write calls, so a Block chat's
-QAs take their outputs from it (haipipe-chat `scripts/qa.py`); a file a shell command wrote is not seen there and
-is named with `--changed`. Several sessions edit the same folders at once, so one folder will have many overlapping
+A file a shell command wrote is not seen in the session's Edit and Write calls and is named with `--changed`. Several sessions edit the same folders at once, so one folder will have many overlapping
 episodes; that is expected.
 
 ### 4.3 Records that already count
@@ -105,12 +102,11 @@ These are read as episodes where they are, never copied into a second record:
 
 | Theme | Existing record | Read as |
 | --- | --- | --- |
-| every theme | Block chat `cNN_<slug>/cNN_<slug>.md` (haipipe-chat; its QAs: question, answer, outputs) | one episode per chat |
 | every theme | Studio topic `sNN-<topic>/passes/pNN-<MMDD>/` (digest.md, transcript.md) | one episode per pass |
 | Insight, Work, Design | soft Run `runs/run-*/passes/pNN-<MMDD>/pass.md` | one episode per pass |
 | Labeling, Work | collect Run `runs/rNN_collect_*/passes/pNN-<MMDD>/pass.md` (a person's form round) | one episode per pass |
 | Paper | `draft/records/<stem>-revise.md`, each `## Pass N … on draft vX` | one episode per Pass |
-| Project | git commits on Block paths (`page/project_branches.py`) | stations on the Timeline, beside the passes |
+| Project | git commits on Block paths (`home/project_branches.py`) | stations on the Timeline, beside the passes |
 
 An older record without `paths:` is joined to the folder that holds it, and its `## Changed` is shown as written.
 
@@ -123,7 +119,7 @@ An older record without `paths:` is joined to the folder that holds it, and its 
   the items `ref/cards.md` § 2 calls content), passed as a derived mark (`item_marks.DERIVED`), so it opens in
   the same card slot. Never 💬, which means open comments. Structure rows (Job, Task and Run rows, folds, tabs,
   section bars) carry no 🧵; there the Folder and Sessions parts show it.
-- **Project level**: nothing new to draw. The Timeline (`page/project_branches.py`, through
+- **Project level**: nothing new to draw. The Timeline (`home/project_branches.py`, through
   `focus_studio.timeline_events`) already draws every Run pass as a □ station; one station per pass, one 🙋 tip
   per Block, no count on its bar, commits and passes on one day stay separate stations.
 
@@ -158,18 +154,18 @@ An older record without `paths:` is joined to the folder that holds it, and its 
 
 ## 7. Built
 
-- `page/frame_sessions.py`: the reader (`episodes`, `touched`, `touched_set`) and Studio › Sessions
+- `side_pane/rail_sections/frame_sessions.py`: the reader (`episodes`, `touched`, `touched_set`) and Studio › Sessions
   (`sessions_part`, the seventh folding part, under Folder; not shown when empty).
-- Focus pages (`layout=focus`, the Files section): `page/work_files.py` puts 🧵 on touched folders and files of
+- Focus pages (`layout=focus`, the Files section): `side_pane/files_tree/work_files.py` puts 🧵 on touched folders and files of
   the tree (lazy expands too) and Sessions under it, filtered to the page's folder (`sessions_part(..., under=)`).
   `focus_studio.files_html` does the same for the plain folder list.
-- Older tabbed Studio: `page/frame_folders.py` 🧵 on touched rows; Sessions after Folder (`page/frame.py`).
-- `page/item_marks.py`: 🧵 in `DERIVED`.
+- Older tabbed Studio: `side_pane/files_tree/frame_folders.py` 🧵 on touched rows; Sessions after Folder (`page/block_index_page/frame.py`).
+- `page/element_marks/item_marks.py`: 🧵 in `DERIVED`.
 - SPACE root: the nearest folder with `env.sh` or `.server_config` (`frame_sessions.SPACE_MARKS`).
 - Cache: one entry per record file, replaced when its (mtime, size) changes; the touched set per Block is kept
   until any record's signature changes.
-- `haipipe-run/scripts/soft_run.py pass`: `--session`, `--provider`, `--cards`; SPACE-relative `--changed`.
-- Tests: `servers/workbench/tests/test_frame_sessions.py`, `haipipe-run/tests/test_soft_run.py`.
+- `hai-run/scripts/soft_run.py pass`: `--session`, `--provider`, `--cards`; SPACE-relative `--changed`.
+- Tests: `servers/workbench/side_pane/rail_sections/tests/test_frame_sessions.py`, `hai-run/tests/test_soft_run.py`.
 - Still to do: each theme's element map and its 🧵 on content items (§ 6); episode grouping by `mNN`/`eNN` and by
   draft version (today grouped by the folder holding the record).
 

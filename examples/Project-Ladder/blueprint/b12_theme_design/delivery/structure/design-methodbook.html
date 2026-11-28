@@ -1,0 +1,478 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design Method Book structure</title><style>
+:root{color-scheme:light dark;--paper:#fff;--ink:#223047;--muted:#59677b;--line:#d9e2ee;--soft:#edf5ff;--accent:#275f9f;--fg:var(--ink);--mut:var(--muted);--card:var(--paper);--acc:var(--accent);--wash:var(--soft)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.65 system-ui,sans-serif}
+main{padding:22px;max-width:1080px;margin:auto}h1{font-size:20px;letter-spacing:-.3px;margin:0 0 22px}
+.tree,.tree ul{list-style:none}.tree{padding:0;margin:0}.tree ul{margin:8px 0 10px 13px;padding-left:23px;border-left:1px solid var(--line)}
+.tree li{position:relative;margin:4px 0}.tree ul>li:before{content:'';position:absolute;left:-23px;top:14px;width:23px;border-top:1px solid var(--line)}
+summary,.leaf{display:inline-block;padding:2px 4px;background:none}
+summary{cursor:pointer;list-style-position:inside;display:list-item;width:fit-content}summary:hover{color:var(--accent)}
+.tree>li>details>summary{color:var(--accent);font-weight:600}
+.tree summary span,.leaf span{color:var(--accent);margin-right:5px}.tree span.why{color:inherit;margin:0;cursor:help}.drawing{overflow:auto;padding:5px 4px 18px}
+.role{display:inline-block;margin-left:12px;color:var(--muted);font-size:11px;font-weight:400}
+.drawing .tree{min-width:0;overflow-wrap:anywhere}.records{margin:24px 0 0;border-top:1px solid var(--line)}
+.record{display:grid;grid-template-columns:minmax(130px,1fr) 2fr;gap:20px;padding:15px 0;border-bottom:1px solid var(--line)}
+.record dt{font-weight:600;overflow-wrap:anywhere}.record dd{margin:0;color:var(--muted)}
+
+.content>section[hidden]{display:none}body[data-mode=draw] .records{display:none}a{color:var(--accent)}
+.job-examples [hidden]{display:none!important}
+.example-picker{display:flex;align-items:center;gap:12px;margin-bottom:20px;color:var(--muted)}
+.example-picker select{min-width:0;max-width:100%;flex:1;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:16px system-ui}
+.studio-topics{list-style:none;padding:0;margin:0;font-size:17px}
+.studio-topics li{padding:14px 0;border-bottom:1px solid var(--line)}
+@media(prefers-color-scheme:dark){:root{--paper:#19232f;--ink:#e3eaf4;--muted:#abb9cb;--line:#3b4b60;--soft:#243c55;--accent:#9bc9ff}}
+@media(max-width:500px){main{padding:14px}.record{grid-template-columns:1fr;gap:5px}}
+</style><link rel="stylesheet" href="/examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/structure.css"><style>.rule .lvl a{color:inherit}.content>section[hidden]{display:none!important}</style></head><body><main class="content"><section id="folder-rules" title="Fixed name · 〈Name for this work〉"><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="a Method Book: the design methods one kind of thing is made by" data-node="n" data-parent="" data-level=""><span aria-hidden="true">📁</span> DesignMethodBook-〈topic〉/</summary><ul><li><details open><summary class="lvl" title="one method type: its steps and its signed versions" data-node="n0" data-parent="n" data-level=""><span aria-hidden="true">📁</span> jNN_M0x-〈method〉/</summary><ul><li><span class="leaf lvl" title="the Job&#x27;s face: its pins (goal, method, inputs) and state" data-node="n0-0" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> jNN_〈job〉.md</span></li><li><span class="leaf lvl" title="one signed version of the method" data-node="n0-1" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> mK.md</span></li></ul></details></li><li><span class="leaf lvl" title="changes proposed to the methods, from Boards and experiments" data-node="n1" data-parent="n" data-level=""><span aria-hidden="true">📁</span> proposals/</span></li><li><span class="leaf lvl" title="a Studio topic: a drawing or design to talk through" data-node="n2" data-parent="n" data-level=""><span aria-hidden="true">📁</span> sNN-〈topic〉/</span></li><li><span class="leaf lvl" title="a record of each change, by day" data-node="n3" data-parent="n" data-level=""><span aria-hidden="true">📁</span> trace/</span></li><li><span class="leaf lvl" title="what came in from outside; made when first needed" data-node="n4" data-parent="n" data-level=""><span aria-hidden="true">📁</span> related/</span></li><li><span class="leaf lvl" title="what the Block hands out: the released designs" data-node="n5" data-parent="n" data-level=""><span aria-hidden="true">📁</span> delivery/</span></li><li><span class="leaf lvl" title="the Block&#x27;s face: goals, Jobs and Studio topics" data-node="n6" data-parent="n" data-level=""><span aria-hidden="true">◇</span> board.md</span></li></ul></details></li></ul></div><details class="structure-example"><summary>DesignMethodBook-Example</summary><div id="folder"><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="DesignMethodBook-Example/" data-node="n" data-parent="" data-level=""><span aria-hidden="true">📁</span> DesignMethodBook-Example/</summary><ul><li><details open><summary class="lvl" title="j01_M01-goal-only/" data-node="n0" data-parent="n" data-level=""><span aria-hidden="true">📁</span> j01_M01-goal-only/</summary><ul><li><span class="leaf lvl" title="j01_M01-goal-only.md" data-node="n0-0" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> j01_M01-goal-only.md</span></li><li><span class="leaf lvl" title="m2.md" data-node="n0-1" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> m2.md</span></li></ul></details></li><li><details open><summary class="lvl" title="j02_M02-overall-performance/" data-node="n1" data-parent="n" data-level=""><span aria-hidden="true">📁</span> j02_M02-overall-performance/</summary><ul><li><span class="leaf lvl" title="j02_M02-overall-performance.md" data-node="n1-0" data-parent="n1" data-level=""><span aria-hidden="true">◇</span> j02_M02-overall-performance.md</span></li><li><span class="leaf lvl" title="m1.md" data-node="n1-1" data-parent="n1" data-level=""><span aria-hidden="true">◇</span> m1.md</span></li></ul></details></li><li><details><summary class="lvl" title="proposals/" data-node="n2" data-parent="n" data-level=""><span aria-hidden="true">📁</span> proposals/</summary><ul><li><span class="leaf lvl" title="README.md" data-node="n2-0" data-parent="n2" data-level=""><span aria-hidden="true">◇</span> README.md</span></li><li><span class="leaf lvl" title="fewer-ideas-per-rule.md" data-node="n2-1" data-parent="n2" data-level=""><span aria-hidden="true">◇</span> fewer-ideas-per-rule.md</span></li></ul></details></li><li><span class="leaf lvl" title="board.md" data-node="n3" data-parent="n" data-level=""><span aria-hidden="true">◇</span> board.md</span></li></ul></details></li></ul></div></div></details></section><section id="jobs-rules" title="Fixed name · 〈Name for this work〉" hidden><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="Design Method Book" data-node="n" data-parent="" data-level=""><span aria-hidden="true">◇</span> Design Method Book</summary><ul><li><details open><summary class="lvl" title="Job group · optional" data-node="n0" data-parent="n" data-level="job-group"><span aria-hidden="true">◇</span> 〈Method family〉</summary><ul><li><span class="leaf lvl" title="Job name" data-node="n0-0" data-parent="n0" data-level="job-name"><span aria-hidden="true">◇</span> M0x · 〈method〉</span></li></ul></details></li></ul></details></li></ul></div><details class="structure-example"><summary>DesignMethodBook-Example</summary><div id="jobs"><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="Design Method Book" data-node="n" data-parent="" data-level=""><span aria-hidden="true">◇</span> Design Method Book</summary><ul><li><details open><summary class="lvl" title="Job group · optional" data-node="n0" data-parent="n" data-level="job-group"><span aria-hidden="true">◇</span> Goal Only</summary><ul><li><span class="leaf lvl" title="Job name" data-node="n0-0" data-parent="n0" data-level="job-name"><span aria-hidden="true">◇</span> <a href="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesignMethodBook-Example&amp;layout=focus&amp;section=jobs&amp;group=j01" target="_self">j01 · M01 · goal only</a></span></li></ul></details></li><li><details open><summary class="lvl" title="Job group · optional" data-node="n1" data-parent="n" data-level="job-group"><span aria-hidden="true">◇</span> Internal</summary><ul><li><span class="leaf lvl" title="Job name" data-node="n1-0" data-parent="n1" data-level="job-name"><span aria-hidden="true">◇</span> <a href="/_board/workbench?path=examples%2FProject-Ladder%2Fdesign%2FDesignMethodBook-Example&amp;layout=focus&amp;section=jobs&amp;group=j02" target="_self">j02 · M02 · overall performance</a></span></li></ul></details></li></ul></details></li></ul></div></div></details></section><section id="studio-rules" title="Fixed name · 〈Name for this work〉" hidden><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="Design Method Book" data-node="n" data-parent="" data-level=""><span aria-hidden="true">◇</span> Design Method Book</summary><ul><li><span class="leaf lvl" title="🧱 Block Structure · s0N" data-node="n0" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🧱 Block Structure · s0N</span></li><li><span class="leaf lvl" title="👀 Block Job UI Preview · s1N" data-node="n1" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 👀 Block Job UI Preview · s1N</span></li><li><span class="leaf lvl" title="📊 Report · s2N" data-node="n2" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 📊 Report · s2N</span></li><li><span class="leaf lvl" title="🧩 UI Plugin · s3N" data-node="n3" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🧩 UI Plugin · s3N</span></li><li><span class="leaf lvl" title="🪜 Task Procedure · s4N" data-node="n4" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🪜 Task Procedure · s4N</span></li><li><span class="leaf lvl" title="🧰 Skills · s5N" data-node="n5" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🧰 Skills · s5N</span></li><li><span class="leaf lvl" title="🧰 Skills · s6N" data-node="n6" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🧰 Skills · s6N</span></li><li><span class="leaf lvl" title="🏷️ Studio Type · s7N" data-node="n7" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🏷️ Studio Type · s7N</span></li><li><span class="leaf lvl" title="🗺️ Theme Guide · s8N" data-node="n8" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🗺️ Theme Guide · s8N</span></li><li><span class="leaf lvl" title="🧭 Guide · s9N" data-node="n9" data-parent="n" data-level=""><span aria-hidden="true">◇</span> 🧭 Guide · s9N</span></li></ul></details></li></ul></div><details class="structure-example"><summary>DesignMethodBook-Example</summary><div id="studio"><div class="drawing"><ul class="tree rule"><li><span class="leaf lvl" title="Design Method Book" data-node="n" data-parent="" data-level=""><span aria-hidden="true">◇</span> Design Method Book</span></li></ul></div></div></details></section><section id="folder-rules-draw" title="Fixed name · 〈Name for this work〉" hidden><div class="drawing"><ul class="tree rule"><li><details open><summary class="lvl" title="a Method Book: the design methods one kind of thing is made by" data-node="n" data-parent="" data-level=""><span aria-hidden="true">📁</span> DesignMethodBook-〈topic〉/</summary><ul><li><details open><summary class="lvl" title="one method type: its steps and its signed versions" data-node="n0" data-parent="n" data-level=""><span aria-hidden="true">📁</span> jNN_M0x-〈method〉/</summary><ul><li><span class="leaf lvl" title="the Job&#x27;s face: its pins (goal, method, inputs) and state" data-node="n0-0" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> jNN_〈job〉.md</span></li><li><span class="leaf lvl" title="one signed version of the method" data-node="n0-1" data-parent="n0" data-level=""><span aria-hidden="true">◇</span> mK.md</span></li></ul></details></li><li><span class="leaf lvl" title="changes proposed to the methods, from Boards and experiments" data-node="n1" data-parent="n" data-level=""><span aria-hidden="true">📁</span> proposals/</span></li><li><span class="leaf lvl" title="a Studio topic: a drawing or design to talk through" data-node="n2" data-parent="n" data-level=""><span aria-hidden="true">📁</span> sNN-〈topic〉/</span></li><li><span class="leaf lvl" title="a record of each change, by day" data-node="n3" data-parent="n" data-level=""><span aria-hidden="true">📁</span> trace/</span></li><li><span class="leaf lvl" title="what came in from outside; made when first needed" data-node="n4" data-parent="n" data-level=""><span aria-hidden="true">📁</span> related/</span></li><li><span class="leaf lvl" title="what the Block hands out: the released designs" data-node="n5" data-parent="n" data-level=""><span aria-hidden="true">📁</span> delivery/</span></li><li><span class="leaf lvl" title="the Block&#x27;s face: goals, Jobs and Studio topics" data-node="n6" data-parent="n" data-level=""><span aria-hidden="true">◇</span> board.md</span></li></ul></details></li></ul></div></section><section id="jobs-rules-draw" title="Fixed name · 〈Name for this work〉" hidden><style>
+/* the map grows to its widest Point and its box scrolls sideways; a Point never wraps (JL 261021: "怎么让这个 structure
+   的宽度能够无限延伸 ... 我就是想让它一直不要有这个 break") */
+.pm{position:relative;display:grid;grid-template-columns:250px auto;gap:0 64px;align-items:center;padding:8px 4px;
+ width:max-content;min-width:100%;box-sizing:border-box}
+.pm-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.pm-wires path{fill:none;stroke:var(--mut);stroke-opacity:.45;stroke-width:1.4}
+.pm-node{position:relative;background:var(--card);border:1.5px solid var(--fg);border-radius:10px}
+.pm-root{padding:14px 16px;font-size:13px;line-height:1.5}.pm-root b{display:block;font-size:17px;margin-bottom:6px}
+.pm-root p{margin:0;color:var(--mut)}
+.pm-para{display:grid;grid-template-columns:230px auto;gap:0 56px;align-items:center;margin:4px 0}
+.pm-pnode,.pm-cnode{padding:9px 12px;font-size:14.5px;line-height:1.35}.pm-id{display:block;font-size:11.5px;color:var(--mut)}
+.pm-part{display:grid;grid-template-columns:180px auto;gap:0 48px;align-items:center;margin:8px 0}
+.pm-part .pm-para{grid-template-columns:210px auto;gap:0 48px}.pm-part .pm-q{width:210px}
+.pm-leaves{list-style:none;margin:0;padding:0}
+.pm-leaves li{position:relative;padding:3px 0;line-height:1.5;font-size:14px;white-space:nowrap}
+.pm-s{display:inline-block;min-width:30px;font-size:12px;color:var(--mut)}
+.pm-role{display:inline-block;min-width:86px;box-sizing:border-box;text-align:center;margin-right:7px;padding:0 6px;border:1px solid var(--line);border-radius:9px;font-size:11.5px;color:var(--mut)}
+.pm-card{display:inline-block;margin-left:2px;padding:0 5px;border:1px solid;border-radius:3px;font-size:11px;font-weight:600}
+.pm-flag{color:#e03131;font-weight:600}
+.pm-edit{position:relative}.pm-msg{position:absolute;right:4px;top:0;font-size:12px;color:var(--mut)}
+[data-edit]{outline:none;border-radius:3px;cursor:text}[data-edit]:hover{background:var(--wash)}
+[data-edit]:focus{background:#fff3bf;color:var(--fg)}.pm-role[data-edit]{border-radius:9px}.pm-role:empty{border-style:dashed}
+.pm-q [data-edit]::before{content:"↓ "}.pm-s{cursor:grab}.pm-leaves li.pm-drop{box-shadow:0 -2px 0 var(--acc)}
+.pm-pnode.pm-drop{border-color:var(--acc)}[data-edit].pm-bad{outline:1.5px dashed #e03131;outline-offset:2px}
+.pm-err{color:#e03131;font-size:12px;font-weight:600;font-style:normal}.pm-leaves li.pm-new .pm-s{visibility:hidden}
+.pm-q{width:230px;box-sizing:border-box;margin:2px 0;padding:2px 8px 2px 14px;font-size:12.5px;font-style:italic;color:var(--mut);line-height:1.4}
+.pm-q [data-edit]:empty::before{content:"↓ ＋ question";opacity:.7}
+.pm-plus{border:0;background:none;padding:1px 4px;font:12px/1.4 system-ui,sans-serif;color:var(--mut);opacity:.6;cursor:pointer}
+.pm-plus:hover{opacity:1;color:var(--acc)}.pm-leaves li.pm-add{padding:1px 0 0 30px}
+.pm-addp{width:230px;box-sizing:border-box;padding:0 0 2px 10px}.pm-part .pm-addp{width:210px}
+/* the ＋ marks stay hidden until the mouse is over their paragraph or their gap (JL 261020: "能不能让它默认隐身，等我鼠标
+   移过去的时候再显示出来"); they keep their room, so nothing moves; a touch screen, with no hover, always shows them */
+@media(hover:hover){.pm-leaves li.pm-add,.pm-addp,.pm-q [data-edit]:empty::before{opacity:0;transition:opacity .12s}
+ .pm-para:hover li.pm-add,.pm-addp:hover,.pm-para:hover+.pm-addp,.pm-para:hover+.pm-q+.pm-addp,.pm-q:hover+.pm-addp,
+ .pm-add:focus-within,.pm-addp:focus-within{opacity:1}
+ .pm-para:hover+.pm-q [data-edit]:empty::before,.pm-q:hover [data-edit]:empty::before,.pm-q [data-edit]:empty:focus::before{opacity:.7}}
+.pm-pnode [data-edit]:empty{display:block;min-height:1.35em;border-bottom:1px dashed var(--line)}
+.pm-detail:empty{display:none}   /* a node with no detail draws no empty grey box */
+/* a narrow screen keeps the tree and slides sideways; it never stacks into a list (JL 261031: "do not have this
+   version, I want to have the mindmap tree for all the time") */
+</style><style>
+.pm-more{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-more[aria-expanded=true]{transform:rotate(90deg)}.pm-more[data-empty]{opacity:0}.pm-leaves li:hover .pm-more[data-empty]{opacity:.5}
+.pm-detail{margin:3px 0 6px 30px;padding:6px 10px;max-width:560px;white-space:normal;font-size:12.5px;line-height:1.5;
+ color:var(--fg);background:var(--wash);border:1px solid var(--line);border-radius:7px}
+.pm-detail p{margin:0 0 4px}.pm-detail ul{margin:0 0 4px;padding-left:18px}.pm-detail img{display:block;max-width:420px;
+ max-height:300px;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}
+.pm-pen{border:0;background:none;padding:0;font-size:12px;color:var(--mut);cursor:pointer;opacity:.6}.pm-pen:hover{opacity:1}
+.pm-detail textarea{display:block;width:520px;min-height:90px;font:12.5px/1.5 ui-monospace,Menlo,monospace}
+.pm-sub{list-style:none;margin:0;padding:0 0 0 30px}.pm-sub li{padding:2px 0;font-size:13.5px}
+.pm-open{text-decoration:none;color:var(--mut)}.pm-open:hover{color:var(--acc)}
+.pm-pnode .pm-id:empty{display:none}           /* a branch with no kind: no grey line over its name */
+.pm-pnode .pm-id{text-transform:lowercase;letter-spacing:.02em}
+/* a point with no role keeps its pill hidden until the line is hovered, so a role can still be typed */
+.pm-leaves li .pm-role:empty,.pm-sub li .pm-role:empty{visibility:hidden}.pm-leaves li:hover>.pm-role:empty,.pm-sub li:hover>.pm-role:empty,.pm-role:empty:focus{visibility:visible}
+</style><style>
+.pm-folds .pm-para:not(.pm-on)>.pm-leaves{display:none}.pm-folds li:not(.pm-on)>.pm-sub{display:none}
+.pm-foldbtn{position:absolute;right:5px;top:5px;border:0;background:none;padding:2px 4px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+/* a card's fold mark carries its word (every mark has its word: round 3, "the map-card fold mark has no word") */
+.pm-foldbtn::before{content:"▸ show"}.pm-on>.pm-pnode>.pm-foldbtn::before{content:"▾ hide"}
+.pm-pnode:has(>.pm-foldbtn):has(>.pm-id:empty),.pm-pnode:has(>.pm-foldbtn):not(:has(>.pm-id)){padding-right:52px}
+.pm-subfold{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-subfold::before{content:"▸"}li.pm-on>.pm-w>.pm-subfold::before{content:"▾"}
+.pm-folds .pm-pnode:has(>.pm-foldbtn){cursor:pointer}.pm-folds .pm-pnode:has(>.pm-foldbtn):hover{border-color:var(--acc)}
+.pm-foldbar{display:flex;gap:6px;margin:0 0 6px}.pm-foldbar button{border:1px solid var(--line);border-radius:6px;background:none;padding:2px 10px;font:12.5px system-ui,sans-serif;color:inherit;cursor:pointer}
+</style><script>
+(function(){if(window.__pmFold)return;window.__pmFold=1;var kept={};
+ function key(m){var b=m.querySelector('.pm-root b');return b?b.textContent:'';}
+ function ids(m){return m.querySelectorAll('.pm-para[data-p],li[data-s]');}
+ function id(n){return n.dataset.p||n.dataset.s;}
+ function keep(m){var o={};ids(m).forEach(function(n){if(n.classList.contains('pm-on'))o[id(n)]=1;});kept[key(m)]=o;}
+ function redraw(){if(window.pmDraw)window.pmDraw();}
+ function restore(){document.querySelectorAll('.pm-folds').forEach(function(m){if(m.dataset.kept)return;m.dataset.kept=1;var o=kept[key(m)];if(!o)return;
+  ids(m).forEach(function(n){if(o[id(n)])n.classList.add('pm-on');});redraw();});}
+ document.addEventListener('click',function(e){if(!e.target.closest)return;
+  var all=e.target.closest('[data-foldall]');
+  if(all){var w=all.closest('.pm-edit').querySelector('.pm-folds');ids(w).forEach(function(n){n.classList.toggle('pm-on',all.dataset.foldall==='1');});keep(w);redraw();return;}
+  var m=e.target.closest('.pm-folds');if(!m)return;
+  var btn=e.target.closest('.pm-foldbtn,.pm-subfold'),hit=null;
+  if(btn)hit=btn.closest('.pm-para,li');
+  else if(!e.target.isContentEditable&&!e.target.closest('a,button,.pm-detail')){
+   var c=e.target.closest('.pm-pnode');
+   if(c&&c.querySelector(':scope>.pm-foldbtn'))hit=c.parentNode;
+   else{var l=e.target.closest('.pm-leaves li');if(l&&l.querySelector(':scope>.pm-w>.pm-subfold'))hit=l;}}
+  if(!hit)return;e.preventDefault();hit.classList.toggle('pm-on');keep(m);redraw();});
+ document.addEventListener('DOMContentLoaded',restore);setTimeout(restore,40);
+ function watch(){new MutationObserver(restore).observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+})();
+</script><div class=pm-edit data-task="structure-0904b0e6af9c4417" data-file="structure-0904b0e6af9c4417" data-endpoint="/_board/mindmap"><span class=pm-msg role=status></span><div class=pm-foldbar><button type=button data-foldall=1>Open all</button><button type=button data-foldall=0>Close all</button></div><div class="pm pm-folds"><svg class=pm-wires aria-hidden=true></svg><div class="pm-node pm-root"><b>Design Method Book</b></div><div><div class=pm-para data-p="n1"><div class="pm-node pm-pnode"><span class=pm-id>Job group · optional</span><b data-edit=para data-raw="〈Method family〉" spellcheck=false>〈Method family〉</b><button type=button class=pm-foldbtn aria-label="open or close"></button></div><ul class=pm-leaves><li data-s="n2"><span class=pm-s draggable=true>1.1</span><span class=pm-role data-edit=role data-raw="Job name" spellcheck=false>Job name</span><span class=pm-w><span class=pm-t data-edit=words data-raw="M0x · 〈method〉" spellcheck=false>M0x · 〈method〉</span><button type=button class=pm-more aria-expanded=false title="add a detail" data-empty=1>▸</button></span><div class=pm-detail hidden></div></li></ul></div></div></div></div><script>
+(function(){if(window.__pmMap)return;window.__pmMap=1;
+ function wire(a,b,o,leaf){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
+  /* a leaf hung under its card (a narrow box puts it there) gets an elbow from the card's foot, not a curve back */
+  if(leaf&&q.left<p.right-4){var ex=p.left-o.left+10,ey=p.bottom-o.top,ty=q.top+12-o.top,tx=q.left-o.left-4;
+   return '<path d="M'+ex+','+ey+' V'+ty+' H'+tx+'"/>';}
+  var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-6,y2=(leaf?q.top+12:q.top+q.height/2)-o.top,m=(x1+x2)/2;
+  return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
+ function draw(){document.querySelectorAll('.pm').forEach(function(m){var svg=m.querySelector('.pm-wires');
+  if(!m.offsetParent||getComputedStyle(svg).display==='none')return;
+  var o=m.getBoundingClientRect(),root=m.querySelector('.pm-root'),d='';
+  svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
+  m.querySelectorAll('.pm-part').forEach(function(pt){d+=wire(root,pt.querySelector('.pm-cnode'),o);});
+  m.querySelectorAll('.pm-para').forEach(function(pa){var p=pa.querySelector('.pm-pnode'),pt=pa.closest('.pm-part');
+   d+=wire(pt?pt.querySelector('.pm-cnode'):root,p,o);
+   pa.querySelectorAll('.pm-leaves>li:not(.pm-add)').forEach(function(l){if(l.offsetParent)d+=wire(p,l,o,true);});});
+  svg.innerHTML=d;});}
+ window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
+ document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
+ window.pmDraw=draw;document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('.pm'))draw();});
+ /* a map in a hidden tab or a closed section has no size, so it drew no lines; it draws them when it is shown (JL 261111: "why there are no lines here?") */
+ if(window.ResizeObserver){var ro=new ResizeObserver(function(){requestAnimationFrame(draw);});
+  var watch=function(){document.querySelectorAll('.pm').forEach(function(m){if(!m.dataset.pmro){m.dataset.pmro=1;ro.observe(m);}});};
+  watch();window.addEventListener('load',watch);}
+})();
+</script><script>
+(function(){if(window.__pmEdit)return;window.__pmEdit=1;
+ function host(el){return el.closest('.pm-edit');}
+ function say(el,t,bad){var m=host(el).querySelector('.pm-msg');m.textContent=t||'';m.style.color=bad?'#c92a2a':'';
+  if(t&&!bad)setTimeout(function(){if(m.textContent===t)m.textContent='';},1800);}
+ /* a refusal is said where the person typed, and the words they typed stay, outlined red (JL 261020: "why the
+    content is not saved here?") */
+ function bad(el,msg){var x=el.parentNode.querySelector(':scope > .pm-err');if(!x){x=document.createElement('span');x.className='pm-err';el.after(x);}
+  x.textContent=' not saved: '+msg;el.classList.add('pm-bad');say(el,'not saved: '+msg,true);if(window.pmDraw)window.pmDraw();}
+ function post(el,body){var h=host(el);body.task=h.dataset.task;body.file=h.dataset.file;say(el,'…');
+  return fetch(h.dataset.endpoint||'/_board/draft-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){if(j.file)h.dataset.file=j.file;
+    if(!j.ok){var e=new Error(j.err||'not saved');e.reload=/newer/.test(j.err||'');throw e;}
+    el.classList.remove('pm-bad');var x=el.parentNode&&el.parentNode.querySelector(':scope > .pm-err');if(x)x.remove();
+    say(el,'saved');return j;});}
+ /* the map again from the server, after a point was added, taken out or moved */
+ function refresh(h,then){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(t){
+  var n=new DOMParser().parseFromString(t,'text/html').querySelector('.pm-edit[data-task="'+h.dataset.task+'"]');
+  if(n){h.innerHTML=n.innerHTML;h.dataset.file=n.dataset.file;}if(window.pmDraw)window.pmDraw();if(then)then();});}
+ /* a new point or paragraph refused because the draft changed under the page: the map reloads, and what was typed
+    comes back in the same paragraph, outlined red, so clicking away adds it to the newest draft */
+ var AGAIN='the draft changed under this page; click away to add it again';
+ function again(h,what,pid,txt,role){refresh(h,function(){var pa=h.querySelector('.pm-para[data-p="'+pid+'"]');
+  if(!pa){say(h.querySelector('.pm-msg')||h,'not saved: '+pid+' is gone in the newest draft',true);return;}
+  if(what==='para'){var row=pa.nextElementSibling;while(row&&!row.classList.contains('pm-addp'))row=row.nextElementSibling;
+   var b=row&&row.querySelector('[data-add=para]');if(!b)return;b.click();var e=h.querySelector('.pm-newp [data-edit]');e.textContent=txt;bad(e,AGAIN);return;}
+  var pts=pa.querySelectorAll('li[data-s]');newpoint(pa.querySelector('li.pm-add'),pts.length?pts[pts.length-1].dataset.s:'',pid);
+  var n=pa.querySelector('li.pm-new');n.querySelector('.pm-role').textContent=role||'';var w=n.querySelector('.pm-t');w.textContent=txt;bad(w,AGAIN);});}
+ function words(el){return el.innerText.replace(/\s+/g,' ').trim();}
+ function newpoint(before,after,pid){var n=document.createElement('li');n.className='pm-new';n.dataset.after=after||'';n.dataset.p=pid;
+  n.innerHTML='<span class=pm-s>+</span><span class=pm-role data-edit=role data-raw=""></span>'+
+   '<span class=pm-w><span class=pm-t data-edit=words data-raw=""></span></span>';
+  before.parentNode.insertBefore(n,before);n.querySelector('.pm-t').focus();if(window.pmDraw)window.pmDraw();}
+ /* ＋ point: a new point last in its paragraph; ＋ paragraph: a new paragraph after this one, named first */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit [data-add]');if(!b)return;e.preventDefault();
+  if(b.dataset.add==='point'){var ul=b.closest('.pm-leaves'),pts=ul.querySelectorAll('li[data-s]');
+   newpoint(b.closest('li'),pts.length?pts[pts.length-1].dataset.s:'',b.closest('.pm-para').dataset.p);return;}
+  var row=b.closest('.pm-addp'),n=document.createElement('div');n.className='pm-para pm-newp';n.dataset.after=b.dataset.after;
+  n.innerHTML='<div class="pm-node pm-pnode"><span class=pm-id>＋</span><b data-edit=newpara data-raw=""></b></div><ul class=pm-leaves></ul>';
+  row.after(n);n.querySelector('[data-edit]').focus();if(window.pmDraw)window.pmDraw();});
+ document.addEventListener('focusin',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el||el._html!=null)return;
+  el._html=el.innerHTML;if(!el.classList.contains('pm-bad'))el.textContent=el.dataset.raw;});
+ document.addEventListener('keydown',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
+  if(e.key==='Escape'){e.preventDefault();el.textContent=el.dataset.raw;el.blur();return;}
+  if(e.key!=='Enter')return;e.preventDefault();
+  /* Enter after a point: a new point below it, in the same paragraph */
+  var li=el.dataset.edit==='words'&&el.closest('li');
+  if(li&&words(el)){el.blur();newpoint(li.nextSibling,li.dataset.s||li.dataset.after||'',li.closest('.pm-para').dataset.p);}else el.blur();});
+ document.addEventListener('focusout',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
+  var h=host(el),li=el.closest('li'),v=words(el),was=el.dataset.raw,html=el._html;el._html=null;
+  if(el.dataset.edit==='newpara'){var np=el.closest('.pm-newp');if(!v){np.remove();if(window.pmDraw)window.pmDraw();return;}
+   post(el,{what:'addpara',after:np.dataset.after,value:v}).then(function(){refresh(h);})
+    .catch(function(err){if(err.reload)again(h,'para',np.dataset.after,v);else bad(el,err.message);});return;}
+  if(li&&li.classList.contains('pm-new')){
+   if(e.relatedTarget&&li.contains(e.relatedTarget))return;          /* from the role to the words of the new point */
+   var t=words(li.querySelector('.pm-t'));if(!t){li.remove();if(window.pmDraw)window.pmDraw();return;}
+   var role=words(li.querySelector('.pm-role'));
+   post(el,{what:'add',after:li.dataset.after,p:li.dataset.p,value:t,role:role})
+    .then(function(){refresh(h);}).catch(function(err){if(err.reload)again(h,'point',li.dataset.p,t,role);else bad(el,err.message);});return;}
+  if(v===was){el.innerHTML=html!=null?html:el.innerHTML;return;}
+  var body={what:el.dataset.edit,was:was,value:v};if(li)body.s=li.dataset.s;
+  if(el.dataset.p)body.p=el.dataset.p;else if(el.dataset.edit==='para')body.p=el.closest('.pm-para').dataset.p;
+  /* a point emptied is taken out */
+  if(el.dataset.edit==='words'&&!v)body.what='drop';
+  post(el,body).then(function(j){if(body.what==='drop'){refresh(h);return;}el.dataset.raw=v;el.innerHTML=j.html!=null?j.html:v;
+    if(window.pmDraw)window.pmDraw();})
+   .catch(function(err){bad(el,err.message);});});
+ /* a point dragged by its S label: onto another point to go before it, onto a paragraph to go last in it */
+ var drag=null;
+ document.addEventListener('dragstart',function(e){var s=e.target.closest&&e.target.closest('.pm-edit .pm-s');if(!s)return;
+  drag=s.closest('li');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',drag.dataset.s);});
+ function spot(e){return drag&&e.target.closest&&(e.target.closest('.pm-leaves li[data-s]')||e.target.closest('.pm-pnode'));}
+ document.addEventListener('dragover',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
+  if(!t||t===drag||host(t)!==host(drag))return;e.preventDefault();t.classList.add('pm-drop');});
+ document.addEventListener('drop',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
+  if(!t||t===drag)return;e.preventDefault();var h=host(drag),body={what:'move',s:drag.dataset.s,p:t.closest('.pm-para').dataset.p};
+  if(t.tagName==='LI')body.before=t.dataset.s;drag=null;
+  post(t,body).then(function(){refresh(h);}).catch(function(err){say(t,'not saved: '+err.message,true);if(err.reload)refresh(h);});});
+ document.addEventListener('dragend',function(){drag=null;});
+})();
+</script><script>
+(function(){if(window.__pmMore)return;window.__pmMore=1;
+ window.pmOpen=window.pmOpen||new Set();
+ function draw(){if(window.pmDraw)window.pmDraw();}
+ /* ▸: a point's detail opens below it; an empty one (on an editable map) opens straight into its editor */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm .pm-more');if(!b)return;
+  e.preventDefault();e.stopPropagation();var li=b.closest('li'),d=li.querySelector(':scope>.pm-detail'),on=d.hidden;
+  d.hidden=!on;b.setAttribute('aria-expanded',String(on));if(on)window.pmOpen.add(li.dataset.s);else window.pmOpen.delete(li.dataset.s);
+  if(on&&b.dataset.empty){var pen=d.querySelector('.pm-pen');if(pen)pen.click();}draw();});
+ /* after the map reloads (an edit), the details that were open open again */
+ function watch(){new MutationObserver(function(){document.querySelectorAll('.pm-edit li[data-s]').forEach(function(li){
+  if(!window.pmOpen.has(li.dataset.s))return;var d=li.querySelector(':scope>.pm-detail'),b=li.querySelector('.pm-more');
+  if(d&&d.hidden){d.hidden=false;if(b)b.setAttribute('aria-expanded','true');draw();}});})
+  .observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+ /* ✎: the detail as its Markdown, in a box; leaving the box saves it */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit .pm-pen');if(!b)return;e.preventDefault();
+  var d=b.closest('.pm-detail'),t=document.createElement('textarea');t.value=b.dataset.raw;t.dataset.raw=b.dataset.raw;t.className='pm-notebox';
+  d.innerHTML='';d.appendChild(t);t.focus();draw();});
+ document.addEventListener('focusout',function(e){var t=e.target.closest&&e.target.closest('.pm-edit .pm-notebox');if(!t)return;
+  var h=t.closest('.pm-edit'),li=t.closest('li'),v=t.value.replace(/\s+$/,'');
+  function again(){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(x){
+   var n=new DOMParser().parseFromString(x,'text/html').querySelector('.pm-edit[data-task="'+h.dataset.task+'"]');
+   if(n)h.innerHTML=n.innerHTML;draw();});}
+  if(v===t.dataset.raw){again();return;}
+  fetch(h.dataset.endpoint||'/_board/draft-plan',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({what:'note',s:li.dataset.s,was:t.dataset.raw,value:v,task:h.dataset.task,file:h.dataset.file})})
+   .then(function(r){return r.json();}).then(function(j){if(!j.ok)throw new Error(j.err);again();})
+   .catch(function(err){t.style.outline='1.5px dashed #e03131';t.title='not saved: '+err.message;});});
+})();
+</script><style>.pm-q [data-edit]:empty::before{content:none}</style></section><section id="studio-rules-draw" title="Fixed name · 〈Name for this work〉" hidden><style>
+/* the map grows to its widest Point and its box scrolls sideways; a Point never wraps (JL 261021: "怎么让这个 structure
+   的宽度能够无限延伸 ... 我就是想让它一直不要有这个 break") */
+.pm{position:relative;display:grid;grid-template-columns:250px auto;gap:0 64px;align-items:center;padding:8px 4px;
+ width:max-content;min-width:100%;box-sizing:border-box}
+.pm-wires{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.pm-wires path{fill:none;stroke:var(--mut);stroke-opacity:.45;stroke-width:1.4}
+.pm-node{position:relative;background:var(--card);border:1.5px solid var(--fg);border-radius:10px}
+.pm-root{padding:14px 16px;font-size:13px;line-height:1.5}.pm-root b{display:block;font-size:17px;margin-bottom:6px}
+.pm-root p{margin:0;color:var(--mut)}
+.pm-para{display:grid;grid-template-columns:230px auto;gap:0 56px;align-items:center;margin:4px 0}
+.pm-pnode,.pm-cnode{padding:9px 12px;font-size:14.5px;line-height:1.35}.pm-id{display:block;font-size:11.5px;color:var(--mut)}
+.pm-part{display:grid;grid-template-columns:180px auto;gap:0 48px;align-items:center;margin:8px 0}
+.pm-part .pm-para{grid-template-columns:210px auto;gap:0 48px}.pm-part .pm-q{width:210px}
+.pm-leaves{list-style:none;margin:0;padding:0}
+.pm-leaves li{position:relative;padding:3px 0;line-height:1.5;font-size:14px;white-space:nowrap}
+.pm-s{display:inline-block;min-width:30px;font-size:12px;color:var(--mut)}
+.pm-role{display:inline-block;min-width:86px;box-sizing:border-box;text-align:center;margin-right:7px;padding:0 6px;border:1px solid var(--line);border-radius:9px;font-size:11.5px;color:var(--mut)}
+.pm-card{display:inline-block;margin-left:2px;padding:0 5px;border:1px solid;border-radius:3px;font-size:11px;font-weight:600}
+.pm-flag{color:#e03131;font-weight:600}
+.pm-edit{position:relative}.pm-msg{position:absolute;right:4px;top:0;font-size:12px;color:var(--mut)}
+[data-edit]{outline:none;border-radius:3px;cursor:text}[data-edit]:hover{background:var(--wash)}
+[data-edit]:focus{background:#fff3bf;color:var(--fg)}.pm-role[data-edit]{border-radius:9px}.pm-role:empty{border-style:dashed}
+.pm-q [data-edit]::before{content:"↓ "}.pm-s{cursor:grab}.pm-leaves li.pm-drop{box-shadow:0 -2px 0 var(--acc)}
+.pm-pnode.pm-drop{border-color:var(--acc)}[data-edit].pm-bad{outline:1.5px dashed #e03131;outline-offset:2px}
+.pm-err{color:#e03131;font-size:12px;font-weight:600;font-style:normal}.pm-leaves li.pm-new .pm-s{visibility:hidden}
+.pm-q{width:230px;box-sizing:border-box;margin:2px 0;padding:2px 8px 2px 14px;font-size:12.5px;font-style:italic;color:var(--mut);line-height:1.4}
+.pm-q [data-edit]:empty::before{content:"↓ ＋ question";opacity:.7}
+.pm-plus{border:0;background:none;padding:1px 4px;font:12px/1.4 system-ui,sans-serif;color:var(--mut);opacity:.6;cursor:pointer}
+.pm-plus:hover{opacity:1;color:var(--acc)}.pm-leaves li.pm-add{padding:1px 0 0 30px}
+.pm-addp{width:230px;box-sizing:border-box;padding:0 0 2px 10px}.pm-part .pm-addp{width:210px}
+/* the ＋ marks stay hidden until the mouse is over their paragraph or their gap (JL 261020: "能不能让它默认隐身，等我鼠标
+   移过去的时候再显示出来"); they keep their room, so nothing moves; a touch screen, with no hover, always shows them */
+@media(hover:hover){.pm-leaves li.pm-add,.pm-addp,.pm-q [data-edit]:empty::before{opacity:0;transition:opacity .12s}
+ .pm-para:hover li.pm-add,.pm-addp:hover,.pm-para:hover+.pm-addp,.pm-para:hover+.pm-q+.pm-addp,.pm-q:hover+.pm-addp,
+ .pm-add:focus-within,.pm-addp:focus-within{opacity:1}
+ .pm-para:hover+.pm-q [data-edit]:empty::before,.pm-q:hover [data-edit]:empty::before,.pm-q [data-edit]:empty:focus::before{opacity:.7}}
+.pm-pnode [data-edit]:empty{display:block;min-height:1.35em;border-bottom:1px dashed var(--line)}
+.pm-detail:empty{display:none}   /* a node with no detail draws no empty grey box */
+/* a narrow screen keeps the tree and slides sideways; it never stacks into a list (JL 261031: "do not have this
+   version, I want to have the mindmap tree for all the time") */
+</style><style>
+.pm-more{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-more[aria-expanded=true]{transform:rotate(90deg)}.pm-more[data-empty]{opacity:0}.pm-leaves li:hover .pm-more[data-empty]{opacity:.5}
+.pm-detail{margin:3px 0 6px 30px;padding:6px 10px;max-width:560px;white-space:normal;font-size:12.5px;line-height:1.5;
+ color:var(--fg);background:var(--wash);border:1px solid var(--line);border-radius:7px}
+.pm-detail p{margin:0 0 4px}.pm-detail ul{margin:0 0 4px;padding-left:18px}.pm-detail img{display:block;max-width:420px;
+ max-height:300px;border:1px solid var(--line);border-radius:6px;margin:4px 0;background:#fff}
+.pm-pen{border:0;background:none;padding:0;font-size:12px;color:var(--mut);cursor:pointer;opacity:.6}.pm-pen:hover{opacity:1}
+.pm-detail textarea{display:block;width:520px;min-height:90px;font:12.5px/1.5 ui-monospace,Menlo,monospace}
+.pm-sub{list-style:none;margin:0;padding:0 0 0 30px}.pm-sub li{padding:2px 0;font-size:13.5px}
+.pm-open{text-decoration:none;color:var(--mut)}.pm-open:hover{color:var(--acc)}
+.pm-pnode .pm-id:empty{display:none}           /* a branch with no kind: no grey line over its name */
+.pm-pnode .pm-id{text-transform:lowercase;letter-spacing:.02em}
+/* a point with no role keeps its pill hidden until the line is hovered, so a role can still be typed */
+.pm-leaves li .pm-role:empty,.pm-sub li .pm-role:empty{visibility:hidden}.pm-leaves li:hover>.pm-role:empty,.pm-sub li:hover>.pm-role:empty,.pm-role:empty:focus{visibility:visible}
+</style><style>
+.pm-folds .pm-para:not(.pm-on)>.pm-leaves{display:none}.pm-folds li:not(.pm-on)>.pm-sub{display:none}
+.pm-foldbtn{position:absolute;right:5px;top:5px;border:0;background:none;padding:2px 4px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+/* a card's fold mark carries its word (every mark has its word: round 3, "the map-card fold mark has no word") */
+.pm-foldbtn::before{content:"▸ show"}.pm-on>.pm-pnode>.pm-foldbtn::before{content:"▾ hide"}
+.pm-pnode:has(>.pm-foldbtn):has(>.pm-id:empty),.pm-pnode:has(>.pm-foldbtn):not(:has(>.pm-id)){padding-right:52px}
+.pm-subfold{border:0;background:none;padding:0 2px 0 6px;font:11px/1 system-ui,sans-serif;color:var(--mut);cursor:pointer}
+.pm-subfold::before{content:"▸"}li.pm-on>.pm-w>.pm-subfold::before{content:"▾"}
+.pm-folds .pm-pnode:has(>.pm-foldbtn){cursor:pointer}.pm-folds .pm-pnode:has(>.pm-foldbtn):hover{border-color:var(--acc)}
+.pm-foldbar{display:flex;gap:6px;margin:0 0 6px}.pm-foldbar button{border:1px solid var(--line);border-radius:6px;background:none;padding:2px 10px;font:12.5px system-ui,sans-serif;color:inherit;cursor:pointer}
+</style><script>
+(function(){if(window.__pmFold)return;window.__pmFold=1;var kept={};
+ function key(m){var b=m.querySelector('.pm-root b');return b?b.textContent:'';}
+ function ids(m){return m.querySelectorAll('.pm-para[data-p],li[data-s]');}
+ function id(n){return n.dataset.p||n.dataset.s;}
+ function keep(m){var o={};ids(m).forEach(function(n){if(n.classList.contains('pm-on'))o[id(n)]=1;});kept[key(m)]=o;}
+ function redraw(){if(window.pmDraw)window.pmDraw();}
+ function restore(){document.querySelectorAll('.pm-folds').forEach(function(m){if(m.dataset.kept)return;m.dataset.kept=1;var o=kept[key(m)];if(!o)return;
+  ids(m).forEach(function(n){if(o[id(n)])n.classList.add('pm-on');});redraw();});}
+ document.addEventListener('click',function(e){if(!e.target.closest)return;
+  var all=e.target.closest('[data-foldall]');
+  if(all){var w=all.closest('.pm-edit').querySelector('.pm-folds');ids(w).forEach(function(n){n.classList.toggle('pm-on',all.dataset.foldall==='1');});keep(w);redraw();return;}
+  var m=e.target.closest('.pm-folds');if(!m)return;
+  var btn=e.target.closest('.pm-foldbtn,.pm-subfold'),hit=null;
+  if(btn)hit=btn.closest('.pm-para,li');
+  else if(!e.target.isContentEditable&&!e.target.closest('a,button,.pm-detail')){
+   var c=e.target.closest('.pm-pnode');
+   if(c&&c.querySelector(':scope>.pm-foldbtn'))hit=c.parentNode;
+   else{var l=e.target.closest('.pm-leaves li');if(l&&l.querySelector(':scope>.pm-w>.pm-subfold'))hit=l;}}
+  if(!hit)return;e.preventDefault();hit.classList.toggle('pm-on');keep(m);redraw();});
+ document.addEventListener('DOMContentLoaded',restore);setTimeout(restore,40);
+ function watch(){new MutationObserver(restore).observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+})();
+</script><div class=pm-edit data-task="structure-be4bb4be2d1bfd19" data-file="structure-be4bb4be2d1bfd19" data-endpoint="/_board/mindmap"><span class=pm-msg role=status></span><div class=pm-foldbar><button type=button data-foldall=1>Open all</button><button type=button data-foldall=0>Close all</button></div><div class="pm pm-folds"><svg class=pm-wires aria-hidden=true></svg><div class="pm-node pm-root"><b>Design Method Book</b></div><div><div class=pm-para data-p="n1"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🧱 Block Structure · s0N" spellcheck=false>🧱 Block Structure · s0N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n1" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n2"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="👀 Block Job UI Preview · s1N" spellcheck=false>👀 Block Job UI Preview · s1N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n2" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n3"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="📊 Report · s2N" spellcheck=false>📊 Report · s2N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n3" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n4"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🧩 UI Plugin · s3N" spellcheck=false>🧩 UI Plugin · s3N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n4" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n5"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🪜 Task Procedure · s4N" spellcheck=false>🪜 Task Procedure · s4N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n5" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n6"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🧰 Skills · s5N" spellcheck=false>🧰 Skills · s5N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n6" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n7"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🧰 Skills · s6N" spellcheck=false>🧰 Skills · s6N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n7" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n8"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🏷️ Studio Type · s7N" spellcheck=false>🏷️ Studio Type · s7N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n8" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n9"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🗺️ Theme Guide · s8N" spellcheck=false>🗺️ Theme Guide · s8N</b></div><ul class=pm-leaves></ul></div><div class=pm-q><span data-edit=ask data-p="n9" data-raw="" spellcheck=false></span></div><div class=pm-para data-p="n10"><div class="pm-node pm-pnode"><span class=pm-id>Studio Band</span><b data-edit=para data-raw="🧭 Guide · s9N" spellcheck=false>🧭 Guide · s9N</b></div><ul class=pm-leaves></ul></div></div></div></div><script>
+(function(){if(window.__pmMap)return;window.__pmMap=1;
+ function wire(a,b,o,leaf){var p=a.getBoundingClientRect(),q=b.getBoundingClientRect();
+  /* a leaf hung under its card (a narrow box puts it there) gets an elbow from the card's foot, not a curve back */
+  if(leaf&&q.left<p.right-4){var ex=p.left-o.left+10,ey=p.bottom-o.top,ty=q.top+12-o.top,tx=q.left-o.left-4;
+   return '<path d="M'+ex+','+ey+' V'+ty+' H'+tx+'"/>';}
+  var x1=p.right-o.left,y1=p.top+p.height/2-o.top,x2=q.left-o.left-6,y2=(leaf?q.top+12:q.top+q.height/2)-o.top,m=(x1+x2)/2;
+  return '<path d="M'+x1+','+y1+' C'+m+','+y1+' '+m+','+y2+' '+x2+','+y2+'"/>';}
+ function draw(){document.querySelectorAll('.pm').forEach(function(m){var svg=m.querySelector('.pm-wires');
+  if(!m.offsetParent||getComputedStyle(svg).display==='none')return;
+  var o=m.getBoundingClientRect(),root=m.querySelector('.pm-root'),d='';
+  svg.setAttribute('width',o.width);svg.setAttribute('height',o.height);
+  m.querySelectorAll('.pm-part').forEach(function(pt){d+=wire(root,pt.querySelector('.pm-cnode'),o);});
+  m.querySelectorAll('.pm-para').forEach(function(pa){var p=pa.querySelector('.pm-pnode'),pt=pa.closest('.pm-part');
+   d+=wire(pt?pt.querySelector('.pm-cnode'):root,p,o);
+   pa.querySelectorAll('.pm-leaves>li:not(.pm-add)').forEach(function(l){if(l.offsetParent)d+=wire(p,l,o,true);});});
+  svg.innerHTML=d;});}
+ window.addEventListener('resize',draw);window.addEventListener('load',draw);setTimeout(draw,60);
+ document.addEventListener('toggle',function(){setTimeout(draw,0);},true);
+ window.pmDraw=draw;document.addEventListener('input',function(e){if(e.target.closest&&e.target.closest('.pm'))draw();});
+ /* a map in a hidden tab or a closed section has no size, so it drew no lines; it draws them when it is shown (JL 261111: "why there are no lines here?") */
+ if(window.ResizeObserver){var ro=new ResizeObserver(function(){requestAnimationFrame(draw);});
+  var watch=function(){document.querySelectorAll('.pm').forEach(function(m){if(!m.dataset.pmro){m.dataset.pmro=1;ro.observe(m);}});};
+  watch();window.addEventListener('load',watch);}
+})();
+</script><script>
+(function(){if(window.__pmEdit)return;window.__pmEdit=1;
+ function host(el){return el.closest('.pm-edit');}
+ function say(el,t,bad){var m=host(el).querySelector('.pm-msg');m.textContent=t||'';m.style.color=bad?'#c92a2a':'';
+  if(t&&!bad)setTimeout(function(){if(m.textContent===t)m.textContent='';},1800);}
+ /* a refusal is said where the person typed, and the words they typed stay, outlined red (JL 261020: "why the
+    content is not saved here?") */
+ function bad(el,msg){var x=el.parentNode.querySelector(':scope > .pm-err');if(!x){x=document.createElement('span');x.className='pm-err';el.after(x);}
+  x.textContent=' not saved: '+msg;el.classList.add('pm-bad');say(el,'not saved: '+msg,true);if(window.pmDraw)window.pmDraw();}
+ function post(el,body){var h=host(el);body.task=h.dataset.task;body.file=h.dataset.file;say(el,'…');
+  return fetch(h.dataset.endpoint||'/_board/draft-plan',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){if(j.file)h.dataset.file=j.file;
+    if(!j.ok){var e=new Error(j.err||'not saved');e.reload=/newer/.test(j.err||'');throw e;}
+    el.classList.remove('pm-bad');var x=el.parentNode&&el.parentNode.querySelector(':scope > .pm-err');if(x)x.remove();
+    say(el,'saved');return j;});}
+ /* the map again from the server, after a point was added, taken out or moved */
+ function refresh(h,then){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(t){
+  var n=new DOMParser().parseFromString(t,'text/html').querySelector('.pm-edit[data-task="'+h.dataset.task+'"]');
+  if(n){h.innerHTML=n.innerHTML;h.dataset.file=n.dataset.file;}if(window.pmDraw)window.pmDraw();if(then)then();});}
+ /* a new point or paragraph refused because the draft changed under the page: the map reloads, and what was typed
+    comes back in the same paragraph, outlined red, so clicking away adds it to the newest draft */
+ var AGAIN='the draft changed under this page; click away to add it again';
+ function again(h,what,pid,txt,role){refresh(h,function(){var pa=h.querySelector('.pm-para[data-p="'+pid+'"]');
+  if(!pa){say(h.querySelector('.pm-msg')||h,'not saved: '+pid+' is gone in the newest draft',true);return;}
+  if(what==='para'){var row=pa.nextElementSibling;while(row&&!row.classList.contains('pm-addp'))row=row.nextElementSibling;
+   var b=row&&row.querySelector('[data-add=para]');if(!b)return;b.click();var e=h.querySelector('.pm-newp [data-edit]');e.textContent=txt;bad(e,AGAIN);return;}
+  var pts=pa.querySelectorAll('li[data-s]');newpoint(pa.querySelector('li.pm-add'),pts.length?pts[pts.length-1].dataset.s:'',pid);
+  var n=pa.querySelector('li.pm-new');n.querySelector('.pm-role').textContent=role||'';var w=n.querySelector('.pm-t');w.textContent=txt;bad(w,AGAIN);});}
+ function words(el){return el.innerText.replace(/\s+/g,' ').trim();}
+ function newpoint(before,after,pid){var n=document.createElement('li');n.className='pm-new';n.dataset.after=after||'';n.dataset.p=pid;
+  n.innerHTML='<span class=pm-s>+</span><span class=pm-role data-edit=role data-raw=""></span>'+
+   '<span class=pm-w><span class=pm-t data-edit=words data-raw=""></span></span>';
+  before.parentNode.insertBefore(n,before);n.querySelector('.pm-t').focus();if(window.pmDraw)window.pmDraw();}
+ /* ＋ point: a new point last in its paragraph; ＋ paragraph: a new paragraph after this one, named first */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit [data-add]');if(!b)return;e.preventDefault();
+  if(b.dataset.add==='point'){var ul=b.closest('.pm-leaves'),pts=ul.querySelectorAll('li[data-s]');
+   newpoint(b.closest('li'),pts.length?pts[pts.length-1].dataset.s:'',b.closest('.pm-para').dataset.p);return;}
+  var row=b.closest('.pm-addp'),n=document.createElement('div');n.className='pm-para pm-newp';n.dataset.after=b.dataset.after;
+  n.innerHTML='<div class="pm-node pm-pnode"><span class=pm-id>＋</span><b data-edit=newpara data-raw=""></b></div><ul class=pm-leaves></ul>';
+  row.after(n);n.querySelector('[data-edit]').focus();if(window.pmDraw)window.pmDraw();});
+ document.addEventListener('focusin',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el||el._html!=null)return;
+  el._html=el.innerHTML;if(!el.classList.contains('pm-bad'))el.textContent=el.dataset.raw;});
+ document.addEventListener('keydown',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
+  if(e.key==='Escape'){e.preventDefault();el.textContent=el.dataset.raw;el.blur();return;}
+  if(e.key!=='Enter')return;e.preventDefault();
+  /* Enter after a point: a new point below it, in the same paragraph */
+  var li=el.dataset.edit==='words'&&el.closest('li');
+  if(li&&words(el)){el.blur();newpoint(li.nextSibling,li.dataset.s||li.dataset.after||'',li.closest('.pm-para').dataset.p);}else el.blur();});
+ document.addEventListener('focusout',function(e){var el=e.target.closest&&e.target.closest('.pm-edit [data-edit]');if(!el)return;
+  var h=host(el),li=el.closest('li'),v=words(el),was=el.dataset.raw,html=el._html;el._html=null;
+  if(el.dataset.edit==='newpara'){var np=el.closest('.pm-newp');if(!v){np.remove();if(window.pmDraw)window.pmDraw();return;}
+   post(el,{what:'addpara',after:np.dataset.after,value:v}).then(function(){refresh(h);})
+    .catch(function(err){if(err.reload)again(h,'para',np.dataset.after,v);else bad(el,err.message);});return;}
+  if(li&&li.classList.contains('pm-new')){
+   if(e.relatedTarget&&li.contains(e.relatedTarget))return;          /* from the role to the words of the new point */
+   var t=words(li.querySelector('.pm-t'));if(!t){li.remove();if(window.pmDraw)window.pmDraw();return;}
+   var role=words(li.querySelector('.pm-role'));
+   post(el,{what:'add',after:li.dataset.after,p:li.dataset.p,value:t,role:role})
+    .then(function(){refresh(h);}).catch(function(err){if(err.reload)again(h,'point',li.dataset.p,t,role);else bad(el,err.message);});return;}
+  if(v===was){el.innerHTML=html!=null?html:el.innerHTML;return;}
+  var body={what:el.dataset.edit,was:was,value:v};if(li)body.s=li.dataset.s;
+  if(el.dataset.p)body.p=el.dataset.p;else if(el.dataset.edit==='para')body.p=el.closest('.pm-para').dataset.p;
+  /* a point emptied is taken out */
+  if(el.dataset.edit==='words'&&!v)body.what='drop';
+  post(el,body).then(function(j){if(body.what==='drop'){refresh(h);return;}el.dataset.raw=v;el.innerHTML=j.html!=null?j.html:v;
+    if(window.pmDraw)window.pmDraw();})
+   .catch(function(err){bad(el,err.message);});});
+ /* a point dragged by its S label: onto another point to go before it, onto a paragraph to go last in it */
+ var drag=null;
+ document.addEventListener('dragstart',function(e){var s=e.target.closest&&e.target.closest('.pm-edit .pm-s');if(!s)return;
+  drag=s.closest('li');e.dataTransfer.effectAllowed='move';e.dataTransfer.setData('text/plain',drag.dataset.s);});
+ function spot(e){return drag&&e.target.closest&&(e.target.closest('.pm-leaves li[data-s]')||e.target.closest('.pm-pnode'));}
+ document.addEventListener('dragover',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
+  if(!t||t===drag||host(t)!==host(drag))return;e.preventDefault();t.classList.add('pm-drop');});
+ document.addEventListener('drop',function(e){var t=spot(e);document.querySelectorAll('.pm-drop').forEach(function(x){x.classList.remove('pm-drop');});
+  if(!t||t===drag)return;e.preventDefault();var h=host(drag),body={what:'move',s:drag.dataset.s,p:t.closest('.pm-para').dataset.p};
+  if(t.tagName==='LI')body.before=t.dataset.s;drag=null;
+  post(t,body).then(function(){refresh(h);}).catch(function(err){say(t,'not saved: '+err.message,true);if(err.reload)refresh(h);});});
+ document.addEventListener('dragend',function(){drag=null;});
+})();
+</script><script>
+(function(){if(window.__pmMore)return;window.__pmMore=1;
+ window.pmOpen=window.pmOpen||new Set();
+ function draw(){if(window.pmDraw)window.pmDraw();}
+ /* ▸: a point's detail opens below it; an empty one (on an editable map) opens straight into its editor */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm .pm-more');if(!b)return;
+  e.preventDefault();e.stopPropagation();var li=b.closest('li'),d=li.querySelector(':scope>.pm-detail'),on=d.hidden;
+  d.hidden=!on;b.setAttribute('aria-expanded',String(on));if(on)window.pmOpen.add(li.dataset.s);else window.pmOpen.delete(li.dataset.s);
+  if(on&&b.dataset.empty){var pen=d.querySelector('.pm-pen');if(pen)pen.click();}draw();});
+ /* after the map reloads (an edit), the details that were open open again */
+ function watch(){new MutationObserver(function(){document.querySelectorAll('.pm-edit li[data-s]').forEach(function(li){
+  if(!window.pmOpen.has(li.dataset.s))return;var d=li.querySelector(':scope>.pm-detail'),b=li.querySelector('.pm-more');
+  if(d&&d.hidden){d.hidden=false;if(b)b.setAttribute('aria-expanded','true');draw();}});})
+  .observe(document.documentElement,{childList:true,subtree:true});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',watch);else watch();
+ /* ✎: the detail as its Markdown, in a box; leaving the box saves it */
+ document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('.pm-edit .pm-pen');if(!b)return;e.preventDefault();
+  var d=b.closest('.pm-detail'),t=document.createElement('textarea');t.value=b.dataset.raw;t.dataset.raw=b.dataset.raw;t.className='pm-notebox';
+  d.innerHTML='';d.appendChild(t);t.focus();draw();});
+ document.addEventListener('focusout',function(e){var t=e.target.closest&&e.target.closest('.pm-edit .pm-notebox');if(!t)return;
+  var h=t.closest('.pm-edit'),li=t.closest('li'),v=t.value.replace(/\s+$/,'');
+  function again(){fetch(location.href,{credentials:'same-origin'}).then(function(r){return r.text();}).then(function(x){
+   var n=new DOMParser().parseFromString(x,'text/html').querySelector('.pm-edit[data-task="'+h.dataset.task+'"]');
+   if(n)h.innerHTML=n.innerHTML;draw();});}
+  if(v===t.dataset.raw){again();return;}
+  fetch(h.dataset.endpoint||'/_board/draft-plan',{method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({what:'note',s:li.dataset.s,was:t.dataset.raw,value:v,task:h.dataset.task,file:h.dataset.file})})
+   .then(function(r){return r.json();}).then(function(j){if(!j.ok)throw new Error(j.err);again();})
+   .catch(function(err){t.style.outline='1.5px dashed #e03131';t.title='not saved: '+err.message;});});
+})();
+</script><style>.pm-q [data-edit]:empty::before{content:none}</style></section></main><script>function pick(){const hash=location.hash.slice(1),draw=hash.endsWith('-draw');
+const raw=hash.replace(/-draw$/,''),want=['folder','jobs','studio'].includes(raw)?raw+'-rules':raw;
+const key=document.getElementById(want+(draw?'-draw':''))?want+(draw?'-draw':''):'folder-rules';
+document.body.dataset.mode=draw?'draw':'structure';document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!==key);}
+addEventListener('hashchange',()=>{pick();if(window.pmDraw)requestAnimationFrame(window.pmDraw)});pick();</script></body></html>

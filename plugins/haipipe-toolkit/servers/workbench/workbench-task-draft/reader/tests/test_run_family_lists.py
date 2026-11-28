@@ -15,7 +15,7 @@ import sys
 import unittest
 
 SERVER_DIR = Path(__file__).resolve().parents[1]
-PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "haipipe-draft"
+PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "hai-draft"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR.parent))                      # workbench-task-draft: the Page Task views
 sys.path[:0] = [str(d) for d in sorted(SERVER_DIR.parent.iterdir()) if d.is_dir() and any(d.glob("*.py"))]   # its module folders

@@ -27,10 +27,10 @@ limitations: A topic can grow past its spine; a split is a new Block, and a Bloc
 Applied to AI
 -------------
 
-agent: haipipe-discovery-orchestrator-agent writes the header; the person agrees the spine and the close condition.
+agent: hai-discovery-orchestrator-agent writes the header; the person agrees the spine and the close condition.
 steps: 1. Read the Project's discoveries/README.md. 2. Write the header lines. 3. Open the Jobs. 4. Stop for the person.
 returns: the Block's board.md header and its Job folders.
 verify: Spine, close condition and one inquiry per Job are all written (T0).
 risk: An agent may write a close condition nothing can test, such as "read everything" (ours).
 evidence on ai: No study tests agents scoping a literature topic (ours).
-skill: haipipe-discovery
+skill: hai-discovery

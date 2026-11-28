@@ -16,7 +16,7 @@ WARN = ("verify", "revise", "open", "failed", "waiting", "draft")
 
 
 # ── the run cards (b12 s21: each Run's skill, agent, sign and prompt live on its card) ────────────
-CARDS = skill_dir("haipipe-design-workflow") / "references" / "run-cards.md"
+CARDS = skill_dir("hai-design-workflow") / "references" / "run-cards.md"
 _CARD_LINE = re.compile(r"^🔘 BUTTON\s+(.+?) · (Block|Job|Task) › (.+?) · (\^run-\S+)(?: · views (.+))?$")
 _ALIAS = {}                                     # older spellings of a Run, mapped to its card (none left, 261007)
 _cache: dict = {}

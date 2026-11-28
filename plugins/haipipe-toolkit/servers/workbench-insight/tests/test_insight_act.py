@@ -89,7 +89,7 @@ class InsightActTest(unittest.TestCase):
         self.assertFalse((self.task / "runs" / "run-check-t03" / "passes").exists())
 
     def test_a_page_a_person_wrote_goes_to_another_checker(self):
-        A._pass(self.task, "write", "t03", "haipipe-insight-knowledge", "none", "written by a person", "", [], {})
+        A._pass(self.task, "write", "t03", "hai-insight-knowledge", "none", "written by a person", "", [], {})
         self.assertEqual(self.check()[0], 409)
 
     def test_the_close_waits_on_every_step_then_a_person_signs_it(self):

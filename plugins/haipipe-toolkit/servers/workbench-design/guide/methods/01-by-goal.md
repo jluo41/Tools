@@ -61,4 +61,4 @@ evidence on AI: LLM messages persuade about as well as human ones [Hölbling 202
   rated higher than the most-retweeted human messages on quality and
   clarity [Lim 2023]. Tailored to a reader from one short prompt, they
   persuaded more [Matz 2024].
-skill: haipipe-design-by-goal (proposed)
+skill: hai-design-by-goal (proposed)

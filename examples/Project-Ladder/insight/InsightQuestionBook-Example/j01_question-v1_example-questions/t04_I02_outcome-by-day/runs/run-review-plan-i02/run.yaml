@@ -1,0 +1,16 @@
+run: run-review-plan-i02
+kind: soft
+type: review-plan
+scope: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t04_I02_outcome-by-day
+target: i02
+ticket: run-review-plan-i02.md
+skill: hai-insight-evidence-plan
+agent: hai-insight-reviewer-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t04_I02_outcome-by-day/question.md
+feeds: []

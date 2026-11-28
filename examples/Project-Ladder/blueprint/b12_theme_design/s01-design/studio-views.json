@@ -1,0 +1,77 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job / Task Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "studio-rules"
+        },
+        {
+          "name": "Design-Example",
+          "block": "examples/Project-Ladder/design/Design-Example"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "folder-rules-draw"
+        },
+        {
+          "name": "Job / Task Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "jobs-rules-draw"
+        },
+        {
+          "name": "Studio Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-board.html",
+          "fragment": "studio-rules-draw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-design",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design/SKILL.md"
+        },
+        {
+          "name": "hai-design-goal",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design-goal/SKILL.md"
+        },
+        {
+          "name": "hai-design-unit",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design-unit/SKILL.md"
+        },
+        {
+          "name": "hai-design-workflow",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design-workflow/SKILL.md"
+        },
+        {
+          "name": "hai-design-delivery",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design-delivery/SKILL.md"
+        },
+        {
+          "name": "workbench-design",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/workbench-design/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

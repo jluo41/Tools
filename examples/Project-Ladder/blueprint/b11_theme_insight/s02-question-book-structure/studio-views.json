@@ -1,0 +1,83 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Question-set version",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s02-question-book-structure/delivery/types/job-type--question-set-version.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Question level",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s02-question-book-structure/delivery/types/task-group-type--question-level.html"
+        },
+        {
+          "name": "Question definition",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s02-question-book-structure/delivery/types/task-type--question-definition.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "folder-map"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "jobs-map"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/question-book.html",
+          "fragment": "studio-map"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/SKILL.md"
+        },
+        {
+          "name": "hai-insight-question",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/folder-kinds/hai-insight-question/SKILL.md"
+        },
+        {
+          "name": "workbench-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/workbench-insight/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

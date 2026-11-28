@@ -7,7 +7,7 @@ Data, Information, Knowledge and Wisdom (MT01-MT04), on the right the runs
 that answer them, joined by each task config's `answers:` line.  Check shows
 the gates, the mechanical checks and the workflow runtime; Delivery the signed
 handoffs.  Each Space has its Runs panel; a run line opens its results, and a
-page opens as a document, in a pop-out.  Design: Tools/blueprints/Project-Ladder/work/b11_theme_insight/s02-insight-workbench/insight-workbench-design.excalidraw.
+page opens as a document, in a pop-out.  Design: Tools/plugins/haipipe-toolkit/servers/workbench-insight/studio/insight-workbench-design.excalidraw.
 An Insight Block (a task Block with workbench: insight) is read by instance_reader.py into the same snapshot.
 Insight › Studio lists the board's own studio/*.excalidraw drawings; the shared Studio
 routes save them.  The shared Guide (workbench) mounts before Scope.
@@ -95,7 +95,7 @@ def _render_methods(snap: dict, view: str = "method", only: tuple = (), editable
 # Guide › Method and Guide › Related Paper frame the family's methods (Guide is the method and
 # the skills, shared across workbenches; Scope is the board's own data). The pages are the same on every
 # board, so no board is named. Read-only; the page tells its frame how tall it is, as Design's theory does.
-_EXPLAIN_HEIGHT = ("<script>(function(){function post(){parent.postMessage({kind:'haipipe-explain-height',"
+_EXPLAIN_HEIGHT = ("<script>(function(){function post(){parent.postMessage({kind:'hai-explain-height',"
                    "height:document.documentElement.scrollHeight},location.origin)}"
                    "if(window.ResizeObserver)new ResizeObserver(post).observe(document.body);"
                    "addEventListener('load',post);document.addEventListener('toggle',post,true);"
@@ -220,7 +220,7 @@ def render_insight_report(snap: dict, qid: str, pid: str) -> str:
 
 def render_insight_page(snap: dict, page: dict) -> str:
     """One page as a document, for the pop-out: the shared Page reader, the same document the
-    web delivery writes (workbench/page/page_reader.py)."""
+    web delivery writes (workbench/page/parts_and_map/page_reader.py)."""
     from live.page_reader import page_document
     cells = page_cells(snap, page)
     where = " · ".join(f'{_STAGE[q[1]]} question {q[2:]} on {_part_label(snap, p)}' for q, p in cells) or "answers no register question"
@@ -273,7 +273,7 @@ class InsightBoardMixin:
         if not (query.get("file") or [""])[0]:
             # Retired: the board opens in the workbench (/_board/workbench, the insight theme,
             # b11 s11 · s12 · s13). Its old Spaces map to the new ones; screenshots of this page are kept in
-            # Tools/blueprints/Project-Ladder/work/b11_theme_insight/s11-block-level/old-insight-board/.
+            # Tools/examples/Project-Ladder/blueprint/b11_theme_insight/_old/s11-block-level/old-insight-board/.
             old_space = (query.get("space") or ["insight"])[0]
             space = _RETIRED_SPACE.get(old_space, "Audience Report")
             from .insight_plan_c import JOB_NAME
@@ -289,7 +289,7 @@ class InsightBoardMixin:
             self.end_headers()
             return None
         if kind:
-            # an Insight Block (haipipe-insight ref/block-contract.md): the same workbench, its data
+            # an Insight Block (hai-insight ref/block-contract.md): the same workbench, its data
             # read by instance_reader for one dataset; a file opens in the pop-out
             wanted = (query.get("file") or [""])[0]
             if wanted == "board.md":                 # the Board's own face (the `/w/` and Home link): the board

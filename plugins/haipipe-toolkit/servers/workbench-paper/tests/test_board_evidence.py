@@ -1,4 +1,4 @@
-"""The paper Board's Evidence view (board_evidence.py, haipipe-paper-evidence 0.7.0): a value or citation Task shows
+"""The paper Board's Evidence view (board_evidence.py, hai-paper-evidence 0.7.0): a value or citation Task shows
 its newest Run's ledger page tall, with a pop-out, and its headline as its status; an evidence Job with no Task says
 which script makes them. Placeholders only, in a temp folder."""
 from __future__ import annotations
@@ -104,15 +104,15 @@ class SourceFileTest(unittest.TestCase):
         """261105: SOURCE.txt names its source from the Tools root; in a SPACE, Tools sits at Tools/."""
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            src = root / "Tools/blueprints/P/work/b90/j02/t01/runs/r01/result"
+            src = root / "Tools/examples/P/work/b90/j02/t01/runs/r01/result"
             src.mkdir(parents=True)
             (src / "values.csv").write_text("key,value\n")
-            res = root / "Tools/blueprints/P/work/b90/j02/t03/runs/r02/result"
+            res = root / "Tools/examples/P/work/b90/j02/t03/runs/r02/result"
             res.mkdir(parents=True)
-            found = board_evidence._source_file("blueprints/P/work/b90/j02/t01/runs/r01/result", "values.csv", res, root)
+            found = board_evidence._source_file("examples/P/work/b90/j02/t01/runs/r01/result", "values.csv", res, root)
             self.assertEqual(found, (src / "values.csv").resolve())
             self.assertIsNone(board_evidence._source_file("../outside", "values.csv", res, root))
-            self.assertIsNone(board_evidence._source_file("blueprints/P/missing", "values.csv", res, root))
+            self.assertIsNone(board_evidence._source_file("examples/P/missing", "values.csv", res, root))
 
 
 if __name__ == "__main__":

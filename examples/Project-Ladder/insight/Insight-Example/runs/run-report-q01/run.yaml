@@ -1,0 +1,16 @@
+run: run-report-q01
+kind: soft
+type: report
+scope: Tools/examples/Project-Ladder/insight/Insight-Example
+target: q01
+ticket: run-report-q01.md
+skill: hai-report
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- s04-q01-gap-across-data-versions/s04-q01-gap-across-data-versions.md
+feeds: []

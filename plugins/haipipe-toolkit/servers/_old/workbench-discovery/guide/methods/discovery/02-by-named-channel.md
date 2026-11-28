@@ -27,10 +27,10 @@ limitations: Channels differ in coverage, and no list of channels is complete (o
 Applied to AI
 -------------
 
-agent: haipipe-discovery-search-worker-agent returns candidates only; it never judges relevance or opens a Run.
+agent: hai-discovery-search-worker-agent returns candidates only; it never judges relevance or opens a Run.
 steps: 1. Take one channel. 2. Run the query. 3. Return candidates with identity. 4. Stop.
 returns: candidate papers with query, date and count, as text.
 verify: Each channel names query, date and count (T1).
 risk: An agent may report a paper it never saw in the channel; each candidate carries a link (ours).
 evidence on ai: No study tests agents searching channels for this loop (ours).
-skill: haipipe-discovery-search
+skill: hai-discovery-search

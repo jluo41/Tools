@@ -16,8 +16,8 @@ import yaml
 
 # a Board Job's folder: jNN_question-vN-<release slug>_data-vM, read left to right; underscores part its three
 # fields, hyphens join the words inside one. The older jNN_prototype-pN-<slug>_data-<D>vM and jNN_pN_<D>vM still read,
-# until haipipe-insight ref/rename_code_data.py carries their Board over. Groups: release, dataset ('' in the new name),
-# version (haipipe-insight ref/open_job.py writes the name).
+# until hai-insight ref/rename_code_data.py carries their Board over. Groups: release, dataset ('' in the new name),
+# version (hai-insight ref/open_job.py writes the name).
 class _Either:
     """Two patterns read as one: the first that matches (re has no branch reset, so the groups stay numbered alike)."""
 
@@ -102,7 +102,7 @@ def run_card(run_dir: Path) -> dict:
 
 # ── a Run's report: an agent's reading of its result, beside result/ (workbench-insight T31) ──────────
 def result_hash(run_dir: Path) -> str:
-    """The result's content, as haipipe-insight ref/run_report.py result_hash pins it (a test keeps the two equal)."""
+    """The result's content, as hai-insight ref/run_report.py result_hash pins it (a test keeps the two equal)."""
     import hashlib
     rec = _yaml(run_dir / "result" / "runtime.yaml")
     if rec.get("tables_sha256"):

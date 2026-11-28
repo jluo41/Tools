@@ -1,7 +1,7 @@
 describe-exercise / benchmark
 ================================================================================
 
-The noun-specific half. The harness is shared: `haipipe-norm/xbench`.
+The noun-specific half. The harness is shared: `hai-norm/xbench`.
 
 ```text
   taxonomy.py                 KIND x LABEL. Classifies from the CODEBOOKS only,

@@ -23,8 +23,14 @@ from pathlib import Path
 from host_paths import HOST, WORKBENCHES, SERVERS, TOOLKIT
 
 
-# the base workbench's code, grouped by what it draws; each group is a live folder, so `live.<module>` names stay flat
-BASE_GROUPS = ("home", "page", "studio", "guide")
+# the base workbench's code, grouped by what it draws (one folder per b17 j11/j12 Task); each group is a live folder,
+# so `live.<module>` names stay flat
+BASE_GROUPS = ("home", "page/block_index_page", "page/job_task_views", "page/element_marks", "page/parts_and_map",
+               "side_pane/files_tree", "side_pane/rail_sections", "studio/tabs", "studio/canvas", "chat_drawer",
+               "terminal", "guide")
+# a Task type folder's code, grouped the same way (b17 j14: one module folder per Task); each is a live folder
+TASK_GROUPS = {"workbench-task-draft": ("page_shell", "plan_outline", "evidence_steps", "revise_steps", "run_views",
+                                        "delivery_export")}
 
 
 def workbench_folders():
@@ -45,7 +51,10 @@ def workbench_folders():
 def _task_types(folder):
     """A workbench's Task type folders, ``workbench-task-<type>/`` (b32 s41-D15): each a server folder of its own
     (its layout ``task_<type>.py``, its views, its assets)."""
-    return sorted(p for p in folder.glob("workbench-task-*") if p.is_dir())
+    found = []
+    for p in sorted(p for p in folder.glob("workbench-task-*") if p.is_dir()):
+        found += [p] + [p / g for g in TASK_GROUPS.get(p.name, ()) if (p / g).is_dir()]
+    return found
 
 
 def task_folders():
@@ -57,6 +66,8 @@ def workbench_name(folder):
     """A workbench folder's name in WORKBENCH_ROUTES: ``workbench-<name>`` -> ``<name>``; the base
     ``workbench`` folder answers the ``shared`` routes (Studio's draw, chat and terminal), and its
     Task level the ``page`` routes."""
+    if folder.parent.name.startswith("workbench-task-"):   # a Task type's module folder answers as its Task type
+        return workbench_name(folder.parent)
     if folder.name.startswith("workbench-task-"):   # a Task type: the base's draft one answers the ``page``
         if folder.parent.name != "workbench":        # routes; a theme's own answers its theme's
             return workbench_name(folder.parent)
@@ -66,7 +77,7 @@ def workbench_name(folder):
 
 def server_folders():
     """Every folder that may contribute mixins or asset parts, in load order."""
-    # the reader (once servers/haipipe-page) keeps its old slot, so its css still loads before the base
+    # the reader (once servers/hai-page) keeps its old slot, so its css still loads before the base
     folders = [HOST, SERVERS / "workbench" / "workbench-task-draft" / "reader"]
     folders.extend(workbench_folders())
     return [f for f in folders if f.is_dir()]
@@ -122,7 +133,7 @@ def route_allowed(path: str, only) -> bool:
     p = path.split("?", 1)[0]
     if not only:
         return True
-    if p == "/_excalidraw/_haipipe-xcal.js":
+    if p == "/_excalidraw/_hai-xcal.js":
         # Guide's read-only canvas uses the existing storage-isolating boot script.
         return True
     if p in ("", "/", "/boards") or p.startswith(("/b/", "/w/", "/boards/")):

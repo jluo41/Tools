@@ -1,0 +1,483 @@
+{
+  "proposed": false,
+  "sections": {
+    "📄 Overall Report": {
+      "what": "Current: show this Job’s Executive answers. A Job whose question version is not signed says it is still open. Never replace this Job’s report with another Job’s. Source: insight_focus.py _overall_res → insight_views._overall_tabs. Skills: hai-insight.",
+      "layout": "Left Executive tabs · Right answer and figure",
+      "example": "Example j02 Findings: inspect Executive answers, the source artifacts and their actual review state."
+    },
+    "🧷 This Job": {
+      "what": "Current: name the pinned question version, the data version, the state (open or closed) and what changed from the Job before. Source: insight_focus.py _overall_res; Job face and linked question version. Skills: hai-insight-workflow.",
+      "layout": "Compact facts table",
+      "example": "Example j02 shows its updated data version and the Job before it. Writing a report does not close the Job."
+    },
+    "🔎 Answers": {
+      "what": "Current: show the newest answer per question across Jobs, grouped by evidence level. Keep coverage distinct from checked evidence. Source: insight_focus.py _answers → insight_views._coverage. Skills: hai-insight-check.",
+      "layout": "Left DIKW tabs · Right question answers",
+      "example": "Use the two data versions to inspect question coverage; Work adds each question’s trail."
+    },
+    "❓ Questions": {
+      "what": "Current: every question version’s questions, in words, kept apart from the dataset answers; the state word says whether an idea is still open. Source: insight_focus.py _questions_view → insight_views._prototype_tabs. Skills: hai-insight-question.",
+      "layout": "Left question-version tabs · Right question content",
+      "example": "Open the Example question version and compare it with the linked Question Book; no copied question definition."
+    },
+    "🕸 Question map": {
+      "what": "Current: the question canvas, one side tab per Job (question version × data version), newest first; each dot or card is coloured by whether that Job’s answer page is written. Source: insight_focus.py _canvas → question_canvas.canvas. Skills: hai-insight-question, hai-insight-evidence-plan.",
+      "layout": "Left Job tabs · Right canvas (Cards default, Dots); the reading panel opens under it on a click",
+      "example": "Open j02 and then j01; hover K01 to light what it rests on and what uses it."
+    },
+    "🧭 Board questions": {
+      "what": "Current, conditional: show Board-level reports only when the Board declares its own questions. Source: insight_focus.py _questions_view → insight_views._findings; board.md Questions / reports. Skills: hai-report.",
+      "layout": "Question reports grouped by question",
+      "example": "The example link opens Questions; this section appears only if Board reports exist, independently of the question version’s questions."
+    },
+    "🗄 Data versions": {
+      "what": "Current: show each data version with the date it was locked, what changed, aggregate key numbers and source files; no row-level data in reports. Source: insight_focus.py _data_view / _version_panel; board.md versions and dataset manifests. Skills: hai-insight-meta.",
+      "layout": "Left data version tabs · Right number cards and file links",
+      "example": "Compare data-v1 with data-v2 and open the recorded summary/dictionary files."
+    },
+    "✂️ Segments": {
+      "what": "Current: the segments of the question version the newest Job runs (before any Job, the newest question version’s): each filter, its reason, which questions ask it and its row counts by data version. Source: insight_focus.py _data_view / _cuts_tabs; partitions.md / thresholds.yaml. Skills: hai-insight, hai-insight-evidence-plan.",
+      "layout": "Left segment tabs · Right facts; question-version file links",
+      "example": "Open full and another segment; a new segment is proposed for a later question version, not silently applied to a closed Job."
+    },
+    "🧠 Advice so far": {
+      "what": "Current, shown once the Board has a Job: what each Wisdom answer of the newest Job advises and its answer state, then the question version and data version it comes from and the draft file. A draft is not a sign. Source: insight_focus.py _handoff_view / _draft_handoff; newest Job Wisdom pages and delivery records. Skills: hai-insight-wisdom.",
+      "layout": "Wisdom answer list · facts (from, draft)",
+      "example": "Example W01 stays readable while the advice is unsigned. An unwritten answer stays visibly unwritten. A person owns the sign."
+    },
+    "📦 Signed": {
+      "what": "Current, conditional on advice records: list each record, its source Job and its sign. Read the boundary in the linked file. A stale mark is a contract requirement, not a displayed column in this table. Source: insight_focus.py _handoff_view → insight_views._handoff. Skills: hai-insight-wisdom.",
+      "layout": "Table · advice / from Job / signed",
+      "example": "Open Advice and then the source file to inspect scope and evidence. No records means the section is omitted."
+    },
+    "🧷 Jobs": {
+      "what": "Current: rows are named question versions, columns named data versions; each occupied cell opens its Job and shows its state (open or closed) with DIKW marks and a legend. Keep absent pairs empty of invented work. Source: insight_focus.py _jobs_view / _plans_grid; Board versions and Question Book question versions. Skills: hai-insight.",
+      "layout": "Matrix · one Job per pair",
+      "example": "Example j01 and j02 hold the same question version with different data versions. This matrix appears in Jobs, not Findings."
+    },
+    "📂 Newest Job": {
+      "what": "Current: show the newest Job’s question Tasks grouped by DIKW with links and real states. The live heading adds the Job id. Source: insight_focus.py _jobs_view / _job_tasks. Skills: hai-insight-workflow.",
+      "layout": "Grouped Task rows and progress marks",
+      "example": "Example j02 exposes its question Tasks. Opening a Task preserves its parent Job identity."
+    },
+    "⏱ Changes": {
+      "what": "Current: say what each Job moved (the first Job, the data or the code) from its recorded moved field and the Job before. Source: insight_focus.py _jobs_view; Job faces moved / previous. Skills: hai-insight.",
+      "layout": "Job facts table",
+      "example": "Compare j01 start with j02 data; do not infer a changed method from changed results."
+    },
+    "🗺 Board structure": {
+      "what": "Current: expose the Board’s structural relationships and navigable children; preserve a real drawing rather than prose listing. Source: insight_focus.py _parts_map and focus-page MindMap integration. Skills: hai-mindmap, workbench-insight.",
+      "layout": "MindMap · expandable branches",
+      "example": "Open Insight-Example at Report / MindMap and follow its Jobs."
+    },
+    "🔲 Progress": {
+      "what": "Current: show each question’s evidence at the segments it asks; distinguish planned, refused, run, written and checked evidence with words. Source: insight_focus.py _grid_res / _grid. Skills: hai-insight-workflow, hai-insight-check.",
+      "layout": "Question × segment grid grouped by evidence level",
+      "example": "Inspect Example j02 Progress; citation-only questions must not gain artificial compute tickets."
+    },
+    "🔁 Changes": {
+      "what": "Current: follow the same question id across the Jobs that ask it, each with its answer and status. Keep the explicit single-Job state when only this Job asks it. Source: insight_focus.py _t_across. Skills: hai-insight-check.",
+      "layout": "Cross-Job table · Job / answer / status",
+      "example": "Open D01 across the two data versions. Read changed definitions in the linked question versions before comparing answers."
+    },
+    "🗺 Questions by evidence level": {
+      "what": "Current: draw this Job’s question labels grouped by D/I/K/W/X. The map uses text leaves, not linked Task/Run nodes. Source: insight_focus.py _job_mindmap / draw_map. Skills: hai-mindmap, hai-insight.",
+      "layout": "MindMap · evidence level → question text",
+      "example": "Example j02 shows its question wording under each evidence level. Open source Tasks and Runs through Progress or page navigation; direct map navigation remains a target."
+    },
+    "⚓ The answer": {
+      "what": "Current: lead with the answer, first figure, other thumbnails, sourced facts and page. If using a previous Job answer while writing, label that fallback explicitly. Source: insight_focus.py _t_answer; Task face / Run results / figures. Skills: hai-insight-data, hai-insight-information, hai-insight-knowledge, hai-insight-wisdom, hai-insight, hai-insight-check.",
+      "layout": "Answer headline · aggregate tiles when applicable · lead figure and thumbnails",
+      "example": "D shows extract facts; I contrasts; K robustness; W advice; X a plain synthesis. The current Task type controls which real example opens."
+    },
+    "🔲 By segment": {
+      "what": "Current for compute Tasks, a section of Answer: show each real segment’s results, power or refusal and its Run. The question version defines the segments. Source: insight_focus.py _t_cuts; hard Run records and results. Skills: hai-insight-workflow.",
+      "layout": "Left segment tabs · Right evidence",
+      "example": "D/I/K examples have compute evidence. A refused segment remains refused, not a successful null finding."
+    },
+    "🔗 What it cites": {
+      "what": "Current for a question with no Run of its own, a section of Answer in place of By segment: show the answers it cites and whether each is ready. Source: insight_focus.py _t_cuts / _cite_chain / _cite_only. Skills: hai-insight-evidence-plan, hai-insight-check.",
+      "layout": "Cited-answer chain and linked pages",
+      "example": "W and X examples show this section because they have no hard Runs and their roles are outside the renderer’s compute levels. The K example uses By segment."
+    },
+    "🎯 How sure": {
+      "what": "Current: show recorded uncertainty and supporting Runs or cited answers. A CHECK mark describes review, not certainty. Source: insight_focus.py _t_answer / _plan_cites; how-sure and check fields. Skills: hai-insight-check.",
+      "layout": "Confidence facts and evidence links",
+      "example": "Compare checked evidence with an answer still awaiting CHECK; retain its limitations."
+    },
+    "📋 Needs": {
+      "what": "Current: show the question, evidence needs, work steps, permitted claims, agreement and authoritative question file. Source: insight_focus.py _t_plan; Question Book question.md. Skills: hai-insight-evidence-plan.",
+      "layout": "Needs / agreement facts with question-file pop-out",
+      "example": "Open the question’s method, including citation needs for W/X. An empty agreement field is not approval."
+    },
+    "🗺 Question evidence": {
+      "what": "Current: retain the Task MindMap as explicitly decided; summarize the answer, per-segment findings or cited answers, and checks. Text leaves do not link to source Runs. Source: insight_focus.py _task_mindmap / draw_map. Skills: hai-mindmap, hai-insight.",
+      "layout": "MindMap · answer / segment findings or citations / checks",
+      "example": "Compare D01 with W01/X01. Use By segment in Answer or the answer’s evidence links to open sources; the map itself summarizes them."
+    },
+    "🎨 Studio": {
+      "what": "Shared integration target; not yet integrated in Insight. Develop alternatives as drawings under the explicitly linked View or Topic. Source: shared work_frame.py and its section components. Skills: hai-studio.",
+      "layout": "Left Topic tabs · Right drawing",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A question-development Topic belongs to Questions; unrelated topics remain outside that View."
+    },
+    "🙋 Interactions": {
+      "what": "Shared integration target; not yet integrated in Insight. Read and answer the View/Topic’s linked questions; unassigned records stay only in the page rail. Source: shared work_frame.py and its section components. Skills: hai-interaction.",
+      "layout": "Left Topic tabs · Right question form",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: An unassigned question must not appear in every Insight View."
+    },
+    "⚖️ Decisions": {
+      "what": "Shared integration target; not yet integrated in Insight. Read recorded choices and reasons from the selected scope, keeping the original decision record. Source: shared work_frame.py and its section components. Skills: hai-interaction.",
+      "layout": "Left Topic tabs · Right decisions",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A plan choice links to its source; it does not silently sign a question version."
+    },
+    "📚 Things to Know": {
+      "what": "Shared integration target; not yet integrated in Insight. Read terms, assumptions and references needed for this View or linked Topic. Source: shared work_frame.py and its section components. Skills: hai-related.",
+      "layout": "Left Topic tabs · Right notes",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A theory relevant to a Knowledge question links back to its source and transfer limits."
+    },
+    "📝 Checklist": {
+      "what": "Shared integration target; not yet integrated in Insight. Read existing checks and evidence in this scope. The proposed four-state Work checklist is not an implemented API. Source: shared work_frame.py and its section components. Skills: hai-insight-check.",
+      "layout": "Checklist with source evidence links",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A completed Run cannot automatically pass the answer’s independent review."
+    },
+    "🕒 Timeline": {
+      "what": "Shared integration target; not yet integrated in Insight. Read dated work, feedback and decisions linked to this View; the rail aggregates the page and descendants. Source: shared work_frame.py and its section components. Skills: hai-run.",
+      "layout": "Chronological records",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: A new data version event and a question idea keep separate provenance."
+    },
+    "🧰 Skills": {
+      "what": "Shared integration target; not yet integrated in Insight. Open the skills relevant to the selected View and its work. Source: shared work_frame.py and its section components. Skills: workbench-insight.",
+      "layout": "Left skill tabs · Right skill contents",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: Use the owner listed for this View; do not infer authority to execute from a skill link."
+    },
+    "📁 Files": {
+      "what": "Shared integration target; not yet integrated in Insight. Open source directories grouped by Workspace, Blocks, Code, Tools · Skills and Tools · UI; absent types are hidden. Source: shared work_frame.py and its section components. Skills: workbench-insight.",
+      "layout": "Left folder types · Right expandable tree · File pop-out",
+      "example": "No live Insight implementation is claimed. Acceptance scenario: Closing a file retains the selected tree location. Runs remain within Blocks."
+    },
+    "📜 Each question version": {
+      "what": "Current: one section per question version, newest first, titled with its own label (question-vN and its words): its sign state, what is new in it, its Segments, and Open. Source: insight_focus.py prototype_views → insight_prototype._version_part. Skills: hai-insight-workflow (sign a question version).",
+      "layout": "One section per question version · new questions · Segments side tabs · Open",
+      "example": "question-v1 is closed and signed; question-v2 is a draft waiting for its review and sign."
+    },
+    "📮 Ideas": {
+      "what": "Current: what the Board’s answers suggest asking next (new question, fix, retire, segment); the next question version is picked from here. Source: insight_prototype._proposals_part; proposals/*.md. Skills: hai-insight-question.",
+      "layout": "Left idea tabs · Right kind, level, from, state and why",
+      "example": "Read the open idea and where it came from."
+    },
+    "🗺 Book structure": {
+      "what": "Current: the Question Book as a map: its question versions and their questions. Source: focus-page MindMap. Skills: hai-mindmap, workbench-insight.",
+      "layout": "MindMap · expandable branches",
+      "example": "Open InsightQuestionBook-Example at MindMap."
+    }
+  },
+  "skills": {
+    "Findings": [
+      "hai-insight",
+      "hai-insight-check"
+    ],
+    "Questions": [
+      "hai-insight-question",
+      "hai-insight-evidence-plan",
+      "hai-insight-workflow",
+      "hai-insight-check"
+    ],
+    "Ideas": [
+      "hai-insight-question"
+    ],
+    "Versions": [
+      "hai-insight-workflow",
+      "hai-insight"
+    ],
+    "Data": [
+      "hai-insight-meta"
+    ],
+    "Advice": [
+      "hai-insight-wisdom"
+    ],
+    "Jobs": [
+      "hai-insight",
+      "hai-insight-workflow"
+    ],
+    "Changes": [
+      "hai-insight-knowledge",
+      "hai-insight-check"
+    ],
+    "Progress": [
+      "hai-insight-workflow",
+      "hai-insight-check"
+    ],
+    "Answer": [
+      "hai-insight-check",
+      "hai-insight-workflow",
+      "hai-insight-evidence-plan"
+    ],
+    "Method": [
+      "hai-insight-evidence-plan",
+      "hai-insight"
+    ],
+    "MindMap": [
+      "hai-mindmap",
+      "workbench-insight"
+    ]
+  },
+  "examples": {
+    "block": {
+      "Insight Board": "examples/Project-Ladder/insight/Insight-Example",
+      "Question Book": "examples/Project-Ladder/insight/InsightQuestionBook-Example"
+    },
+    "job": {
+      "Analysis": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2"
+    },
+    "task": {
+      "Data question": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t01_D01_extract-shape",
+      "Information question": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t03_I01_outcome-by-arm",
+      "Knowledge question": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t05_K01_gap-holds",
+      "Wisdom question": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t06_W01_next-round",
+      "Executive question": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t07_X01_what-we-found"
+    }
+  },
+  "view_routes": {
+    "Findings": {
+      "section": "report",
+      "group": "answers"
+    },
+    "Questions": {
+      "section": "report",
+      "group": "questions"
+    },
+    "Ideas": {
+      "section": "report",
+      "group": "ideas"
+    },
+    "Versions": {
+      "section": "report",
+      "group": "versions"
+    },
+    "Data": {
+      "section": "report",
+      "group": "data"
+    },
+    "Advice": {
+      "section": "report",
+      "group": "handoff"
+    },
+    "Jobs": {
+      "section": "report",
+      "group": "jobs"
+    },
+    "Changes": {
+      "section": "report",
+      "group": "vs-previous"
+    },
+    "Progress": {
+      "section": "report",
+      "group": "grid"
+    },
+    "Answer": {
+      "section": "report",
+      "group": "answer"
+    },
+    "Method": {
+      "section": "report",
+      "group": "plan"
+    },
+    "MindMap": {
+      "section": "report",
+      "group": "mindmap"
+    }
+  },
+  "use_cases": {
+    "block": {
+      "Insight Board": {
+        "Dataset investigation": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "job": {
+      "Analysis": {
+        "Apply a question version": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j01_question-v1-example-questions_data-v1",
+            "label": "Blueprint example"
+          }
+        ],
+        "Compare analyses": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    },
+    "task": {
+      "Data question": {
+        "Audit extract quality": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t01_D01_extract-shape",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Information question": {
+        "Measure outcomes": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t03_I01_outcome-by-arm",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Knowledge question": {
+        "Assess differences across segments": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t05_K01_gap-holds",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Wisdom question": {
+        "Develop counsel": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t06_W01_next-round",
+            "label": "Blueprint example"
+          }
+        ]
+      },
+      "Executive question": {
+        "Summarize findings": [
+          {
+            "path": "examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t07_X01_what-we-found",
+            "label": "Blueprint example"
+          }
+        ]
+      }
+    }
+  },
+  "overrides": {
+    "block": {
+      "Insight Board": {
+        "📄 Overall Report": {
+          "what": "Current: show the Executive answers of the newest Job that has Executive Tasks, with a link to that Job and whether it is open or closed. Do not hide that this can differ from the newest Job. Source: insight_focus.py _answers → insight_views._overall_tabs. Skills: hai-insight.",
+          "layout": "Left Executive tabs · Right answer and first figure",
+          "example": "Insight-Example: compare the Job the report comes from with the newest Job. Other figures stay reachable."
+        }
+      },
+      "Question Book": {
+        "❓ Questions": {
+          "what": "Current: the newest question version’s questions by DIKW level, in words, each marked new or kept. An older version’s own list is on its page. Source: insight_focus.py prototype_views → insight_prototype._questions_newest. Skills: hai-insight-question, hai-insight-evidence-plan.",
+          "layout": "Questions by level · new or kept on each",
+          "example": "Open InsightQuestionBook-Example: K02 is marked new in question-v2; the others are kept."
+        },
+        "🕸 Question map": {
+          "what": "Current: the Question Book’s questions drawn one side tab per question version, newest first; a question new in that version is blue. Source: insight_focus.py prototype_views → insight_prototype.map_top → question_canvas.canvas. Skills: hai-insight-question.",
+          "layout": "Left question-version tabs · Right canvas (Cards default, Dots); the reading panel opens under it on a click",
+          "example": "Open question-v2: K02 is the one new question; question-v1 shows its eight, without K02."
+        }
+      }
+    },
+    "job": {
+      "Analysis": {
+        "🔁 Changes": {
+          "what": "Current: compare this Job with the Job before it, question by question: changed or unchanged answers and the recorded explanation. The View is hidden for the first Job. Source: insight_focus.py _vs_res → insight_views._vs_previous; reports/vs-*.md. Skills: hai-insight-knowledge.",
+          "layout": "Left comparison tabs · Right per-question evidence",
+          "example": "Example j02 has a Job before it; Example j01 must not display Changes. A comparison can still be waiting for its report."
+        }
+      }
+    }
+  },
+  "type_view_routes": {
+    "job": {
+      "Analysis": {
+        "Findings": {
+          "section": "report",
+          "group": "overall"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "vs-previous"
+        },
+        "Progress": {
+          "section": "report",
+          "group": "grid"
+        }
+      }
+    },
+    "task": {
+      "Data question": {
+        "Answer": {
+          "section": "report",
+          "group": "answer"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "across-jobs"
+        },
+        "Method": {
+          "section": "report",
+          "group": "plan"
+        }
+      },
+      "Information question": {
+        "Answer": {
+          "section": "report",
+          "group": "answer"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "across-jobs"
+        },
+        "Method": {
+          "section": "report",
+          "group": "plan"
+        }
+      },
+      "Knowledge question": {
+        "Answer": {
+          "section": "report",
+          "group": "answer"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "across-jobs"
+        },
+        "Method": {
+          "section": "report",
+          "group": "plan"
+        }
+      },
+      "Wisdom question": {
+        "Answer": {
+          "section": "report",
+          "group": "answer"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "across-jobs"
+        },
+        "Method": {
+          "section": "report",
+          "group": "plan"
+        }
+      },
+      "Executive question": {
+        "Answer": {
+          "section": "report",
+          "group": "answer"
+        },
+        "Changes": {
+          "section": "report",
+          "group": "across-jobs"
+        },
+        "Method": {
+          "section": "report",
+          "group": "plan"
+        }
+      }
+    }
+  }
+}

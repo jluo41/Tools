@@ -1,0 +1,17 @@
+{
+  "block": {
+    "examples/Project-Ladder/design/Design-Example": "🎨 Design Board",
+    "examples/Project-Ladder/design/DesignMethodBook-Example": "📘 Design Method Book"
+  },
+  "job": {
+    "examples/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2": "🧩 Design Job · review example",
+    "examples/Project-Ladder/design/Design-Example/j01_confirm-by-reply_M01-goal-only-m2_inputs-v1": "🧩 Design Job · released example",
+    "examples/Project-Ladder/design/Design-Example/j02_confirm-by-reply_M01-goal-only-m2_inputs-v2": "🧩 Design Job · reasoning example",
+    "examples/Project-Ladder/design/DesignMethodBook-Example/j02_M02-overall-performance": "📘 Design method"
+  },
+  "task": {
+    "examples/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t00_reason-ideas": "💡 Reason ideas",
+    "examples/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t02_d02_reminder-one-ask": "✏️ One design",
+    "examples/Project-Ladder/design/Design-Example/j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/t99_review-whole": "🏆 Review whole"
+  }
+}

@@ -5,7 +5,7 @@ Build `_FoodInfo/0-inputs/`: one specimen of every SHAPE that can arrive.
     source .venv/bin/activate && source env.sh
     python Tools/plugins/haipipe-utils/skills/describe-food/build_inputs_gallery.py
 
-The engine is haipipe-norm/inputs_gallery.py, shared by all four nouns. This
+The engine is hai-norm/inputs_gallery.py, shared by all four nouns. This
 file holds only the list of shapes, because the list is the part that differs:
 food arrives as a photograph and exercise never does.
 """
@@ -17,7 +17,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = next(a for a in [*HERE.parents, pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SKILLS = ROOT / "Tools/plugins/haipipe-utils/skills"
-sys.path[:0] = [str(HERE), str(SKILLS / "haipipe-norm")]
+sys.path[:0] = [str(HERE), str(SKILLS / "hai-norm")]
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_FoodInfo"
 
 from inputs_gallery import (Shape, build, ABSENT, CALL,

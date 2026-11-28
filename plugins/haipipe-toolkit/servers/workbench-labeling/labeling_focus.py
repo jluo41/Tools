@@ -113,10 +113,8 @@ def level_page(theme, root, folder, section="", group=""):
             body = findings_html(folder, root) or WF.empty("No labeling findings recorded yet.")
         else:
             body = delivery_html(folder, root) or WF.empty("No signed labeling release recorded yet.")
-        shared = WF.shared(folder, root, theme.name, level, view, topics, every, knows, events, every)
-        body = ('<section class="work-section-group"><h2>📋 Review Content</h2>' + body
-                + '</section><section class="work-section-group"><h2>🧭 Around the Work</h2>'
-                + shared + '</section>')
+        body = ('<section class="work-section-group"><h2>📋 Review Content</h2>' + body   # the side pane holds the
+                + WF.view_asks(folder, root, theme.name, level, view, topics, every, knows, events, every) + '</section>')   # rest
     head, tail = _assets()
     return task_shell(root, folder, section, views, view, WF.STYLE + F.side_css() + body,
                       head, tail + F.PB_JS, aligned=True)
@@ -138,6 +136,10 @@ def render(theme, root, folder, section="", group=""):
     root, folder = Path(root).resolve(), Path(folder).resolve()
     if not F.inside(folder, root):
         raise ValueError("Folder outside root")
+    from live.labeling_block_preview import render_block_preview
+    preview = render_block_preview(folder, root)
+    if preview is not None:
+        return preview
     if frame.level_of(folder) in ("Block", "Job"):     # the shared shape (round 2), MindMap · Status · Findings
         return level_page(theme, root, folder, section, group)
     if frame.level_of(folder) not in {"Job", "Task"}:

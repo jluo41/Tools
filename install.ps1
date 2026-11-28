@@ -60,9 +60,10 @@ function Write-JsonFile {
 # name. Mirrors install.sh exactly, including its prune: any folder whose name
 # starts with "_" (_old, _archive, _todo, _legacy, ...) and node_modules/ are
 # excluded BEFORE matching, not merely demoted. Until 2026-07-26 this function only
-# demoted them, so Windows installed two retired skills (haipipe-project-organize,
-# haipipe-project-inspect) that macOS never saw. haipipe-toolkit nests skills in
-# layers (skills/0_utils, skills/1_base/<family>, skills/2_theme/<theme>); the
+# demoted them, so Windows installed two retired skills (hai-project-organize,
+# hai-project-inspect) that macOS never saw. haipipe-toolkit nests skills in
+# layers (skills/0_utils, skills/1_base/<family>, skills/2_work/<theme>,
+# skills/3_theme/<theme>); the
 # rule names no layer, so a layer move cannot leave it pointing nowhere.
 #
 # Duplicate names are resolved by priority (lowest wins), ties by plugin/path.
@@ -111,7 +112,7 @@ function Get-Skills {
 }
 
 # Short names, as install.sh makes them: `aliases: [wb]` under `metadata:` in a
-# SKILL.md is one more link per alias to the same folder (/wb is /workbench). An
+# SKILL.md is one more link per alias to the same folder (/wb is /hai-workbench). An
 # alias that is already a skill's own name is skipped. Shared by Install-Skills
 # and the -Verify audit, so the two can never disagree about what should exist.
 function Get-SkillAliases {
@@ -159,7 +160,7 @@ function Get-Agents {
 
         $plugin  = $parts[0]
         $relPath = ($parts[1..($parts.Length - 1)] -join '/')
-        $name    = $f.BaseName    # e.g. haipipe-task-builder-agent
+        $name    = $f.BaseName    # e.g. hai-task-builder-agent
 
         $priority = 50
         if ($relPath -match '^skills/') { $priority = 10 }

@@ -1,0 +1,24 @@
+status: refused
+question: I01
+run: r05_third
+partition: third
+release: question-v1
+data: data-v2
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t04_I01_outcome-by-arm/runs/r05_third/run.sh
+job: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1
+prototype: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions
+extract: _WorkSpace/insight-ready/Example_data-v2@prep-v1/example.parquet
+spec: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t03_I01_outcome-by-arm/question.md
+spec_sha256: 2dd0cff0a1b5bff4161e9d305883c851d9e6f5d21d43d1571e2e89518c0883a3
+scripts: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t03_I01_outcome-by-arm/scripts
+scripts_sha256: 4aa6f79116c796be8ae073bd537070ec44f6676e3f1c7712359190226d309c13
+shared_sha256: fc3dd755d0b8ac952017e6fb7eef5600b9affe28f650cb64e8490b5f87050f84
+git_sha: unknown
+started: '2026-11-26T14:43:55Z'
+rows_before: 960
+rows_after: 68
+power: low
+reason: 'underpowered: third MDE 33.42 > 20.0'
+ended: '2026-11-26T14:43:55Z'
+duration_s: 0.1
+content_since: '2026-11-26T14:43:55Z'

@@ -1,0 +1,278 @@
+{
+  "title": "Paper Block · Job / Task Organization",
+  "reference": "examples/Project-Ladder/blueprint/b16_theme_paper/s03-paper-block-structure/structure/jobs.md",
+  "scope": "Named design examples; a Job without children has no Task assigned in this map. Group labels remain metadata and create no folder level.",
+  "legend": "Design examples · † Contract to define · ‡ Legacy type conflict",
+  "tree": {
+    "name": "Paper Block",
+    "children": [
+      {
+        "name": "Story †",
+        "group": "Story",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Shared story",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Research question",
+                    "group": "Questions"
+                  },
+                  {
+                    "name": "Contribution",
+                    "group": "Argument"
+                  },
+                  {
+                    "name": "Section outline",
+                    "group": "Narrative"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Evidence †",
+        "group": "Evidence",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Shared evidence",
+            "children": [
+              {
+                "name": "value ‡",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "Legacy Paper face value is not registered in the shared Task registry.",
+                "children": [
+                  {
+                    "name": "Reported estimates",
+                    "group": "Values"
+                  }
+                ]
+              },
+              {
+                "name": "evidence ‡",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/10_evidence/hai-task-for-evidence/SKILL.md",
+                "note": "Legacy citation use conflicts with the registered numeric-extraction owner.",
+                "children": [
+                  {
+                    "name": "Source verification",
+                    "group": "Citations"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Evidence audit",
+                    "group": "Checks"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Display",
+        "group": "Display",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Current Paper reader label; no new job-type field is asserted.",
+        "children": [
+          {
+            "name": "Main",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Study workflow",
+                    "group": "Figures"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Appendix",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Results table",
+                    "group": "Tables"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Explore",
+            "note": "A named Display role; this illustrative branch does not assign Tasks yet."
+          }
+        ]
+      },
+      {
+        "name": "Writing Version",
+        "group": "Writing",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Current Paper reader label; no new job-type field is asserted.",
+        "children": [
+          {
+            "name": "Manuscript",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Abstract",
+                    "group": "Main text"
+                  },
+                  {
+                    "name": "Methods",
+                    "group": "Main text"
+                  },
+                  {
+                    "name": "Cover letter",
+                    "group": "Submission"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Portal fields",
+                    "group": "Submission"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Revised manuscript",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Supplement",
+                    "group": "Appendix"
+                  },
+                  {
+                    "name": "Reviewer response",
+                    "group": "Review"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Presentation †",
+        "group": "Presentation",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Slides",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Speaker notes",
+                    "group": "Content"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Slide deck",
+                    "group": "Delivery"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Video",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Script",
+                    "group": "Content"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Captions",
+                    "group": "Delivery"
+                  },
+                  {
+                    "name": "Export",
+                    "group": "Delivery"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Poster",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Poster",
+                    "group": "Delivery"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

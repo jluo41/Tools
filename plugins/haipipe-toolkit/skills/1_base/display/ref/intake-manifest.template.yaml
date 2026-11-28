@@ -1,6 +1,6 @@
 # Display Intake Manifest — copy to <unit>/intake/manifest.yaml.
 # Paths are project-root-relative unless location is secure-server.
-schema: haipipe-display-intake/v1
+schema: hai-display-intake/v1
 
 display:
   id: displayNN-slug

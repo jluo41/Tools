@@ -62,4 +62,4 @@ verify: Verify checks that only the named change differs from the design it revi
 risk: An AI can explain any result after the fact, so a reason read from one result
   needs the next Exp to hold (ours). Small revisions climb to a nearby best (ours).
 evidence on AI: No study tests an AI designing by revising yet (ours).
-skill: haipipe-design-by-revising (proposed)
+skill: hai-design-by-revising (proposed)

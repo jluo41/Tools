@@ -40,4 +40,4 @@ returns: the round's response and the changed paper.
 verify: Every point has an answer and a located change (T5).
 risk: A model may answer politely without changing the paper (ours).
 evidence on ai: No study tests agent-drafted responses to reviewers (ours).
-skill: haipipe-paper-comments
+skill: hai-paper-comments

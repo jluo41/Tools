@@ -41,7 +41,7 @@ def __getattr__(name: str):
 # Stage, its Input, the prompt), then Result, what the Stage made (one card per topic, folded). Sizes are named
 # by symbol until the engine writes them (n m u r b, s42-D41); each agent step shows its reading budget (👁, s42-D43).
 BUILD_TABS = ("1 · Contract", "2 · Initial Labeling Definition", "3 · Rounds", "4 · Handoff")
-BUILD_SKILL = "haipipe-labeling-building"
+BUILD_SKILL = "hai-labeling-building"
 
 
 def _items_task(task: Path) -> Path | None:

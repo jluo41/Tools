@@ -9,7 +9,7 @@ A new workbench family fills its Guide by the checklist in `servers/README.md` Â
 Guide has four Views: **Description** (what the Workbench does), **Method**
 (its steps, as text), **RoadMap Draw** (one drawing of its skills, method,
 Workbench and folders) and **Related Paper**. Guide's UI design artifacts (once this folder's `studio/`) live in
-the b10 Workbench Block (`Tools/blueprints/Project-Ladder/work/b10_project_workbench/`), not here: `s31-guide/` (the Guide tab, one screen per View, each
+the b10 Workbench Block (`b10_project_workbench/ (removed 261126)`), not here: `s31-guide/` (the Guide tab, one screen per View, each
 family's status; `method-canvas.py`; the 261002 design in its `history/`). The base's RoadMap Draw is
 `s02-studio-workbench-skill/` (the frame). The Studio runtime stays.
 
@@ -96,7 +96,7 @@ Guide â€º <View>
 - **Family key.** The work family is `work`; `guide_families.ALIASES` keeps `task` answering. A
   frame folder with no face file still opens its family's Guide, its cards read from the folder.
 - **Tests.** `_host/tests/test_guide_levels.py`; the status of every family is frame 6 of
-  `Tools/blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/s31-guide.excalidraw`, read off the code.
+  `b10_project_workbench/s31-guide/s31-guide.excalidraw (removed 261126)`, read off the code.
 
 ## Revised sharing boundary
 
@@ -140,7 +140,7 @@ actions and source writers remain owned by that family.
 The shared host mounts Guide in Paper, Task, Page, Insight, Design Board,
 Design Page and Labeling Workbenches. The standalone Page host and the
 dedicated Labeling Page-folder route also mount it. The Labeling family is
-available only when the optional `haipipe-labeling` package is present.
+available only when the optional `hai-labeling` package is present.
 
 | File | Responsibility |
 |---|---|

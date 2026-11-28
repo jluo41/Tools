@@ -6,11 +6,11 @@ it (b03 s32-D09). A design is shown as it reads, the theme's own element (b12 s3
 {LINK} where the platform puts it; a UI design as its rendered screen (its Task's screens/ PNG).
 Every Space is laid out here (`page=True`), so its views and run types are exactly the design's. A Runs-panel
 entry is named as its Run is, run-<type>-<target> (hard or soft), and carries its run card's skill, agent,
-sign and prompt (haipipe-design-workflow/references/run-cards.md, `<Level> › <Space>`); a Run with no card keeps
+sign and prompt (hai-design-workflow/references/run-cards.md, `<Level> › <Space>`); a Run with no card keeps
 the prompt written here. Read-only: a run type only copies its prompt.
 
 What the design leaves open (b12 s11 · s12 · s13, red) is drawn as nothing or "—": tokens while a Run receipt has
-no `usage:`. The method registry is read by design_reader (haipipe-design-method/methods/).
+no `usage:`. The method registry is read by design_reader (hai-design-method/methods/).
 """
 from __future__ import annotations
 

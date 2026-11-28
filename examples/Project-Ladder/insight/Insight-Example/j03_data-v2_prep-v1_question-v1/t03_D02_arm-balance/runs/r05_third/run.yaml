@@ -1,0 +1,14 @@
+run: r05_third
+kind: hard
+type: partition
+partition: third
+target: t03_D02_arm-balance
+question: D02
+release: question-v1
+data: data-v2
+status: ok
+passes: 1
+script: bda4e1ed2edd
+n: 68
+power: ok
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t03_D02_arm-balance/runs/r05_third/run.sh

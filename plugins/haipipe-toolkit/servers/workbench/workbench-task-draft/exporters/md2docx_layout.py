@@ -60,7 +60,7 @@ def col_widths(rows, ncol, total=BODY_TW, pad=216):
 
 # lanes that are EVIDENCE and become comments; see QC0 on typed lanes
 # THE EVIDENCE LANES, and there are exactly three. This is not our list: it is
-# the board's own, at haipipe-draft/src/body.py:288, "Typed evidence lanes
+# the board's own, at hai-draft/src/body.py:288, "Typed evidence lanes
 # (`> Citation:`, `> Value:`, `> Display:`)". Each one answers "what backs this
 # sentence" and resolves against a file: the .bib, a run, a display unit.
 EVIDENCE_LANES = ("Value", "Citation", "Display")

@@ -208,7 +208,7 @@ def _is_open(p: dict) -> bool:
 
 
 def _skill(text: str) -> str:
-    return copy_verb("Copy prompt", text, "Copies a prompt for /haipipe-insight; paste it in a Claude session")
+    return copy_verb("Copy prompt", text, "Copies a prompt for /hai-insight; paste it in a Claude session")
 
 
 def _li(name: str, href: str, pop: str, note: str, verb: str = "") -> str:
@@ -230,7 +230,7 @@ def process(folder: Path, root: Path, level: str, view: str) -> list | None:
     """A Question Book's ⚙️ Process steps on one Work view, in place of the shared ones (round 2: "sign a release and triage
     a proposal on the Question Book too"); None leaves the shared steps. [(title, word, html, waits)].
 
-      findings  📋 the question version: triage its open proposals, then sign it, each a Copy prompt for /haipipe-insight
+      findings  📋 the question version: triage its open proposals, then sign it, each a Copy prompt for /hai-insight
       standing  🚧 Next steps: each question not yet agreed and scripted, by its name and its step; "nothing to do"
                 when none (never a row per Task saying "no Run waiting")"""
     folder, root = Path(folder), Path(root).resolve()
@@ -249,7 +249,7 @@ def process(folder: Path, root: Path, level: str, view: str) -> list | None:
             pdir = rel(Path(proto["path"]) / "proposals", root)
             rows.append(_li("Sort the open ideas", V.open_url(Path(proto["path"]) / "proposals", root) if open_ else "",
                             "proposals", ("waiting for you · " + names) if open_ else "done: none open",
-                            _skill(f"/haipipe-insight {pdir} triage the open proposals ({names}) for {_label(r)}: take each "
+                            _skill(f"/hai-insight {pdir} triage the open proposals ({names}) for {_label(r)}: take each "
                                    "in, merge it or decline it, and say why in its file.") if open_ else ""))
             if open_:
                 p = open_[0]
@@ -266,7 +266,7 @@ def process(folder: Path, root: Path, level: str, view: str) -> list | None:
             waits = waits or f"🙋 {_label(r)}: every question is ready; it waits for your sign"
         rows.append(_li(f"Sign {_label(r)}", V.page_link(r["job"], root) if r.get("job") else "", _label(r), sign,
                         "" if _closed_r(r) else
-                        _skill(f"/haipipe-insight {where} I sign {_label(r)}: check every question is agreed and its "
+                        _skill(f"/hai-insight {where} I sign {_label(r)}: check every question is agreed and its "
                                "script reviewed, then record my sign (run-sign-release); if one is not, say which.")))
         you = sum("waiting for you" in x for x in rows)
         word = (f"{you} wait{'s' if you == 1 else ''} for you" if you else "done" if _closed_r(r) else f"waits on {', '.join(left)}"

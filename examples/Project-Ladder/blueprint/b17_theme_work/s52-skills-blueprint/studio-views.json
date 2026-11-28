@@ -1,0 +1,207 @@
+{
+  "views": [
+    {
+      "name": "hai-blueprint",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/blueprint/hai-blueprint/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/blueprint/hai-blueprint/CONSTITUTION.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-ui",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/CONSTITUTION.md"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/scripts"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/constitution"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-block",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/CONSTITUTION.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/agents"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/constitution"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-block/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-project",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/scripts"
+        },
+        {
+          "name": "feedback/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/feedback"
+        },
+        {
+          "name": "fn/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/fn"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/CHANGELOG.md"
+        },
+        {
+          "name": "README.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-project/README.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-stack",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/0_utils/hai-stack/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/0_utils/hai-stack/CONSTITUTION.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/0_utils/hai-stack/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/0_utils/hai-stack/scripts"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/0_utils/hai-stack/constitution"
+        }
+      ]
+    },
+    {
+      "name": "hai-workbench",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench/ref"
+        },
+        {
+          "name": "cli/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench/cli"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/workbench/hai-workbench/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-blueprint",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "hai-ui",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "hai-block",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "hai-project",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "hai-stack",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-4"
+        },
+        {
+          "name": "hai-workbench",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-5"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s52-skills-blueprint/delivery/check.html",
+          "fragment": "check-6"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+}

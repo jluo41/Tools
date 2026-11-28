@@ -25,13 +25,13 @@ _DESIGN_RUN_GUIDE = {
     "generate": {
         "name": "Generate", "type": "Design.generate", "actor": "agent",
         "purpose": "Create or revise the commissioned design and check it against every released rule.",
-        "worker": "haipipe-design-unit · through haipipe-designer-agent",
+        "worker": "hai-design-unit · through hai-designer-agent",
         "requires": "A released Commission, frozen config and inputs not edited since the run record was written. A revision also needs its exact base and feedback; no second open Run for the item.",
     },
     "verify": {
         "name": "Verify", "type": "Design.verify", "actor": "independent agent",
         "purpose": "Review the exact completed draft against every released rule and record pass, fail or unresolved gaps.",
-        "worker": "haipipe-design-unit · through a fresh haipipe-designer-agent context",
+        "worker": "hai-design-unit · through a fresh hai-designer-agent context",
         "requires": "A complete Generate Result, pinned sources and criteria, and a reviewer independent of its producer. An already completed valid review cannot be repeated unchanged.",
     },
 }
@@ -41,7 +41,7 @@ _DESIGN_RUN_GUIDE = {
 # work is started from a run type and its prompt, copied into a Claude or Codex
 # session, never from a form on the page. The run types are the Design run cards,
 # the Workbench Table written as cards (one per button: agent, skill, signs, prompt).
-_RUN_CARDS = skill_dir("haipipe-design-workflow") / "references" / "run-cards.md"
+_RUN_CARDS = skill_dir("hai-design-workflow") / "references" / "run-cards.md"
 _CARD_SPACE = {"Tasks": "tasks", "Theory": "theory", "Goal": "goal", "Design": "design", "Delivery": "delivery"}
 
 
@@ -182,9 +182,9 @@ def design_chat_prompt(snapshot: dict, item: dict) -> str:
         "item": item["id"], "item_title": item["title"], "venue": item["type"],
         "target": released.get("intent", {}).get("move") or item["goal"],
         "run_name": spec["name"], "run_type": spec["type"], "actor_role": spec["actor"],
-        "purpose": spec["purpose"], "owner_skill": "haipipe-design-workflow",
-        "owner_instructions": str(_UNIT_CHECKER.parents[2] / "haipipe-design-workflow/SKILL.md"),
-        "worker_skill": "haipipe-design-unit", "worker_instructions": str(_UNIT_CHECKER.parents[1] / "SKILL.md"),
+        "purpose": spec["purpose"], "owner_skill": "hai-design-workflow",
+        "owner_instructions": str(_UNIT_CHECKER.parents[2] / "hai-design-workflow/SKILL.md"),
+        "worker_skill": "hai-design-unit", "worker_instructions": str(_UNIT_CHECKER.parents[1] / "SKILL.md"),
         "state_when_copied": item["state"], "next_permitted_action": action,
         "prerequisites": spec["requires"], "released_commission": record(released),
         "release_decision": str(released["result_dir"] / "decision.yaml"),
@@ -210,7 +210,7 @@ def design_chat_prompt(snapshot: dict, item: dict) -> str:
         "owner's native queue action once. A dispatch-existing request may only reuse the recorded open_matching_run id. "
         "Do not choose a different next operation if the item's state changed. For a queued revision, read its frozen base and "
         "feedback; do not invent feedback or change the base.\n"
-        "Generate uses haipipe-design-unit in its allocated Result. Verify requires a genuinely fresh independent reviewer "
+        "Generate uses hai-design-unit in its allocated Result. Verify requires a genuinely fresh independent reviewer "
         "context distinct from every producer; if this chat inherited generation discussion, dispatch that fresh reviewer "
         "or stop and report that independence is unavailable. Renaming an actor is not independence.\n"
         "The worker writes only its paired Result, excluding runtime.yaml. The caller validates the Result and closes its "
@@ -284,7 +284,7 @@ def design_next_run(item: dict, human: str, *, writable: bool = False, compact: 
     if spec:
         detail += (f'<p>Run Type: <code>{_escape(spec["type"])}</code><br>'
                    f'Target: {_escape(item["id"])} · {_escape(item["title"])}</p>'
-                   '<p>Owner Skill: <code>haipipe-design-workflow</code><br>'
+                   '<p>Owner Skill: <code>hai-design-workflow</code><br>'
                    f'Worker Skill: {_escape(spec["worker"])}</p>'
                    f'<p>Prerequisites: {_escape(spec["requires"])}</p>'
                    '<p>The native control checks these prerequisites again before writing.</p>')

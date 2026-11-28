@@ -1,6 +1,6 @@
-"""The paper theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
+"""The paper theme on the base frame (servers/workbench/page/block_index_page/frame.py): only what differs from vanilla.
 
-A paper Board climbs the ladder as Tools/blueprints/Project-Ladder/work/b16_theme_paper proposes (Q01, s11-paper-block): the
+A paper Board climbs the ladder as Tools/examples/Project-Ladder/blueprint/b16_theme_paper proposes (Q01, s11-paper-block): the
 Board is one paper; its versions are Jobs and its Sections are Page Tasks once those folders exist. Today
 a paper Board holds A1-Story/ (Ideation and Story Pages) and Ba-/Bb- Section groups, so this theme fills
 the Block tab only, from today's folders, with paper.py's own content (JL: carry over what exists) drawn in
@@ -53,7 +53,7 @@ def _slug(view: str) -> str:
 
 
 def _run_cards(level: str, space: str, view: str | None = None) -> tuple:
-    """The run cards of one level's Space (haipipe-paper-workflow/ref/run-cards.md, `<Level> › <Space>`, b16
+    """The run cards of one level's Space (hai-paper-workflow/ref/run-cards.md, `<Level> › <Space>`, b16
     Q05), keeping those meant for `view`; a card with no views shows in every view of its Space."""
     return _kinds(f"{level} › {space}".lower(), (_slug(view),) if view else None)
 
@@ -428,7 +428,7 @@ def work_meta(folder, root):
 
 # ── Delivery: each result in its Section series (JL 261014: "there should be groups for the section-task group") ──
 # A version's own build (the whole paper) first, then its Sections by series, each series in reading order:
-# t00 Abstract and t0N Main, t2N Appendix, t3N Letters (haipipe-paper ref/paper-ladder.md).
+# t00 Abstract and t0N Main, t2N Appendix, t3N Letters (hai-paper ref/paper-ladder.md).
 SERIES = (("📄 Paper", None), ("Main", ("0",)), ("Appendix", ("2",)), ("Letters", ("3",)))
 
 

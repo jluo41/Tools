@@ -24,6 +24,7 @@ from live import work_frame as WF, decision_report_view as DR  # noqa: E402
 from live import focus_page as F  # noqa: E402
 from live import frame, labeling_focus as L  # noqa: E402
 from test_labeling_theme import items_task, project  # noqa: E402
+import page_parts as P  # noqa: E402
 
 ENGINE = skill_dir("labeling") / "engine"
 GOAL = "a standard you sign, frozen for labeling at scale"
@@ -79,8 +80,8 @@ def content(page: str) -> str:
 
 
 def review(page: str) -> str:
-    """The open view's 📋 Review Content: the step itself, without 🧭 Around the Work under it."""
-    return content(page).split("<h2>📋 Review Content</h2>", 1)[-1].split("<h2>🧭 Around the Work</h2>", 1)[0]
+    """The open view's 📋 Review Content: the step itself, without the shared 🙋 Interactions fold under it."""
+    return P.END.split(content(page).split("<h2>📋 Review Content</h2>", 1)[-1] + "</section><footer>", 1)[0]
 
 
 def rows(page: str) -> list:
@@ -117,11 +118,10 @@ class BuildingPageTest(Fixture):
                           ("release", "Release"), ("runs", "Runs"), ("delivery", "Delivery")):
             self.assertIn(f"section=report&amp;group={key}\"", bar)
             self.assertIn(f">{name}</a>", bar)
-        self.assertIn(">Report</span></h1>", page)
-        self.assertIn('<span class="goal-word">Aim</span>', page)
-        self.assertIn(GOAL, page)
+        self.assertRegex(page, r'class="h1-section h1-pick"[^>]*>Report[^<]*(<(?!/button)[^<]*)*</button></h1>')
+        self.assertNotIn('class="focus-goal"', page)                # no goal-line under the title (hai-block A03)
         self.assertIn("<h2>📋 Review Content</h2>", page)
-        self.assertIn("<h2>🧭 Around the Work</h2>", page)
+        self.assertNotIn("🧭 Around the Work", page)   # the side pane holds it (hai-block A01)
 
     def test_shell_and_rails_are_the_shared_frame(self):
         mine, base = self.render("report"), F.render(self.theme, self.root, self.task, "report")
@@ -130,9 +130,8 @@ class BuildingPageTest(Fixture):
         self.assertEqual(re.findall(r"section=(\w+)", right), ["report"] + [key for key, _ in WF.SHARED])
         crumb = lambda p: p.split('<div class="focus-crumb">', 1)[1].split("</div>", 1)[0]
         self.assertEqual(crumb(mine), crumb(base))
-        goal = lambda p: p.split('<div class="focus-goal">', 1)[1].split("</div>", 1)[0]
-        self.assertEqual(goal(mine), goal(base))
-        self.assertIn("Open this page&#x27;s Markdown", mine)
+        self.assertNotIn('class="focus-goal"', mine)               # no goal-line under the title (hai-block A03)
+        self.assertNotIn("Open this page&#x27;s Markdown", mine)   # the face opens from Files (hai-block A02)
 
     def test_the_shared_sections_are_the_shared_pages(self):
         for section in ("interactions", "files", "checklist"):
@@ -340,7 +339,7 @@ class DecideViewTest(Fixture):
         if DR.waiting_report(self.task):
             self.skipTest("the store still counts a deferred card as waiting")
         page = self.render("report", "decide")
-        self.assertIn(">Report</span></h1>", page)
+        self.assertRegex(page, r'class="h1-section h1-pick"[^>]*>Report[^<]*(<(?!/button)[^<]*)*</button></h1>')
         self.assertEqual(current_view(page), "Decide")
         body = review(page)
         self.assertNotIn("dec-group", body)

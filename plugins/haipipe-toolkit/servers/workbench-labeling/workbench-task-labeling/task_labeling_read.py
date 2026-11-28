@@ -13,7 +13,7 @@ try:
     import yaml
 except ImportError:                               # a Run's manifest then shows its headline only
     yaml = None
-L = T.L                                         # the optional haipipe-labeling package (labeling.py)
+L = T.L                                         # the optional hai-labeling package (labeling.py)
 
 # every `task-type:` line a labeling Task may carry, and "" for an older labeling Page that names none
 TASK_TYPES = ("",) + tuple(dict.fromkeys(line for t in TYPES for line in t[3]))
@@ -82,7 +82,7 @@ def _embedding_state(job: dict | None, block: Path | None):
 # ── The items Task, as designed in b15 s41-task-items-procedure: three steps, each a tab named the same in Work and
 # Report. Work: the step itself (what we have, read from disk; the recipe or build a person signs; the prompt, which
 # takes the person's notes), folded to one line once done (s41-D15); then one card per topic, a list read down
-# (s41-D09). Report: the cards only. The steps run through haipipe-labeling-preparation's engine, items_task.py
+# (s41-D09). Report: the cards only. The steps run through hai-labeling-preparation's engine, items_task.py
 # (s41-D11); a person's Sign and Agree and a Draw again go through LabelingMixin's two narrow routes.
 RESULTS = ("1 · Data", "2 · Items", "3 · Embedding")
 OLD_RESULT = {"Itemization": RESULTS[0], "2 · Item": RESULTS[1], "3 · Item list": RESULTS[1],
@@ -91,10 +91,10 @@ SAMPLE_N = 5
 
 
 def _engine():
-    """haipipe-labeling-preparation's items_task.py, found from this file; None when the skill is absent."""
+    """hai-labeling-preparation's items_task.py, found from this file; None when the skill is absent."""
     import importlib.util
     for base in Path(__file__).resolve().parents:
-        path = base / "skills" / "2_theme" / "labeling" / "engine" / "items_task.py"
+        path = base / "skills" / "3_theme" / "labeling" / "engine" / "items_task.py"
         if path.is_file():
             spec = importlib.util.spec_from_file_location("labeling_items_task", path)
             mod = importlib.util.module_from_spec(spec)

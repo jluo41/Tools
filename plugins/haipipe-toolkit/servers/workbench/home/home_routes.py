@@ -99,7 +99,7 @@ def resolve_workbench(root: Path, slug: str, anchor: str = "",
             % (route, quote(f"{rel}/{page_rel}", safe="/"), quote(page_rel, safe="/"))), "ok"
 
 
-# A tab of a Task's Page -> its Space and subspace in the frame (workbench-task-draft/task_draft.py PAGE_VIEWS, JL 261007)
+# A tab of a Task's Page -> its Space and subspace in the frame (workbench-task-draft/page_shell/task_draft.py PAGE_VIEWS, JL 261007)
 TAB_SPACE = {"draft": ("Audience Report", "Draft"), "runs": ("Runs", "Page Runs"),
              "delivery": ("Delivery", "Lanes"), "folderstat": ("Description", "Folder"),
              "evidence": ("Work Details", "Evidence"), "value": ("Work Details", "Value")}

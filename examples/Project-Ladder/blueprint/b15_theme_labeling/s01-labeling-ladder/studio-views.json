@@ -1,0 +1,78 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "jobs"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "studio"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": []
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "items",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/s01-labeling-ladder/delivery/types/task-type--items.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "draw-jobs"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/itemization.html",
+          "fragment": "draw-studio"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-labeling",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md"
+        },
+        {
+          "name": "hai-labeling-preparation",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/1_data/hai-labeling-preparation/SKILL.md"
+        },
+        {
+          "name": "hai-run",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/SKILL.md"
+        },
+        {
+          "name": "workbench-labeling",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/workbench-labeling/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

@@ -32,7 +32,7 @@ doshi2024_genaicreativity.pdf     Doshi & Hauser 2024, Science Advances   CC BY 
                                   10(28)
 
 
-Each copy was found by a Discovery Paper Run (`haipipe-discovery`), which also keeps its
+Each copy was found by a Discovery Paper Run (`hai-discovery`), which also keeps its
 verbatim BibTeX entry and abstract, and was checked to carry its title on its first
 pages. To add one: a Paper Run saves the free copy, and its license is confirmed before
 the file is copied here and named in the row's `pdf` cell.

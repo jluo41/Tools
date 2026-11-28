@@ -1,4 +1,4 @@
-"""Read a design Block on b12's ladder from disk (Tools/blueprints/Project-Ladder/work/b12_theme_design s11 · s12 · s13, 261007).
+"""Read a design Block on b12's ladder from disk (Tools/examples/Project-Ladder/blueprint/b12_theme_design s11 · s12 · s13, 261007).
 
 The ladder: a design Block `bNN_<app>/` holds its goal list (board.md ## Goals), its inputs versions
 (`inputs/inputs-vN/` + manifest.yaml; an older Block's `inputs/iN/` reads the same), what an Exp returned
@@ -26,7 +26,7 @@ from pathlib import Path
 import yaml
 
 # the registered methods and their type, one of the Guide's 13 cards: read from the registry, the skill
-# haipipe-design-method's methods/MNN-<slug>/method.md and its versions m<k>.md (decided 261007). This table is used
+# hai-design-method's methods/MNN-<slug>/method.md and its versions m<k>.md (decided 261007). This table is used
 # only when the registry is missing.
 _FALLBACK = {"M01": ("Goal only", "By goal"), "M02": ("Overall performance", "By precedent"),
              "M03": ("Detailed evidence", "By insight"), "M04": ("Actionable insights", "By insight"),
@@ -36,9 +36,9 @@ _FALLBACK = {"M01": ("Goal only", "By goal"), "M02": ("Overall performance", "By
 def _registry_dir() -> Path:
     try:
         from host_paths import skill_dir                  # on the host: wherever the skill sits under skills/
-        return skill_dir("haipipe-design-method") / "methods"
+        return skill_dir("hai-design-method") / "methods"
     except ImportError:                                   # read directly (a skill's test): the toolkit's own tree
-        return Path(__file__).resolve().parents[2] / "skills" / "2_theme" / "design" / "haipipe-design-method" / "methods"
+        return Path(__file__).resolve().parents[2] / "skills" / "3_theme" / "design" / "hai-design-method" / "methods"
 
 
 def registry(path: Path | None = None) -> dict:

@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Labeling at Scale · Design preview</title><link rel="stylesheet" href="../../../delivery/ui/labeling-blocks/preview.css"></head>
+<body><main><div class="crumb"><span>Labeling</span><span>›</span><span>Labeling at Scale</span><button class="scope" type="button" data-action="about" title="Synthetic examples; memory-only actions">Design preview</button></div>
+<div class="title-line"><h1>Labeling at Scale</h1><button class="section-pick" type="button" popovertarget="sections"><span id="section-name">Jobs</span></button><button id="wait-tray" class="wait-tray" type="button" data-action="waits" title="Review waiting items" hidden></button></div>
+<div id="sections" popover><button data-section="Jobs">Jobs</button><button data-section="Studio">Studio</button><button data-section="Delivery">Delivery</button></div>
+<div id="navigation"><nav class="row topics" data-row="job-topic" aria-label="Job topics"></nav><nav class="row" data-row="job" aria-label="Jobs"></nav><nav class="row topics task-topics" data-row="task-topic" aria-label="Task topics"></nav><nav class="row tasks" data-row="task" aria-label="Tasks" hidden></nav></div><div id="body"></div></main>
+<dialog id="dialog" class="dialog"><button type="button" class="dialog-close" data-close aria-label="Close">×</button><h2 id="dialog-title"></h2><div id="dialog-body"></div></dialog><div id="toast" class="toast" role="status" hidden></div>
+<script type="application/json" id="preview-data">{
+  "kind": "scale",
+  "name": "Labeling at Scale",
+  "topic": "s14-scale-job-preview",
+  "goal": "Execute a frozen guideline on a fixed item snapshot, then audit and publish traceable labels.",
+  "jobUnit": "One Items snapshot × one signed Guideline release × one executor configuration. Batches and retries are Runs.",
+  "jobGroups": "Guideline release",
+  "taskGroups": "Qualification · Execution · Quality",
+  "input": "Released Items, signed Guideline and executor configuration",
+  "output": "Audited labels with coverage, exclusions and per-item provenance",
+  "releaseName": "Audited labels",
+  "releaseRequirements": [
+    [
+      "Binding",
+      "Exact Items, Guideline and executor versions"
+    ],
+    [
+      "Qualification",
+      "Executor passes the sealed-test rule"
+    ],
+    [
+      "Coverage",
+      "Every expected item accounted for"
+    ],
+    [
+      "Audit",
+      "Recorded acceptance and unresolved dispositions"
+    ]
+  ],
+  "baseline": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression",
+  "baselineLabel": "task-release-current",
+  "baselineGroup": "release",
+  "folder": "bNN_labeling_at_scale",
+  "jobs": [
+    {
+      "id": "j01",
+      "name": "Support replies",
+      "topic": "Response safety · guideline-v2",
+      "goal": "Label the fixed support-replies snapshot with the qualified executor.",
+      "signed": true,
+      "qualified": true,
+      "complete": false,
+      "inputs": [
+        [
+          "Items",
+          "items-v1"
+        ],
+        [
+          "Guideline",
+          "guideline-v2"
+        ],
+        [
+          "Executor",
+          "executor-v1"
+        ],
+        [
+          "Partition",
+          "production-v1"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Qualify executor",
+          "group": "Qualification",
+          "state": "done",
+          "output": "qualification.json",
+          "facts": [
+            [
+              "Guideline",
+              "guideline-v2"
+            ],
+            [
+              "Executor",
+              "executor-v1"
+            ],
+            [
+              "Gate",
+              "Passed against sealed test"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Score fixed executor",
+              "done"
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Run batches",
+          "group": "Execution",
+          "state": "ready",
+          "output": "partial-labels.jsonl",
+          "facts": [
+            [
+              "Identity",
+              "Items × Guideline × executor × batch"
+            ],
+            [
+              "Resume",
+              "Skip completed, matching batches"
+            ],
+            [
+              "Current output",
+              "Partial labels; not a final release"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Batch A",
+              "done"
+            ],
+            [
+              "r02",
+              "Batch B",
+              "planned"
+            ]
+          ],
+          "action": "queue",
+          "columns": [
+            "Item",
+            "Label",
+            "Guideline"
+          ],
+          "rows": [
+            [
+              "conversation-01/reply-01",
+              "Safe",
+              "guideline-v2"
+            ]
+          ]
+        },
+        {
+          "id": "t03",
+          "name": "Audit labels",
+          "group": "Quality",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Sample",
+              "Risk-based and random audit"
+            ],
+            [
+              "Meaning issue",
+              "Return to Guideline Generation"
+            ]
+          ],
+          "runs": []
+        },
+        {
+          "id": "t04",
+          "name": "Package labels",
+          "group": "Quality",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Closure",
+              "Coverage and audit checks pass"
+            ],
+            [
+              "Release",
+              "Labels plus exclusions and provenance"
+            ]
+          ],
+          "runs": []
+        }
+      ],
+      "delivery": null
+    },
+    {
+      "id": "j02",
+      "name": "Community replies",
+      "topic": "Response safety · guideline-v2",
+      "goal": "Qualify a new executor before labeling community replies.",
+      "signed": true,
+      "qualified": false,
+      "complete": false,
+      "inputs": [
+        [
+          "Items",
+          "community-items-v1"
+        ],
+        [
+          "Guideline",
+          "guideline-v2"
+        ],
+        [
+          "Executor",
+          "executor-v2"
+        ],
+        [
+          "Partition",
+          "production-v1"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Qualify executor",
+          "group": "Qualification",
+          "state": "blocked",
+          "output": "",
+          "facts": [
+            [
+              "Guideline",
+              "guideline-v2"
+            ],
+            [
+              "Executor",
+              "executor-v2"
+            ],
+            [
+              "Required evidence",
+              "Sealed-test qualification"
+            ]
+          ],
+          "runs": [],
+          "action": "qualify",
+          "issue": "Executor requires qualification",
+          "reason": "This executor configuration has no passing qualification for guideline-v2."
+        },
+        {
+          "id": "t02",
+          "name": "Run batches",
+          "group": "Execution",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Identity",
+              "Items × Guideline × executor × batch"
+            ],
+            [
+              "Resume",
+              "Skip completed, matching batches"
+            ],
+            [
+              "Current output",
+              "Partial labels; not a final release"
+            ]
+          ],
+          "runs": [],
+          "action": "queue",
+          "columns": [
+            "Item",
+            "Label",
+            "Guideline"
+          ],
+          "rows": []
+        },
+        {
+          "id": "t03",
+          "name": "Audit labels",
+          "group": "Quality",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Sample",
+              "Risk-based and random audit"
+            ],
+            [
+              "Meaning issue",
+              "Return to Guideline Generation"
+            ]
+          ],
+          "runs": []
+        },
+        {
+          "id": "t04",
+          "name": "Package labels",
+          "group": "Quality",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Closure",
+              "Coverage and audit checks pass"
+            ],
+            [
+              "Release",
+              "Labels plus exclusions and provenance"
+            ]
+          ],
+          "runs": []
+        }
+      ],
+      "delivery": null
+    },
+    {
+      "id": "j03",
+      "name": "Archived replies",
+      "topic": "Response safety · guideline-v2",
+      "goal": "Inspect a completed release bound to its original versions.",
+      "signed": true,
+      "qualified": true,
+      "complete": true,
+      "inputs": [
+        [
+          "Items",
+          "archive-items-v1"
+        ],
+        [
+          "Guideline",
+          "guideline-v2"
+        ],
+        [
+          "Executor",
+          "executor-v1"
+        ],
+        [
+          "Partition",
+          "production-v1"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Qualify executor",
+          "group": "Qualification",
+          "state": "done",
+          "output": "qualification.json",
+          "facts": [
+            [
+              "Guideline",
+              "guideline-v2"
+            ],
+            [
+              "Executor",
+              "executor-v1"
+            ],
+            [
+              "Gate",
+              "Passed against sealed test"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Score fixed executor",
+              "done"
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Run batches",
+          "group": "Execution",
+          "state": "done",
+          "output": "One batch retained",
+          "facts": [
+            [
+              "Identity",
+              "Items × Guideline × executor × batch"
+            ],
+            [
+              "Resume",
+              "Skip completed, matching batches"
+            ],
+            [
+              "Current output",
+              "Partial labels; not a final release"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Batch A",
+              "done"
+            ],
+            [
+              "r02",
+              "Batch B",
+              "done"
+            ]
+          ],
+          "action": "queue",
+          "columns": [
+            "Item",
+            "Label",
+            "Guideline"
+          ],
+          "rows": [
+            [
+              "conversation-01/reply-01",
+              "Safe",
+              "guideline-v2"
+            ]
+          ]
+        },
+        {
+          "id": "t03",
+          "name": "Audit labels",
+          "group": "Quality",
+          "state": "done",
+          "output": "",
+          "facts": [
+            [
+              "Sample",
+              "Risk-based and random audit"
+            ],
+            [
+              "Meaning issue",
+              "Return to Guideline Generation"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Audit the completed label set",
+              "done"
+            ]
+          ]
+        },
+        {
+          "id": "t04",
+          "name": "Package labels",
+          "group": "Quality",
+          "state": "done",
+          "output": "",
+          "facts": [
+            [
+              "Closure",
+              "Coverage and audit checks pass"
+            ],
+            [
+              "Release",
+              "Labels plus exclusions and provenance"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Check coverage and build the release",
+              "done"
+            ]
+          ]
+        }
+      ],
+      "delivery": {
+        "title": "Archived replies · labels-v1",
+        "facts": [
+          [
+            "Items",
+            "archive-items-v1"
+          ],
+          [
+            "Guideline",
+            "guideline-v2"
+          ],
+          [
+            "Executor",
+            "executor-v1"
+          ],
+          [
+            "Labels",
+            "labels.jsonl"
+          ],
+          [
+            "Coverage",
+            "coverage.json"
+          ],
+          [
+            "Audit",
+            "audit.json"
+          ],
+          [
+            "Provenance",
+            "run-manifest.yaml"
+          ]
+        ]
+      }
+    }
+  ]
+}</script><script src="../../../delivery/ui/labeling-blocks/preview.js"></script></body></html>

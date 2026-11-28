@@ -41,7 +41,7 @@ def _main(argv: list[str]) -> int:
     except ValueError as exc:
         print(f"refused: {exc}")
         return 1
-    print(f"registered {qid} on {', '.join(pids)} · next: /haipipe-insight application {board.name} chain {qid} {pids[0]}")
+    print(f"registered {qid} on {', '.join(pids)} · next: /hai-insight application {board.name} chain {qid} {pids[0]}")
     return 0
 
 
@@ -117,7 +117,7 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
             runtime = yaml.safe_load(runtime_path.read_text(encoding="utf-8"))
         except (OSError, yaml.YAMLError) as exc:
             raise ValueError(f"registration Runtime cannot be read: {exc}") from exc
-        if not isinstance(runtime, dict) or runtime.get("workflow_id") != "haipipe-insight-workflow" \
+        if not isinstance(runtime, dict) or runtime.get("workflow_id") != "hai-insight-workflow" \
                 or runtime.get("workflow_runtime_id") != runtime_id \
                 or runtime.get("status") not in {"planned", "running", "held"} \
                 or request not in runtime.get("requested_controls", []):
@@ -125,13 +125,13 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
         if not isinstance(runtime.get("resource_controls", []), list):
             raise ValueError("Runtime resource_controls must be a list")
     else:
-        definition = {"schema": "haipipe.insight-definition/v1", "workflow_id": "haipipe-insight-workflow",
+        definition = {"schema": "haipipe.insight-definition/v1", "workflow_id": "hai-insight-workflow",
                       "revision": "v001", "run_specs": [], "requested_answer_targets": [],
                       "requested_controls": [request],
                       "completion": {"required_controls": "neutral-row-open-cells-and-registration-receipt",
                                      "required_runs": "none", "frontier": "empty"}}
         definition_text = yaml.safe_dump(definition, sort_keys=False, allow_unicode=True)
-        runtime = {"schema": "haipipe.workflow-runtime/v1", "workflow_id": "haipipe-insight-workflow",
+        runtime = {"schema": "haipipe.workflow-runtime/v1", "workflow_id": "hai-insight-workflow",
                    "workflow_version": "1.3.1", "workflow_runtime_id": runtime_id,
                    "definition_ref": "definition-v001.yaml",
                    "status": "planned", "requested_answer_targets": [], "requested_controls": [request],
@@ -142,7 +142,7 @@ def _register_question(board_root: Path, level: str, question: str, partitions,
     log = record_path(plan_dir(path.parent), path.stem, "log")
     receipt = f"{log.relative_to(board_root).as_posix()}#{record_id}"
     control = {"key": "registration", "target": {"question": qid, "partitions": partitions},
-               "status": "passed", "authority": "haipipe-insight-question", "actor": actor,
+               "status": "passed", "authority": "hai-insight-question", "actor": actor,
                "evidence": [{"path": path.relative_to(board_root).as_posix()}], "receipt": receipt}
     stamp = datetime.now().astimezone().isoformat(timespec="seconds")
     record = {"workflow_runtime_id": runtime_id, "at": stamp, **control,

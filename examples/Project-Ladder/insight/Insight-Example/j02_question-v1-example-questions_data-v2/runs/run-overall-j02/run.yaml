@@ -1,0 +1,17 @@
+run: run-overall-j02
+kind: soft
+type: overall
+scope: Tools/examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2
+target: j02
+ticket: run-overall-j02.md
+skill: hai-insight
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+- p02-1106
+writes:
+- delivery/j02_question-v1-example-questions_data-v2
+feeds: []

@@ -8,7 +8,7 @@ Build `_WorkSpace/0-RawDataStore/0-EventNorm/_MedInfo/`.
 Emits the xinfo-v1 shape shared by _FoodInfo and _ExerciseInfo, so a benchmark
 that reads coverage, confidence or basis is written once for all four nouns.
 This file owns only what is about MEDICATION; the folder's shape belongs to
-`haipipe-norm/xinfo`.
+`hai-norm/xinfo`.
 
 Covers describe-medication ONLY since insulin moved to `_InsInfo`. The two are
 still one chain -- the insulin skill's input is this skill's DrugKey -- and the
@@ -26,7 +26,7 @@ import pandas as pd
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[4]
 sys.path[:0] = [str(HERE), str(HERE.parent / "describe-insulin"),
-                str(HERE.parent / "haipipe-norm")]
+                str(HERE.parent / "hai-norm")]
 
 from mednorm import normalize as mednorm                      # noqa: E402
 from mednorm.constants import BANK, LEXICON                   # noqa: E402

@@ -176,7 +176,7 @@ def _chat_prompt(vm: dict, current: dict, draw: dict, *, run: dict | None = None
         lines.append("Next items: " + ", ".join(todo))
     lines += [
         "",
-        'Follow /haipipe-labeling-rounds, JUDGE "By chat" (engine/calibration.py):',
+        'Follow /hai-labeling-rounds, JUDGE "By chat" (engine/calibration.py):',
         "1. Call open_item for the next unfinished item, even if it was shown earlier. Show me its conversation and AI reply.",
         "2. Record only what I say: record_first for my first answer, then show any available reference observations and your view.",
         "3. record_final when I keep or change; add_feedback for a note about an item.",

@@ -1,0 +1,173 @@
+---
+name: hai-nn
+description: "Stage 5 NN door: reads the layer's part (algo, tuner, instance, modelset) for algorithm classes, tuner sweeps, ModelInstance builds and ModelSet pipelines. Use for dashboards, reviews, generation, tests. Trigger: nn pipeline, model, algorithm, tuner, checkpoint, modelset, /hai-nn."
+argument-hint: "[layer] [function] [args...]"
+allowed-tools: Bash, Read, Grep, Glob, Skill, Write, Edit
+metadata:
+  version: "0.2.1"
+  last_updated: "2026-10-26"
+  # version history: ./CHANGELOG.md (skill-scoped, never loaded at invocation)
+---
+
+Skill: hai-nn (orchestrator)
+=================================
+
+User-facing entry for Stage 5.
+Parses intent, then reads the layer's part, `_parts/<layer>/PART.md`, and follows it.
+The parts are files of this skill, not separate skills.
+
+```
+/hai-nn                       -> cross-layer dashboard
+/hai-nn <layer>               -> ref-only view of one layer
+/hai-nn <layer> <fn> [args]   -> dispatch to specialist
+/hai-nn <fn> <layer> [args]   -> same (flexible order)
+/hai-nn <fn>                  -> ASK which layer (don't guess across L1-L4)
+/hai-nn L0                    -> architecture overview (umbrella inline)
+/hai-nn "<natural language>"  -> infer layer + fn from keywords, dispatch
+```
+
+---
+
+Parts
+-----
+
+```
+_parts/algo/PART.md       L1: Algorithm (model class, forward, loss, metric)
+_parts/tuner/PART.md      L2: Tuner (hyperparameter sweep, search space)
+_parts/instance/PART.md   L3: ModelInstance (materialized weights + config)
+_parts/modelset/PART.md   L4: ModelSet / Pipeline (composition of instances)
+```
+
+---
+
+Layer Keyword Map
+------------------
+
+```
+algorithm, algo, mlpredictor, tsforecast, tefm,
+tediffusion, bandit, model class, forward, loss   -> algo
+tuner, hyperparameter, hp, sweep, search space    -> tuner
+instance, ModelInstance, weights, trained model,
+ckpt, checkpoint                                  -> instance
+ModelSet, modelset, pipeline, registry,
+ensemble, multi-instance                          -> modelset
+```
+
+Layer aliases (positional):
+```
+1, L1, layer-1, algorithm  -> algo
+2, L2, layer-2, tuner      -> tuner
+3, L3, layer-3, instance   -> instance
+4, L4, layer-4, modelset   -> modelset
+0, L0, overview            -> umbrella inline
+```
+
+---
+
+Function Verb Map
+------------------
+
+```
+status, dashboard, what's there       -> dashboard
+review, audit, check, validate        -> review
+generate, build, create, scaffold     -> generate
+test, smoke, explicit `run` alias      -> test
+```
+
+---
+
+Routing Logic
+-------------
+
+```
+Step 1: Parse $ARGUMENTS.
+
+Step 2: Resolve (layer, function):
+  - First positional matches layer alias?  -> layer = that
+  - Else first positional matches verb?    -> function = that
+  - Scan keyword maps for any unmatched terms.
+  - layer = L0 / overview                  -> handle inline (overview mode)
+
+Step 3: Decide handling:
+  - No args                                -> CROSS-LAYER DASHBOARD (inline)
+  - layer = L0                             -> read ref/overview.md, summarize
+  - layer resolved, no function            -> dispatch to <layer> with arg "(none)"
+                                              -> specialist returns ref-only summary
+  - both resolved                          -> dispatch to specialist
+  - function resolved, no layer            -> ASK which layer
+
+Step 4: Read `_parts/<layer>/PART.md` and follow it, with
+        args "<function> <remaining_args>".
+
+Step 5: End with the part's structured tail (status / summary /
+        artifacts / next).
+```
+
+---
+
+Cross-Layer Dashboard (no-arg case)
+------------------------------------
+
+When invoked with no arguments, run the `dashboard` function of every part in turn and concatenate:
+
+```
+_parts/algo/PART.md       dashboard
+_parts/tuner/PART.md      dashboard
+_parts/instance/PART.md   dashboard
+_parts/modelset/PART.md   dashboard
+```
+
+Emit a 4-line summary (one per layer) plus an overall header.
+
+---
+
+L0 / Overview Mode (inline)
+----------------------------
+
+`/hai-nn L0` and `/hai-nn overview` are handled inline:
+
+  1. Read `ref/overview.md`.
+  2. Summarize the 4-layer architecture, registry, YAML templates.
+  3. Suggest the next layer-scoped command.
+
+---
+
+Disambiguation Rules
+---------------------
+
+  - Layer unclear -> list 4 layer options, wait.
+  - Verb unclear, layer clear -> default to `dashboard`.
+  - Multi-layer request ("review L1 to L3") -> dispatch sequentially,
+    reporting after each.
+
+---
+
+Specialist Return Contract
+---------------------------
+
+```
+status:    ok | blocked | failed
+summary:   2-3 sentences on what was done at the layer
+artifacts: [paths created, read, or modified]
+next:      suggested next command
+```
+
+---
+
+Files Owned by This Umbrella
+-----------------------------
+
+```
+ref/overview.md          cross-layer architecture + registry + YAML templates
+fn/fn-dashboard.md       dashboard procedure (used by every specialist)
+fn/fn-review.md          review procedure (used by every specialist)
+fn/fn-generate.md        generate procedure (used by every specialist)
+fn/fn-test.md            test procedure (used by every specialist)
+```
+
+These fn docs are SHARED across specialists.
+Each specialist reads its own `ref/concepts.md` plus the relevant umbrella fn doc.
+
+Natural-language requests to train, tune, or produce a real checkpoint route to `/hai-task fit` (hai-task reads hai-task-for-fit by path).
+The explicit `/hai-nn run` alias retains smoke-test compatibility.
+For ambiguous “run the model”, resolve whether the requested product is a smoke check, inference, or a trained checkpoint before selecting the operation.

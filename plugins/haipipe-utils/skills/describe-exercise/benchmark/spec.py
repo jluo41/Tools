@@ -49,7 +49,7 @@ from exnorm import normalize
 # The SPACE root. Tools is shared by every SPACE, so a written-out path is
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
-# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+# the resolver. Same walk as hai-norm/paths.py:space_root().
 ROOT = next(a for a in Path(__file__).resolve().parents
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SOURCE_STORE = ROOT / "_WorkSpace/1-SourceStore"

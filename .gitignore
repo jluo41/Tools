@@ -38,7 +38,7 @@ plugins/haipipe-toolkit/skills/diagrams/*/board/
 # The served board's local state: the activity database and the session
 # sidecar. Both are per-machine (sessions.json stores absolute paths) and
 # both self-create when missing, so they are never shared.
-.haipipe-board/
+.hai-board/
 
 # ── Virtualenvs, wherever a skill grows one ─────────────────────────────────
 # JL 260823: diagram-excalidraw/references/.venv is 138 MB and 100% virtualenv
@@ -60,25 +60,25 @@ node_modules/
 # 260823), and nothing tracked references them.
 **/materials/raw/
 
-# a studio builder's seed snapshot (haipipe-studio canvas.py): a local cache of the last build, rebuilt per
+# a studio builder's seed snapshot (hai-studio canvas.py): a local cache of the last build, rebuilt per
 # machine, often several MB; never committed
 .*.seed.json
 
-# a mind map's static page (haipipe-studio's mind map part): rebuilt from its .mindmap.md on every change; only this suffix,
+# a mind map's static page (hai-studio's mind map part): rebuilt from its .mindmap.md on every change; only this suffix,
 # never a blanket *.html, since Tools tracks real .html files
 *.mindmap.html
-# a Studio topic's slides (haipipe-studio topic_slides.py): rebuilt from its face and rounds after every round
+# a Studio topic's slides (hai-studio topic_slides.py): rebuilt from its face and rounds after every round
 *.slides.html
 *.slides.pptx
 
 # ── A Block's outside material stays on this machine ───────────────────────
-# related/ keeps what came in from outside (haipipe-related). A meeting
+# related/ keeps what came in from outside (hai-related). A meeting
 # transcript names colleagues and internal plans, a sent file or email is
 # someone else's, and this repo is public: related.md links them, git never
 # holds them. Papers are open-licensed and stay tracked.
-blueprints/**/related/meetings/
-blueprints/**/related/emails/
-blueprints/**/related/files/
+examples/**/related/meetings/
+examples/**/related/emails/
+examples/**/related/files/
 
 # local server settings and the share door's access table (emails): never committed (b10 s52, 261012)
 /.server_config/

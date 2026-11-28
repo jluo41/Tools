@@ -11,7 +11,7 @@ or become a remote service without a pipeline file changing.
 
 WHY THIS DOOR TAKES MORE THAN A LIST OF STRINGS
 ================================================================================
-haipipe-norm's contract is `normalize(items: list[str])`. Food obeys it exactly
+hai-norm's contract is `normalize(items: list[str])`. Food obeys it exactly
 because a meal string is self-contained. An exercise row is not:
 
     minutes    MET is a RATE. Without minutes there is no dose to report, and

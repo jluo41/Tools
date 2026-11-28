@@ -21,7 +21,7 @@ every number.
     curl -sS localhost:8070/exercise/normalize -H 'content-type: application/json' \
          -d '{"activity":"Walking","minutes":30,"weight_kg":82}'
 
-Member of the `haipipe-norm` family; read that contract first. Sibling:
+Member of the `hai-norm` family; read that contract first. Sibling:
 `describe-food`.
 
 
@@ -233,7 +233,7 @@ THE EVENT JSON
 --------------------------------------------------------------------------------
 
 What an event door's JSON must hold (raw as it came, input normalized, output by
-local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+local hour) is one checklist for every type: hai-norm's THE EVENT JSON, with
 its table of where each type stands. Exercise's own (eventnorm/exercise/schema.py, b51 s02):
 
     item      {"id", "activity", "met"}: the words, and the MET a device gives

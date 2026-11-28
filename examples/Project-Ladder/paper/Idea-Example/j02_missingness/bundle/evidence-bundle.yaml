@@ -1,0 +1,30 @@
+version: 1
+kind: ideation-evidence-bundle
+direction:
+  address: Idea-Example.j02
+  question: Does masking inputs during training preserve prediction quality when deployment observations
+    are missing?
+  scope: Demonstration hypotheses for robustness under deployment change.
+  decision_rule: Compare verified prior work, a bounded test and target fit before requesting human selection.
+sources:
+  context:
+  - id: ctx01
+    kind: user-brief
+    path: paper/Idea-Example/board.md
+    address: null
+    locator: Topic
+    role: scope
+    status: reported
+    owner_state: null
+    digest: Demonstration portfolio requested to inspect Idea organization.
+    claim_support: false
+  internal: []
+  external: []
+  venues: []
+policy:
+  local_first: true
+  no_copy: true
+  unverified_is_support: false
+  conflicts_preserved: true
+created_at: '2026-11-27T18:39:41-05:00'
+updated_at: '2026-11-27T18:39:41-05:00'

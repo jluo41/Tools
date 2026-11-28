@@ -1,0 +1,14 @@
+run: run-check-delivery-export
+kind: soft
+type: check
+scope: null
+target: delivery-export
+ticket: run-check-delivery-export.md
+skill: hai-ui
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1125
+writes: []
+feeds: []

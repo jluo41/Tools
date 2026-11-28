@@ -1,0 +1,33 @@
+{
+  "status": "partial",
+  "readiness": "content-adopted",
+  "source": {
+    "path": "hai-page-guide.md",
+    "decision": "go ahead to the content and delivery"
+  },
+  "outputs": {
+    "web": {
+      "status": "built",
+      "path": "delivery/web/index.html"
+    },
+    "latex": {
+      "status": "built",
+      "tex": "delivery/latex/hai-page-guide.tex",
+      "pdf": "delivery/latex/hai-page-guide.pdf",
+      "pdf_pages": 2
+    },
+    "word": {
+      "status": "built",
+      "docx": "delivery/word/hai-page-guide.docx",
+      "pdf_twin": {
+        "status": "unavailable",
+        "path": "delivery/word/hai-page-guide.pdf",
+        "reason": "The existing headless-browser conversion did not produce the PDF file."
+      }
+    }
+  },
+  "check": {
+    "status": "pending",
+    "next": "independent CHECK"
+  }
+}

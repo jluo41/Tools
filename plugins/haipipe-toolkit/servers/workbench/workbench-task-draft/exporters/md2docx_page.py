@@ -200,7 +200,7 @@ def parse_page(path, keep_fences=False):
     insight = bool(re.search(r"(?m)^folder-kind:\s*(data|information|knowledge|wisdom)\s*$",
                              raw_page.split("\n## ", 1)[0]))
     abstract = is_abstract_page(raw_page)
-    # `part-headings: sections` (haipipe-draft page_adopt, JL 261114): one draft Task holds several Sections, each
+    # `part-headings: sections` (hai-draft page_adopt, JL 261114): one draft Task holds several Sections, each
     # its own `### <name>` in Content, so the Task's own title is not a printed heading.
     sections_task = bool(re.search(r"(?m)^part-headings:\s*sections\s*$", raw_page.split("\n## ", 1)[0]))
     if page_title and not own_h1 and not sections_task:

@@ -57,7 +57,7 @@ def spaces(snap):
 
 
 def render_report(report, board, root, board_path):
-    """Show the current Page Face with the shared Page reader (workbench/page/page_reader.py).
+    """Show the current Page Face with the shared Page reader (workbench/page/parts_and_map/page_reader.py).
 
     Draft Reading displays plan-bound prose. A new report may have no Draft;
     reading its Page Face must still work without allocating a writing Run.
@@ -250,7 +250,7 @@ def drawing_html(drawing):
                f'<span class="mono mut">{e(drawing["path"])}</span></span>{link(url + "&edit=1", "Open full screen")}')
     sessions = drawing.get("sessions") or []
     saved = ""
-    if sessions:                                     # the studio's saved sessions, newest first (haipipe-studio)
+    if sessions:                                     # the studio's saved sessions, newest first (hai-studio)
         items = "".join(f'<li>{pop(s["url"], "Session · " + s["title"], s["pass"] + " · " + s["title"])}</li>'
                         for s in sessions)
         saved = f'<div class="draw-sessions"><span class="mut">Sessions</span><ul>{items}</ul></div>'

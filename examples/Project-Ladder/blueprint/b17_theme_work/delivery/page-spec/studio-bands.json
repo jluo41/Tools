@@ -1,0 +1,64 @@
+{
+  "bands": [
+    {
+      "band": "s0N",
+      "emoji": "🧱",
+      "name": "Block Structure",
+      "holds": "The Folder, the Job-Task and the Studio of one Block type."
+    },
+    {
+      "band": "s1N",
+      "emoji": "👀",
+      "name": "Block Job UI Preview",
+      "holds": "One live preview per Block type: its Block page, a Job and a Task, as the server renders them."
+    },
+    {
+      "band": "s2N",
+      "emoji": "📊",
+      "name": "Report",
+      "holds": "Kept for the Block's Report: a topic that answers one of the Block's Questions."
+    },
+    {
+      "band": "s3N",
+      "emoji": "🧩",
+      "name": "UI Plugin",
+      "holds": "A piece every page carries: the Files tree, the Trace section."
+    },
+    {
+      "band": "s4N",
+      "emoji": "🪜",
+      "name": "Task Procedure",
+      "holds": "Task methods belonging to the relevant Task type and its owning skill."
+    },
+    {
+      "band": "s5N",
+      "emoji": "🧰",
+      "name": "Skills",
+      "holds": "The skills that make one Block type, or one skill alone: a top button per skill; on the left its whole top level under the names on disk (`SKILL.md`, `CONSTITUTION.md`, `ref/`, `scripts/`, its other folders, its loose files); a folder shows one fold per file; every file read live."
+    },
+    {
+      "band": "s6N",
+      "emoji": "🧰",
+      "name": "Skills",
+      "holds": "Shared skills used by the Block."
+    },
+    {
+      "band": "s7N",
+      "emoji": "🏷️",
+      "name": "Studio Type",
+      "holds": "Shared Studio type requirements and theme-specific type definitions; reuse shared types by reference."
+    },
+    {
+      "band": "s8N",
+      "emoji": "🗺️",
+      "name": "Theme Guide",
+      "holds": "The theme's Guide, shared by every Block of the theme: Description, Method, RoadMap, Related Paper."
+    },
+    {
+      "band": "s9N",
+      "emoji": "🧭",
+      "name": "Guide",
+      "holds": "Guidance for reading and using the owning Block."
+    }
+  ]
+}

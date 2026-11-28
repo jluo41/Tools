@@ -1,0 +1,8 @@
+run: r01_example
+kind: hard
+type: prep
+target: t01_prep-v1_example-ready
+prep: prep-v1
+data: data-v2
+ready: _WorkSpace/insight-ready/Example_data-v2@prep-v1/
+status: done

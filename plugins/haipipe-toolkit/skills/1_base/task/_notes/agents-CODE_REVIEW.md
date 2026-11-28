@@ -7,9 +7,9 @@
 - dialect: agent-definition (not Python or Stata)
 - reviewed_at: 2026-06-23
 - files reviewed:
-    - .claude/agents/haipipe-task-orchestrator-agent.md  (v1.0.0 2026-06-23)
-    - .claude/agents/haipipe-task-creator-agent.md       (v2.0.0 2026-06-09)
-    - .claude/agents/haipipe-task-reviewer-agent.md      (v1.0.0 2026-06-08)
+    - .claude/agents/hai-task-orchestrator-agent.md  (v1.0.0 2026-06-23)
+    - .claude/agents/hai-task-creator-agent.md       (v2.0.0 2026-06-09)
+    - .claude/agents/hai-task-reviewer-agent.md      (v1.0.0 2026-06-08)
     - Tools/plugins/haipipe-toolkit/skills/1_base/task/agents/README.md
 
 ---
@@ -19,30 +19,30 @@
 
 ### 1. Role Separation: WARN
 
-evidence: haipipe-task-reviewer-agent.md line 43
+evidence: hai-task-reviewer-agent.md line 43
 
 intent: reviewer "I do NOT" section should redirect code authorship to the
-correct agent name, haipipe-task-creator-agent.
+correct agent name, hai-task-creator-agent.
 
-code: "author code → haipipe-task-builder-agent (builder ≠ judge)"
+code: "author code → hai-task-builder-agent (builder ≠ judge)"
 
-detail: The reviewer agent was consolidated when haipipe-task-builder-agent
-was renamed to haipipe-task-creator-agent (creator changelog entry v2.0.0
+detail: The reviewer agent was consolidated when hai-task-builder-agent
+was renamed to hai-task-creator-agent (creator changelog entry v2.0.0
 2026-06-09). The reviewer's "I do NOT" cross-reference was not updated. This
-is a stale name — haipipe-task-builder-agent no longer exists as a declared
+is a stale name — hai-task-builder-agent no longer exists as a declared
 agent. A reader following this pointer will find no matching file.
 
-fix: Replace "haipipe-task-builder-agent" with "haipipe-task-creator-agent"
+fix: Replace "hai-task-builder-agent" with "hai-task-creator-agent"
 in the reviewer's "I do NOT" block.
 
 
 ### 2. Lifecycle Coverage: WARN
 
 evidence:
-  - haipipe-task-reviewer-agent.md scope block: "serves_gates: GATE 1 (pre-run) + GATE 2 (post-run)"
-  - haipipe-task-reviewer-agent.md body: only documents Gate 1 (code review) and Gate 2 (result audit)
+  - hai-task-reviewer-agent.md scope block: "serves_gates: GATE 1 (pre-run) + GATE 2 (post-run)"
+  - hai-task-reviewer-agent.md body: only documents Gate 1 (code review) and Gate 2 (result audit)
   - README.md line 53: reviewer listed at stages 1, 2, 4
-  - haipipe-task-orchestrator-agent.md lines 88, 101: orchestrator dispatches reviewer for "plan check" (Stage 1) and "report check" (Stage 4)
+  - hai-task-orchestrator-agent.md lines 88, 101: orchestrator dispatches reviewer for "plan check" (Stage 1) and "report check" (Stage 4)
 
 intent: reviewer should cover plan-check (Stage 1) and report-check (Stage 4)
 in addition to Gate 1 code review (Stage 2) and Gate 2 result audit (Stage 3).
@@ -57,7 +57,7 @@ artifact and expect a verdict. The reviewer has no documented behavior for
 that path — it will fall back to ad-hoc judgment. This is a coverage gap:
 two of four lifecycle stages lack reviewer procedures.
 
-fix: Add two sections to haipipe-task-reviewer-agent.md — "PLAN check
+fix: Add two sections to hai-task-reviewer-agent.md — "PLAN check
 (Stage 1)" and "REPORT check (Stage 4)" — each with an explicit checklist
 and return format. Update "serves_gates" scope line to reflect all four
 stages (not just Gate 1/Gate 2 terminology).
@@ -84,17 +84,17 @@ model context) and not a defect.
 
 ### 4. Dispatch Chain and Agent Name Consistency: WARN
 
-evidence: haipipe-task-reviewer-agent.md line 43 (same as Check 1)
+evidence: hai-task-reviewer-agent.md line 43 (same as Check 1)
 
 intent: all cross-references between agent files and the README should use
 the canonical agent names declared in the frontmatter name: field.
 
 code:
-  - orchestrator dispatches "haipipe-task-creator-agent" and
-    "haipipe-task-reviewer-agent" — matches frontmatter names. PASS.
-  - creator paired_with "haipipe-task-reviewer-agent" — matches. PASS.
+  - orchestrator dispatches "hai-task-creator-agent" and
+    "hai-task-reviewer-agent" — matches frontmatter names. PASS.
+  - creator paired_with "hai-task-reviewer-agent" — matches. PASS.
   - README uses same three names throughout. PASS.
-  - reviewer "I do NOT" block references "haipipe-task-builder-agent" — does
+  - reviewer "I do NOT" block references "hai-task-builder-agent" — does
     NOT match any declared agent name. FAIL on this reference.
 
 detail: One stale cross-reference in the reviewer. All other dispatch
@@ -106,9 +106,9 @@ affects documentation clarity, not runtime routing.
 ### 5. Return Contract Compatibility: FAIL
 
 evidence:
-  - haipipe-task-creator-agent.md lines 140-151: loop contract includes
+  - hai-task-creator-agent.md lines 140-151: loop contract includes
     verdict == "revise" as a distinct state that causes retry with feedback
-  - haipipe-task-reviewer-agent.md return contract: "verdict: pass | warn | fail"
+  - hai-task-reviewer-agent.md return contract: "verdict: pass | warn | fail"
     — no "revise" state declared
 
 intent: the orchestrator-managed creator-reviewer loop must close cleanly.
@@ -137,11 +137,11 @@ return contract — "verdict: pass | warn | fail | revise" and
 ### 6. Cross-layer Consistency (orchestrator <-> probe-orchestrator): WARN
 
 evidence:
-  - haipipe-task-orchestrator-agent.md description: "Dispatch target for
+  - hai-task-orchestrator-agent.md description: "Dispatch target for
     probe-orchestrator or any skill needing task work done with clean context"
   - README.md: documents probe-orchestrator -> task-orchestrator dispatch
     relationship with a diagram
-  - haipipe-task-orchestrator-agent.md return contract: {status, summary,
+  - hai-task-orchestrator-agent.md return contract: {status, summary,
     results, artifacts, next}
 
 intent: probe-orchestrator needs to be able to parse task-orchestrator's

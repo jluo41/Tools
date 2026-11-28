@@ -1,7 +1,7 @@
 /* A building Task's views (labeling_focus.py, decision_report_view.py; b15 j01 t03 s58 C2): numbered heading bars that
    fold; the Decide view's inbox (slide 17: a row per card, its question large, its state in a pill, Open) and its
    decision card (slide 16). Scoped to .dec-view, in the workbench's own colours, fonts and boxes (focus.css tokens;
-   haipipe-ui: a redesign moves structure, never the look); no illustrations. */
+   hai-ui: a redesign moves structure, never the look); no illustrations. */
 .dec-view{--dec-wait:light-dark(#b35c00,#e4bd62);--dec-wait-wash:light-dark(#fff4e6,#3a2a12);--dec-wait-line:light-dark(#ffd8a8,#7a5520);
  --dec-ok:light-dark(#2b8a3e,#8ce99a);--dec-ok-wash:light-dark(#ebfbee,#16301d);--dec-ok-line:light-dark(#b2f2bb,#2f6b3c);
  --dec-err:light-dark(#c92a2a,#ff8787)}

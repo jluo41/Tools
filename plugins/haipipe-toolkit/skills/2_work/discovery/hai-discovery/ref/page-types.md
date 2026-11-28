@@ -1,0 +1,157 @@
+# Discovery Page Types
+
+A Discovery Page Type is the article form of one Level-3 Discovery `tNN_` Task
+Page. It is a domain field in `discovery.yaml`, not a Board `page-type:` key,
+not a Folder level, and not a Run family.
+
+```text
+one Job inquiry -> one or more typed Task Pages
+one Task question -> one tNN_ Page Folder -> one discovery_type
+one admitted evidence Subject -> one rNN_ Paper/Source Run
+```
+
+All seven canonical forms are live Discovery surface. Search finds candidate
+Subjects, Review inspects one admitted source at a time, and Synthesize
+combines accepted Results into a topic article. Semantic direction and idea
+work is owned by the separate `hai-ideation` skill, not by a Discovery Page
+Type. The numbered layout and its BJTR retrofit are defined in
+`bjtr-alignment.md`.
+
+Changing the article form does not change what earns a Run. Search queries,
+candidate lists, synthesis passes, outline revisions, and direction generation are
+Page workflow. A selected canonical paper/source becomes a Run only when the
+Topic commissions a durable analysis of that Subject.
+
+## Canonical types
+
+| `discovery_type` | Specialist | Reader promise | Typed Task-side record | Evidence Run policy |
+|---|---|---|---|---|
+| `source-map` | Search | show what relevant sources exist and the coverage boundary | none | one Run per admitted source |
+| `source-reading` | Review | explain what one selected source says and what it supports | none | one Run per analyzed source |
+| `topic-summary` | Synthesize | synthesize what is known about one bounded topic | optional `summary.md` | one Run per cited source |
+| `prior-art-verdict` | Synthesize | decide whether a named claim already exists | optional `verdict.md` | one Run per closest-prior-work source |
+| `counterevidence-review` | Synthesize | preserve and weigh evidence against a named claim | optional `verdict.md` | one Run per admitted counter/source |
+| `landscape-review` | Synthesize | map approaches, clusters, disagreements, and gaps | optional `landscape.md` | one Run per cited source |
+| `benchmark-landscape` | Synthesize | compare datasets, tasks, metrics, and evaluation setups | optional `landscape.md` | one Run per cited benchmark/source |
+
+The root `<task-folder-name>.md` is always the human-facing article. A typed record is a
+compact Task-side synthesis receipt used by the specialist and may be absent
+when the Page itself is sufficient. It never replaces the Page and is never a
+Level-4 Result.
+
+## Permitted normalization
+
+Existing manifests may use a permitted old `type` + `role` pair. Normalize it
+to the canonical field without rewriting the article automatically:
+
+| legacy `type` / `role` | canonical `discovery_type` |
+|---|---|
+| `Search / source_gather` | `source-map` |
+| `Search / source_read` or `search_and_read` | `source-reading` |
+| `Review / topic_summary` | `topic-summary` |
+| `Review / prior_art_check` | `prior-art-verdict` |
+| `Review / counterevidence` | `counterevidence-review` |
+| `Review / landscape_review` | `landscape-review` |
+| `Review / benchmark_landscape` | `benchmark-landscape` |
+
+New manifests write only `discovery_type`. Specialists derive their route from
+the table above. A manifest that carries both forms must normalize to the same
+type or the Topic is invalid.
+
+## Page Face contract
+
+What `paper_runs.py check` requires of the root Page, in the four-division layout:
+
+~~~text
+---                                   frontmatter: folder-kind: discovery (never page-type: task),
+folder-kind: discovery                address, address_compact, discovery_type, status, state
+...
+---
+# <Title>
+## Opening                            first paragraph at most 520 characters; the Board check
+<one question, alone on line 1>       also wants its first line to be the question
+## Content
+### 1 · Question and boundary · <name>      the four role names, in this order
+**<Label>**: <one line>                     every division opens with a bold label line
+```text                                     and then a text block (its face diagram)
+### 2 · Type payload · <name>
+### 3 · Evidence map · <name>
+### 4 · Limits and next move · <name>
+~~~
+
+The Board check (`board_sync.py --check`) also warns on a division name over six
+reader-facing words and on prose hard-wrapped mid-sentence.
+
+The Page keeps the shared `hai-draft` Page Face: Opening, then Content.
+Outline, Aims and other process records are backstage in the Page Folder and
+are never added as Page sections (a legacy `## Aims` is still checked when
+present). Its Content makes four promises, with headings chosen for the
+subject rather than copied mechanically. Each Discovery Content division may
+carry its own captioned face diagram; a whole-Page diagram is not a fifth
+on-stage section. Do not author `## Outline`, `## Diagram`, or `## Writing Style`;
+the plan, Mermaid structure, and writing requirements live in `draft/`.
+
+The root Page writes `folder-kind: discovery`. It does not write
+`page-type: task`: Discovery owns both Folder faces, while the empirical
+technical-report grammar belongs only to `folder-kind: task`.
+
+1. **Question and boundary**: define the Topic, population/time/venue boundary,
+   channels searched, and admission rule.
+2. **Type payload**: source map, source reading, summary, verdict, landscape,
+   or benchmark guide.
+3. **Evidence map**: link every factual support to completed Result Cards and
+   exact cite keys; preserve disagreement and unresolved evidence.
+4. **Limits and next move**: state what the Page does not establish and whether
+   the honest route is gather, revise, extend, hold, or close.
+
+In the four-division layout the Page synthesizes Results many-to-many. It may quote or compress them, but
+must not become a pasted `notes.md` ledger or imply one paper per paragraph.
+Backstage Aim records, when a workflow keeps them, judge whether the article
+keeps its reader promise; Paper Run status is derived separately from runtime
+receipts.
+
+## One division per Run (`layout: one-division-per-run`)
+
+A Page that files one source per Run (a video, a talk, a post) may instead
+give every Run its own Content division, so a reader opens one source at a
+time and sees which ones are checked. The Page opts in with
+`layout: one-division-per-run` in its frontmatter; without that line the four
+promises above apply. The checker (`paper_runs.py`) reads the field and then
+requires:
+
+1. **Division 1 is `Concept · <concept>`**: the scope text block, the plain
+   explanation (What it is, How it works, Why it matters), a table with one
+   row per Run (`| # | Run | Video | Length | Interview | State |`), how the
+   sources fit, and the interview questions.
+2. **Divisions 2 to N-1 are `rNN · <English gist>`**: one per Run, in Run
+   order, each opening with `**rNN**: <one sentence>` and a text block
+   (Video, Title, Creator, Result, State), then the links and that Run's notes.
+3. **The last division is `Limits · <what is still open>`**: the transcript
+   and source-list pointers, what is unchecked, and the next move.
+4. **No Aims on the Page.** The Concept table's `State` column carries each
+   Run's checked state. A legacy Page that still carries `## Aims` must mirror
+   the divisions one to one with identical names, and the checker enforces it.
+
+Every division still opens with its `**Label**:` line and a text block. In
+this layout a Result belongs to exactly one division, which is the point: the
+many-to-many rule below is for Pages that argue across sources, not for Pages
+that file them. A Run moved to another Page takes its division with it. The
+per-page reorganization job that moves an existing four-division Page into
+this layout is written in `hai-task-for-evidence` (section "Reorganize a
+Discovery Page into one division per Run").
+
+When human Page interaction is needed, the shared Page workflow starts with
+`rp00_mermaid-structure`, which closes the Mermaid argument map and the global
+`P01..PN` order. Selected paragraph-group Page Runs then use
+`rp01_p01` or `rp02_p02-p03`. These Page Runs own feedback and accepted prose;
+they are distinct from the native Discovery `rNN` Runs that analyze sources.
+The Page release barrier requires the selected Page Runs and required Task
+Results to be ready before CONTENT adopts the Page and builds delivery.
+
+## Type changes
+
+Change `discovery_type` in place only when the Topic question and evidence
+population stay the same and the Page is still before CLOSE. After CLOSE, a
+materially different reader promise opens a new `tNN_` Task Page and may reuse
+completed Results by global Run reference. Never relabel a completed verdict as
+a landscape Page merely to avoid a new address.

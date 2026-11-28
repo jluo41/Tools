@@ -8,7 +8,7 @@ This folder holds what every Workbench family reuses instead of owning a copy:
 
 | Component | Writes? | Contract | What it serves |
 |---|---|---|---|
-| **Studio** | Yes, through its own routes | [haipipe-studio](../../skills/1_base/project/haipipe-studio/ref/screen.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
+| **Studio** | Yes, through its own routes | [hai-studio](../../skills/1_base/project/hai-studio/ref/screen.md) | The live Excalidraw editor and its save path, the chat (GUI) and terminal (TUI), the ✨ Draw it and ✨ deck pens |
 | **Guide** | Never | [ref/guide.md](ref/guide.md) | Family explanations: skills, methods, UI and folder maps, RoadMap Draw |
 
 Any Workbench that shows a drawing (Paper Story › RoadMap Draw, Task Scope ›
@@ -19,7 +19,7 @@ Guide embeds the same canvas in its isolated viewing mode and never saves.
 
 ## Folders
 
-One folder per Task of the b17 work Block (`blueprints/Project-Ladder/work/b17_theme_work`): a file's
+One folder per Task of the b17 work Block (`examples/Project-Ladder/blueprint/b17_theme_work`): a file's
 folder names the Task that owns it. Every code folder is listed in `_host/host_registry.py` `BASE_GROUPS`,
 so a module is `live.<module>` wherever it sits; the Draft Task's module folders are `TASK_GROUPS`.
 
@@ -107,10 +107,10 @@ name       and its        and its output     name
 
 - Workbench design principle (b10, removed 261126)
 - [Paper Workbench implementation](../workbench-paper/paper.py)
-- [Paper workflow contract](../../skills/2_theme/paper/haipipe-paper-workflow/SKILL.md)
-- [Paper Story contract](../../skills/2_theme/paper/haipipe-paper-story/SKILL.md)
-- [Paper Workbench contract](../../skills/2_theme/paper/workbench-paper/SKILL.md)
-- [Paper design studio](../../../../blueprints/Project-Ladder/work/b16_theme_paper/s01-paper-tree-concept/s01-paper-tree-concept.excalidraw)
+- [Paper workflow contract](../../skills/3_theme/paper/hai-paper-workflow/SKILL.md)
+- [Paper Story contract](../../skills/3_theme/paper/hai-paper-story/SKILL.md)
+- [Paper Workbench contract](../../skills/3_theme/paper/workbench-paper/SKILL.md)
+- [Paper design studio](../../../../examples/Project-Ladder/blueprint/b16_theme_paper/s01-paper-tree-concept/s01-paper-tree-concept.excalidraw)
 - [Insight Workbench implementation](../workbench-insight/insightboard.py)
 - [Insight design studio](../workbench-insight/studio/insight-workbench-design.excalidraw)
-- [Studio contract](../../skills/1_base/project/haipipe-studio/ref/screen.md)
+- [Studio contract](../../skills/1_base/project/hai-studio/ref/screen.md)

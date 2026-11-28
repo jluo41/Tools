@@ -20,7 +20,7 @@ PAPER_CAPTIONS: dict = {}
 
 # Each part is read from the Board's topics by its role, so every paper Board shows its own: Idea (s01-ideation),
 # Story (board.md `story-current:`; the venues and their related work sit inside it, b16 s32-D12), Data flow and
-# Paper flow (haipipe-paper-plan's s03 and s04). "venue" stays in the list for its key only; no view is drawn for it.
+# Paper flow (hai-paper-plan's s03 and s04). "venue" stays in the list for its key only; no view is drawn for it.
 # A part is not a view: Data flow and Paper flow are one view, Data + Paper Plan (JL 261104); Idea and Story each have their
 # own button (JL 261105: "I mean seperate this!!!", on the Idea + Story button; BOARD_VIEWS).
 BOARD_PARTS = (("idea", "Idea", r"s\d+-idea"), ("story", "Story", r"s\d+-story"), ("venue", "Venue", ""),
@@ -169,7 +169,7 @@ def _lead_sentence(body: str):
 
 def _rq_lists(body: str):
     """([(n, question)], {n: narrative}): each list item keeps its own number, so a story that starts at 0 (RQ0, a
-    setup question, haipipe-paper-story) labels and pairs by that number, never by position."""
+    setup question, hai-paper-story) labels and pairs by that number, never by position."""
     def items_after(label):
         m = re.search(rf"\*\*{label}[^*]*\*\*:?\s*\n((?:\s*\d+\.\s.+\n?)+)", body)
         return [(int(g.group(1)), g.group(2).strip()) for x in m.group(1).strip().splitlines()
@@ -384,6 +384,9 @@ def _task_url(task: Path, root: Path, group: str = "") -> str:
 def is_version(job: Path) -> bool:
     """A paper Board's Job is a version unless it is the display Job (j21_displays, s01-D11), the citation Job, or the
     submission Job of a send (jNN_submission_<version>: its letters and the portal; JL 261102)."""
+    from live.idea_block import is_idea_block          # an Idea Job (paper/Idea-<Slug>/jNN_) is no version (Paper-Idea 261124)
+    if is_idea_block(job.parent):
+        return False
     return not re.search(r"display|citation|cite|evidence|value|submission|review", job.name, re.I)   # a coauthor review Job too (JL 261110)
 
 
@@ -418,11 +421,11 @@ def explore_blocks(board: Path) -> dict:
 
 
 def display_plan():
-    """haipipe-paper-plan's display_plan module (the s06 display plan and the venue's display rules), or None."""
+    """hai-paper-plan's display_plan module (the s06 display plan and the venue's display rules), or None."""
     import importlib.util
     try:
         from host_paths import skill_dir
-        f = skill_dir("haipipe-paper-plan") / "scripts" / "display_plan.py"
+        f = skill_dir("hai-paper-plan") / "scripts" / "display_plan.py"
         spec = importlib.util.spec_from_file_location("display_plan", f)
         mod = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(mod)

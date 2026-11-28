@@ -235,7 +235,7 @@ def build_section(page, displays, report, keep_fences=False):
     declared = section_title_of(page)
     # A structured abstract (JL 261021): its labels open their paragraphs as `\noindent\textbf{<label>}`
     # and its unnumbered divisions print as `\section*{Key Points}`, `\section*{Abstract}`, which is
-    # the shape the paper's JAMA renderer reads (haipipe-paper-assemble latex_room_to_docx.py).
+    # the shape the paper's JAMA renderer reads (hai-paper-assemble latex_room_to_docx.py).
     abstract = md2docx.is_abstract_page(pathlib.Path(page).read_text(encoding="utf-8", errors="ignore"))
     label = None
     if nfenced and not keep_fences:

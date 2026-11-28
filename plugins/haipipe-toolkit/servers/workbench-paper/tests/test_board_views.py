@@ -142,7 +142,7 @@ class BoardViewsTest(unittest.TestCase):
     def test_plan_process_is_its_plan_and_runs(self):
         work = self.work["work-plan"]
         self.assertIn("· 🧭 Plan<", work)
-        self.assertIn("use /haipipe-paper-plan", work)
+        self.assertIn("use /hai-paper-plan", work)
         self.assertIn('class="fd-btn pb-copy"', work)                 # the shared Prompt box (ui_parts.prompt_box)
         self.assertIn("⚙️ Runs to do<", work)               # a title names the step, never a count
         self.assertNotIn(" of 2 open", work)
@@ -256,7 +256,7 @@ class BoardViewsTest(unittest.TestCase):
         self.assertNotIn("claim", arc)
         spine = br._story_arc(self.b, "A note.\n\n```text\nHEADLINE  C4\n```\n\n#### 8.1 · Claims\n")
         self.assertIn("HEADLINE  C4", spine)
-        self.assertIn("haipipe-paper-story", br._story_arc(self.b, "| claim | proposition |\n"))
+        self.assertIn("hai-paper-story", br._story_arc(self.b, "| claim | proposition |\n"))
 
     def test_each_section_tells_its_part_of_the_arc_before_its_claims(self):
         """JL 261109: "this is not just the claims, it is also about the narratives, the arc, how to make it smooth"."""
@@ -399,7 +399,7 @@ if __name__ == "__main__":
 
 class StoryListsTest(unittest.TestCase):
     def test_a_story_that_starts_at_rq0_keeps_its_numbers(self):
-        """A setup question RQ0 (haipipe-paper-story) is RQ0, and its narrative item is paired by number, not position."""
+        """A setup question RQ0 (hai-paper-story) is RQ0, and its narrative item is paired by number, not position."""
         from live import board_read
         body = ("**The story, question by question:**\n0. <a setup question>? set up\n1. <a question>? open\n\n"
                 "**The narrative:**\n0. <what RQ0 says>\n1. <what RQ1 says>\n")

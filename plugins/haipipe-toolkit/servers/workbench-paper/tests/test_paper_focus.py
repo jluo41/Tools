@@ -15,13 +15,13 @@ from live import focus_page as f, frame, paper_focus as p, skills_section, work_
 class PaperFocusTest(unittest.TestCase):
     def test_shared_content_owners_are_in_the_view_skill_links(self):
         catalog = {}
-        for name in ('haipipe-paper-related', 'haipipe-paper-story'):
+        for name in ('hai-paper-related', 'hai-paper-story'):
             skill = self.root / 'skills' / name / 'SKILL.md'
             skill.parent.mkdir(parents=True)
             skill.write_text('# ' + name)
             catalog[name] = ('Description', '1', skill)
         with patch.object(skills_section, 'catalog', return_value=catalog):
-            for view, name in [('idea', 'haipipe-paper-related'), ('displays', 'haipipe-paper-story')]:
+            for view, name in [('idea', 'hai-paper-related'), ('displays', 'hai-paper-story')]:
                 bodies = p.shared_bodies(self.board, self.root, 'paper', 'Block', view,
                                          self.topics, [], [], [], self.rows, only=('skills',))
                 self.assertIn(name, bodies['skills'][0])
@@ -97,7 +97,7 @@ class PaperFocusTest(unittest.TestCase):
 
     def test_all_eight_sections_share_scope_and_rail_retains_records(self):
         catalog = {}
-        for name in ['haipipe-paper-story', 'haipipe-paper-draft', 'skill_story', 'skill_override', 'skill_unassigned']:
+        for name in ['hai-paper-story', 'hai-paper-draft', 'skill_story', 'skill_override', 'skill_unassigned']:
             md = self.root / 'skills' / name / 'SKILL.md'
             md.parent.mkdir(parents=True)
             md.write_text(name)
@@ -107,7 +107,7 @@ class PaperFocusTest(unittest.TestCase):
             bodies = p.shared_bodies(*args)
             for key, marker in [('studio', 's02-story'), ('interactions', 'story_QUESTION'),
                                 ('decisions', 'STORY_DECISION'), ('checklist', 'STORY_CHECK'), ('know', 'STORY_NOTE'),
-                                ('timeline', 'r01_story'), ('skills', 'skill_story'), ('files', 'r01_story')]:
+                                ('timeline', 'r01_story'), ('skills', 'skill_story')]:   # Files is the page's own folder only
                 self.assertIn(marker, bodies[key][0], key)
             combined = ''.join(html for html, _ in bodies.values())
             for marker in ['IDEA_DECISION', 'UNASSIGNED_DECISION', 'override_QUESTION', 'unassigned_QUESTION', '/skill_override']:
@@ -130,14 +130,11 @@ class PaperFocusTest(unittest.TestCase):
             legacy = f.render(theme, self.root, self.board, 'work', 'work-story')
         for html in (report, legacy):
             self.assertIn('📋 Review Content', html)
-            self.assertIn('🧭 Around the Work', html)
+            self.assertNotIn('🧭 Around the Work', html)   # the side pane holds it (hai-block A01)
             self.assertNotIn('Process</h3>', html)
             self.assertNotIn('Results</h3>', html)
             self.assertNotIn('unassigned_QUESTION', re.sub(r'(?s)<template id="wait-items">.*?</template>', '', html))   # the 🙋 tray lists every wait
             self.assertNotIn('view-caption', re.sub(r'<style>.*?</style>', '', html, flags=re.S))
-            content = html.split('id="work-shared"', 1)[1]
-            positions = [content.index(title) for _, title in w.SHARED if title in content]   # empty ones hidden (JL 261113)
-            self.assertEqual(positions, sorted(positions))
             self.assertEqual(html.count('<h2>📋 Review Content</h2>'), 1)
             self.assertLessEqual(html.count('<summary>🎨 Studio'), 1)                          # once, or hidden when empty
             self.assertNotIn('aria-label="Work"', html)

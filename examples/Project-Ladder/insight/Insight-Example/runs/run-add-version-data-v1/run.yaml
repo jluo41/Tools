@@ -1,0 +1,17 @@
+run: run-add-version-data-v1
+kind: soft
+type: add-version
+scope: Tools/examples/Project-Ladder/insight/Insight-Example
+target: data-v1
+ticket: run-add-version-v1.md
+skill: hai-insight-meta
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- board.md
+- meta/meta.md
+feeds: []

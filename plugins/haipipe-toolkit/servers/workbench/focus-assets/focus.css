@@ -72,9 +72,9 @@ h2{color:var(--ink)}.row-name{font-family:inherit;font-weight:700;font-size:16px
 /* JL 261029: the rail picks the section; the row under its name picks the view */
 .section-line{display:none}@media(max-width:600px){.section-line{display:flex}}.focus-card>.section-views{margin:14px 0 0}.glance{font-size:15px;font-weight:600;margin:4px 0}.glance-list{list-style:none;padding:0;margin:6px 0}.glance-list li{padding:6px 0;border-bottom:1px solid var(--line);font-size:14px}.glance-list li b{margin-right:6px}.glance-list time{display:inline-block;min-width:96px;font-size:13px;color:var(--muted)}.focus-content .focus-sub{margin:22px 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}.focus-content .focus-sub:first-child{margin-top:0}
 /* JL 261029 sketch: the section beside the title, its views right under it, then the goal */
-h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-size:22px;font-weight:600;color:var(--muted)}h1+.section-line,h1+.section-views,h1+.card-sub{margin-top:2px}.focus-page>.section-views{margin:4px 0 16px}.focus-page>.card-sub{margin:0 0 14px;font-size:13px;color:var(--muted)}.focus-goal{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}.focus-card{margin-top:0}
+h1{display:flex;align-items:center;flex-wrap:wrap;gap:18px}.h1-section{font-size:22px;font-weight:600;color:var(--muted)}h1+.section-line,h1+.section-views,h1+.card-sub{margin-top:2px}.focus-page>.section-views{margin:4px 0 16px}.focus-page>.card-sub{margin:0 0 14px;font-size:13px;color:var(--muted)}.focus-goal{margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line)}.focus-card{margin-top:0}
 .focus-map{overflow:auto;border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--paper)}
-/* the mind map renderer (haipipe-mindmap mapview) names the classic tokens: give it them, keep it in the column */
+/* the mind map renderer (hai-mindmap mapview) names the classic tokens: give it them, keep it in the column */
 :root{--fg:var(--ink);--mut:var(--muted);--card:var(--paper);--acc:var(--accent)}.focus-map{width:auto;margin:0;overflow-x:auto;padding:14px 10px}@media(min-width:1001px){.focus-map .pm{grid-template-columns:190px auto;gap:0 40px}.focus-map .pm-para{grid-template-columns:200px auto;gap:0 36px}}.focus-map .pm-root b{font-size:15px}.focus-map .pm-pnode{font-size:13.5px}.focus-map .pm-leaves li{font-size:13px}
 .focus-map .pm-role:empty{display:none}.focus-map .pm-s{min-width:26px}
 @media(min-width:1001px){.focus-map .pm-leaves li{white-space:normal;max-width:470px}}
@@ -119,7 +119,7 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 
 /* an sNN's delivery: each piece and each file opens in place to read (JL 261030) */
 .deliv-piece{display:block}.deliv-piece>summary,.deliv-file>summary{cursor:pointer;list-style:none}.deliv-piece>summary::-webkit-details-marker,.deliv-file>summary::-webkit-details-marker{display:none}.deliv-piece>summary .row-name::after,.deliv-file>summary::after{content:"  ▸ read";font-size:12px;font-weight:400;color:var(--accent)}.deliv-piece[open]>summary .row-name::after,.deliv-file[open]>summary::after{content:"  ▾ close"}.deliv-file{border-bottom:1px solid var(--line);padding:8px 0;font-size:14px}.deliv-body{border-top:1px solid var(--line);margin-top:10px;padding-top:8px;max-height:60vh;overflow:auto;font-size:14px}.deliv-body pre{white-space:pre-wrap;font-size:12px;margin:0}.deliv-body img{max-width:100%}
-/* interactions (haipipe-interaction; JL 261031): the Interactions view's rows, and the one badge Work, the map and Studio share */
+/* interactions (hai-interaction; JL 261031): the Interactions view's rows, and the one badge Work, the map and Studio share */
 /* each item a page-width card, the same box as a Work step's waiting row (.fd-ask; JL 261102) */
 .inbox-row{border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin:0 0 12px}
 .inbox-row.waiting{border-left:3px solid light-dark(#b35c00,#e4bd62)}
@@ -143,7 +143,7 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 @media(max-width:600px){.section-views{flex-wrap:wrap}.focus-crumb{overflow-wrap:anywhere}}
 
 /* Narrow screens retain both rails behind separate, named drawer controls. */
-.mobile-rail-controls{display:none}
+.rail-tab{display:none}
 .rail-drawer{position:fixed;inset:0 0 0 auto;margin:0;width:min(300px,85vw);height:100dvh;max-height:100dvh;max-width:85vw;box-sizing:border-box;padding:20px;border:0;border-left:1px solid var(--line);border-radius:0;background:var(--paper);color:var(--ink);overflow:auto}
 .rail-drawer::backdrop{background:#0005}
 .rail-drawer header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
@@ -157,7 +157,48 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 #page-drawer .rail-name small{display:block;font-size:12px;color:var(--muted)}
 #page-drawer a.child{padding-left:26px}#page-drawer a.grand{padding-left:40px}
 .section-drawer-open{overflow:hidden}
-@media(max-width:600px){.mobile-rail-controls{display:flex;justify-content:space-between;gap:12px;margin:12px 0 0}.mobile-rail-controls button{min-height:44px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font-size:13px;cursor:pointer}}
+.files-ball{position:fixed;z-index:5;border:1px solid var(--line);background:var(--paper);color:var(--ink);box-shadow:0 3px 12px light-dark(#17251d24,#0008);padding:0;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;right:calc(14px + env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom))}
+.files-ball .folder-icon{width:22px;height:22px}.files-ball[aria-expanded=true],.files-ball:hover{background:var(--soft)}
+.rail-drawer.files-drawer{inset:auto max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) auto;width:min(420px,calc(100vw - 20px));max-width:none;height:min(580px,75dvh);padding:10px;border:1px solid var(--line);border-radius:14px}
+.files-drawer header{margin:0 0 6px;padding-left:8px}.files-panel-content{padding:4px 8px 12px}.files-panel-content.focus-content{border:0;border-radius:0;box-shadow:none}
+/* The side pane: the right rail's sections behind the round button; its menu and the pane's switching title. */
+.side-menu{position:fixed;z-index:7;display:flex;flex-direction:column;gap:2px;min-width:200px;padding:6px;background:var(--paper);border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px light-dark(#17251d22,#0008)}
+.side-menu button{display:flex;align-items:center;gap:6px;text-align:left;padding:7px 12px;min-height:34px;border:0;border-radius:6px;background:none;color:var(--ink);font-size:13px;cursor:pointer}
+.side-menu button:is(:hover,:focus-visible,.on){background:var(--soft);color:var(--accent)}
+.side-menu button[aria-current]{font-weight:600}
+.h1-pick{border:0;background:none;padding:2px 8px;margin:0 -8px;border-radius:8px;font:inherit;font-size:22px;font-weight:600;color:var(--muted);cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:background .15s,color .15s}
+.h1-pick::before{content:'';flex:none;width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.5;transition:opacity .15s,transform .15s}.h1-pick:hover::before,.h1-pick[aria-expanded=true]::before{opacity:1;transform:scale(1.25)}.h1-pick:hover,.h1-pick[aria-expanded=true]{color:var(--accent);background:var(--soft)}.pick-caret{flex:none;width:14px;height:14px;opacity:.75;transition:transform .2s,opacity .15s}.h1-pick:hover .pick-caret{opacity:1}.h1-pick[aria-expanded=true] .pick-caret{opacity:1;transform:rotate(180deg)}.h1-pick:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.side-menu .side-close{border-top:1px solid var(--line);border-radius:0 0 6px 6px;margin-top:4px;color:var(--muted)}
+.focus-rail.right{display:none}   /* no right rail at any width: sections are the title's ▾ menu (JL 261126) */
+/* Wide screens: Files is a right split, full height; the page and its rails narrow beside it. */
+.files-grip{display:none}
+@media(min-width:601px){
+  :root{--files-w:min(420px,40vw)}
+  body.files-split{padding-right:var(--files-w)}
+  body.files-split .rail-drawer.files-drawer{inset:0 0 0 auto;width:var(--files-w);height:100dvh;max-height:100dvh;border:0;border-left:1px solid var(--line);border-radius:0;z-index:6}
+  body.files-split .files-grip{display:block;position:absolute;left:-4px;top:0;bottom:0;width:8px;cursor:col-resize;z-index:1}
+  body.files-split .files-grip:hover,body.files-dragging .files-grip{background:var(--accent);opacity:.35}
+  body.files-dragging{cursor:col-resize;user-select:none}body.files-dragging iframe{pointer-events:none}
+  /* closed, the round button sits in the bottom-right corner; with the pane open, at the middle of the pane's left edge */
+  body.files-split .files-ball{top:50%;bottom:auto;right:calc(var(--files-w) - 15px);transform:translateY(-50%);z-index:7;width:30px;height:30px}
+  body.files-split .files-ball .folder-icon{width:15px;height:15px}
+  body.files-split .focus-rail.left{left:max(3px,calc((100vw - var(--files-w) - 960px)/2 + 3px))}
+  body.files-split .focus-rail.right{right:calc(var(--files-w) + max(3px,calc((100vw - var(--files-w) - 960px)/2 + 3px)))}
+}
+@media(max-width:600px){
+  /* The visible handle is small; its transparent target is still easy to tap. */
+  .rail-tab{display:flex;align-items:center;position:fixed;z-index:5;width:44px;height:44px;top:40dvh;transform:translateY(-50%);padding:0;border:0;background:transparent}
+  .rail-tab:hover{background:transparent}
+  .rail-tab::before{content:"";width:4px;height:16px;background:var(--muted)}
+  .rail-tab.left{left:0;justify-content:flex-start}.rail-tab.left::before{border-radius:0 4px 4px 0}
+  .rail-tab.right{right:0;justify-content:flex-end}.rail-tab.right::before{border-radius:4px 0 0 4px}
+  .rail-tab:focus-visible{outline-offset:-3px}
+  .rail-tab:is(:hover,:focus-visible)::before{background:var(--accent)}
+  .rail-tab-label{display:none;position:absolute;white-space:nowrap;font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:5px;padding:3px 8px}
+  .rail-tab.left .rail-tab-label{left:calc(100% + 6px)}.rail-tab.right .rail-tab-label{right:calc(100% + 6px)}
+  .rail-tab:focus-visible .rail-tab-label{display:block}
+}
+@media(max-width:600px) and (hover:hover){.rail-tab:hover .rail-tab-label{display:block}}
 
 /* Job identity is stable across views; purposes are authored on the Job face. */
 .job-identity{display:flex;flex-wrap:wrap;gap:8px 24px;margin:-4px 0 18px;font-size:13px;line-height:1.6}
@@ -169,3 +210,34 @@ h1{display:flex;align-items:baseline;flex-wrap:wrap;gap:18px}.h1-section{font-si
 .tray-flash{animation:tray-flash 1.4s ease-out}@keyframes tray-flash{from{box-shadow:0 0 0 3px var(--accent)}to{box-shadow:0 0 0 0 transparent}}@media(prefers-reduced-motion:reduce){.tray-flash{animation:none}}
 .wait-tray li small{display:block;font-size:11.5px;color:var(--muted)}.wait-tray li a.tray-open{border:1px solid var(--line);border-radius:5px;padding:2px 10px;font-size:12.5px}
 .bar-mk{cursor:pointer;margin-left:auto}.bar-mk~.bar-mk,.bar-mk~.word{margin-left:6px}.bar-mk:hover{outline:1px solid var(--line)}.bar-mk:not(.you){color:var(--muted)}
+/* The viewer's one header line: name, its file tools, then Go and Close on the right. */
+#focus-viewer header{justify-content:flex-start;gap:6px;padding:2px 2px 6px;border-bottom:1px solid var(--line);margin-bottom:6px}
+#focus-viewer [data-viewer-title]{font-weight:600;margin-right:8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+#focus-viewer .viewer-verbs{margin-left:auto;gap:2px}
+#focus-viewer :is(.viewer-tools a,.viewer-tools label,.viewer-verbs a,.viewer-verbs button){display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--ink);text-decoration:none;background:var(--paper);cursor:pointer;white-space:nowrap}
+#focus-viewer :is(.viewer-tools a,.viewer-tools label,.viewer-verbs a,.viewer-verbs button):hover{border-color:var(--accent);color:var(--accent);text-decoration:none}
+#focus-viewer :is(.viewer-verbs a,.viewer-verbs button){justify-content:center;width:26px;height:26px;padding:0;border-color:transparent;background:none;font-size:15px;line-height:1}
+#focus-viewer :is(.viewer-verbs a,.viewer-verbs button):hover{border-color:var(--line);background:var(--paper)}
+#focus-viewer .viewer-tools{display:inline-flex;gap:6px;flex-wrap:wrap}.viewer-tools input{margin:0}
+
+/* state marks (state_marks.py) and their effects, as s07's Effects tab shows (JL 261126): the mark itself pops in when
+   done, breathes when running, pings when it waits for you; a row with fx-<key> fades as new (a plus before its name),
+   sweeps while running, is struck when void; not yet stays still. The Files pane's folder dot pings on a group bar. */
+.st{display:inline-grid;place-items:center;flex:none;line-height:0}.st .state-mark{width:14px;height:14px}
+.st.fx-done{animation:fx-pop .7s cubic-bezier(.3,1.6,.5,1) 1}
+.st.fx-edit{animation:fx-breathe 1.8s ease-in-out infinite}
+.st.fx-you{border-radius:50%;animation:fx-ping-you 1.8s ease-out infinite}
+.job-row.fx-new>summary .tn,.task-rr.fx-new>span:nth-child(2){color:var(--muted);font-style:italic;animation:fx-fade 2.6s ease-in-out infinite}
+.job-row.fx-new>summary .tn:before,.task-rr.fx-new>span:nth-child(2):before{content:"+ ";font-style:normal}
+.job-row.fx-plan>summary .tn,.task-rr.fx-plan>span:nth-child(2){color:var(--muted)}
+.job-row.fx-edit>summary,.task-rr.fx-edit{background:linear-gradient(90deg,transparent,rgba(47,111,214,.10),transparent);background-size:200% 100%;animation:fx-shine 2.4s ease-in-out infinite}
+.job-row.fx-void>summary .tn,.task-rr.fx-void>span:nth-child(2){text-decoration:line-through;opacity:.55}
+.live-dot{display:inline-block;vertical-align:middle;width:6px;height:6px;border-radius:50%;margin-left:6px}
+.live-dot.edit{background:#2f6fd6;animation:fx-ping-run 1.8s ease-out infinite}.live-dot.you{background:#d98a12;animation:fx-ping-you 1.8s ease-out infinite}
+@keyframes fx-pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
+@keyframes fx-breathe{50%{filter:drop-shadow(0 0 4px rgba(47,111,214,.8));transform:scale(1.15)}}
+@keyframes fx-ping-you{0%{box-shadow:0 0 0 0 rgba(217,138,18,.55)}100%{box-shadow:0 0 0 6px rgba(217,138,18,0)}}
+@keyframes fx-ping-run{0%{box-shadow:0 0 0 0 rgba(47,111,214,.55)}100%{box-shadow:0 0 0 6px rgba(47,111,214,0)}}
+@keyframes fx-fade{50%{opacity:.45}}
+@keyframes fx-shine{0%{background-position:150% 0}100%{background-position:-50% 0}}
+@media (prefers-reduced-motion:reduce){.st,.live-dot,[class*="fx-"],[class*="fx-"]>summary,[class*="fx-"] .tn,[class*="fx-"]>span{animation:none!important}}

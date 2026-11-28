@@ -74,7 +74,7 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
         # a round already rewritten: the prompt starts the next one (round 4: "done" still offered round e02 again)
         go = f"e{int(now[1:]) + 1:02d}" if st["rewrite"][0] == "done" and now[1:].isdigit() else now
         prompt = _prompt(task, root, "rewrite", "Rewrite", f"the whole round {go}", (
-            f"Use /haipipe-labeling-expression on {task.name}, round {go}: rewrite the wording under meaning "
+            f"Use /hai-labeling-expression on {task.name}, round {go}: rewrite the wording under meaning "
             f"{v or '<the approved mNN>'} from Train errors only, run the executors, evaluate, and stop at round report "
             f"{go}. Change no rule and ask me nothing: rule or label questions go to the round report."))
         process = _step("✏️ Rewrite expression", _flow(
@@ -91,7 +91,7 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
             (f"{v or 'mNN'} + expression {now}", "Train + Test items", ""),
             ("🤖 Label executors", "the models this Job names", last["run"].name if last["run"] else "rNN_run_…"),
             ("Labels on Train and Test", "", "")) + _rerun(task, "Run", "rerun the executors", (
-                f"To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression on "
+                f"To rerun this step alone (Rewrite's prompt runs the whole round): use /hai-labeling-expression on "
                 f"{task.name}, step Run, round {now}: label Train and Test with {v or 'the approved meaning'} + {now} on "
                 "the Job's executors; keep the reference labels hidden.")), st["run"], empty="not run yet")
         data = _json(last["run"] / "result" / "runs.json") if last["run"] else None
@@ -108,7 +108,7 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
             ("🤖 Execution & Audit Agent", "score by set; sort errors", last["evaluate"].name if last["evaluate"] else "rNN_evaluate_…"),
             (f"Round report {now}", "errors by kind", "and where the round goes")) + _rerun(
                 task, "Evaluate", f"rerun round report {now}", (
-                    f"To rerun this step alone (Rewrite's prompt runs the whole round): use /haipipe-labeling-expression "
+                    f"To rerun this step alone (Rewrite's prompt runs the whole round): use /hai-labeling-expression "
                     f"on {task.name}, step Evaluate, round {now}: score by set and model, sort errors into the four "
                     f"kinds, and write round report {now} with its route.")), st["evaluate"], empty="not run yet")
         out = last["evaluate"] / "result" if last["evaluate"] else None
@@ -165,7 +165,7 @@ def x_view(task: Path, root: Path, key: str) -> tuple[str, str, str]:
         part = _bar("✍️ Your sign: the release, once every criterion below is met",
                     '<button type=button class=fd-btn disabled>Sign release</button>', "wait")
     part += _prompt(task, root, "release", "Release", "check readiness", (
-        f"Use /haipipe-labeling-expression on {task.name}, step Release: freeze {v or 'the approved meaning'} · {now} · "
+        f"Use /hai-labeling-expression on {task.name}, step Release: freeze {v or 'the approved meaning'} · {now} · "
         "its reference labels · the model settings, check the floors, non-regression and cost, and report pass or fail."))
     process = _step("🔒 Freeze a version and check release readiness", _flow(
         ("Frozen package", f"rules {v or 'mNN'} · expression {now}", "+ labels + model settings"),

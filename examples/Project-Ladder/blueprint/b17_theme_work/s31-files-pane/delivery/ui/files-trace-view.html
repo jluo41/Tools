@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trace files</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--accent:#1f5fbf;--ink:#1d1d1b;--bg:#fff;--plan:#9a9a94;--edit:#2f6fd6;--done:#2f9e5b;--warn:#d98a12}
+body{margin:0;background:#f4f4f2;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+.pane{width:420px;margin:24px auto;background:var(--bg);border-left:1px solid var(--line);min-height:90vh;padding:14px 18px 40px;box-sizing:border-box}
+.switch{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.switch button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:4px 11px;font:inherit;font-size:12px;color:var(--muted);cursor:pointer}
+.switch button[aria-pressed=true]{background:#1d1d1b;color:#fff;border-color:#1d1d1b}
+.switch button[aria-pressed=true] .mk circle,.switch button[aria-pressed=true] .mk path{stroke:#fff}
+.switch small{font-size:11px;opacity:.6;font-variant-numeric:tabular-nums;margin-left:2px}
+.aim{margin:8px 0 2px;font-size:13px;color:var(--ink)}
+ul{list-style:none;margin:0;padding:0}
+h3{margin:14px 0 2px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.part+.part{border-top:1px solid var(--line);margin-top:10px}
+.where{margin:0 0 4px;font:12px/1.4 ui-monospace,Menlo,monospace;color:var(--muted)}
+.row{display:flex;align-items:center;gap:7px;padding:5px 0;min-height:20px}
+.row .name{flex:1;min-width:0;overflow-wrap:anywhere}
+.kids{margin-left:10px;padding-left:15px;border-left:1px solid var(--line)}
+.tw{width:10px;flex:none;color:var(--ink)}
+.file .name{color:var(--accent);padding-left:17px}
+.file .name>span{margin-right:5px}
+.ghost .name{color:var(--plan);font-style:italic}
+.ghost .name>span{opacity:.45}
+.ghost{background:repeating-linear-gradient(90deg,transparent 0 6px,transparent 6px)}
+.ghost .name{border-bottom:1px dashed #cfcfca}
+.mk{flex:none;width:12px;height:12px;display:inline-block}
+.dot{flex:none;width:6px;height:6px;border-radius:50%;margin:0 3px}
+.row[title]{cursor:default}
+.folder{font-weight:400}.folder.b{font-weight:600}
+@keyframes pulse{0%{transform:scale(1)}40%{transform:scale(1.35)}100%{transform:scale(1)}}
+.fresh .mk{animation:pulse .6s ease-out 1}
+</style></head><body>
+<div class="pane">
+  <div class="switch" role="group" aria-label="View">
+    <button aria-pressed="false">Files</button>
+    <button aria-pressed="true" title="2026-11-25 03:10"><svg class="mk" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><path d="M6 1.5a4.5 4.5 0 0 1 0 9z" fill="#2f6fd6"/></svg>trace folder<small>11-25</small></button>
+    <button aria-pressed="false" title="2026-11-24 01:42"><svg class="mk" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#2f9e5b"/><path d="M3.6 6.2l1.6 1.6 3.2-3.3" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>files split pane<small>11-24</small></button>
+  </div>
+  <p class="aim">Every change leaves one trace file in its Block.</p>
+
+  <section class="part"><h3>1 · Block</h3><p class="where">examples/Project-Ladder/work/</p>
+  <ul>
+   <li><div class="row folder b"><span class="tw">▾</span>FOLDER<span class="name">b10_project_workbench (removed 261126)</span><i class="dot" style="background:var(--plan)"></i></div>
+    <ul class="kids">
+     <li><div class="row folder"><span class="tw">▾</span>FOLDER<span class="name">trace / 261125</span><i class="dot" style="background:var(--plan)"></i></div>
+      <ul class="kids">
+       <li><div class="row file ghost" title="add · this trace's own record: aim, plan, prompts, changes, check, summary"><span class="name"><span>📝</span>0310_trace_folder.md</span>PLAN</div></li>
+      </ul></li>
+    </ul></li>
+  </ul></section>
+
+  <section class="part"><h3>2 · UI</h3><p class="where">plugins/haipipe-toolkit/servers/workbench/page/</p>
+  <ul>
+   <li><div class="row file" title="edit · read trace/ as Session view episodes"><span class="name"><span>PY</span>frame_sessions.py</span>PLAN</div></li>
+   <li><div class="row file fresh" title="not in the plan"><span class="name"><span>PY</span>work_files.py</span>WARN</div></li>
+  </ul></section>
+
+  <section class="part"><h3>3 · Skills</h3><p class="where">plugins/haipipe-toolkit/skills/1_base/project/</p>
+  <ul>
+   <li><div class="row folder b"><span class="tw">▾</span>FOLDER<span class="name">hai-chat</span><i class="dot" style="background:var(--edit)"></i></div>
+    <ul class="kids">
+     <li><div class="row folder"><span class="tw">▾</span>FOLDER<span class="name">scripts</span><i class="dot" style="background:var(--edit)"></i></div>
+      <ul class="kids">
+       <li><div class="row file" title="add · open, close, list, check"><span class="name"><span>PY</span>trace.py</span>EDIT</div></li>
+       <li><div class="row file" title="edit · pull the file list and the summary out of a reply"><span class="name"><span>PY</span>qa.py</span>EDIT</div></li>
+       <li><div class="row file" title="edit · append each answer to the open trace"><span class="name"><span>PY</span>chat_hook.py</span>DONE</div></li>
+      </ul></li>
+     <li><div class="row folder"><span class="tw">▾</span>FOLDER<span class="name">ref</span><i class="dot" style="background:var(--plan)"></i></div>
+      <ul class="kids">
+       <li><div class="row file ghost" title="add · the trace file's shape and when it opens and closes"><span class="name"><span>📝</span>trace-contract.md</span>PLAN</div></li>
+      </ul></li>
+     <li><div class="row folder"><span class="tw">▸</span>FOLDER<span class="name">tests</span><i class="dot" style="background:var(--plan)"></i></div></li>
+     <li><div class="row file" title="edit · a part on traces"><span class="name"><span>📝</span>SKILL.md</span>PLAN</div></li>
+    </ul></li>
+  </ul></section>
+</div>
+<script>
+const F=`<svg width="20" height="18" viewBox="0 0 24 20" style="flex:none"><path d="M2 5V3a1 1 0 0 1 1-1h6l2 3h10a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" fill="#f8c44f" stroke="#996515" stroke-width="1.4" stroke-linejoin="round"/><path d="M2 7h20" stroke="#b27b22" stroke-width="1.2"/></svg>`;
+const PY=`<svg width="14" height="14" viewBox="0 0 24 24" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg>`;
+const M={
+ PLAN:`<svg class="mk" viewBox="0 0 12 12" aria-label="Planned"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#9a9a94" stroke-width="1.4" stroke-dasharray="2 1.6"/></svg>`,
+ EDIT:`<svg class="mk" viewBox="0 0 12 12" aria-label="Editing"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><path d="M6 1.5a4.5 4.5 0 0 1 0 9z" fill="#2f6fd6"/></svg>`,
+ DONE:`<svg class="mk" viewBox="0 0 12 12" aria-label="Done"><circle cx="6" cy="6" r="5" fill="#2f9e5b"/><path d="M3.6 6.2l1.6 1.6 3.2-3.3" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+ WARN:`<svg class="mk" viewBox="0 0 12 12" aria-label="Not in plan"><path d="M6 1l5 5-5 5-5-5z" fill="#d98a12"/></svg>`};
+let h=document.querySelector('.pane').innerHTML.replace(/FOLDER/g,F).replace(/<span>PY<\/span>/g,'<span>'+PY+'</span>');
+for(const k in M)h=h.replace(new RegExp('</span>'+k+'</div>','g'),'</span>'+M[k]+'</div>');
+document.querySelector('.pane').innerHTML=h;
+</script>
+</body></html>

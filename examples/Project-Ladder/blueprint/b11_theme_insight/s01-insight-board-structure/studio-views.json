@@ -1,0 +1,95 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Question version",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/job-group-type--question-version.html"
+        },
+        {
+          "name": "Analysis",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/job-type--analysis.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Preparation",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/task-group-type--preparation.html"
+        },
+        {
+          "name": "Question level",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/task-group-type--question-level.html"
+        },
+        {
+          "name": "Preparation execution",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/task-type--preparation-execution.html"
+        },
+        {
+          "name": "Question answer",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s01-insight-board-structure/delivery/types/task-type--question-answer.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "folder-map"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "jobs-map"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/insight-board.html",
+          "fragment": "studio-map"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/SKILL.md"
+        },
+        {
+          "name": "hai-insight-workflow",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight-workflow/SKILL.md"
+        },
+        {
+          "name": "workbench-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/workbench-insight/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

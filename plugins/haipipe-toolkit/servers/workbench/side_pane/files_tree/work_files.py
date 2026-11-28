@@ -220,43 +220,89 @@ def shown_rel(path, root):
         return path.relative_to(root).as_posix() if path.is_relative_to(root) else path.name
 
 
-def files_part(n, title, base, tree, root, cls=''):
-    """One numbered part of the Files pane: its title, then where its folders sit, as a path from the SPACE root;
-    a part with nothing in it is not drawn."""
+def files_part(title, base, tree, root, cls='', *, role='block', first=False):
+    """The Block part of the Files pane: its name, then where its folder sits as a path from the SPACE root; a part
+    with nothing in it is not drawn."""
     if not tree:
         return ''
     where = shown_rel(base, root) if base != root else ''
-    return (f'<section class="files-part"><h3>{n} · {title}</h3>'
+    return (f'<section class="files-part files-{role}{" files-first" if first else ""}"><h3>{title}</h3>'
             f'<p class="files-where" title="{frame.esc(where)}/">{frame.esc(where + "/" if where else "./")}</p>'
             f'<ul class="{cls or "file-sources"}">{tree}</ul></section>')
+
+
+def outermost(paths, root):
+    """The paths that may be shown, sorted, one inside another kept once as the outer one."""
+    paths = sorted(set(p for p in paths if allowed_source(p, root)))
+    return [p for p in paths if not any(q != p and q in p.parents for q in paths)]
+
+
+def role_parts(role, items, root):
+    """One part for a role (Maintain, Read-From), one row per folder numbered inside the role, so the reader says
+    "Maintain 2": `items` are (path, base, row). One path line opens the part: the folder every row shares; a row
+    that sits deeper is named by its path below it (`cowork/b01_example_cowork`)."""
+    if not items:
+        return []
+    rows = []
+    shared = Path(commonpath([str(base) for _, base, _ in items]))
+    where = shown_rel(shared, root) if shared != root else ''
+    for n, (path, base, row) in enumerate(items, 1):
+        if base != shared:                       # its own folders above it go into its name
+            name, below = frame.esc(path.name), frame.esc(path.relative_to(shared).as_posix())
+            for old, new in ((f'>{name}</span>', f'>{below}</span>'), (f'> {name}</a>', f'> {below}</a>')):
+                if old in row:
+                    row = row.replace(old, new, 1)
+                    break
+        rows.append(row.replace('<li', f'<li data-n="{n}"', 1))
+    key = role.split(':')[0].lower().replace('-', '')          # Maintain: Skills is a maintain part
+    return [f'<section class="files-part files-{key} files-first"><h3>{role}</h3>'
+            f'<p class="files-where" title="{frame.esc(where)}/">{frame.esc(where + "/" if where else "./")}</p>'
+            f'<ul class="file-sources files-rows">{"".join(rows)}</ul></section>']
+
+
+def own_row(path, root):
+    return (path, path.parent, folder_node(path, root) if path.is_dir() else file_node(path, root))
 
 
 def flat_tree(paths, root):
     """(base, rows): the selected folders and files under the folder they share, in their real nesting from there.
     A folder between the base and a selected one opens to show only the way down; a selected folder stays closed
     and loads its own rows when opened. One inside another is shown once, as the outer one."""
-    paths = sorted(set(p for p in paths if allowed_source(p, root)))
-    paths = [p for p in paths if not any(q != p and q in p.parents for q in paths)]
+    paths = outermost(paths, root)
     if not paths:
         return root, ''
     base = Path(commonpath([p.parent for p in paths]))
+    return base, nested_rows(base, paths, root)
 
+
+def nested_rows(base, paths, root):
+    """The rows of `paths` below `base` in their real nesting: a folder on the way opens to show only the way down,
+    and a run of folders that each hold one folder is written on one row (`draft/hai-draft`), so a deep file does
+    not cost a row per level."""
     def rows(parent, selected):
         groups = {}
         for path in selected:
             groups.setdefault(parent / path.relative_to(parent).parts[0], []).append(path)
         out = []
-        for child, below in sorted(groups.items(), key=lambda kv: kv[0].name.casefold()):
+        for child, below in sorted(groups.items(), key=lambda kv: (kv[0].is_file(), kv[0].name.casefold())):
             if child in below:
                 out.append(folder_node(child, root) if child.is_dir() else file_node(child, root))
-            else:
-                out.append(folder_node(child, root, children='<ul>' + rows(child, below) + '</ul>', expanded=True))
+                continue
+            top = child
+            while True:                                   # one folder inside, and not a chosen one: same row
+                inner = {child / p.relative_to(child).parts[0] for p in below}
+                only = next(iter(inner))
+                if len(inner) != 1 or only in below or not only.is_dir():
+                    break
+                child = only
+            label = child.relative_to(top.parent).as_posix() if child != top else None
+            out.append(folder_node(child, root, label, children='<ul>' + rows(child, below) + '</ul>', expanded=True))
         return ''.join(out)
-    return base, rows(base, paths)
+    return rows(base, paths)
 
 
 SHARED_SKILLS = ('hai-trace', 'hai-stack')       # traces and rules, under skills/0_utils/
-LEVEL_SKILLS = {'Block': 'haipipe-block', 'Job': 'haipipe-job', 'Task': 'haipipe-task', 'Topic': 'haipipe-studio'}
+LEVEL_SKILLS = {'Block': 'hai-block', 'Job': 'hai-job', 'Task': 'hai-task', 'Topic': 'hai-studio'}
 
 
 def own_skills(folder, root):
@@ -265,7 +311,7 @@ def own_skills(folder, root):
     from live import focus_page as f, skills_section
     from live.focus_themes import TYPE_SKILLS
     level, theme = f.page_level(folder), frame.theme_of(folder, root)
-    names = [LEVEL_SKILLS.get(level, ''), 'haipipe-' + theme, 'workbench-' + theme, *SHARED_SKILLS]
+    names = [LEVEL_SKILLS.get(level, ''), 'hai-' + theme, 'workbench-' + theme, *SHARED_SKILLS]
     if level == 'Task':
         names.append(TYPE_SKILLS.get(frame.task_type(folder), ''))
     catalog = skills_section.catalog()
@@ -279,14 +325,6 @@ def face_list(block, key):
     if not md:
         return []
     return [v.strip() for k, line in _fields(md, (key,)) for v in line.split(',') if v.strip()]
-
-
-def support_tree(block, root):
-    """(base, rows): the Blocks this Block waits for (its face's `waits-for:` line), as closed folders beside it
-    (JL 261125: "you can use b11 as the support ... as a new section below")."""
-    kids = [block.parent / name for name in face_list(block, 'waits-for')]
-    kids = [k for k in kids if allowed_folder(k, root) and k != block]
-    return block.parent, ''.join(folder_node(k, root) for k in kids)
 
 
 def project_of(block):
@@ -334,25 +372,56 @@ def drive_rows(folder, depth=0):
     return ''.join(rows) or '<li class="mut">empty</li>'
 
 
-def onedrive_tree(block, root):
-    """(base, rows): the Block's shared OneDrive folders (its face's `onedrive:` line), listed by name, closed."""
-    folders = [root / v for v in face_list(block, 'onedrive')]
-    if not folders:
-        return root, ''
-    base = Path(commonpath([str(f.parent) for f in folders]))
-    rows = ''.join('<li><details class="file-branch"><summary>' + FOLDER_ICON + '<span title="'
-                   + frame.esc(shown_rel(f, root)) + '">' + frame.esc(f.name)
-                   + '</span></summary><div class="folder-children"><ul>' + drive_rows(f) + '</ul></div></details></li>'
-                   for f in folders)
-    return base, rows
+def named_row(f, root):
+    """(folder, base, row) for a folder this host does not serve (a link that leads outside the SPACE): by name, closed."""
+    return (f, f.parent, '<li><details class="file-branch"><summary>' + FOLDER_ICON + '<span title="'
+            + frame.esc(shown_rel(f, root)) + '">' + frame.esc(f.name)
+            + '</span></summary><div class="folder-children"><ul>' + drive_rows(f) + '</ul></div></details></li>')
+
+
+def onedrive_rows(block, root):
+    """[(folder, base, row)]: the Block's shared OneDrive folders (its face's `onedrive:` line), by name, closed."""
+    return [named_row(f, root) for f in (root / v for v in face_list(block, 'onedrive'))]
+
+
+def data_rows(block, root):
+    """[(folder, base, row)]: the Block's data, read and never changed here: each store of its face's Data list
+    (```yaml `data:`, project_findings.data_stores) whose `where:` is a folder of the SPACE, written from its root
+    (`_WorkSpace/2-RecStore/cohort_a`). A store kept elsewhere (a catalog, a share) has no folder to show."""
+    from live import project_findings
+    out, seen = [], set()
+    for store in project_findings.data_stores(block) or []:
+        where = str(store.get('where') or '').strip().strip('/')
+        f = root / where
+        if not where or where.startswith(('.', '/')) or '..' in Path(where).parts:      # only a path below the SPACE root
+            continue
+        if f in seen or not f.is_dir() or f == block or block in f.parents:
+            continue
+        seen.add(f)
+        out.append(own_row(f, root) if allowed_folder(f, root) else named_row(f, root))
+    return out
+
+
+def support_blocks(block, root):
+    """The Blocks this Block waits for (its face's `waits-for:` line)."""
+    kids = [block.parent / name for name in face_list(block, 'waits-for')]
+    return [k for k in kids if allowed_folder(k, root) and k != block]
+
+
+def example_blocks(block, root):
+    """The example Blocks this Block's design is drawn from (its face's `examples:` line, from the Project folder)."""
+    kids = [project_of(block) / v for v in face_list(block, 'examples')]
+    return [k for k in kids if k.is_dir() and allowed_folder(k, root) and k != block]
 
 
 def render(folder, root, view=None, topics=(), pages=(), *, scope=None, skill_rows=None):
-    """The Files pane in numbered parts, each holding real folders only: 1 · Block (the Block's folder, open down to
-    this page's own), then the Blocks it waits for and its shared OneDrive folders (from the Block's face; JL 261125),
-    Code (the server code and page spec that draw this page), Skills (the skills that own this page), and the
-    Block Examples its design is drawn from (the face's `examples:` line).
-    No grouping folders, no 🧵 marks, no Sessions."""
+    """The Files pane in parts named by their role, each holding one real folder: Block (the Block's folder, open down
+    to this page's own: where the work is), a Maintain part per kind of thing the Block changes and keeps (ServerUI:
+    the server code and page spec that draw this page; Skills: the skills that own it; Block-Example: the example
+    Blocks of its face's `examples:` line; Blueprint Blocks: the other blueprint Blocks its traces changed; OneDrive:
+    its shared folders), Read-From (what
+    it does not change: a Block it waits for, a data store its Data list places in a SPACE folder),
+    and Touch N from the traces (trace_view). A role numbers its own parts; no number runs down the page."""
     folder, root = folder.resolve(), root.resolve()
     if not allowed_folder(folder, root):
         return ''
@@ -362,22 +431,20 @@ def render(folder, root, view=None, topics=(), pages=(), *, scope=None, skill_ro
     rows = open_rows(block, folder, root) if block != folder else tree_rows(block, root)
     ui = [p for p in groups.get('🖥️ Tools · UI', []) if block not in p.parents and p != block]   # the Block part has them
     from live import trace_view
-    mine = own_skills(folder, root)          # only what the page owns; any other folder a trace touched is Also touched
-    examples = examples_tree(block, root)
+    mine = own_skills(folder, root)          # only what the page owns; any other folder a trace touched is a Touch part
+    reads = [own_row(p, root) for p in support_blocks(block, root)] + data_rows(block, root)
+    examples, blueprints = example_blocks(block, root), trace_view.blueprint_blocks(block, root)
+    blueprints = [p for p in blueprints if p not in examples and allowed_folder(p, root)]
     covered = [block, *ui, *mine, *(block.parent / n for n in face_list(block, 'waits-for')),
-               *(project_of(block) / n for n in face_list(block, 'examples'))]
-    ui, skills = flat_tree(ui, root), flat_tree(mine, root)
-    support, drive = support_tree(block, root), onedrive_tree(block, root)
-    parts, n = [], 0
-    for title, base, tree, cls in (('Block', block.parent, folder_node(block, root, children=rows, expanded=True),
-                                    'fixed-folder'),
-                                   ('Support Blocks', *support, ''), ('OneDrive', *drive, ''),
-                                   ('Code', *ui, ''), ('Skills', *skills, ''), ('Block Examples', *examples, '')):
-        if tree:                                  # numbered in reading order; an empty part is not drawn
-            n += 1
-            if title in ('Code', 'Skills') and not any('files-ext' in p for p in parts):
-                parts.append('<p class="files-ext" aria-hidden="true">extends into</p>')   # what the Block reaches out to
-            parts.append(files_part(n, title, base, tree, root, cls))
+               *(project_of(block) / n for n in face_list(block, 'examples')), *(p for p, _, _ in reads), *blueprints]
+    code, skills = outermost(ui, root), outermost(mine, root)
+    parts = [files_part('Block', block.parent, folder_node(block, root, children=rows, expanded=True), root,
+                        'fixed-folder')]
+    for kind, items in (('ServerUI', code), ('Skills', skills), ('Block-Example', examples),
+                        ('Blueprint Blocks', blueprints)):                # one part per kind of thing it keeps
+        parts += role_parts('Maintain: ' + kind, [own_row(p, root) for p in items], root)
+    parts += role_parts('Maintain: OneDrive', onedrive_rows(block, root), root)
+    parts += role_parts('Read-From', reads, root)
     from live import file_info       # the traces in play mark their files on this one tree
     return (TYPE_STYLE + trace_view.render(folder, root, '<div class="file-tree">' + ''.join(parts) + '</div>', covered)
             + TYPE_SCRIPT + file_info.CARD)
@@ -397,7 +464,7 @@ TYPE_STYLE = '''<style>
 .file-tree ul{list-style:none;padding:0;margin:0}
 .file-tree .fixed-folder+.file-sources{border-top:1px solid var(--line);margin-top:8px;padding-top:5px}
 .fixed-folder>li>details>summary,.file-group>summary{font-weight:600}
-.files-part+.files-part{border-top:1px solid var(--line);margin-top:10px;padding-top:4px}.files-ext{display:flex;align-items:center;gap:8px;margin:16px 0 0;font-size:11px;color:var(--muted);letter-spacing:.06em}.files-ext::before,.files-ext::after{content:"";flex:1;border-top:1px dashed var(--line)}.files-ext+.files-part{border-top:0;margin-top:2px}.files-ext~.files-part>h3::before{content:"↳ "}.files-where{margin:0 0 4px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);overflow-wrap:anywhere;user-select:all}.files-part>h3{margin:8px 0 2px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.files-part.files-first{border-top:1px solid var(--line);margin-top:10px;padding-top:4px}.file-tree .files-rows>li{position:relative;padding-left:18px}.files-rows>li::before,.files-where[data-n]::before{content:attr(data-n);font:600 11px/18px ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}.files-rows>li::before{position:absolute;left:0;top:1px;width:13px;text-align:right}.files-where[data-n]::before{margin-right:6px}.files-part .files-where+ul+.files-where{margin-top:5px}.files-where{margin:0 0 4px;font:12px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);overflow-wrap:anywhere;user-select:all}.files-part>h3{margin:8px 0 2px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .file-tree .folder-children>ul{margin-left:10px;padding-left:15px;border-left:1px solid var(--line)}
 .file-tree li{padding:0;margin:0;min-width:0}.file-tree summary{display:flex;align-items:flex-start;gap:7px;cursor:pointer;padding:1px 0;line-height:18px;list-style:none;font-size:13px}
 .file-tree summary::-webkit-details-marker{display:none}.file-tree summary::before{content:"▸";flex:none;width:10px}

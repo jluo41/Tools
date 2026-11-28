@@ -1,0 +1,189 @@
+# The ladder · what each level may hold
+
+One table for the shape of every level under a Project world:
+Block → Job → Task → Run → pass. `scripts/ladder.py` reads the yaml block below, so
+`/hai-project audit <path>` checks a Block, a Job, a Task or a Run against it, and
+`/hai-project update <path>` fixes what is safe. Edit the table here, never in the script.
+
+This skill checks the **shape** (names, faces, which folders sit where, the Run card).
+The owning skill keeps the **content**: a Page's sections belong to hai-draft, a
+ticket's body to hai-task, a Run's kinds and passes to hai-run.
+
+## The levels
+
+```text
+level   name            face               may hold                                     children
+Project Project-<name>/ project.md         studio/ delivery/ note/ and its Themes        <theme>/
+Theme   <theme>/        <theme>.md         (optional; its Blocks)                        bNN_<topic>/
+Block   bNN_<topic>/    board.md           studio/ delivery/ related/                  jNN_<job>/
+                                           resources/ src/
+Job     jNN_<job>/      jNN_<job>.md       studio/ src/ sbatch/                        tNN_<task>/
+                                           runs/ (soft Runs only)
+Task    tNN_<task>/     tNN_<task>.md      studio/ scripts/ draft/                     runs/<run>/
+                                           displays/ notebooks/ tests/ workflow/ sbatch/
+Run     runs/<run>/     run.yaml           the ticket · config.yaml · result/ · passes/  pNN-<MMDD>/
+```
+
+1. **Face**: one page per folder (JL 261028). A Project's page is its `project.md` (JL 261028); a
+   `README.md` beside it has another job, the repository's front door on GitHub (what it is, how to set it up);
+   a Theme's is the optional `<theme>/<theme>.md`, such as `work/work.md`, written when there is something to say
+   (what its Blocks are for, the order to read them). Any folder of Blocks is a Theme by what it holds, so Tools'
+   `examples/` (b01, b10, b17, …) is one too, with `examples/blueprints.md` as its page; a Block's face is `board.md` (the rename to `bNN_<topic>.md` is still an open
+   design question, so both pass); a Job's and a Task's face is its own name plus `.md`.
+2. **Task kind**: a Task face may say `task-kind: page`; a Page Task holds soft Runs only.
+   Without the field a Task is a work Task.
+3. **Hard and soft**: a hard Run (`rNN_<slug>`, ticket `.sh`, `.cmd` where only cmd.exe runs, or a runner `.yaml`) writes only
+   its own `result/` and lives in a work Task. A soft Run (`run-<type>-<target>`, ticket `.md`; a Page's Delivery Run `run-delivery-<lane>` keeps its one command, `.sh`)
+   writes into its scope's items, has no `result/`, and may sit at Block, Job or Task. Its name
+   carries no date; the date is in its passes. A collection Run (`rNN_collect_<slug>`, hai-interaction, JL
+   261031) is the one hard Run allowed under any page: its questions are `question_collection.md`, its ticket
+   is the form `rNN_collect_<slug>.html` rendered from them. The previews and pictures its questions link by bare name
+   (`[preview](option-q1-a.html)`) sit beside them. hai-run owns the definitions.
+4. **Old layout**: `runs/<run>.sh` beside `results/<run>/` is the layout before one folder per
+   Run. The audit reports it as debt; `update --apply` moves it (see `fn/update.md`).
+5. **Families**: a Block's `workbench:` field (default `task`) adds its family's extras below.
+6. **A world's studio/**: a world folder such as `work/` holds Blocks and may hold one `studio/` for
+   project-wide drawings (a mind map of the whole world, hai-mindmap); the audit does not call it
+   "not a Block". A Block's `studio/` keeps its mind map (`mind-map.*`) loose, as it keeps its question map.
+
+## The table
+
+```yaml
+world:                                   # a world folder (work/, discovery/, ...) holds Blocks, and these
+  may_hold: [studio]                     # studio/: project-wide drawings, such as a mind map of the world (261024)
+levels:
+  block:
+    may_hold: [studio, reports, delivery, related, resources, src, runs, trace, _old]   # related/: what came in (hai-delivery, JL 261011); trace/: hai-trace (261126)
+    debt:
+      diagram: "diagram/ is retired: drawings go in studio/"
+      diagram-ceiling: "diagram/ is retired: drawings go in studio/"
+  job:
+    may_hold: [studio, reports, delivery, src, sbatch, runs, _old]
+    debt:
+      diagram: "diagram/ is retired: drawings go in studio/"
+      scripts: "a Job holds no scripts/: src/ and sbatch/ mark a Job; local code goes in a Task"
+      results: "a Job holds no results/: evidence sits in a Task's runs/<run>/result/"
+      notebooks: "a Job holds no notebooks/: they belong to a Task's Runs"
+      workflow: "workflow/ at a Job is not in the ladder"
+  task:
+    may_hold: [studio, reports, delivery, scripts, draft, evidence, display, displays, notebooks, tests,
+               workflow, sbatch, runs, review, _old]   # sbatch/: this Task's own supervisor (hai-task);
+                                                   # draft/ evidence/ display/: a draft Task (hai-draft, 261016);
+                                                   # review/: a display Task's revise-loop rounds, rNN.md (hai-display)
+    debt:
+      results: "old layout: results/<run>/ moves into runs/<run>/result/"
+      diagram: "diagram/ is retired: drawings go in studio/"
+  run:
+    may_hold: [result, passes, run.yaml, config.yaml, config.do,   # config.do: a Stata Run (hai-task-for-stata)
+               question_collection.md, applied.md]                 # a collection Run's questions and what applied them (hai-interaction)
+
+names:
+  block: '^(b\d{2}_[A-Za-z0-9][A-Za-z0-9_-]*|Paper-[A-Za-z0-9][A-Za-z0-9-]*)$'   # a paper Board: Paper-<Slug>/
+  job:   '^j\d{2,3}_[A-Za-z0-9][A-Za-z0-9_-]*$'                                    # kebab tails (paper, design)
+  task:  '^t\d{2}_[A-Za-z0-9][A-Za-z0-9_-]*$'
+  hard:  '^r\d{2,3}_[A-Za-z0-9][A-Za-z0-9_.-]*$'
+  collect: '^r\d{2,3}_collect_[a-z0-9]+(_[a-z0-9]+)*$'                            # a person's answers, under any page
+  soft:  '^run-[a-z]+-[A-Za-z0-9][A-Za-z0-9_.-]*$'
+  soft_dated: '^run-[a-z]+-\d{4}-'
+
+families:
+  task: {}
+  discovery: {}
+  ideation:
+    job: [bundle, cards, workflow, projection, handoff]
+    task: [assessments, bundle, cards, projection, handoff]  # latter lanes: legacy Task portfolios
+  insight:
+    block: [meta, datasets]
+    hard: '^[a-z0-9]+_[a-z0-9_]+$'       # <dataset>_<partition>; its vNNN are passes
+  paper:
+    block: [venues, related]             # a paper Board's venues and related papers (a meeting is a comments report)
+  cowork:
+    job: [emails, meetings, materials, design]  # a cowork Job's lanes (hai-cowork), text only
+  labeling:
+    task: [labeling]
+    hard: '^rl\d{2}_[a-z0-9_-]+$'        # rlNN_<operation>_<target>, owned by hai-labeling
+
+today:                                   # b10's rules since 261012: `audit --today`, and /wb update step 2 (b10 s10)
+  topic: '^s\d{2}[-_][A-Za-z0-9]'        # sNN-<topic>/ sits beside the Jobs or Tasks (JL 261030); studio/ keeps _groups.txt, _build/, dot names
+  register: '(?m)^## Questions[ \t]*$'   # the Block face's Questions register (hai-report)
+  report: '^q\d{2}_'                     # legacy reports/qNN_<topic>/, read until moved: an answer is a Studio topic, a review a Job (JL 261110)
+  block_only: [related]                  # a Job's or a Task's moves to the Block (hai-related); only a Block has a delivery/
+                                         # (a Job's or Task's output sits under its address in it; older layout: its own delivery/)
+  drawing: [.excalidraw, .png, .svg, .py, .md, .json]   # in studio/, these wait for a topic; other files move to the Block
+  keep: [question-map.excalidraw, question-map.png]     # the workbench's question_map.py writes the Block's map here
+  keep_glob: ['mind-map.*']              # and its mind map, from-work: .mindmap.md and .mindmap.html (hai-studio, 261024)
+  workflow:                              # a work Block (family task) since 261021 (LLMRec b01, b02): Goal first
+    layout: '(?m)^workbench-layout:[ \t]*workflow[ \t]*$'   # the Block face opts in (workbench-work)
+    job_fields: [emoji]                  # a Job face's own emoji on its Goal line (hai-job)
+    job_section: '(?m)^## Deliverables[ \t]*$'             # what the Job hands on, the Goal's to-do list (hai-job)
+    task_fields: [goal, close]           # a work Task face's two lines (hai-task); a Page Task keeps its own
+    run_role: true                       # every Run card says its role:, written by update --today --apply (hai-run)
+    stand_in: true                       # a receipt that only stands in (status: blocked + repair:) is rebuilt from the files
+
+checks:
+  heavy_mb: 10                           # the SPACE's AGENTS.md § Working rules: a Result is light
+  heavy_exempt:                          # a discovery Paper Run keeps its source PDF beside its Result,
+    discovery: [paper.pdf]               # only when project.yaml says visibility: private (JL 261009)
+  absolute_path: '/(Users|home)/[^/\s]+/' # the SPACE's AGENTS.md § Working rules
+```
+
+## What the audit reports
+
+`failed` breaks the contract; `debt` is a known older shape that `update` or its owner
+fixes later; `ok` is clean. A folder's status is its worst finding.
+
+```text
+failed   a hard Run in a Page Task, a Job or a Block · a soft Run with result/ ·
+         a Run with no ticket · run.yaml disagreeing with its folder (run, kind) ·
+         a hard Run marked done with no result/ · a heavy file in a Result ·
+         an absolute path in a ticket, run.yaml or receipt · a Run name neither hard nor soft
+debt     a missing face · the old runs/ + results/ layout · a dated soft name ·
+         a Run with no run.yaml · a folder the ladder does not list (named in the finding)
+```
+
+A moved Run's old receipt (its run.yaml names `moved_from:`) is history: the paths it recorded
+are not checked (JL 261009). Tickets, run.yaml and every receipt written since stay strict.
+
+## Today's rules (`audit --today`)
+
+The shape above passes a Block made before the studio topics, the Questions and the Block-only
+`related/` existed (b00_rawdata: 1 Block, 14 Jobs, 310 Tasks, all ok). `audit --today` adds the
+`today:` rules, as debt, at the Block it is given (b10 s10, JL 261012). `/wb update <block>` runs
+both and plans the fix.
+
+```text
+debt   the level has no sNN-<topic>/ topic                  proposed by /wb update step 5
+       studio/<data file> is not a topic: moves to the Block   moved by update --today --apply
+       studio/s00-<any>/ or sNN-…background-index/              retired 261029 (Report › MindMap): delete it and run-draw-s00
+       studio/<sNN>-<topic>/: move it beside its Jobs             hai-studio studio_move.py --apply (261031)
+       sNN-<topic>/ reuses the number of an old index             renumber it to the next free sNN
+       studio/<drawing, builder or note>: gather into a topic   the topic step 5 names
+       a Job's or Task's studio/sNN: move it into the Job or Task   studio_move.py, beside its Tasks or Runs
+       the face has no ## Questions register                proposed by /wb update step 6
+       reports/ still here (an older Block)                 fold each answer into its Studio topic (hai-studio
+                                                             reports_to_topics.py); it then moves to _old/reports/
+       a Job's or Task's related/                            hai-related moves it to the Block
+debt   (a work Block, family task)
+       the face has no workbench-layout: workflow line       add it: Goal · Plan · Execution · Results
+       a Job face has no ## Deliverables, or no emoji:       write them: hai-job ref/job-contract.md
+       a work Task face has no goal: or no close: line       write them: hai-task ref/task-page-template.md
+                                                             (a Page Task or a draft Task keeps its own face)
+       a Task's Run card has no role:                        written by update --today --apply (hai-run)
+       a Run ran but keeps only a stand-in receipt           rebuild it from the files the Run left (hai-run
+                                                             ref/receipts-and-inventory.md § Rebuilt receipts)
+```
+
+The workflow rules count, they do not list: one line per rule, the first six names, then `+N`. They
+read a Task's Runs only (a Block's or a Job's soft Runs, such as `run-draw-sNN`, take no role), and
+nothing under `_old/`, which is history.
+A Block opts out of them only by its family (a paper, insight, cowork, design, discovery or
+labeling Block keeps its own workbench).
+
+`update --today --apply` makes three safe changes. A data file in a Block's `studio/` (a `.tsv`, a
+`.yaml`; not a drawing, its builder or a note) goes to the Block root, beside the face, never over a
+file of the same name; a loose drawing waits for the topic a person names. A Run card whose `kind:`
+disagrees with its name, where the folder agrees with the name (a `.sh` ticket and no `.md` one is
+hard), takes the name's kind; plain `update --apply` makes this fix too. And a Run card with no
+`role:` gets the one line hai-run's `run_roles.py` proposes from its name, after `kind:`; no other
+field of the card changes. No file's words change. Deliverables, emoji, goal and close lines are
+words: an agent writes them from the Job's and Task's own records, never `update`.

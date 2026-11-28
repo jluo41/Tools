@@ -25,7 +25,7 @@ four years,
 
 Pricing one of those as a bout says a patient did a single 11-minute workout
 every day for four years, and never burned a calorie doing it. Rule 2 of
-haipipe-norm applies: TYPE it, do not drop it. A caller that wants daily active
+hai-norm applies: TYPE it, do not drop it. A caller that wants daily active
 minutes should read ExerciseDuration itself; this normalizer will not launder a
 daily total into a session.
 

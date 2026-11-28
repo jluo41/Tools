@@ -381,7 +381,7 @@
   });
 })();
 
-// A UI preview's live view names the part it is about (haipipe-studio ref/ui-preview-topic.md): `mark=jobs-rows`
+// A UI preview's live view names the part it is about (hai-studio ref/ui-preview-topic.md): `mark=jobs-rows`
 // (comma-separated: a class name, or `jsub=main` for [data-jsub="main"]) outlines the visible ones in red and
 // scrolls the first into view.
 (function () {

@@ -13,7 +13,7 @@ different things depending on what was taken:
 
 So 39.0 is 39 units of insulin or 39 tablets, and nothing in the row says which.
 This file decides the unit AFTER the drug is known, and writes it into a column
-next to the number. Rule 4 of haipipe-norm: never report a quantity without the
+next to the number. Rule 4 of hai-norm: never report a quantity without the
 scale it is on. It is the same defect as reading a per-100g nutrition
 composition as a per-meal dose, in a different noun.
 

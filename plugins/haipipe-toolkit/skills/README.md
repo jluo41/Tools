@@ -17,15 +17,17 @@ skills/
 ├── 0_utils/    generic helpers, not tied to the Block -> Job -> Task ladder
 │               (response-format, diagram-ascii, ask-questions, table-workbench, table-papers, ...)
 ├── 1_base/     what every theme is built on: project (the ladder, Runs) · task (the work
-│               Task) · draft (the words) · evidence · display · excalidraw · workbench · ideation · search
-└── 2_theme/    one folder per theme: cowork · design · discovery · insight · labeling · paper · work,
-                each holding its haipipe-<theme> skills and its workbench-<theme>
+│               Task) · draft (the words) · evidence · display · draw · workbench · ideation · search
+├── 2_work/     the work themes: blueprint · cowork · discovery · knowledge · work,
+│               each holding its hai-<theme> skills and its workbench-<theme>
+└── 3_theme/    the domain themes: design · insight · labeling · paper,
+                each holding its hai-<theme> skills and its workbench-<theme>
 ```
 
-A skill in `0_utils` is one folder deep (`0_utils/<skill>/`); a skill in `1_base`
-or `2_theme` sits in its family (`1_base/draft/haipipe-draft/`, `2_theme/paper/workbench-paper/`).
+A skill in `0_utils` is one folder deep (`0_utils/<skill>/`); a skill in `1_base`,
+`2_work` or `3_theme` sits in its family (`1_base/draft/hai-draft/`, `2_work/work/hai-work/`, `3_theme/paper/workbench-paper/`).
 Code finds the skills root by its folder name and a skill by its folder name
-(`servers/_host/host_paths.py` `skill_dir`, `1_base/draft/haipipe-draft/src/skill_paths.py`),
+(`servers/_host/host_paths.py` `skill_dir`, `1_base/draft/hai-draft/src/skill_paths.py`),
 never by counting parent folders, so moving a family to another layer breaks no path.
 The servers pair with the layers the same way: `servers/workbench` is the base
 every workbench reuses, and each `servers/workbench-<theme>` gives its theme.
@@ -39,7 +41,7 @@ Block (bNN) -> Job (jNN) -> Task Page (tNN) -> Run (rNN)
                                            └── Result(s)
 ```
 
-`haipipe-run` is the shared Level-4 contract. A Run records one bounded
+`hai-run` is the shared Level-4 contract. A Run records one bounded
 commission with preserved Steps/attempts; its Result records the outcome.
 A Workflow lists planned Run Specs and actual Instances, connected by
 dependencies and routes. A Task or Discovery
@@ -64,16 +66,16 @@ Supporting Run ids, Local Run id, Result, and any decision or feedback note.
 Insight topic instances
 =======================
 
-`2_theme/insight/haipipe-page-insight` owns a consumer-neutral topic/data
+`3_theme/insight/hai-page-insight` owns a consumer-neutral topic/data
 instance Page Folder. Its items are runnable questions, not extra Pages.
 
 | Contract | Owner | Unit |
 |---|---|---|
-| Research topic/data context | haipipe-page-insight | One instance Page Folder |
-| Shared analysis | haipipe-task | Reusable recipe; isolated instance inputs and outputs |
-| Insight work | haipipe-page-insight + haipipe-run | Item ticket and versioned DIKW/RF Results |
-| Item table / Runs view | haipipe-draft | Read projections of intent and receipts |
-| Consumer-specific Design authority | haipipe-insight-workflow | Exact item/RF evidence contextualized in person-signed Wisdom |
+| Research topic/data context | hai-page-insight | One instance Page Folder |
+| Shared analysis | hai-task | Reusable recipe; isolated instance inputs and outputs |
+| Insight work | hai-page-insight + hai-run | Item ticket and versioned DIKW/RF Results |
+| Item table / Runs view | hai-draft | Read projections of intent and receipts |
+| Consumer-specific Design authority | hai-insight-workflow | Exact item/RF evidence contextualized in person-signed Wisdom |
 
 The detailed contracts are the Insight skill's `ref/instance-items.md`,
 `ref/workflow-table.md`, and `ref/task-calls.md`. The same recipe can serve A/B/C
@@ -85,7 +87,7 @@ The Page workflow
 =================
 
 The Page family is canonical under `skills/1_base/draft/` (the Board family was retired
-into it, JL 261005): `haipipe-draft`, `haipipe-draft-logic`, `haipipe-draft-writing`, `haipipe-draft-review`, `haipipe-draft-workflow` with its Run pages (context, structure, scratch in `haipipe-draft-logic/ref/`; revise in `haipipe-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is haipipe-studio's. The Page runtime owns file intake,
+into it, JL 261005): `hai-draft`, `hai-draft-logic`, `hai-draft-writing`, `hai-draft-review`, `hai-draft-workflow` with its Run pages (context, structure, scratch in `hai-draft-logic/ref/`; revise in `hai-draft-writing/ref/`). The screen manuals `workbench` (the /wb door) and `workbench-task-draft` live in `skills/1_base/workbench/`; the Studio screen is hai-studio's. The Page runtime owns file intake,
 individual rendering and standalone editing/hosting, the Board checker and the
 Run CLIs. A Board is a folder of Pages read live in the workbench; nothing is built.
 Old Board paths are compatibility links, not a second implementation.
@@ -94,13 +96,13 @@ The Page Face is a small, numbered workflow. The numbers are records, not
 extra folder levels:
 
 ```text
-00 CONTEXT   -> haipipe-draft-logic   gather policy, requirements, audience,
+00 CONTEXT   -> hai-draft-logic   gather policy, requirements, audience,
                                          source scope, and freeze the brief
-01 OUTLINE   -> haipipe-draft-logic   SHAPE the plan; SURVEY evidence items
-02 EVIDENCE  -> haipipe-evidence (ref/page-evidence.md) LAND Supporting/Local Run Results;
+01 OUTLINE   -> hai-draft-logic   SHAPE the plan; SURVEY evidence items
+02 EVIDENCE  -> hai-evidence (ref/page-evidence.md) LAND Supporting/Local Run Results;
                                          EMBED accepted evidence
-03 CONTENT   -> haipipe-draft-writing  WRITE: Adopt -> Integrate -> Build -> Pre-check
-04 CHECK     -> haipipe-draft-review    whole-page consistency and readiness
+03 CONTENT   -> hai-draft-writing  WRITE: Adopt -> Integrate -> Build -> Pre-check
+04 CHECK     -> hai-draft-review    whole-page consistency and readiness
 ```
 
 The outline workbench owns the Draft and Evidence Spaces. The evidence
@@ -134,11 +136,11 @@ Project folder contract
 
 ```text
 examples/<PROJECT>/
-├── work/          internal execution (haipipe-task)
-├── discovery/    external evidence (haipipe-discovery)
-├── paper/         academic Page composition (haipipe-paper)
+├── work/          internal execution (hai-task)
+├── discovery/    external evidence (hai-discovery)
+├── paper/         academic Page composition (hai-paper)
 ├── insight/ · design/ · labeling/ · cowork/ · ideation/   the other Theme folders, each its skill's
-└── external/ · platforms/   pinned upstream material · owned code repos (haipipe-project; applications/ and diagram/ are retired)
+└── external/ · platforms/   pinned upstream material · owned code repos (hai-project; applications/ and diagram/ are retired)
 ```
 
 A canonical Task or Discovery leaf is addressed as
@@ -161,7 +163,7 @@ Page, not the executor, records the Supporting/Local relationship.
 A board's own Questions are a different thing: topics recorded in its
 `board.md` register, each answered in the Studio topic that answers it (an older Block: a
 `reports/qNN_<topic>/` report Page). They are owned
-by `1_base/project/haipipe-report/`.
+by `1_base/project/hai-report/`.
 
 
 Current skill buckets
@@ -170,7 +172,7 @@ Current skill buckets
 ```text
 0_utils               shared helpers
 draft · workbench     the Page (its words, its workflow) and the screen manuals (/wb, the Page Task's screen, page rules)
-project               project container setup; haipipe-report holds board questions (a topic and its
+project               project container setup; hai-report holds board questions (a topic and its
                       asks, the register, its answer in a Studio topic), shaping an ask and reviewing it (Q1-Q7)
 task                  internal execution and task-domain families
 discovery             Search, Review, and Synthesize external evidence
@@ -202,7 +204,7 @@ the consumer's Supporting/Local evidence row.
 Running a skill's scripts
 =========================
 
-Skill scripts need Python 3.10 or newer; `haipipe-draft`'s `cli/page.py` needs 3.11. A system
+Skill scripts need Python 3.10 or newer; `hai-draft`'s `cli/page.py` needs 3.11. A system
 `python3` may be older (macOS's Command Line Tools ship 3.9), so a bare `python3 <script>` can stop
 with `TypeError: unsupported operand type(s) for |`. Run them through uv, from Tools-SPACE (paths
 start at `plugins/`) or from a SPACE (paths start at `Tools/plugins/`):
@@ -216,10 +218,10 @@ Where to read next
 ==================
 
 * `README.md` — user-facing doors and the Run/Result overview.
-* `skills/1_base/project/haipipe-run/SKILL.md` — the neutral Level-4 contract.
-* `skills/1_base/draft/haipipe-draft-workflow/SKILL.md` — the Page loop.
+* `skills/1_base/project/hai-run/SKILL.md` — the neutral Level-4 contract.
+* `skills/1_base/draft/hai-draft-workflow/SKILL.md` — the Page loop.
 * `skills/1_base/workbench/workbench-task-draft/` — Bullet/Evidence
   Workspaces, the evidence-item table, and `ref/run-space.md`, the
   read-only Runs view.
-* `skills/2_theme/paper/workbench-paper/` — the Paper Board's Setup, Ideation,
+* `skills/3_theme/paper/workbench-paper/` — the Paper Board's Setup, Ideation,
   Story, and Run-Type work console.

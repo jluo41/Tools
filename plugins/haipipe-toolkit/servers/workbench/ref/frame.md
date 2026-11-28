@@ -164,7 +164,7 @@ servers/workbench-<theme>/workbench-task-<type>/         task_<type>.py  ⟷ wor
 `name`, `label`, `icon`, `guide` (its Guide family), `levels`, `level_names`, and
 `spaces(level, folder, root, sub) -> {Space name: Space(html, subspaces, open, run_types)}`.
 Each run type is `{"label", "prompt", "skills"}`: every button names the skill that owns it
-(b03 s21, 261007; the vanilla buttons' owners are listed in haipipe-run's
+(b03 s21, 261007; the vanilla buttons' owners are listed in hai-run's
 `ref/run-types-by-space.md`), and a theme's own buttons name theirs the same way.
 A level with no folders shows a greyed tab, so every page keeps one tab row; a theme may set
 `hide_empty_levels=True` to leave it out instead.
@@ -201,7 +201,7 @@ Studio and Report follow b03's `s02-studio-workbench-skill` (s02-D04, D06):
 The frame's page carries the base's shared styles and no theme's own (JL 261007, "base styles only"):
 a theme's Space html uses only base classes: the frame's `.topic` folds (`.topic.missing`: a dashed
 card awaiting a Run), `.wf-table`, `.q-row`, `.chip`, `.mut`, the status marks `.st-ok` and
-`.st-warn`; `SPACE_VIEW_CSS` (`workbench-task-draft/space_views.py`: Space tabs and views, evidence tables, the
+`.st-warn`; `SPACE_VIEW_CSS` (`workbench-task-draft/page_shell/space_views.py`: Space tabs and views, evidence tables, the
 Supporting Runs tree) and `WORK_ITEM_CSS` (`work_items.py`: the `bj-` and `lw-` work rows). A
 component a theme lacks goes into the base for every theme. `_host/tests/test_frame_routes.py` StyleTest
 keeps these styles off the frame's own parts.

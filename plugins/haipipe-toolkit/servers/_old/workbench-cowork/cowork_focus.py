@@ -28,13 +28,13 @@ _NOBODY = ("us", "nobody", "")
 _ROUND_RUN = re.compile(r"^run-(?:write|revise|draft|edit)-")
 _HEAD = re.compile(r"(?m)^(To|Cc|Subject|From|How):\s*(.+?)\s*$")
 
-VIEW_SKILLS = {"mindmap": (("haipipe-mindmap", "draws and refreshes this map"),),
-               "standing": (("haipipe-cowork", "keeps each Job's state, who has the move and since when"),
-                            ("haipipe-job", "keeps a Job's face and its Tasks in order")),
-               "findings": (("haipipe-cowork", "keeps the people, the emails, the meetings and the next move"),
-                            ("haipipe-report", "writes each Question's answer for you to agree"),
-                            ("haipipe-delivery", "keeps each message sent in delivery/"),
-                            ("haipipe-draft", "writes a document in rounds, as a Task"))}
+VIEW_SKILLS = {"mindmap": (("hai-mindmap", "draws and refreshes this map"),),
+               "standing": (("hai-cowork", "keeps each Job's state, who has the move and since when"),
+                            ("hai-job", "keeps a Job's face and its Tasks in order")),
+               "findings": (("hai-cowork", "keeps the people, the emails, the meetings and the next move"),
+                            ("hai-report", "writes each Question's answer for you to agree"),
+                            ("hai-delivery", "keeps each message sent in delivery/"),
+                            ("hai-draft", "writes a document in rounds, as a Task"))}
 
 # a theme's own words for a view at a level (focus_page reads CAPTIONS, 261108): a cowork Job has no Tasks, so the
 # shared "Where its Tasks stand" reads wrong

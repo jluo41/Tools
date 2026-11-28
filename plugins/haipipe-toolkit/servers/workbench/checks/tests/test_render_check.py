@@ -1,4 +1,4 @@
-"""render_check.py names the same kinds as the format table, and a file whose page breaks is reported (haipipe-ui A09)."""
+"""render_check.py names the same kinds as the format table, and a file whose page breaks is reported (hai-ui A09)."""
 import importlib.util
 import tempfile
 import unittest

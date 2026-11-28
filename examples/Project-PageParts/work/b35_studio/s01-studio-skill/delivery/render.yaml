@@ -1,0 +1,6 @@
+# Where s01's delivery goes (hai-studio scripts/render_delivery.py). The deck stays in deck/.
+# The five text pieces in skill/ (first-principle, where-it-sits, how-many, one-delivery, themes) are no longer written
+# into hai-studio's SKILL.md: that file carries no generated region, and owns its own words (b17 trace 261127/2009).
+pieces:
+  - code: "new_topic.py writes the For: line and keeps the limits"
+    by: j01_studio_delivery_type/t02_new_topic_for_line

@@ -118,7 +118,7 @@ def idea_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
                           "one chosen" if any("✅" in r.get("verdict", "") for r in rows) else "none chosen yet")
         n += 1
         out += _named(n, "🎓", "Theory", tabs.get("Theory") or _no_theory(
-            board, "each direction names its theory, a <code>theory</code> column in Directions considered (haipipe-paper-ideation)."),
+            board, "each direction names its theory, a <code>theory</code> column in Directions considered (hai-paper-ideation)."),
             _written(tabs.get("Theory", "")))
     out += related_section(board, root, n)[0]            # the same references inform both candidate ideas and the Story
     return out
@@ -154,7 +154,7 @@ def story_view(board: Path, root: Path, md, items=(), *, studio=True) -> str:
         said = _field(parts.get("identity", ""), "Theory")
         whole = parts.get("theory", "")
         bar("🎓", "Theory", flush(md(whole or said, topic)) if whole or said else _no_theory(
-            board, "a <code>**Theory**:</code> line in the Story's Identity (haipipe-paper-story)."), _written(whole or said))
+            board, "a <code>**Theory**:</code> line in the Story's Identity (hai-paper-story)."), _written(whole or said))
         if "Research Questions" in tabs:
             bar("❓", "Research Questions", tabs["Research Questions"][1], _rq_word(parts.get("research questions", "")))
         # no Stakes and evidence section: the RQ table's Why we ask column says why each question matters, and the
@@ -222,7 +222,7 @@ def with_prompts(section: str, prompts: str) -> str:
 
 
 def plan_view(board: Path, root: Path, md, items=()) -> str:
-    """B · Data + Paper Plan, two sections (JL 261111, after re-reading haipipe-paper-plan, Paper-CMS-AI-Usage
+    """B · Data + Paper Plan, two sections (JL 261111, after re-reading hai-paper-plan, Paper-CMS-AI-Usage
     r03_collect_plan_view_decisions: "okay, go ahead and do it"): 1 · 🗄️ Data flow, the s03 topic (how the data become
     each answer), 2 · 📝 Paper flow, the s04 topic (how each answer becomes the page), each with its own plan prompts on
     its bar. Every fact once: the Story's § 7 Runs show in the Data flow drawing, § 6 reading in the Story view, the
@@ -335,7 +335,7 @@ def evidence_view(board: Path, root: Path, md, items=()) -> str:
 
 def displays_view(board: Path, root: Path, md, items=()) -> str:
     """E · Displays: the plan against the venue's display rules
-    (haipipe-paper-plan's display plan, when the Board has one), followed by the displays, one side tab
+    (hai-paper-plan's display plan, when the Board has one), followed by the displays, one side tab
     per pool Task (Figure 1 (Display A), its type and name), its panel the newest preview.pdf, the display as the paper
     prints it, then how it was made; and all of them as one PDF (build_displays_pdf.py); then Examples; last the
     shared Story by Section, the same section the Story view shows (JL 261109: "this Story by Section should be at the
@@ -361,7 +361,7 @@ def displays_view(board: Path, root: Path, md, items=()) -> str:
     examples = _display_examples(board, root)
     body += _named(n, "🔍", "Examples", examples or (
         '<p class=mut>No examples yet. The target venue\'s published displays go on one canvas, the Board topic '
-        '<code>sNN-paper-display-examples</code> (haipipe-paper-display, Examples).</p>'), "drawn" if examples else "")
+        '<code>sNN-paper-display-examples</code> (hai-paper-display, Examples).</p>'), "drawn" if examples else "")
     return out + body + story
 
 

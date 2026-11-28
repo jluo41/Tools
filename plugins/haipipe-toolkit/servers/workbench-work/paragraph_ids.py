@@ -1,5 +1,5 @@
 """Give each paragraph of a page's own sections its invisible id, once (ref/cards.md §3 rule 5; JL 261116), so a
-paragraph can carry marks and cards (workbench/page/paragraph_cards.py).
+paragraph can carry marks and cards (workbench/page/element_marks/paragraph_cards.py).
 
     python paragraph_ids.py <page folder> [<page folder> ...]           show what it would add
     python paragraph_ids.py <page folder> ... --apply                   add it
@@ -8,7 +8,7 @@ A page's own sections are its face's `## Review Content`, `## Plan + Results`, `
 `.md` files they bring in with `embed:` or `each:`. A paragraph is a run of plain text lines (no heading, list, table,
 quote, fence, HTML or `key: value` line), or a one-line top-level list item (not a bold header item, not one with
 sub-items: those read as cards already). Its id, ` <!-- id: pNN -->`, goes at the end of its last line; NN counts on
-from the highest id the page already has, so an id is never reused or renumbered. `/haipipe-work update` runs it.
+from the highest id the page already has, so an id is never reused or renumbered. `/hai-work update` runs it.
 """
 from __future__ import annotations
 

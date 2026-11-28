@@ -1,0 +1,37 @@
+status: ok
+question: I01
+run: r01_full
+partition: full
+release: question-v1
+data: data-v2
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t03_I01_outcome-by-arm/runs/r01_full/run.sh
+job: Tools/examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2
+prototype: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions
+extract: Tools/examples/Project-Ladder/insight/Insight-Example/data/data-v2/example.parquet
+spec: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t03_I01_outcome-by-arm/question.md
+spec_sha256: 2dd0cff0a1b5bff4161e9d305883c851d9e6f5d21d43d1571e2e89518c0883a3
+scripts: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t03_I01_outcome-by-arm/scripts
+scripts_sha256: 4aa6f79116c796be8ae073bd537070ec44f6676e3f1c7712359190226d309c13
+shared_sha256: fc3dd755d0b8ac952017e6fb7eef5600b9affe28f650cb64e8490b5f87050f84
+git_sha: unknown
+started: '2026-11-10T02:39:14Z'
+rows_before: 960
+rows_after: 960
+power: ok
+outputs:
+- gap.csv
+- rates_by_arm.csv
+- partition_power.csv
+figures:
+- need: E1
+  table: rates_by_arm.csv
+  file: fig_E1_rates_by_arm.png
+  kind: rates
+- need: E2
+  table: gap.csv
+  file: fig_E2_gap.png
+  kind: estimate
+tables_sha256: d223bea3274b9e5249d2dacb498e7e511ac5c91518ba8f9f01c1cb1526402959
+ended: '2026-11-10T02:39:14Z'
+duration_s: 0.6
+content_since: '2026-11-06T18:58:03Z'

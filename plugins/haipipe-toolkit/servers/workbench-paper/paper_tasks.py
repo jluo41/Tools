@@ -249,9 +249,9 @@ def _process(task: Path, root: Path, kind: str, view: str) -> str:
     if last is None:
         return ""
     rel = ds._rel(task, root)
-    how = (f"Use /haipipe-run. Rerun the ticket {rel}/runs/{last.name}/{ticket.name} and read its result/ back into "
+    how = (f"Use /hai-run. Rerun the ticket {rel}/runs/{last.name}/{ticket.name} and read its result/ back into "
            f"{task.name}; change nothing by hand." if ticket is not None and ticket.suffix == ".sh" else
-           f"Use /haipipe-run. Read {rel}/runs/{last.name}/{ticket.name if ticket else 'run.yaml'} and tell me what a person "
+           f"Use /hai-run. Read {rel}/runs/{last.name}/{ticket.name if ticket else 'run.yaml'} and tell me what a person "
            "must do to start it; start nothing yourself.")
     pill, says = _run_state(last)
     box = prompt_box(how, (), step=last.name, asks=says or "make it again", key=f"{rel}#make")
@@ -339,6 +339,9 @@ def views(task: Path, root: Path, section: str, base: dict) -> dict:
     """The Task's Report (`section` "report") or Work ("work") views, {} -> `base` for any Task this does not draw. Base
     keys kept: MindMap and Status come from the frame; Findings is this module's."""
     try:
+        from live import idea_block
+        if idea_block.idea_block_of(task) is not None:   # an Idea Job's assessment Task: its face and its verdicts
+            return idea_block.task_views(task, root) or base
         kind = kind_of(task)
         if not kind or not base:
             return base

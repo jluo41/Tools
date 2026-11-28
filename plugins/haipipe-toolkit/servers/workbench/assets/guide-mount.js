@@ -46,7 +46,7 @@
   button.addEventListener('click',function(event){event.stopPropagation();open(new URL(location.href).searchParams.get('guide'))});
   nav.addEventListener('click',function(event){if(!button.contains(event.target)&&event.target.closest('button,a'))close()},true);
   addEventListener('message',function(event){
-    if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.kind!=='haipipe-guide-height')return;
+    if(event.origin!==location.origin||event.source!==frame.contentWindow||event.data?.kind!=='hai-guide-height')return;
     var value=Number(event.data.height);if(Number.isFinite(value)&&value>0&&value<100000)frame.style.height=Math.ceil(value)+'px';
     if(document.body.classList.contains('wb-guide-open')){
       var address=new URL(location.href);address.searchParams.set('guide',event.data.view);history.replaceState({},'',address);

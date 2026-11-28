@@ -1,6 +1,6 @@
 """The cowork theme on the base frame (servers/workbench/frame.py): only what differs from vanilla.
 
-A cowork topic climbs Block → Job → Run (Tools/blueprints/Project-Ladder/work/b13_theme_cowork, Q01, proposed 261007). An
+A cowork topic climbs Block → Job → Run (Tools/examples/Project-Ladder/work/b13_theme_cowork, Q01, proposed 261007). An
 email, a meeting or a checklist step is a row of its Job, not a Task; a Task (`tNN_<doc>/`) is only a
 document written with others in rounds, and it opens as the base's Page Task, so the Task level is
 left vanilla and its tab is greyed until a Job has one.
@@ -31,28 +31,28 @@ _NOBODY = ("us", "nobody", "")
 
 
 def _run(label, verb):
-    return {"label": label, "prompt": f"/haipipe-cowork {verb} {{folder}}"}
+    return {"label": label, "prompt": f"/hai-cowork {verb} {{folder}}"}
 
 
 BLOCK_RUNS = {"Description": (_run("Update the Block status", "update the Block status of"),
                               _run("Add a person", "add a person to"), _run("Add a resource", "add a resource to")),
-              "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-report ask {folder}"},
-                                  {"label": "Review the questions", "prompt": "/haipipe-report review {folder}"},
-                                  {"label": "Write the report", "prompt": "/haipipe-draft-writing {folder}/reports/"},
-                                  {"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"}),
+              "Audience Report": ({"label": "Ask a Question", "prompt": "/hai-report ask {folder}"},
+                                  {"label": "Review the questions", "prompt": "/hai-report review {folder}"},
+                                  {"label": "Write the report", "prompt": "/hai-draft-writing {folder}/reports/"},
+                                  {"label": "Check a report", "prompt": "/hai-draft-review check {folder}/reports/"}),
               "Work Details": (_run("Open a job", "open a job in"), _run("Update a job", "update a job in")),
               "Runs": (_run("Update the Block status", "update the Block status of"),
-                       {"label": "Draw", "prompt": "/haipipe-studio draw a topic in {folder}/ (sNN-<topic>/, beside its Jobs)"}),
-              "Delivery": ({"label": "Check a report", "prompt": "/haipipe-draft-review check {folder}/reports/"},)}
+                       {"label": "Draw", "prompt": "/hai-studio draw a topic in {folder}/ (sNN-<topic>/, beside its Jobs)"}),
+              "Delivery": ({"label": "Check a report", "prompt": "/hai-draft-review check {folder}/reports/"},)}
 JOB_RUNS = {"Description": (_run("Update the Job", "update the job"), _run("Add a file", "add a file to")),
-            "Audience Report": ({"label": "Ask a Question", "prompt": "/haipipe-report ask {folder}"},),
+            "Audience Report": ({"label": "Ask a Question", "prompt": "/hai-report ask {folder}"},),
             "Work Details": (_run("Add an entry", "add a Timeline entry to"),
-                             {"label": "Draft an email", "prompt": "/haipipe-draft draft an email in {folder}/emails/"},
+                             {"label": "Draft an email", "prompt": "/hai-draft draft an email in {folder}/emails/"},
                              _run("Write meeting notes", "write meeting notes in")),
             "Runs": (_run("Update the Job", "update the job"),
-                     {"label": "Draft an email", "prompt": "/haipipe-draft draft an email in {folder}/emails/"},
+                     {"label": "Draft an email", "prompt": "/hai-draft draft an email in {folder}/emails/"},
                      _run("Write meeting notes", "write meeting notes in"),
-                     {"label": "Review a draft", "prompt": "/haipipe-draft-review review the draft in {folder}/emails/"})}
+                     {"label": "Review a draft", "prompt": "/hai-draft-review review the draft in {folder}/emails/"})}
 
 
 def _pick(sub, options):
@@ -111,7 +111,7 @@ def _deliveries(job_dir, block):
         out.append({"date": date.group(1) if date else "",
                     "md": md, "page": page, "title": title.group(1).strip() if title else p.name,
                     "draft": bool(re.search(r"(?m)^\s*status:\s*draft\b", text)) or "draft" in (md.name if md else ""),
-                    # sent is a person's word (haipipe-delivery): its draft says so, or delivery.md has its row sent
+                    # sent is a person's word (hai-delivery): its draft says so, or delivery.md has its row sent
                     "sent": bool(re.search(r"(?m)^\s*status:\s*sent\b", text)) or bool(re.search(
                         r"(?m)^\|.*" + re.escape(p.name) + r".*\|\s*sent\s*\|\s*$", marked)),
                     "attach": [p / n.strip() for n in named.group(1).split(";") if n.strip()] if named
@@ -307,7 +307,7 @@ def spaces(level, folder, root, sub):
     return {}                                                            # a Page Task: the base's own
 
 
-# each button's Run (haipipe-run rule 6)
+# each button's Run (hai-run rule 6)
 RUN_NAMES = {"Update the Block status": "run-face-<bNN>", "Add a person": "run-add-person-<name>",
              "Add a resource": "run-add-resource-<slug>", "Ask a Question": "run-ask-<qNN>",
              "Review the questions": "run-review-questions", "Write the report": "run-report-<qNN>",

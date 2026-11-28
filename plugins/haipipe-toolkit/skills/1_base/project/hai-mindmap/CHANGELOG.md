@@ -1,0 +1,223 @@
+haipipe-mindmap · Changelog
+===========================
+
+## [0.9.8] — 2026-11-09 · from-topic nests sub-headings, tables become one line
+
+- JL 261109: "why this is so hard to read?" (s02's mind map). `mmbuild._sections` only split on `##`, so a long face
+  became one flat list of raw `### 1 · Identity …` and `| E | RQ | …` lines. Now each `###`/`####` is a branch with what
+  follows under it (`_nest`), a table is one leaf "table · N rows" (its columns in the detail), and a card's words drop
+  `**`. A map built by the old builder: rebuild it with `from-topic` when no person edited it (refresh keeps old flat
+  nodes whose fingerprint no longer matches, as if a person had changed them).
+
+## [0.9.7] — 2026-11-06
+
+- An unwritten map's root reads "Not written yet." (`mmmap.UNWRITTEN`, `unwritten`), a state, never how to write it; an
+  older map's "Not written yet: ask in the Studio chat…" reads the same. A card's fold mark carries its word ("▸ show",
+  "▾ hide"). A leaf hung under its card (a narrow box) gets an elbow from the card's foot (`mapview` wire).
+  Test: `test_a_new_topics_map_is_honest_about_being_unwritten`.
+
+## [0.9.6] — 2026-11-04
+
+- "The Block map" template in SKILL.md: groups before lists, one screen when closed, short names, never a second kind of
+  drawing. `parts_mindmap` puts a Block's Jobs under the bands of its `bands:` line (b01: 1284 px to 289 px; JL 261104).
+  Test: `test_block_bands_group_jobs_in_the_same_map`.
+
+## [0.9.5] — 2026-11-04
+
+- Every map starts closed, not only a Block's: `draw` and `render` fold by default (`fold=False` turns it off), lines
+  under a point fold too, an editable map folds by its ▸ so typing still works, and the count on a closed card is gone
+  (it disagreed with Status). What was opened no longer survives a page load, so every visit starts closed (JL 261104:
+  "默认的话，大家都是合着的").
+
+## [0.9.4] — 2026-11-04
+
+- A map can fold (`draw(..., fold=True)`, `mapview.FOLD`): its cards start closed, a click opens what hangs under one, a
+  count marks a closed card, Open all and Close all sit above it, and what was opened is kept in the browser. Only a
+  Block's map on the workbench uses it (JL 261104, on b01_c_q25_clm_fm: "the collapse and open it"); a draft's
+  §1 and Studio topics draw as before, except that a hidden point no longer gets a curve.
+
+## [0.9.3] — 2026-10-31
+
+- `from-work` writes `<folder>/mind-map.mindmap.md` beside the folder's face, no longer in `<folder>/studio/`:
+  studio/ folders are gone (JL 261031, haipipe-studio b35 r02: "We will not have the studio anymore").
+
+## [0.9.2] — 2026-10-31
+
+A link opens only on the web or a path (a code review of haipipe-toolkit, 261031). `mmhtml.safe_href()` keeps a web
+address, a root or relative path and an anchor; any other scheme (`javascript:`, `data:`, `file:`) or a `//host` link
+renders as its words, as `page_reader._md_href` already did. `mmhtml.inline` uses it for links and pictures, and
+`mmmap._opens` gives such a link no chip. Before, `[a](javascript:…)` in a question, a topic's For: line or a
+`.mindmap.md` node became a pop-out link on the origin that also serves the terminal. Test:
+test_a_link_opens_only_on_the_web_or_a_path (32 pass).
+
+## [0.9.1] — 2026-10-31
+
+A map is always a tree. The narrow-screen rule (`@media(max-width:1000px)` in `scripts/mapview.py`) that stacked the
+branches into a list, dropped the wires and stretched each empty slot into a grey bar is gone; a narrow screen keeps
+the tree and slides sideways (JL 261031: "do not have this version, I want to have the mindmap tree for all the time").
+A node with no detail no longer draws an empty grey box (`.pm-detail:empty`).
+
+## [0.9.0] — 2026-10-30
+
+`from-work` is written to be read and drawn like every other mind map (JL 261030: "we can read the results quickly
+from the mindmap"; "this should be the same version as other versions"): a card per Job, a numbered point per Task
+with its state as the pill and its goal as the words, its Runs and what each found in its ▸ details (a Job alone: a
+card per Task, a point per Run); counts are gone and running is ⏳, never 🔶. A read-only map shows no "+ question"
+hint. The workbench's Work pop-out draws this map, bare, as an sNN's Mind map pop-out.
+
+
+## [0.8.1] — 2026-10-30
+
+A leaf's sketch writes Excalidraw's code font, Comic Shanns (`fontFamily: 8`), as the Studio drawings do (JL 261030).
+
+
+## [0.8.0] · 2026-10-29 · one drawing per leaf, holding its slides
+
+- A map starts with "The total workflow"; a first-level branch is a section, and each leaf under it has one drawing,
+  `map/<leaf id>-<words>.excalidraw`, holding the slides that name it (`"leaf": "n29"` in `.slides.json`); the
+  leaf's line carries a ✎ link ("✎ N slides" or "✎ draw") that opens it in the page's pop-out (JL 261029, after a
+  section-level try: "一个 leaf 就一个 draw 然后里面可以有几个 slides"; b35-s03-D01). Sections have no drawing.
+- `mindmap.py sketch <x.mindmap.md>` seeds each leaf's drawing with its words and its slides as pictures
+  (`scripts/mmsketch.py`); it never rewrites a drawing that exists.
+- The topic page's map wraps to the card ("the mind map is too wide").
+
+## [0.7.1] · 2026-10-29 · a role pill holds a Block's name
+
+- `[role] words` takes up to 64 characters in the pill (was 24), so a workbench map can lead each Block line with its
+  full folder name as its label (JL 261029: "把这个 B 什么什么名字变成 label").
+
+## [0.7.0] · 2026-10-26 · a mind map takes its topic's name
+
+- `s01-work-ladder` → `s01-work-ladder.mindmap.md` (was `m01-work-ladder.mindmap.md`): one topic, one name, its kind in
+  the ending as the page (`.md`) and the drawing (`.excalidraw`) have it; no second numbering to keep in step. b17's
+  five maps renamed; the workbench still reads an older `mNN-<topic>.mindmap.md`. The Files branch leaves the map's
+  own files out.
+
+## [0.6.2] · 2026-10-26 · a decision line is its own leaf
+
+- from-topic: a face's `Decided` lines written one under another (`s05-D01 · …`, no list marker) were read as one
+  paragraph and became one leaf; each such line is now its own leaf (`mmbuild.DECISION`). Found on the Samsung
+  cowork maps (b12 s05, seven decisions in one node).
+- Tests: 28.
+
+## [0.6.2] · 2026-10-26 · maps written from their drawings; stale flagged; honest new maps
+
+- b17's m02, m03 and m32 rewritten from their drawings, frame by frame, as m01 was (m00's drawing holds what its
+  page holds); each ends with what changed since 261007, checked on disk.
+- `check` warns (does not fail) when a topic's page or drawing changed after its map.
+- `new_topic.py` (haipipe-studio) starts a topic's map with only its root, its Files and a note "Not written yet"
+  (`mindmap.skeleton`), not a skeleton built from the face's template.
+- A test in the servers (`servers/_host/tests/test_structure_map.py`) draws a draft's §1 through the shared renderer
+  and edits it, so moving or breaking haipipe-mindmap fails there first.
+- Tests: 30.
+
+## [0.6.1] · 2026-10-26 · written maps: a kind per branch, a question between, a role per point
+
+- The grey line over a branch's name is its kind (`[question] …`), or nothing; no bare number. b17's five maps are
+  written as §1 is: each branch a step of the topic's argument, the question it hands to the next, short points with
+  roles, the long text and the links (reports, faces, builders) in each detail.
+- A map with `written:` in its header keeps its branches on refresh; only its Files branch follows the disk. A node
+  with no builder hash (the root of a written map) is a person's, never rewritten. Renaming a branch keeps its kind.
+- Tests: 27.
+
+## [0.6.0] · 2026-10-26 · one structure map, shared with the draft's §1; a skill again
+
+- JL 261026: "你把他们那个 map 也放到我们这个新的 skill 里面去 /haipipe-mindmap，这样的话他们就共享了，不用搞那么多代码了"
+  and "就不能够做出来一模一样的东西吗". The §1 Structure map's markup, CSS and script move from
+  `servers/workbench/workbench-task-draft/page_shell/draft_steps.py` into `scripts/mapview.py`; `_plan_map` and the paper theme
+  draw through it (three real JAMA drafts render byte for byte as before, but for the one line that posts to the
+  map's endpoint), and so does every topic's mind map (`mmmap.draw`).
+- A mind map now looks and edits as §1: root card with its note as the arc, a card per first-level node, the question
+  between two (`→ <question>`), a plain line per point with its number and role pill, grey curves. `act` answers §1's
+  payload (words, role, para, ask, arc, add, addpara, drop, move; and note). Removed: the card-per-node layout, the
+  three styles and the branch colours.
+- The part `haipipe-studio/_parts/mindmap/` is the skill `haipipe-mindmap` again, so `/haipipe-mindmap` opens it.
+- Tests: 25 (the shared CSS and script, §1's markup, the question and role, five levels down, chips and pictures,
+  read only, each edit of §1's payload).
+
+## [0.5.2] · 2026-10-26 · no side bars
+
+- JL 261026, of the thick coloured bar down a leaf's and a detail's left side: "我其实不是很想要左边这个东西，感觉它太 AI
+  了". Leaves are edged in a thin line of their branch's colour; a detail is a soft rounded box washed in it.
+
+## [0.5.1] · 2026-10-26 · curved wires again, met at the card's words
+
+- JL 261026: "你这也太直了 … 做得跟那个 haipipe-draft paper 一样 … 还是那种曲线型的", and of the opened card's wire,
+  "它那个比较奇怪". Wires are §1's curves again (draft_steps.py PLAN_JS), in the branch's colour; each end meets its card
+  at the first line (at most 18 px down), so a card opened to its detail is joined at its words, not halfway down.
+
+## [0.5.0] · 2026-10-26 · straight wires, a colour per branch, three styles
+
+- JL 261026: "为什么这个不是笔直的呀" and "这个颜色它们是非常一样的 … 能不能做一下 visualization 之类的，做一下不同风格的变化".
+  Wires are straight: a stub from the parent, one trunk halfway to its children, a straight run into each.
+- Each first-level branch takes a hue of the dataviz reference categorical palette in its fixed order (run through its
+  validator: light and dark pass; the light contrast warning is met by each branch's name on its card); a ninth
+  branch on is grey. Wires, card edges and the detail panel follow the branch.
+- A style switch above each map: Branches (default), Filled, Ink; remembered in the browser (applied to every map on
+  the page, after each reload of a map). An opened detail is its own panel, washed in its branch's colour.
+- Tests: 26 (the branch order, the three styles, no curved wire).
+
+## [0.4.0] · 2026-10-26 · a short card, its detail behind ▸
+
+- JL 261026: "把这个 leaf 写得比较 concise 一些，点开之后就可以把它展开，有详细的介绍" and "它既有可以点开的泡泡链接，点开之后也
+  可以看到 detail information". A card keeps its bubble (🖼 or ↗, the file it names) and gains ▸, which opens its
+  detail (the lines under its bullet) below its words, as Markdown: links open in the pop-out, a picture shows as
+  itself. ✎ edits the detail (`act` what=note; a detail line never becomes a bullet); open details stay open when the
+  map reloads after an edit; ▸ works on the static page too.
+- from-topic: a leaf is at most seven words, its whole sentence the detail; a file is a link, a picture also shown in
+  its detail. from-work: a Task's detail is its face's `goal:` and `close:`.
+- A built node's hash covers its words and its detail. Fixed: a refresh that updated a node's words kept its old hash,
+  so the next refresh took the node for a person's edit and froze it; the hash now follows the update. b17's maps were
+  rebuilt clean.
+- Tests: 26.
+
+## [0.3.1] · 2026-10-26 · a card opens its file; any depth
+
+- JL 261026: "点击这个卡的时候，我能不能点出来一些内容？比如能把图片点出来". A node whose words link a file shows a button
+  beside them (🖼 a picture, ↗ else) that opens the file in the workbench's pop-out (`url_of`, passed by frame.py: a
+  drawing in its editor, a page in its reader, else the file); a link to a file not on disk gets no button; the static
+  page links the file beside it. `from-topic`'s Files branch writes each file as `[name](name)`.
+- "这个它可以是几层的吗": any depth, already; a test now holds a node five levels below the root. Tests: 23.
+
+## [0.3.0] · 2026-10-26 · the mind map is the §1 map, not a canvas; a part of haipipe-studio
+
+- JL 261026: "the mindmap is not the excalidraw … I want that type of the mindmap" (the draft's §1 Structure map),
+  and "the mindmap will also be in the haipipe-studio, they are linked to each other". The skill haipipe-mindmap
+  becomes haipipe-studio's part `_parts/mindmap/`; a topic's two sides, its drawing (sNN) and its mind map (mNN), are
+  linked by number, and `new_topic.py topic` makes both.
+- `scripts/mmmap.py`: the map drawn as `draft_steps.py` `_plan_map` draws §1 (the root left in the key colour, each
+  node's children a column to its right, curved wires, a note on hover) and edited in place (type, Enter, ＋, empty,
+  drag); `act` writes each change into the `.mindmap.md` (POST `/_board/mindmap`, servers/_host/serve.py), refusing
+  words that changed on disk since the page showed them, and rebuilds the static page.
+- Removed: the Excalidraw canvas and its preview (`mmcanvas.py`, `render` to `.excalidraw` and `.png`), `sync` and its
+  conflicts (an edit now goes straight into the file), and the 200-word folding made for the canvas (every Run and
+  leaf is shown; a leaf keeps up to fourteen words). `render` writes the static page; `check` reads grammar and ids.
+- Tests: 21 (the map, read only and editable, each kind of edit, a stale edit refused, the builders, refresh).
+
+
+## [0.2.0] · 2026-10-25 · editable both ways; built from disk
+
+- `sync`: a canvas edit comes back into the file: changed words, added boxes joined by an arrow, rewiring (an arrow
+  from another node, or a line's start dragged onto another box), reordering (boxes read top to bottom), deletions
+  (children move up). Everything else drawn on the canvas is kept through every render; a box taken into the file
+  is drawn again as the map's own. The frame `mm:frame` keeps the base, the tree as last drawn, so the canvas's
+  edits and the file's are told apart.
+- An edit made on both sides stops `sync` (exit 2, nothing written) until the person picks a side: `--take canvas`,
+  `--take file`, or per node `--take <id>=canvas`. `render` refuses to draw over unsynced canvas edits (`--force`).
+- Builders: `from-work` (a world, a Block or a Job: Block → Job → Task → Run, with run counts and each Run's state)
+  and `from-topic` (a Studio topic's structured side, `mNN-<topic>.mindmap.md`, from its face's labelled lines and
+  sections). `refresh` rebuilds from disk after a `sync`; a built node carries `#hash` of its builder's words, so a
+  person's nodes and words are kept and only unchanged words update.
+- Principle ⑦ and ①: a builder folds its longest lists into `+N more` until the map, its title included, holds at
+  most 200 words and one screen of leaves (`--all` keeps everything); the layout narrows or widens its columns and
+  closes its gaps to fit 2800 x 1600.
+- `check`: the grammar, ids, the canvas and preview there, nothing unsynced either way.
+- Docs: ref/grammar.md (the file, the canvas's ids, how sync reads, the conflict table, refresh), agents/openai.yaml.
+- Tests: 22, from the grammar to a refresh that keeps a person's words.
+
+## [0.1.0] · 2026-10-25 · one source, three views
+
+- A `.mindmap.md` file (front matter, `# root`, a nested bullet list with `<!-- id -->` marks, free notes after) is
+  the source; `render` draws it left to right on an Excalidraw canvas with hai-draw's `draw.py` (the root in
+  the key colour, a column per depth, the ⑥ ⑦ badge), previews it with haipipe-studio's `render_png.py`, and writes
+  the web page `.mindmap.html` with its Markdown rendered and the tree folding. `new` and `html`.

@@ -1,0 +1,24 @@
+:root{color-scheme:light dark;--paper:#fff;--ink:#203332;--muted:#61706e;--line:#d8e2df;--soft:#edf4f0;--accent:#176353}
+:root{--card:var(--paper);--fg:var(--ink);--mut:var(--muted);--wash:var(--soft);--acc:var(--accent)}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.6 system-ui,sans-serif}
+main{padding:20px;max-width:1100px;margin:auto}h1{font-size:20px;font-weight:600;margin:0 0 18px}
+a{color:var(--accent);text-underline-offset:3px;overflow-wrap:anywhere}code{display:block;color:var(--muted);overflow-wrap:anywhere;font-size:12px}
+[hidden]{display:none!important}
+.notes{margin-top:20px}.notes summary{cursor:pointer}.notes p{margin:12px 0}.notes li{margin:8px 0}
+.tree,.tree ul{list-style:none;padding:0}.tree ul{margin-left:10px;padding-left:20px;border-left:1px solid var(--line)}
+.tree li{margin:7px 0;overflow-wrap:anywhere}.tree summary{cursor:pointer}.diagram{display:none}
+body[data-mode=draw] .structure-content{display:none}body[data-mode=draw] .diagram{display:block}
+.shared-map{overflow:auto;padding:8px 2px}
+@media(max-width:640px){main{padding:14px}}
+@media(prefers-color-scheme:dark){:root{--paper:#152320;--ink:#e3efeb;--muted:#a4bab2;--line:#354e44;--soft:#23392f;--accent:#a4ddc4}}
+/* the rule trees: one plain tree, no box per item, each line's purpose on hover */
+.tree.rule ul{margin:6px 0 8px 13px;padding-left:23px}.tree.rule li{position:relative;margin:4px 0}
+.tree.rule ul>li:before{content:'';position:absolute;left:-23px;top:13px;width:23px;border-top:1px solid var(--line)}
+.tree.rule>li>details>summary{color:var(--accent);font-weight:600}.tree.rule .why{cursor:help}
+section[id$=-rules] .shared-map,section[id$=-rules] .rule-tree{display:block!important}
+.tree.rule .role{display:inline-block;margin-left:12px;color:var(--muted);font-size:11px;font-weight:400}
+.tree.rule{--l-jg:#7048e8;--l-jn:#1971c2;--l-tg:#2b8a3e;--l-tn:#c2410c}
+.lvl[data-level=job-group]{color:var(--l-jg)}.lvl[data-level=job-name]{color:var(--l-jn)}
+.lvl[data-level=task-group]{color:var(--l-tg)}.lvl[data-level=task-name]{color:var(--l-tn)}
+.lvl[data-level=job-group],.lvl[data-level=task-group]{font-weight:600}
+@media(prefers-color-scheme:dark){.tree.rule{--l-jg:#b197fc;--l-jn:#74c0fc;--l-tg:#8ce99a;--l-tn:#ffa94d}}

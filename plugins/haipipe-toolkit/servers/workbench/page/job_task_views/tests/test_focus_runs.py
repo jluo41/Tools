@@ -167,7 +167,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertIn('<dt>Use case</dt><dd>🧪 Model fitting</dd>', line)
         block = task.parent.parent
         line = focus_page.page_identity_html('work', block, self.root, focus_page.read_face(block, self.root))
-        self.assertIn('<dt>Block type</dt><dd>🧩 Work Block</dd>', line)
+        self.assertIn('<dt>Block type</dt><dd>🧩 Work Block (Work)</dd>', line)
         self.assertNotIn('Use case', line)                                      # none written, none guessed
 
     def test_run_names_its_type_and_use_case_under_the_title(self):

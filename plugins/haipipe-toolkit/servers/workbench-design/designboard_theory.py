@@ -19,13 +19,14 @@ THEORY = METHODS
 # opened in the self-hosted canvas and saved back to this file.
 # The design theme's drawings live in its Block's topics, like any Block's: each sNN beside its Jobs
 #, else in the Block's older studio/.
-B12 = Path(__file__).resolve().parents[4] / "blueprints" / "Project-Ladder" / "work" / "b12_theme_design"
-B12_METHODS = next((p for p in (B12 / "s03-design-methods", B12 / "studio" / "s03-design-methods") if p.is_dir()),
-                   B12 / "s03-design-methods")
+B12 = Path(__file__).resolve().parents[4] / "examples" / "Project-Ladder" / "blueprint" / "b12_theme_design"
+B12_METHODS = next((p for p in (B12 / "s03-design-methods", B12 / "_archive" / "20261127" / "s03-design-methods",
+                                B12 / "studio" / "s03-design-methods") if p.is_dir()),
+                   B12 / "_archive" / "20261127" / "s03-design-methods")
 STUDIO = B12_METHODS / "parts" / "design-methods.excalidraw"
 # The design unit: See input → Conduct process → Check output, each step's parts with their options above,
 # and one row per method below, its choice in every part.
-# Written by Tools/blueprints/Project-Ladder/work/b12_theme_design/s03-design-methods/design_unit_drawing.py.
+# Written by Tools/examples/Project-Ladder/blueprint/b12_theme_design/_archive/20261127/s03-design-methods/design_unit_drawing.py.
 UNIT = B12_METHODS / "parts" / "design-unit-methods.excalidraw"
 
 
@@ -117,7 +118,7 @@ def studio_html(root: Path, drawing: Path = STUDIO, note: str = "") -> str:
     the Paper workbench's RoadMap Draw shows a Story's drawing. It loads only when shown."""
     rel = _href(root, drawing) if Path(drawing).is_file() else ""
     if not rel:
-        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>b12_theme_design/s03-design-methods/parts/design-methods.excalidraw</code>.</div>'
+        return '<div class=empty>No methods drawing yet: the design workbench keeps it as <code>b12_theme_design/_archive/20261127/s03-design-methods/parts/design-methods.excalidraw</code>.</div>'
     url = "/_excalidraw/?board=" + quote(rel.lstrip("/"), safe="/") + "&edit=1"
     note = note or ('The four kinds of reasoning, three inputs, Design and the Exp, the Revise and Learning loops, '
                     'three families, the cards and the tests.')

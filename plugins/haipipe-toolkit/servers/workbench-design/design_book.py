@@ -8,7 +8,7 @@ side by side, and each type's signed versions. Its views, in plain words, each a
     Scorecard  how each method did on the Boards it serves: pass rate, first try, and predicted vs observed
 
 then the shared MindMap and 🧭 Around the Work (the page adds both). Read-only; a version is signed by a person
-through haipipe-design-method, never here.
+through hai-design-method, never here.
 """
 from __future__ import annotations
 
@@ -23,10 +23,10 @@ BOOK_VIEWS = (("method", "Method"), ("versions", "Versions"), ("ideas", "Ideas")
 STEP_ORDER = ("① See input", "② Reason ideas", "③ Conduct process", "④ Review item", "⑤ Review whole")
 
 VIEW_SKILLS = {
-    "method": (("haipipe-design-method", "keeps each method type's five steps, frozen once signed"),),
-    "versions": (("haipipe-design-method", "cuts a type's next version from a signed proposal"),),
-    "ideas": (("haipipe-design-method", "writes a proposal from a Job or an experiment"),),
-    "scorecard": (("haipipe-design-method", "scores each method from what the experiments returned"),),
+    "method": (("hai-design-method", "keeps each method type's five steps, frozen once signed"),),
+    "versions": (("hai-design-method", "cuts a type's next version from a signed proposal"),),
+    "ideas": (("hai-design-method", "writes a proposal from a Job or an experiment"),),
+    "scorecard": (("hai-design-method", "scores each method from what the experiments returned"),),
 }
 
 

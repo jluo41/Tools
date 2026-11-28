@@ -432,7 +432,7 @@ Structure: discovery layer renamed and the narrative layer retired in discovery 
   DESIGN.md point to it instead of restating it. Added
   `skills/discovery/haipipe-discovery/CHANGELOG.md` for layer parity. → see [skills/discovery/haipipe-discovery/CHANGELOG.md](skills/discovery/haipipe-discovery/CHANGELOG.md)
 - Follow-up still open: `skills/STRUCTURE.md` and
-  `blueprints/end-to-end-sandwich-run.md` still reference the old `discover`
+  `examples/end-to-end-sandwich-run.md` still reference the old `discover`
   path and the narrative layer.
 
 

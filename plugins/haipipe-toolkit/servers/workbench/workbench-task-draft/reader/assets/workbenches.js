@@ -22,7 +22,7 @@
   var byId = {};
   workbenches.forEach(function (workbench) { byId[workbench.id] = workbench; });
 
-  var key = 'haipipe-page-workbenches:' + (config.page || location.pathname);
+  var key = 'hai-page-workbenches:' + (config.page || location.pathname);
   var state = { open: [], active: '', visible: true };
   var saved = false;
   try {

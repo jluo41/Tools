@@ -3,7 +3,7 @@
 Drawn as the s03 slide deck draws it (version 12): the inbox of slide 17 (every card one full-width row, its question
 large, its state in a pill, Open) and the decision card of slide 16 (the question, Case A beside Case B, the options
 with none chosen, None of these, Defer, a comment, Save draft and Submit feedback; the interaction of s03's
-decision-report prototype, template.html), in the workbench's own colours and the numbered shape of haipipe-ui:
+decision-report prototype, template.html), in the workbench's own colours and the numbered shape of hai-ui:
 
     🔒 rules m02 · reference labels r02                    the report's base, a strip over the view
     ⚙️ Process   1 · 🙋 Decisions waiting for you          the report in one large sentence and its state word; a
@@ -60,7 +60,7 @@ _LOADED: dict = {}
 
 
 def store():
-    """The engine's decision store (skills/2_theme/labeling/engine/meaning_store.py), loaded by path as labeling.py
+    """The engine's decision store (skills/3_theme/labeling/engine/meaning_store.py), loaded by path as labeling.py
     loads calibration.py; None when it is missing or does not load. Loaded again when the file changes, so a store
     that arrives after the server started is found without a restart."""
     try:
@@ -257,7 +257,7 @@ def drafts(mod, J: Path, report_id: str) -> dict:
     return out
 
 
-# ── the shape every building view shares (haipipe-ui Salience: numbered heading bars that fold) ───────────────
+# ── the shape every building view shares (hai-ui Salience: numbered heading bars that fold) ───────────────
 def section(n, title: str, body: str, anchor: str = "", word: str = "", waits: str = "") -> str:
     """One section: a boxed heading bar `N · <emoji> name` that folds, open by default, its content under it; its state
     word on the bar's right and, while it waits on the person, that one thing under the bar, shown only while the

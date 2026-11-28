@@ -54,4 +54,4 @@ risk: A frame written after the draft only explains it away (ours); freezing the
 evidence on AI: No study tests an AI designing by principle yet (ours). As algorithms
   take over creative problem-solving, human design moves toward deciding
   which problems to address [Verganti 2020].
-skill: haipipe-design-by-principle (proposed)
+skill: hai-design-by-principle (proposed)

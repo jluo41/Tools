@@ -60,7 +60,7 @@ Report: the same seven, Results only · Table · Questions
 - `draft_steps.py` draws the tabs; `task_draft.py` lays them out (`DRAFT_TASK_SUBS`, `DRAFT_TASK_RUNS`). Nothing here writes.
 - Every open reads the files again (s41-D28): the newest `draft/<stem>-draft-v<N>.md` (its header, `## 1 · Structure`,
   `## 2 · Scratch`, `## 3 · Draft`, `approved:`), `draft/records/` (`<stem>-context.md`, `-requirement.md`,
-  `-revise.md`, `-feedback.md`), `draft/previous/`, `evidence/cards.yaml` and `proposals.md` (haipipe-evidence
+  `-revise.md`, `-feedback.md`), `draft/previous/`, `evidence/cards.yaml` and `proposals.md` (hai-evidence
   `cards.py`), the Block's Studio topics whose face names the Task, and the Block's `delivery/<jNN>/<tNN>/`.
 - Each tab's chip comes from those files: Plan is `✍ sign` until `approved:` starts with ✅; Revise counts passes
   by `draft/previous/`; Delivery is four boxes (build, render, check and Send, read back).
@@ -99,13 +99,13 @@ Report: the same seven, Results only · Table · Questions
   only that card's `State:` or `Expected:` in `draft/records/<stem>-revise.md` (`POST /_board/draft-card`,
   `draft_steps.card_act`; refused when the card changed on disk since it was shown). The text changes only when "apply
   the accepted cards" runs (JL 261020: "我想要那种可以交互的感觉"). Below it, the Section canvas, which may hold other
-  papers' openings beside ours (excalidraw-draft `examples:`).
+  papers' openings beside ours (hai-draw draft `examples:`).
 - The text column reads as prose in 2 · Write, 3 · Evidence, 4 · Display and 5 · Revise alike (JL 261021: "现在的
   layout 读起来 ... 比较乱糟糟的"; "把字体变大一些"; "像 S5 这种东西能不能放到最左边"): 17px type, no bullets, each
   sentence's number hung in a left gutter so every sentence starts on one line (`_sentence` gives the number and the
   words their own spans, `.s-no` and `.s-tx`), and `\citep{…}` read as its keys in small grey. In 5 · Revise only, the
   evidence stays boxed but its CITE labels go ("I think we still need the box"); 3 · Evidence keeps both.
-- 📋 Revise Review Report also shows Each sentence, in its context: the report's `Sentences:` lines (haipipe-draft-review
+- 📋 Revise Review Report also shows Each sentence, in its context: the report's `Sentences:` lines (hai-draft-review
   `ref/sentence-logic.md`) as a table of logic and read scores, the link from the sentence before, the problem and the
   smallest fix, then each paragraph's flow (JL 261021: "每句话都要看一下上下文 ... 给每句话打分"). Cards already written
   into the text, and comments their person closed, are hidden until Show the <n> finished ("如果已经结束的话，就把它 hide
@@ -142,7 +142,7 @@ Report: the same seven, Results only · Table · Questions
   under words selected in one sentence, opens a comment card in the right column, in reading order before the cards on
   that sentence; Save writes it to `draft/records/<stem>-comments.md` (`POST /_board/draft-comment`,
   `draft_steps.note_act`: add · reply · done · reopen · delete, refused when its state changed on disk). A sentence a
-  comment still waits on shows 💬. Each pass answers the open comments (haipipe-draft-writing ref/revise.md): the card
+  comment still waits on shows 💬. Each pass answers the open comments (hai-draft-writing ref/revise.md): the card
   that changes the sentence says `Answers: Comment <n>` and shows 💬 answers Comment <n>, the comment shows ↳ that card
   and the pass's Reply, and its person closes it with ✓ Done or ↩ Reply (it opens again). No copy button hands the
   comments to an agent (removed 261115): a pass, or the page's chat, reads them from that file.
@@ -155,7 +155,7 @@ Report: the same seven, Results only · Table · Questions
   its place there, CITE 1.4 or VALUE 2.1 ("should the evidence item have some index as well?"), the same id on the
   text's mark; hovering a row lights its sentence and a sentence its rows. Under it each Evidence card has its own fold
   ("To show each evidenence card seperately?"), then the Asks. A card is a topic, the Task its items come from or would
-  be made in (haipipe-evidence `cards.py by_topic`); VALUE was WORK until 261020.
+  be made in (hai-evidence `cards.py by_topic`); VALUE was WORK until 261020.
 - 3 · Evidence also shows every point still open, card or no card (JL 261021: "我们的 evidence 该怎么把这些不确定的 ...
   都加上去"): each ⟦…⟧ in §3 (⟦check: …⟧ a source not yet verified, ⟦pending …⟧ or a one- or two-word ⟦x⟧ a value a
   Run has not given, any other a source still to find) and each §1 point whose line says `Evidence: none · <why>`. Each is
@@ -164,7 +164,7 @@ Report: the same seven, Results only · Table · Questions
   the prompt asks for an item for each (or leaves the paper's own reasoning), and one to check, find or wait for keeps
   the chip `🔶 asked` (`draft_steps._open_points`).
 - 4 · Display (JL 261020: "a new display view after the 3 - Evidence? ... Please do it"; b34 s41 Open 1): the Section's
-  displays, each a unit `display/Display<n>-<slug>/` (haipipe-display), else a unit still in a display Run's newest
+  displays, each a unit `display/Display<n>-<slug>/` (hai-display), else a unit still in a display Run's newest
   pass. A unit is DISPLAY <n>, linked to the sentences that call it by what its README calls it (`shown as:`, else a
   Table or Figure in `label:`, its heading or its Placement) or by its `\label`; a call no unit answers shows as not made
   yet. The Result is laid out as 3 · Evidence's, each display's card at the first sentence that calls it (its
@@ -187,7 +187,7 @@ Report: the same seven, Results only · Table · Questions
   here?"). Each change is one `POST /_board/draft-plan` (`draft_steps.plan_act`) into the newest draft's §1, refused
   when the words changed on disk, a newer draft exists, or §1 is signed.
 - 1 · Plan's Result also holds the examples, as the Section canvas that draws them beside ours (a topic named by
-  another's `examples:` is shown once, inside it), else a frame onto the topic that reads them (excalidraw-read's
+  another's `examples:` is shown once, inside it), else a frame onto the topic that reads them (hai-draw read's
   `reads/<pNN>/reading.yaml`), and `📏 Requirement and Rubric` (the desk rule, ours beside each example paragraph
   by paragraph, the four axes).
 - A step's Copy prompt ends with the Task's session (`session:` on the Task face, else the Job face): pasted into
@@ -279,7 +279,7 @@ run=<exact run id>                        opens the All-runs view at that Run
 /w/runs · /w/delivery · /w/folder · /w/evidence   tab words ride on the short address
 ```
 
-A writing Step handoff follows `../../draft/haipipe-draft/ref/user-check-packet.md`.
+A writing Step handoff follows `../../draft/hai-draft/ref/user-check-packet.md`.
 
 The Page shell's tab strip is 📃 Page (this workbench, first and default),
 📤 Delivery (the full lane surface, `ref/delivery.md`) and 📂 Folder
@@ -309,7 +309,7 @@ unit, Task folders included.
 ```
 
 The Draft Markdown has three sections that repeat one skeleton
-(`### C<n>.P<m>` headings, `- B<k>` numbers); `haipipe-draft` SKILL.md
+(`### C<n>.P<m>` headings, `- B<k>` numbers); `hai-draft` SKILL.md
 § "The Draft Markdown and Runs beside the content" owns it:
 
 ```text
@@ -365,7 +365,7 @@ and section each view reads is its tooltip); the Structure card shows in Table o
    own sentences where no Draft exists), one sentence per line, a blank line
    between points. `Save` or Cmd+Enter (`action: revise`) writes the changed
    Draft fields only. The first Save on a paragraph opens its Revise run,
-   `run-revise-<c1-p2>` (`haipipe-draft-writing (ref/revise.md)`), whose ticket keeps the
+   `run-revise-<c1-p2>` (`hai-draft-writing (ref/revise.md)`), whose ticket keeps the
    text before; later Saves change only the Draft; `page.py close-run` writes the
    Before / After ledger when the person says close. The status line under the
    box says `Saved · run-revise-0929-c1-p2 · 1 sentence` at once; the Runs panel is
@@ -399,12 +399,12 @@ each current item's `Supporting Runs` line (`Execution · reuse · b03j02t01r04;
 one tree: Execution or Discovery > Block > Job > Task > Run, each Run by its
 ticket name with its state and one chip per Evidence Item it feeds. A chip
 opens that item on its own tab; a Run selected in the tree narrows the Runs
-panel, whose `Task runs` (haipipe-task) and `Discovery runs` (haipipe-discovery)
+panel, whose `Task runs` (hai-task) and `Discovery runs` (hai-discovery)
 types list the same Runs with their Result files. An unknown address shows under `Not found`. A Supporting Run's owner
 stays its Task or Discovery folder, never this Page.
 
 Five layers stay distinct (full binding contract:
-`../../draft/haipipe-draft/ref/page-run-families.md`):
+`../../draft/hai-draft/ref/page-run-families.md`):
 
 ```text
 Evidence Item   authored obligation: what this Bullet needs        draft/<stem>-evidence-items.md
@@ -434,14 +434,14 @@ Page or its exporter, then rebuilt. Lanes, writers and doors:
    strip, `◂` opens it; the choice is remembered per Space in this browser.
    The folded strip turns green when a run awaits the person.
 2. **Run types**: the `🔘 BUTTON` lines of
-   `../../draft/haipipe-draft-workflow/ref/run-cards.md`, as `label · Space · ticket
+   `../../draft/hai-draft-workflow/ref/run-cards.md`, as `label · Space · ticket
    pattern · views <names>`. A view or tab shows only the buttons that name it,
    each with its run count for the current target, then `+ New Run`.
 3. **Target**: the selected paragraph or item narrows every list; nothing
    selected means the whole Page.
 4. **Run card**: an id strip when there are two or more runs, the name, a state
    badge (Closed · Held · Awaiting you · Running), Rerun, the skill it uses
-   (`Skill haipipe-draft-writing · haipipe-draft`: a `skills:` line in its ticket
+   (`Skill hai-draft-writing · hai-draft`: a `skills:` line in its ticket
    or runtime, else its card's `🧩 SKILL` line; JL 260928), a folded `▸ Prompt`
    with Copy, the running process, and the Results folder with its files.
 5. **Starts nothing**: Rerun, `+ New Run` and Copy copy a prompt (the
@@ -498,15 +498,15 @@ Run when the work belongs to it. A new family needs all of:
 
 1. **Owner skill or ref page** under `../../draft/` (run-cards.md leaves Run authority
    to it) and its card in `run-cards.md`.
-2. **`../../../../servers/workbench/workbench-task-draft/runs.py`**: `_TICKET_NAME` (else the run
+2. **`../../../../servers/workbench/workbench-task-draft/run_views/runs.py`**: `_TICKET_NAME` (else the run
    never appears); for a Page writing run also `_valid_page_run_id` (else it shows
    Held) and the label helpers `_page_run_label`, `_page_writing_subspace`,
    `_run_name`, `_run_action`.
 3. **`runs_panel.py::_DISPLAY`**: its full-word name (`run-…-NN`); a family
    already named in full words (`run-delivery-latex`) needs none.
-4. **`../../draft/haipipe-draft/src/run_folders.py::_KINDS`**: its `runs/<space>-run/` folder.
-5. **Docs**: `../../draft/haipipe-draft/ref/page-run-families.md`, `../../draft/haipipe-draft-workflow/`
-   (SKILL.md, `ref/interactive-writing-run.md`), `../../project/haipipe-run/ref/run-catalog.md`,
+4. **`../../draft/hai-draft/src/run_folders.py::_KINDS`**: its `runs/<space>-run/` folder.
+5. **Docs**: `../../draft/hai-draft/ref/page-run-families.md`, `../../draft/hai-draft-workflow/`
+   (SKILL.md, `ref/interactive-writing-run.md`), `../../project/hai-run/ref/run-catalog.md`,
    and a case in `servers/workbench/workbench-task-draft/reader/tests/test_runs_panel.py`.
 
 Cross-check by mirroring the newest family: `grep -rnE "rp-revise|_REVISE_RUN|revise\)"`
@@ -525,7 +525,7 @@ file                         written by                                         
 plan (draft-v*.md)           run-structure (SHAPE/SURVEY); evidence embed appends; never
                              the Structure card, Scratch and Revise saves
 evidence-items.md            SHAPE/SURVEY item contract                           never (authored)
-records/context              CONTEXT (haipipe-draft-logic (ref/context.md))                       haipipe-draft-logic (ref/context.md)
+records/context              CONTEXT (hai-draft-logic (ref/context.md))                       hai-draft-logic (ref/context.md)
 records/requirement V | W    V: cli/requirement.py · W: the author, kept verbatim cli/requirement.py <page>.md
 records/discussion           any Run or the page chat, as D<nn> records           never (authored)
 records/feedback             cli/feedback.py collect; the Page writes Landed      cli/feedback.py collect
@@ -556,7 +556,7 @@ The version is `v<G>.<S>[.<E>]`; no `E` means zero. `G=0` never touches
 Content. A Shape change increments `S` and resets `E`; an evidence fold
 increments `E` and inherits its Shape's approval (`shape-base:`). `approved:`
 is a person's act; a machine only transcribes it. At release,
-`../../draft/haipipe-draft/ref/release-decisions.md` decides profile precedence.
+`../../draft/hai-draft/ref/release-decisions.md` decides profile precedence.
 
 ## 🤝 Review packet
 
@@ -580,11 +580,11 @@ nothing.
 - `ref/content-preview.md` · candidate prose storage and the CONTENT handoff
 - `ref/review-packet.md` · the review packet
 - `ref/skill-record.md` · the ranked Page Skills store
-- `../../draft/haipipe-draft-workflow/ref/run-cards.md` · the run types and prompts the panel shows
-- `../../../../servers/workbench/workbench-task-draft/outline.py` · the page shell, the Spaces, the Draft views
-- `../../../../servers/workbench/workbench-task-draft/space_views.py` · Evidence and Delivery tabs, views, selection
-- `../../../../servers/workbench/page/runs_panel.py` · the Runs panel
-- `../../../../servers/workbench/workbench-task-draft/outline_structure.py` · `outline_scratch.py` · `outline_revise.py` · the three writers
-- `../../../../servers/workbench/workbench-task-draft/evidence.py` · `delivery.py` · `export.py` · `exporters/` · `runs.py` · `folderstat.py`
+- `../../draft/hai-draft-workflow/ref/run-cards.md` · the run types and prompts the panel shows
+- `../../../../servers/workbench/workbench-task-draft/plan_outline/outline.py` · the page shell, the Spaces, the Draft views
+- `../../../../servers/workbench/workbench-task-draft/page_shell/space_views.py` · Evidence and Delivery tabs, views, selection
+- `../../../../servers/workbench/page/job_task_views/runs_panel.py` · the Runs panel
+- `../../../../servers/workbench/workbench-task-draft/plan_outline/outline_structure.py` · `outline_scratch.py` · `outline_revise.py` · the three writers
+- `../../../../servers/workbench/workbench-task-draft/evidence_steps/evidence.py` · `delivery.py` · `export.py` · `exporters/` · `runs.py` · `folderstat.py`
 - `../../../../servers/workbench/workbench-task-draft/studio/page-workbench-design.excalidraw` · the design drawing
-- `../../draft/haipipe-draft/src/plan_layout.py` · `outline_version.py` · `item_table.py` · `page_question.py`
+- `../../draft/hai-draft/src/plan_layout.py` · `outline_version.py` · `item_table.py` · `page_question.py`

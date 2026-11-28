@@ -1,7 +1,7 @@
-"""The design theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
+"""The design theme on the base frame (servers/workbench/page/block_index_page/frame.py): only what differs from vanilla.
 
-The design ladder (Tools/blueprints/Project-Ladder/work/b12_theme_design, s01-design; the contract is
-skills/2_theme/design/haipipe-design/ref/design-ladder.md):
+The design ladder (Tools/examples/Project-Ladder/blueprint/b12_theme_design, s01-design; the contract is
+skills/3_theme/design/hai-design/ref/design-ladder.md):
 
     Block  bNN_<app>/                 one application, one channel: its goal list, theory, shared rules
     Job    jNN_<goal>_by-<method>/    one goal done by one design method, returning N designs
@@ -36,23 +36,23 @@ FAMILY = {**{m: "Goal Only" for m in ("goal", "principle", "exploring", "slots")
                                      "user-test", "co-design")}}
 FAMILIES = ("Internal", "External", "Goal Only")      # Internal first: where an insight Block steers
 STATES = ("passed", "verify", "revise")
-DESIGN_SKILLS = ["haipipe-design", "haipipe-design-unit"]
+DESIGN_SKILLS = ["hai-design", "hai-design-unit"]
 
 
 def _kind(prompt: str, label: str) -> dict:
     return {"label": label, "prompt": prompt, "skills": DESIGN_SKILLS}
 
 
-BLOCK_RUNS = (_kind("/haipipe-design add a goal × method Job to {folder}", "Add a goal × method"),
-              _kind("/haipipe-design-goal set the shared rules of {folder}", "Set shared rules"),
-              _kind("/haipipe-design plan the test of {folder}", "Plan the test"))
-JOB_RUNS = (_kind("/haipipe-design commission {folder}", "Commission"),
-            _kind("/haipipe-design-unit generate N designs for {folder}", "Generate N"),
-            _kind("/haipipe-design-unit verify every design of {folder}", "Verify all"),
-            _kind("/haipipe-design compare {folder} with its sibling Jobs (same goal, other methods)",
+BLOCK_RUNS = (_kind("/hai-design add a goal × method Job to {folder}", "Add a goal × method"),
+              _kind("/hai-design-goal set the shared rules of {folder}", "Set shared rules"),
+              _kind("/hai-design plan the test of {folder}", "Plan the test"))
+JOB_RUNS = (_kind("/hai-design commission {folder}", "Commission"),
+            _kind("/hai-design-unit generate N designs for {folder}", "Generate N"),
+            _kind("/hai-design-unit verify every design of {folder}", "Verify all"),
+            _kind("/hai-design compare {folder} with its sibling Jobs (same goal, other methods)",
                   "Compare methods"))
-TASK_RUNS = (_kind("/haipipe-design-unit verify {folder}", "Verify"),
-             _kind("/haipipe-design-unit revise {folder} with feedback", "Revise"))
+TASK_RUNS = (_kind("/hai-design-unit verify {folder}", "Verify"),
+             _kind("/hai-design-unit revise {folder} with feedback", "Revise"))
 
 
 def method_of(job: Path) -> str:
@@ -156,7 +156,7 @@ def _job(folder: Path, root: Path, sub: str) -> dict:
         goal = _sections(md).get("Goal", "")
         html = _table(("field", "value"), rows) + (f"<pre>{_e(goal)}</pre>" if goal else "")
     out["Description"] = Space(html=html, subspaces=("Goal", "Method"), open=d_sub,
-                               run_types=(_kind("/haipipe-design-goal frame the goal of {folder}", "Set the goal"),))
+                               run_types=(_kind("/hai-design-goal frame the goal of {folder}", "Set the goal"),))
 
     a_sub = sub if sub in ("Elements", "Evaluation") else "Elements"
     if a_sub == "Elements":                   # the element matrix: which elements the N designs changed
@@ -182,7 +182,7 @@ def _job(folder: Path, root: Path, sub: str) -> dict:
     out["Work Details"] = Space(html=_table(("design", "the design, word for word", "state"), rows),
                                 subspaces=("All",) + STATES, open=w_sub, run_types=JOB_RUNS[1:3])
     out["Runs"] = Space(run_types=JOB_RUNS[:3])
-    out["Delivery"] = Space(run_types=(_kind("/haipipe-design release the passed designs of {folder}", "Release"),))
+    out["Delivery"] = Space(run_types=(_kind("/hai-design release the passed designs of {folder}", "Release"),))
     return out
 
 
@@ -268,8 +268,8 @@ def spaces(level, folder, root, sub):
     return {"Block": _block, "Job": _job, "Task": _task}.get(level, lambda *a: {})(folder, root, sub)
 
 
-# every button named by the Run it makes, run-<type>-<target> (haipipe-run ref/run-types-by-space.md rule 6; the names
-# are the ladder's, haipipe-design/ref/design-ladder.md § Runs). Commission and Compare methods make no ladder Run.
+# every button named by the Run it makes, run-<type>-<target> (hai-run ref/run-types-by-space.md rule 6; the names
+# are the ladder's, hai-design/ref/design-ladder.md § Runs). Commission and Compare methods make no ladder Run.
 RUN_NAMES = {"Add a goal × method": "run-add-job-j<NN>", "Set shared rules": "run-setup-rules",
              "Plan the test": "run-plan-test-<app>", "Set the goal": "run-setup-goal-j<NN>",
              "Generate N": "run-generate-d<NN>", "Verify all": "run-verify-d<NN>-v<k>",

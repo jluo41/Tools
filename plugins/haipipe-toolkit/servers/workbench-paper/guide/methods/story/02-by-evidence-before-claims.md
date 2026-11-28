@@ -46,4 +46,4 @@ verify: Each question's Logic is dated before its first Run (T2).
 risk: An agent that has read the Results may write a Logic that fits them; the Logic is
   written first (ours).
 evidence on ai: No study tests agents fixing evidence needs before analysis (ours).
-skill: haipipe-paper-story
+skill: hai-paper-story

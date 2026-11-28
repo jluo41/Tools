@@ -57,4 +57,4 @@ risk: Reporting an accurate predictor as an explanation, or tuning on the held-o
   (ours).
 evidence on AI: On a benchmark of 466 data analysis and 74 data modelling tasks, the best
   agent solved 34.12% of the analysis tasks [Jing 2024].
-skill: haipipe-insight-by-model-comparison (proposed)
+skill: hai-insight-by-model-comparison (proposed)

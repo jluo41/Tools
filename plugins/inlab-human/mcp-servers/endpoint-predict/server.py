@@ -7,7 +7,7 @@ with a JSON payload) as tools an agent can call. The score always comes from
 the endpoint verbatim; no LLM ever produces or edits the number.
 
 Wire-contract provenance: mirrors haipipe-toolkit/skills/1_base/task/4_individual/
-haipipe-individual-inference/src/client.py (Endpoint_Set payload POST). If the
+hai-individual-inference/src/client.py (Endpoint_Set payload POST). If the
 upstream contract changes, re-sync.
 
 Dependency-free (stdlib only), same idiom as haipipe-toolkit/mcp-servers/

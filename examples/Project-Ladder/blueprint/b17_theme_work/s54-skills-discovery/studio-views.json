@@ -1,0 +1,137 @@
+{
+  "views": [
+    {
+      "name": "hai-discovery",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/scripts"
+        },
+        {
+          "name": "feedback/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/feedback"
+        },
+        {
+          "name": "fn/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/fn"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/CHANGELOG.md"
+        },
+        {
+          "name": "PREFERENCES.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/PREFERENCES.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-discovery-inquiry",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-inquiry/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-inquiry/ref"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-inquiry/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-discovery-review",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-review/SKILL.md"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-review/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-discovery-synthesize",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-synthesize/SKILL.md"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery-synthesize/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "workbench-discovery",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/workbench-discovery/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/workbench-discovery/ref"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/workbench-discovery/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "hai-discovery",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "hai-discovery-inquiry",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "hai-discovery-review",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "hai-discovery-synthesize",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "workbench-discovery",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-4"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s54-skills-discovery/delivery/check.html",
+          "fragment": "check-5"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s76-studio-type-skills"
+}

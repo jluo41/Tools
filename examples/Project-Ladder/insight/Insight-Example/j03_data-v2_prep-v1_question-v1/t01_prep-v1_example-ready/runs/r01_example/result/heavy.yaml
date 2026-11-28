@@ -1,0 +1,5 @@
+heavy:
+- dir: _WorkSpace/ProjectResult/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t01_prep-v1_example-ready/r01_example/t02_source
+  files:
+  - path: rows.parquet
+    bytes: 6631

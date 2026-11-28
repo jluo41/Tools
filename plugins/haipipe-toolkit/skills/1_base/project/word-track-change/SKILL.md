@@ -22,9 +22,9 @@ OneDrive .docx ─▶ ① pull ─▶ vN ─▶ ② read ─▶ ③ decide (edit
 
 | Step | Command |
 |---|---|
-| ① pull, ⑧ import, ⑨ push | `haipipe-delivery/scripts/word_round.py --word-dir <lane>/word --name <Name> --onedrive <docx> pull \| import <file> \| push <N>` |
+| ① pull, ⑧ import, ⑨ push | `hai-delivery/scripts/word_round.py --word-dir <lane>/word --name <Name> --onedrive <docx> pull \| import <file> \| push <N>` |
 | ② ④ ⑤ ⑥ ⑦ | `scripts/wordtc.py read \| try \| build \| render \| check \| diff` (this skill) |
-| the XML work | `excalidraw-draft/ref/track_changes.py` `write_tracked` (smallest deletion and insertion per edit) |
+| the XML work | `hai-draw/gallery/draft/ref/track_changes.py` `write_tracked` (smallest deletion and insertion per edit) |
 
 ## Steps
 
@@ -39,8 +39,8 @@ OneDrive .docx ─▶ ① pull ─▶ vN ─▶ ② read ─▶ ③ decide (edit
      comment: <a note>              # optional; alone = a point on their sentence, no rewrite
      why: <the comment or review that asked for it>
    ```
-   - Only changes a person or a blind check accepted go in (haipipe-paper-draft § Co-authors' patterns).
-   - **Fix, don't comment** (JL 261113: "for the comments here, why you don't fix them?"; "only leave the comments when you must have to"; haipipe-paper must-check M-C11). What a comment asks, and a slip or a contradiction in a co-author's sentence, becomes a `new:` tracked change on their sentence, their own marks kept; `comment:` alone only when no edit can answer it (a question for the author, a choice only they can make), with the reason.
+   - Only changes a person or a blind check accepted go in (hai-paper-draft § Co-authors' patterns).
+   - **Fix, don't comment** (JL 261113: "for the comments here, why you don't fix them?"; "only leave the comments when you must have to"; hai-paper must-check M-C11). What a comment asks, and a slip or a contradiction in a co-author's sentence, becomes a `new:` tracked change on their sentence, their own marks kept; `comment:` alone only when no edit can answer it (a question for the author, a choice only they can make), with the reason.
    - `find` is the accepted text: strip review markup (comment anchors, inline author tags) first.
    - A sentence whose math or symbols the export lost is left alone; fix the exporter, not the words.
 4. **Try.** `wordtc.py try vN.docx edits.yaml` tests each edit alone. Fix every ✗ (not found, not unique: lengthen `find`) before building.

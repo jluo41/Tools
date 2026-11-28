@@ -1,0 +1,16 @@
+{
+  "rows": 960,
+  "columns": [
+    "date",
+    "arm",
+    "group",
+    "outcome",
+    "score"
+  ],
+  "checks": {
+    "keys not empty": "pass",
+    "arms known": "pass",
+    "groups known": "pass",
+    "outcome 0 or 1": "pass"
+  }
+}

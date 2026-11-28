@@ -7,7 +7,7 @@
     addEventListener('wheel',function(e){if(e.ctrlKey)e.preventDefault()},{passive:false});
     ['gesturestart','gesturechange','gestureend'].forEach(function(t){addEventListener(t,function(e){e.preventDefault()},{passive:false})});}
   var boot=JSON.parse(document.getElementById('wg-boot').textContent);
-  var key='haipipe-guide-folds:'+boot.family+':'+boot.context.path+':'+boot.context.file+':'+boot.view;
+  var key='hai-guide-folds:'+boot.family+':'+boot.context.path+':'+boot.context.file+':'+boot.view;
   // the drawing cards and, in the card Guide, the Block · Job · Task sections (b03 s31-D07): the server opens
   // the section of the level the Guide was opened from; a person's own folds, once made, are kept
   var folds=Array.from(document.querySelectorAll('.wg-drawing,.wg-level'));
@@ -18,7 +18,7 @@
     if(frame&&!frame.hasAttribute('src'))frame.src=frame.dataset.src;   // an explanation fold loads at once
   }
   function height(){
-    if(parent!==window)parent.postMessage({kind:'haipipe-guide-height',height:document.body.getBoundingClientRect().height,view:boot.view},location.origin);
+    if(parent!==window)parent.postMessage({kind:'hai-guide-height',height:document.body.getBoundingClientRect().height,view:boot.view},location.origin);
   }
   try{var saved=JSON.parse(sessionStorage.getItem(key));if(Array.isArray(saved))folds.forEach(function(f){f.open=saved.indexOf(f.dataset.drawing)>=0})}catch(e){}
   folds.forEach(function(fold){load(fold);fold.addEventListener('toggle',function(){

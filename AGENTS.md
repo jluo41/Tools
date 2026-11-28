@@ -2,7 +2,7 @@
 
 ## The two systems
 
-Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness with a Work side and a Define side, each a Folder System and a UI System: the Define Folder is skills/, servers/ and blueprints/, the Define UI is a blueprint Block's workbench page).
+Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness with a Work side and a Define side, each a Folder System and a UI System: the Define Folder is skills/, servers/, checks/ and examples/, the Define UI is a blueprint Block's workbench page).
 
 ## Layout and scope
 
@@ -10,13 +10,14 @@ Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness wi
 - `references/` contains upstream projects and reference material; many directories are Git submodules. `references/sources.yaml` records origins and license notes.
 - The installers discover skills recursively under `plugins/**/skills/`. They do not install skills from `references/`.
 - Root install behavior is implemented by `install.sh` and `install.ps1`; both read the shared sound-hook table in `install-hooks.json`.
-- `blueprints/` holds the Projects that plan Tools, each with its Blocks in `work/`. A loose thought or a meeting note that has no Block yet lands in `blueprints/Project-RandomThoughts/` first: a thought in its `note/`, a meeting in its `cowork/meetings/`, each under a topic (its `project.md` gives the shapes). It is the one inbox of Tools; the other Projects keep no `note/` of their own.
+- `examples/` holds the Projects that plan Tools. A Project keeps its example Blocks in its theme folders (`work/`, `cowork/`, `paper/` ...) and the Blocks that plan a tool, one per theme, in `blueprint/` (`examples/Project-Ladder/blueprint/b17_theme_work`). A loose thought or a meeting note that has no Block yet lands in `examples/Project-RandomThoughts/` first: a thought in its `note/`, a meeting in its `cowork/meetings/`, each under a topic (its `project.md` gives the shapes). It is the one inbox of Tools; the other Projects keep no `note/` of their own.
 
 ## Protect existing work
 
 - Check `git status` before editing. Preserve pre-existing changes, untracked files, and dirty submodule worktrees. Do not reset, clean, or overwrite them.
 - Treat `references/` as upstream content. Edit it only when the task targets that source. Before doing so, inspect the submodule status, read any scoped `AGENTS.md` and project guidance, and avoid broad formatting changes or unintended submodule pointer updates.
 - The root `AGENTS.md` applies to this repository. Nested `AGENTS.md` files add instructions for their own directories.
+- Before changing any file, list every file you will change (its path and one line on the change) and wait for the user's confirm; only then edit. A trace's plan is that list (hai-ui A07): written, shown, confirmed, then worked. Reading files, running checks and previews outside the repository need no confirm.
 
 ## Keep it general
 
@@ -31,9 +32,10 @@ Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness wi
 - A page never says what state a thing is in ("Status: running", "the status is done", "State · not signed", "this plan is not signed yet"). The layout and the marks show it: an emoji mark beside the item (✅ ⬜ 🏃 ❗ 🙋), its group (Main, Appendix, Not printed), a closed or open fold, a faded or struck row, a button that appears only when the item waits on the reader. Words are kept only for what a mark cannot carry: a required action ("Sign the narrative") or the reason something failed.
 - What waits on the reader pops out where it lives, as on a Draft Lab sentence: a mark beside the item (📝 N edit cards, 🙋 N a decision, ✓ handled), its cards opening under it on a click. A section bar carries only a mark from `ui_parts.word_span`: an orange 🙋 N when something inside waits, a quiet ✓ when done, nothing otherwise; never a state word ("nothing yet", "answered", "3 of 5 done"). Every orange mark and waiting question on a page is gathered in the 🙋 N tray beside its title (`focus.js`, a native popover). A section with nothing in it is not shown, Interaction included. Any item can carry these marks and cards: its address, card files and the one writer are in `plugins/haipipe-toolkit/servers/workbench/ref/cards.md`.
 - A page never shows who asked for a design or when: no "JL 261113", "(JL 261020: …)", dated rule tags or quoted requests in a label, tooltip, button, banner or note. That provenance belongs in code comments, commit messages and docs only. Content the reader wrote (a timeline entry, a note, a commit message shown as data) stays as written.
-- A Studio topic's drawing is a drawing: the idea drawn as a pattern (cycle, timeline, tree, fan-in), never the face's lines listed as text. The method is `references/workflow-diagrams/excalidraw-diagram-skill`; the kit is `haipipe-studio/scripts/quick_draw.py`.
+- A name that is not fixed is written in 〈 〉: a slot each instance fills in, or a thing not decided yet, reads `〈Job type 1〉`, `〈quick page 2〉`, `bNN_〈block〉/`, never as a bare word that looks like a real name ("Job type 1"). A real, agreed name carries no brackets, so a reader tells at a glance what is settled from what is still open. This holds for tabs, buttons, tree rows and file patterns, on a type topic and anywhere a placeholder shows. Every session follows it, in its own Block too; the Studio's check is `hai-studio/scripts/placeholder_check.py` (hai-studio A07).
+- A Studio topic's drawing is a drawing: the idea drawn as a pattern (cycle, timeline, tree, fan-in), never the face's lines listed as text. The method is `references/workflow-diagrams/excalidraw-diagram-skill`; the kit is `hai-studio/scripts/quick_draw.py`.
 
-- Each rule JL's feedback made is an article in the owning skill's `CONSTITUTION.md` (page rules: `plugins/haipipe-toolkit/skills/1_base/workbench/haipipe-ui/CONSTITUTION.md`; a theme's pages: its `workbench-<theme>/CONSTITUTION.md`). Read the owner's file before changing a page or a skill; it wins over the skill and the code. `haipipe-ui/scripts/page_words.py --running` scans what every running workbench shows, and `/haistack sweep` reruns every article's check.
+- Each rule JL's feedback made is an article in the owning skill's `CONSTITUTION.md` (page rules: `plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/CONSTITUTION.md`; a theme's pages: its `workbench-<theme>/CONSTITUTION.md`). Read the owner's file before changing a page or a skill; it wins over the skill and the code. `hai-ui/scripts/page_words.py --running` scans what every running workbench shows, and `/hai-stack sweep` reruns every article's check.
 
 ## Keep files short
 
@@ -55,6 +57,7 @@ Read `PRINCIPLE.md` first: it is how every plugin here is designed (a harness wi
 ## Validation
 
 - There is no single root build or test command. Read the relevant package guide and use checks appropriate to the files changed.
+- After a batch of Skills Studio or generated Studio Type changes, run `python plugins/haipipe-toolkit/checks/run.py --target 〈affected-topic-or-Block〉` with the host Python. Coverage: `plugins/haipipe-toolkit/checks/README.md`. An uncovered target or execution error is not a pass; do not sweep unrelated work after every edit.
 - For skill changes, follow the fresh-context validation process in the root README.
 - For installer or marketplace changes, inspect both platform installers and verify package source paths and metadata. Report platform-specific checks that could not be run.
 
@@ -78,7 +81,7 @@ A Report is a message a session working in a Block of some SPACE sends, by SendM
 You own your theme's topics. A topic comes from a Report or from the user's own message; a message that names a problem is a topic even when it does not say "Report". For every topic:
 
 1. **Name it.** Ask what the topic is: the one thing behind the message, not the single case it showed up in.
-2. **Write it down** in your theme's workbench skill, `ref/topics.md` (for example `skills/2_theme/insight/workbench-insight/ref/topics.md`): the topic's name, the user's message word for word (or the Report's text and its sender), the questions it raises, and the date.
+2. **Write it down** in your theme's workbench skill, `ref/topics.md` (for example `skills/3_theme/insight/workbench-insight/ref/topics.md`): the topic's name, the user's message word for word (or the Report's text and its sender), the questions it raises, and the date.
 3. **Work it.** Answer each question by reading the code and driving the real page or command, not from memory.
 4. **Check that it is fixed.** Repeat the case that raised it and look at the output. Mark the topic `fixed` only when that case now passes and something keeps it passing: a test, a check script, or a rule written into the skill.
 5. **Say what is still owed.** If the case passes today but nothing guarantees it, mark it `open` and write the extra work that would guarantee it. A fix with no guard is not finished.
@@ -91,3 +94,7 @@ UI design
 Avoid unnecessary secondary labels and descriptions. Let the layout do the explaining.
 
 Do not add unnecessary UI text. Let grouping, spacing, controls, and content explain themselves. Omit routine hints such as "available", "nothing yet", "one per kind", and instructions that repeat visible controls. Keep text when it communicates a meaningful state, a required action, or an otherwise unclear empty state.
+
+A page carries no plain-text line that restates what the layout, a mark or a control already shows: a topic's one-line goal under its title, a type pill beside it, "No preview available yet.". Such a sentence goes in a hover on the thing it describes, or stays in its file; the page shows the thing itself. Inside one fold the layout is top-view-left-tab-right-content (`plugins/haipipe-toolkit/servers/workbench/ref/top-view-left-tab-right-content.md`): the kinds of view (Page, Draw, Delivery) are buttons on top, and the things inside the picked view are left tabs with the content on the right (`ui_parts._side_tabs`); a view with one thing shows it full width.
+
+A preview opens from a dot on its top-right corner (`ui_parts.open_dot`): its name is the dot's hover, a click opens it; never an "Open X ↗" button under it. A left list hides behind a dot on its top-left corner. A mark or a dot that explains itself on hover replaces a word.

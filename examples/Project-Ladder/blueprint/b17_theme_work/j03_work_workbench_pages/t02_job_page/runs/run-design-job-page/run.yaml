@@ -1,0 +1,16 @@
+run: run-design-job-page
+kind: soft
+type: design
+scope: null
+target: job-page
+ticket: run-design-job-page.md
+skill: hai-ui
+agent: claude
+signs: null
+status: queued
+passes: []
+writes:
+- examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t02_job_page/s54-job-ui-report/delivery/ui/
+- examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t02_job_page/s55-job-ui-work/delivery/ui/
+- examples/Project-Ladder/blueprint/b17_theme_work/j03_work_workbench_pages/t02_job_page/s56-job-ui-studio/delivery/ui/
+feeds: []

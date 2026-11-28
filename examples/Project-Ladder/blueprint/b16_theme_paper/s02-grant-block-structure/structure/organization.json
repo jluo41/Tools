@@ -1,0 +1,236 @@
+{
+  "title": "Grant Block · Job / Task Organization",
+  "reference": "examples/Project-Ladder/blueprint/b16_theme_paper/s02-grant-block-structure/structure/jobs.md",
+  "scope": "Named design examples; a Job without children has no Task assigned in this map. Group labels remain metadata and create no folder level.",
+  "legend": "Design examples · † Contract to define · ‡ Legacy type conflict",
+  "tree": {
+    "name": "Grant Block",
+    "children": [
+      {
+        "name": "Story †",
+        "group": "Story",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Research case",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Specific aims",
+                    "group": "Aims"
+                  },
+                  {
+                    "name": "Significance",
+                    "group": "Rationale"
+                  },
+                  {
+                    "name": "Research plan",
+                    "group": "Approach"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Evidence †",
+        "group": "Evidence",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Preliminary evidence",
+            "children": [
+              {
+                "name": "value ‡",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "Legacy Paper face value is not registered in the shared Task registry.",
+                "children": [
+                  {
+                    "name": "Pilot measurements",
+                    "group": "Values"
+                  }
+                ]
+              },
+              {
+                "name": "evidence ‡",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/10_evidence/hai-task-for-evidence/SKILL.md",
+                "note": "Legacy citation use conflicts with the registered numeric-extraction owner.",
+                "children": [
+                  {
+                    "name": "Closest-work citation check",
+                    "group": "Citations"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Source provenance",
+                    "group": "Checks"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Display",
+        "group": "Display",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Current Paper reader label; no new job-type field is asserted.",
+        "children": [
+          {
+            "name": "Main",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Study design figure",
+                    "group": "Figures"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Appendix",
+            "children": [
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Feasibility summary table",
+                    "group": "Tables"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Explore",
+            "note": "Named Display role; no Task is assigned in this illustrative branch."
+          }
+        ]
+      },
+      {
+        "name": "Writing Version",
+        "group": "Writing",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Current Paper reader label; no new job-type field is asserted.",
+        "children": [
+          {
+            "name": "Letter of intent",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Research pitch",
+                    "group": "Application"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Full application",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Research strategy",
+                    "group": "Application"
+                  },
+                  {
+                    "name": "Budget justification",
+                    "group": "Attachments"
+                  }
+                ]
+              },
+              {
+                "name": "Unresolved †",
+                "source": "plugins/haipipe-toolkit/skills/1_base/task/hai-task/ref/types.md",
+                "note": "No matching registered Task Type is claimed; resolve the owner contract before creating these Tasks.",
+                "children": [
+                  {
+                    "name": "Upload package",
+                    "group": "Submission"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Revision",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Reviewer response",
+                    "group": "Review"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Presentation †",
+        "group": "Presentation",
+        "source": "plugins/haipipe-toolkit/servers/workbench-paper/paper_jobs.py",
+        "note": "Proposed Job contract.",
+        "children": [
+          {
+            "name": "Slides",
+            "children": [
+              {
+                "name": "draft",
+                "source": "plugins/haipipe-toolkit/skills/3_theme/paper/hai-paper-draft/SKILL.md",
+                "note": "Registered prose Task type; the specific deliverables shown are design examples.",
+                "children": [
+                  {
+                    "name": "Research pitch",
+                    "group": "Content"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "name": "Video",
+            "note": "Named Presentation format; its production Tasks remain to define."
+          },
+          {
+            "name": "Poster",
+            "note": "Named Presentation format; its production Tasks remain to define."
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -62,4 +62,4 @@ risk: An AI asked to change one slot rewords others too (ours); the word diff ca
   it.
 evidence on AI: No study tests an AI designing by slots yet (ours). Search over
   attribute-based product designs is old [Balakrishnan 1996].
-skill: haipipe-design-by-slots (proposed)
+skill: hai-design-by-slots (proposed)

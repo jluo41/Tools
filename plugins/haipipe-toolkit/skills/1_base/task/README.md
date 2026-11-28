@@ -2,20 +2,20 @@
 
 `task/` owns executable Task Folders, their life (plan ▶ build ▶ run ▶ read ▶ close) and the four commands that drive it: Plan → Build → Execute → Report.
 The hierarchy is `work/bNN_<block>/jNN_<job>/tNN_<task>` with native `rNN` Runs, one folder each in `runs/`.
-`haipipe-task` does two jobs: the Task level (`ref/task-folder.md`, `ref/lifecycle.md`, `ref/task-page.md`)
-and the door to every type (`ref/types.md`); each `haipipe-task-for-<type>` carries one `## Type contract`.
+`hai-task` does two jobs: the Task level (`ref/task-folder.md`, `ref/lifecycle.md`, `ref/task-page.md`)
+and the door to every type (`ref/types.md`); each `hai-task-for-<type>` carries one `## Type contract`.
 A Workflow is a list of Runs: `run_specs` defines them, routes form the execution graph,
 and reports bind actual Run Instances to definitions and durable receipts.
 Internal Steps, review gates, and the four lifecycle commands do not allocate Runs.
 
-Insight and Design are independent families under `skills/2_theme/insight/` and `skills/2_theme/design/`.
+Insight and Design are independent families under `skills/3_theme/insight/` and `skills/3_theme/design/`.
 The Task Insight route is a compatibility handoff to the Insight owner.
 Consumers can bind exact Task Results or settled Insight findings as their contracts allow.
 
 ## Mental Model
 
 Every Task takes the same four commands. They are commands on the Task, not phases that own
-anything; what each step of the Task's life leaves on disk is `haipipe-task/ref/lifecycle.md`:
+anything; what each step of the Task's life leaves on disk is `hai-task/ref/lifecycle.md`:
 
 ```text
 Plan -> Build -> Execute -> Report
@@ -62,26 +62,26 @@ The number is a permanent domain id, not a full pipeline order. New domains are
 appended and existing ids are not renumbered.
 
 GPU is an execution modifier of a Fit Task rather than a separate domain. The
-Fit family owns `haipipe-task-for-fit/_parts/gpu` for queue/preflight/receipt mechanics and
-`haipipe-task-for-fit/_parts/gpu-training` for checkpoint/resume and training-specific
+Fit family owns `hai-task-for-fit/_parts/gpu` for queue/preflight/receipt mechanics and
+`hai-task-for-fit/_parts/gpu-training` for checkpoint/resume and training-specific
 fallbacks. Evaluation, serving, and engine tasks keep their own GPU execution
 owners.
 
 ## Page contracts
 
 ```text
-task/haipipe-task/ref/
+task/hai-task/ref/
 └── task-page.md                 one Task Folder, its run-bound reading, and § Displays
-                                 (the display-rich contract; haipipe-page-task until 261021)
+                                 (the display-rich contract; hai-page-task until 261021)
 
 insight/
-└── haipipe-page-insight/       Task-side topic/data instance with item Runs and DIKW Results
+└── hai-page-insight/       Task-side topic/data instance with item Runs and DIKW Results
 ```
 
-The preferred public Insight entry is `/haipipe-insight task`; the older
-`/haipipe-task insight` form remains a compatibility alias.
+The preferred public Insight entry is `/hai-insight task`; the older
+`/hai-task insight` form remains a compatibility alias.
 
-`haipipe-task` remains the canonical owner of Task Folder identity, execution,
+`hai-task` remains the canonical owner of Task Folder identity, execution,
 results, and closure. Its `ref/task-page.md` § Displays extends the same-stem
 reader Page with the required evidence-display inventory: substantive tables,
 figures, and method/provenance diagrams. An Insight Page may read several Task Pages, Task

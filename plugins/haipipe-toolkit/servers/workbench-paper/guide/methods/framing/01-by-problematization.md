@@ -47,4 +47,4 @@ verify: The reviewer did not generate the idea; the person signs G0.
 risk: A model trained on published papers may reproduce the gap-spotting habit of that
   literature (ours).
 evidence on ai: No study tests problematization done by an agent (ours).
-skill: haipipe-paper-ideation
+skill: hai-paper-ideation

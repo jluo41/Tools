@@ -24,7 +24,7 @@ def _version(tmp_path, outputs):
 
 
 def _locked(vdir, pid):
-    lock = Path(tempfile.gettempdir()) / f"haipipe-paper-build-{hashlib.sha1(str(vdir.resolve()).encode()).hexdigest()[:12]}.lock"
+    lock = Path(tempfile.gettempdir()) / f"hai-paper-build-{hashlib.sha1(str(vdir.resolve()).encode()).hexdigest()[:12]}.lock"
     lock.write_text(f"build pid {pid} started 2026-11-04 09:35:00\n", encoding="utf-8")
     return lock
 

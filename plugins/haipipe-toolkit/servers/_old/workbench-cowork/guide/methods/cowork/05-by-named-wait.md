@@ -27,10 +27,10 @@ limitations: A date can be set wrongly; the Timeline line is the check (ours).
 Applied to AI
 -------------
 
-agent: haipipe-cowork-agent (planned) updates the header and drafts the follow-up.
+agent: hai-cowork-agent (planned) updates the header and drafts the follow-up.
 steps: 1. Read the job page header and Timeline. 2. Update the header. 3. Add the line. 4. Draft a follow-up if the wait is ours.
 returns: the changed header lines and the Timeline line.
 verify: The header's since matches the last move in Timeline.md (T4).
 risk: An agent may update since without a real move; the Timeline line must name it (ours).
 evidence on ai: No study tests agents tracking waits (ours).
-skill: haipipe-cowork
+skill: hai-cowork

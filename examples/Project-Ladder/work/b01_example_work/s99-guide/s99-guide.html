@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s99 Guide</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--accent:#1f5fbf;--bg:#fff}
+@media (prefers-color-scheme:dark){:root{--line:#3a3a37;--muted:#a3a39c;--accent:#8ab4ff;--bg:#1b1b19}}
+body{margin:0;background:var(--bg)}
+nav{display:flex;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line)}
+nav button{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:4px 12px;font:12px -apple-system,sans-serif;cursor:pointer}
+nav button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+iframe{display:block;width:100%;height:calc(100vh - 50px);border:0}
+</style></head><body>
+<nav aria-label="Previews">
+ <button type="button" data-src="../../../blueprint/b17_theme_work/s99-guide-view/delivery/ui/guide.html" aria-pressed="true">Guide</button>
+</nav>
+<iframe id="view" title="Preview" src="../../../blueprint/b17_theme_work/s99-guide-view/delivery/ui/guide.html"></iframe>
+<script>
+document.querySelector('nav').addEventListener('click', function (e) {
+  var b = e.target.closest('[data-src]'); if (!b) return;
+  document.querySelectorAll('[data-src]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+  document.getElementById('view').src = b.dataset.src;
+});
+</script>
+</body></html>

@@ -33,7 +33,7 @@ def run_files(task_dir, run=""):
     (`run_fit_forecast.sh` wrote `fits_forecast/…`); else all of `results/`, said so. No
     run: all of it."""
     own = Path(task_dir) / "runs" / run / "result" if run else None
-    if own is not None and own.is_dir():                     # one folder per Run (haipipe-run 0.31.0)
+    if own is not None and own.is_dir():                     # one folder per Run (hai-run 0.31.0)
         return "runs/%s/result/" % run, sorted((f for f in own.rglob("*") if f.is_file() and not f.name.startswith(".")),
                                               key=lambda f: f.relative_to(own).as_posix())
     res = Path(task_dir) / "results"

@@ -16,7 +16,7 @@ SKILLS = TOOLKIT + "skills/"
 
 
 def at(name, rest=""):
-    """A skill folder's path, found by its folder name (skills sit in 0_utils · 1_base · 2_theme)."""
+    """A skill folder's path, found by its folder name (skills sit in 0_utils · 1_base · 2_work · 3_theme)."""
     return TOOLKIT + skill_dir(name).relative_to(_TOOLKIT_DIR).as_posix() + "/" + rest
 
 

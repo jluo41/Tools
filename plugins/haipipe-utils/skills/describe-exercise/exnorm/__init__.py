@@ -13,7 +13,7 @@ that carries its own provenance.
     #   'TypeConf': 'typed'}]
 
 `normalize` is the whole public surface. Everything else is an implementation
-detail and may be rewritten without notice -- see haipipe-norm rule 1.
+detail and may be rewritten without notice -- see hai-norm rule 1.
 
 WHAT THIS CANNOT DO YET, stated here so nobody has to discover it:
 103 of the 135 activity types in 1-SourceStore are opaque vendor codes with no

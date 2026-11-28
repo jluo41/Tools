@@ -2,7 +2,7 @@
 
 A person can act on the board directly, without an agent in between. Before this a person acted only through an agent ("signed: ✅ … · in chat"). Each action here re-reads the files,
 checks the gate the screen shows, and writes what an agent's Run would: the page's `check:` line or the Job face's
-`state: closed`, and a pass of the soft Run (`run-check-tNN`, `run-close-jNN`) through haipipe-run's soft_run.py, its
+`state: closed`, and a pass of the soft Run (`run-check-tNN`, `run-close-jNN`) through hai-run's soft_run.py, its
 card saying `by: a person`. Board files carry no names (✅ <YYMMDD> · a person). The route is `POST
 /_board/insight-act`; serve.py refuses a request from another site or with no page behind it.
 
@@ -20,7 +20,7 @@ import yaml
 
 from live import insight_plan_c as P
 
-_SOFT = Path(__file__).resolve().parents[2] / "skills/1_base/project/haipipe-run/scripts/soft_run.py"
+_SOFT = Path(__file__).resolve().parents[2] / "skills/1_base/project/hai-run/scripts/soft_run.py"
 WRITTEN = ("written", "answered", "checked")
 WHO = "a person"
 
@@ -102,7 +102,7 @@ def _check(root: Path, p: dict) -> tuple:
     line = (f"✅ {today()} · {WHO}" + (f" · {why}" if why else "")) if verdict == "pass" else f"↩ {today()} · {WHO} · {why}"
     set_front(page, {"check": line})
     tnn = task.name.split("_", 1)[0]
-    _pass(task, "check", tnn, "haipipe-report", "none", f"CHECK by {WHO}: {verdict}", why or "it holds",
+    _pass(task, "check", tnn, "hai-report", "none", f"CHECK by {WHO}: {verdict}", why or "it holds",
           [_rel(page, root)], {"verdict": verdict})
     return 200, {"ok": True, "check": line}
 
@@ -127,7 +127,7 @@ def _close(root: Path, p: dict) -> tuple:
     face = job / f"{job.name}.md"
     set_front(face, {"state": "closed", "signed": f"✅ {today()}"})
     jnn = job.name.split("_", 1)[0]
-    _pass(job, "close", jnn, "haipipe-insight-check", WHO, f"the close, signed by {WHO}",
+    _pass(job, "close", jnn, "hai-insight-check", WHO, f"the close, signed by {WHO}",
           "every page checked and the comparison written; the Job is frozen", [_rel(face, root)],
           {"status": "closed", "signed": f"✅ {today()} · {WHO}, in the workbench"})
     return 200, {"ok": True, "state": "closed"}

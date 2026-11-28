@@ -1,0 +1,315 @@
+"""run-delivery-coverletter: the submission cover letter, built like the manuscript (0.9.0, JL 260929).
+
+WORDS  on the ladder (b16 Q05) the version's letter Task, t31_cover-letter/ (or another t3N_ whose name
+       says cover), else the t01_cover-letter/ of the submission Job whose face says `for: <version>`:
+       its "Cover letter" division, else its whole Content. Before that, the "Cover
+       letter" division of the submission Round page (B<x>-<desk>-Round/RD<NN>-…/<stem>.md), still read
+       when paper-build.toml [coverletter] names a round. It is approved like any page. While the page
+       Content has no such words, its latest draft is used and the letter stays not ready.
+FACTS  filled by code so they never drift from the manuscript: {title} {journal} {article_type}
+       {pages} {tables} {figures} in the words, plus the date, addressee and author block from
+       paper-build.toml [coverletter].
+OUTPUT delivery/cover-letter/ (the [outputs] cover_letter_pdf / cover_letter_docx paths): a PDF
+       compiled from generated LaTeX and a DOCX, both generated, never edited by hand.
+CHECKS every number in the letter is printed in the manuscript · required mentions present (profile
+       cover_letter_must_mention + paper must_mention) · no causal verbs · no process text ·
+       manuscript pages within the venue cap · author block complete · the letter fits two pages.
+"""
+from __future__ import annotations
+
+import datetime
+import re
+import shutil
+import subprocess
+from pathlib import Path
+
+HEAD = re.compile(r"(?m)^(#{2,6})\s+(.*)$")
+FACT = re.compile(r"\{(title|journal|article_type|pages|tables|figures)\}")
+NUMBER = re.compile(r"(?<![\w.])\d[\d,]*(?:\.\d+)?")
+# an identifier is not a result: arXiv:2608.18296, a DOI. Dropped before the number check (FairGlucose 261103)
+IDENTIFIER = re.compile(r"\barXiv:\s*\d{4}\.\d{4,5}(?:v\d+)?|\bdoi:\s*\S+|\b10\.\d{4,9}/\S+", re.I)
+CAUSAL = re.compile(r"(?i)\b(causes?|caused|causal effect|leads? to|led to|drives?|driven by|results? in|impact of|effect of)\b")
+PROCESS = re.compile(r"\[(?:TODO|TOADD|Q-|AUTHOR|confirm)[^\]]*\]|\bTOADD\b|\bTODO\b", re.I)
+
+
+def division(text: str, name: str = "cover letter") -> list[str] | None:
+    """Paragraphs of the first heading whose title contains `name`, up to the next heading of the
+    same or a higher level. Headings, tables, lists, quotes and comments inside it are not letter text."""
+    heads = list(HEAD.finditer(text))
+    for i, h in enumerate(heads):
+        if name not in h.group(2).lower():
+            continue
+        level, end = len(h.group(1)), len(text)
+        for nxt in heads[i + 1:]:
+            if len(nxt.group(1)) <= level:
+                end = nxt.start()
+                break
+        body = re.sub(r"<!--.*?-->", "", text[h.end():end], flags=re.S)
+        paras = []
+        for block in re.split(r"\n\s*\n", body):
+            lines = [l for l in block.strip().splitlines() if l.strip()]
+            if not lines or lines[0].lstrip()[:1] in "#|>-*" and not lines[0].lstrip().startswith("*"):
+                continue
+            paras.append(" ".join(l.strip() for l in lines))
+        return [p for p in paras if p]
+    return None
+
+
+def round_page(root: Path, rd: str, version: Path | None = None) -> Path | None:
+    """The batch page: today in B<x>-<desk>-Round/, on the ladder (0.10.0) in the version Job it answers."""
+    found = list(root.glob(f"B*-*-Round/{rd}-*/{rd}-*.md")) + (list(version.glob(f"{rd}[-_]*/{rd}[-_]*.md")) if version else [])
+    hits = [p for p in found if p.parent.name == p.stem]
+    return hits[0] if len(hits) == 1 else None
+
+
+def letter_task(version: Path | None) -> Path | None:
+    """The version's cover letter Task face, t3N_<…cover…>/<stem>.md (b16 Q05), when there is exactly one."""
+    if version is None:
+        return None
+    hits = [p / (p.name + ".md") for p in sorted(version.glob("t3[0-9]_*")) if p.is_dir() and "cover" in p.name
+            and (p / (p.name + ".md")).is_file()]
+    return hits[0] if len(hits) == 1 else None
+
+
+def submission_letter(version: Path | None) -> Path | None:
+    """t01_cover-letter/ of the submission Job for this version (hai-paper § The submission Job), unless that Task
+    only points at the version's own letter (`words-in:`)."""
+    if version is None:
+        return None
+    said = re.compile(rf"(?m)^for:\s*{re.escape(version.name)}\s*$")
+    for job in sorted(version.parent.glob("j[0-9]*_submission_*")):
+        face, page = job / f"{job.name}.md", job / "t01_cover-letter" / "t01_cover-letter.md"
+        if face.is_file() and page.is_file() and said.search(face.read_text(encoding="utf-8")) \
+                and not re.search(r"(?m)^words-in:", page.read_text(encoding="utf-8")):
+            return page
+    return None
+
+
+def content(text: str) -> list[str] | None:
+    """The paragraphs of a page's ## Content, for a letter Task whose Content is the letter."""
+    return division(text, "content")
+
+
+def _draft_version(p: Path):
+    m = re.search(r"-draft-v(\d+)(?:\.(\d+))?\.md$", p.name)
+    return (int(m.group(1)), int(m.group(2) or 0)) if m else (-1, -1)
+
+
+def letter_source(page: Path):
+    """(paragraphs, where, path): Content first; else the page's latest draft. A letter Task's words are its
+    Cover letter division, else its whole Content."""
+    task = re.match(r"^t3\d_|^t\d\d_cover", page.parent.name) is not None     # t01_cover-letter, the submission Job's
+    text = page.read_text(encoding="utf-8")
+    words = division(text) or (content(text) if task else None)
+    if words:
+        return words, "content", page
+    drafts = sorted(page.parent.glob("draft/*-draft-v*.md"), key=_draft_version)
+    for d in reversed(drafts):
+        t = d.read_text(encoding="utf-8")
+        words = division(t) or (content(t) if task else None)
+        if words:
+            return words, "draft", d
+    return [], "missing", page
+
+
+def pdf_pages(pdf: Path) -> int | None:
+    if not pdf.exists():
+        return None
+    try:
+        out = subprocess.run(["pdfinfo", str(pdf)], capture_output=True, text=True).stdout
+        m = re.search(r"(?m)^Pages:\s+(\d+)", out)
+        if m:
+            return int(m.group(1))
+    except FileNotFoundError:
+        pass
+    return len(re.findall(rb"/Type\s*/Page[^s]", pdf.read_bytes())) or None
+
+
+def pdf_text(pdf: Path) -> str | None:
+    try:
+        r = subprocess.run(["pdftotext", str(pdf), "-"], capture_output=True, text=True)
+        return r.stdout if r.returncode == 0 else None
+    except FileNotFoundError:
+        return None
+
+
+def fill(text: str, facts: dict) -> str:
+    return FACT.sub(lambda m: str(facts.get(m.group(1), m.group(0))), text)
+
+
+# ── rendering ─────────────────────────────────────────────────────────────────
+_TEX = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#", "_": r"\_",
+        "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\textasciicircum{}"}
+
+
+def tex_escape(s: str) -> str:
+    out = "".join(_TEX.get(c, c) for c in s)
+    out = re.sub(r"\*([^*]+)\*", r"\\emph{\1}", out)
+    out = re.sub(r'"([^"]*)"', r"``\1''", out)          # straight quotes print as two closing quotes in TeX
+    return out
+
+
+# a letter is one page (Pp-AgreeableRx 261122, JL: "why the cover letter is ... not one page in the submission"):
+# the closing never breaks from "Sincerely,", and when the words spill the space shrinks first, then the type
+FITS = [  # (point size, paragraph skip em, space before the signature em, Word paragraph space pt)
+    (12, 0.8, 1.5, 10), (12, 0.5, 1.0, 7), (12, 0.35, 0.7, 5), (11, 0.35, 0.7, 4)]
+
+
+def write_tex(path: Path, letter: dict, fit: int = 0) -> None:
+    size, skip, sign_space, _ = FITS[fit]
+    sign = [tex_escape(x) for x in (letter["signatory"], letter["affiliation"], letter["email"]) if x]
+    body = "\n\n".join(tex_escape(p) for p in letter["paragraphs"])
+    authors = letter["on_behalf"]
+    path.write_text(
+        "% GENERATED by hai-paper-assemble cover_letter.py; edit the Round page, then rebuild\n"
+        "\\ifdefined\\XeTeXgenerateactualtext\\XeTeXgenerateactualtext=1 \\fi\n"   # a copied ";" stays U+003B (261122)
+        f"\\documentclass[{size}pt]{{article}}\n\\usepackage[letterpaper,margin=1in]{{geometry}}\n\\usepackage{{fontspec}}\n"
+        "\\IfFontExistsTF{TeX Gyre Termes}{\\setmainfont{TeX Gyre Termes}}{\\IfFontExistsTF{Times New Roman}{\\setmainfont{Times New Roman}}{}}\n"
+        f"\\usepackage[hidelinks]{{hyperref}}\n\\setlength{{\\parindent}}{{0pt}}\n\\setlength{{\\parskip}}{{{skip}em}}\n\\pagestyle{{empty}}\n"
+        "\\begin{document}\n"
+        f"{tex_escape(letter['date'])}\n\n"
+        f"{tex_escape(letter['addressee'])}\\\\\n{tex_escape(letter['journal'])}\n\n"
+        f"Dear {tex_escape(letter['salutation'])},\n\n{body}\n\n"
+        + (f"{tex_escape(authors)}\n\n" if authors else "")
+        + "\\noindent\\begin{minipage}{\\linewidth}Sincerely,\\\\[%sem]\n" % sign_space   # one block: never split
+        + "\\\\\n".join(sign) + "\n\\end{minipage}\n\\end{document}\n",
+        encoding="utf-8")
+
+
+def write_docx(path: Path, letter: dict, fit: int = 0) -> None:
+    size, _, _, gap = FITS[fit]
+    from docx import Document
+    from docx.shared import Inches, Pt
+
+    doc = Document()
+    for s in doc.sections:
+        s.left_margin = s.right_margin = s.top_margin = s.bottom_margin = Inches(1)
+    normal = doc.styles["Normal"]
+    normal.font.name = "Times New Roman"
+    normal.font.size = Pt(size)
+    rpr = normal.element.get_or_add_rPr()
+    rpr.get_or_add_rFonts().set("{http://schemas.openxmlformats.org/wordprocessingml/2006/main}eastAsia", "Times New Roman")
+
+    def para(text: str, after: float = None, keep: bool = False):
+        p = doc.add_paragraph()
+        p.paragraph_format.space_after = Pt(gap if after is None else after * gap / 10)
+        p.paragraph_format.keep_with_next = keep
+        p.paragraph_format.line_spacing = 1.0
+        for i, chunk in enumerate(re.split(r"\*([^*]+)\*", text)):
+            if chunk:
+                p.add_run(chunk).italic = bool(i % 2)
+        return p
+
+    para(letter["date"], 14)
+    para(letter["addressee"], 0)
+    para(letter["journal"], 14)
+    para(f"Dear {letter['salutation']},")
+    for p in letter["paragraphs"]:
+        para(p)
+    if letter["on_behalf"]:
+        para(letter["on_behalf"])
+    sign = [x for x in (letter["signatory"], letter["affiliation"], letter["email"]) if x]
+    para("Sincerely,", 24, keep=True)          # the closing stays on one page with its signature
+    for i, line in enumerate(sign):
+        para(line, 0, keep=i < len(sign) - 1)
+    doc.save(path)
+
+
+# ── the lane ──────────────────────────────────────────────────────────────────
+def build_cover_letter(cfg: dict, profile: dict, root: Path, here: Path, out: dict, *,
+                       title: str, main_pdf: Path, tables: int, figures: int, run) -> dict | None:
+    """Build the letter when paper-build.toml has [coverletter]; return the manifest report."""
+    cl = cfg.get("coverletter")
+    if not isinstance(cl, dict):
+        return None
+    pdf_out = (here / out["cover_letter_pdf"]).resolve() if out.get("cover_letter_pdf") else None
+    docx_out = (here / out["cover_letter_docx"]).resolve() if out.get("cover_letter_docx") else None
+    if pdf_out is None and docx_out is None:
+        return {"ready": False, "checks": [], "missing": ["[outputs] cover_letter_pdf / cover_letter_docx"]}
+
+    rd = str(cl.get("round", ""))
+    # on the ladder the build lives in delivery/<version>/ beside the version folder, which [pages] main names
+    version = (Path(here) / str(cfg.get("pages", {}).get("main", ".."))).resolve()
+    named = (Path(here) / str(cl["task"])).resolve() if cl.get("task") else None   # 0.13.0: a letter Task in another
+    named = named / f"{named.name}.md" if named and (named / f"{named.name}.md").is_file() else None   # Job (the submission Job)
+    page = (named or letter_task(version) or letter_task(Path(here).parent) or submission_letter(version)
+            or (round_page(root, rd, Path(here).parent) if rd else None))
+    paragraphs, where, source = letter_source(page) if page else ([], "missing", None)
+    pages = pdf_pages(main_pdf)
+    facts = {"title": title, "journal": cl.get("journal", profile.get("venue_label", "")),
+             "article_type": cl.get("article_type", ""), "pages": pages or "", "tables": tables, "figures": figures}
+    filled = [fill(p, facts) for p in paragraphs]
+    authors = [a for a in cl.get("authors", []) if a]
+    signatory = cl.get("signatory", authors[0] if authors else "")
+    others = [a for a in authors if a != signatory]
+    letter = {
+        "date": (lambda d: f"{d:%B} {d.day}, {d.year}")(datetime.date.today()),
+        "addressee": cl.get("addressee", "Editor-in-Chief"), "journal": facts["journal"],
+        "salutation": cl.get("salutation", cl.get("addressee", "Editor-in-Chief")),
+        "paragraphs": filled, "signatory": signatory,
+        "affiliation": cl.get("affiliation", ""), "email": cl.get("email", ""),
+        "on_behalf": (f"I submit this manuscript on behalf of my co-authors, {', '.join(others[:-1]) + ' and ' if len(others) > 1 else ''}{others[-1]}."
+                      # a letter that already says it in its own words prints it once (Pp-AgreeableRx 261122)
+                      if others and not any("on behalf of" in x.lower() for x in filled) else ""),
+    }
+
+    checks = []
+    def check(name, ok, detail=""):
+        checks.append({"check": name, "ok": bool(ok), "detail": detail})
+
+    check("source", where == "content",
+          {"content": f"the Content of {page.parent.name if page else 'the page'}",
+           "draft": f"the draft {source.name if source else ''} (not yet adopted)",
+           "missing": f"no letter words on {page.parent.name}" if page
+           else f"no t31_cover-letter Task, no t01_cover-letter in a submission Job and no Round page {rd}"}[where])
+    text = " ".join(filled)
+    body_only = IDENTIFIER.sub("", " ".join(FACT.sub("", p) for p in paragraphs))   # code-filled facts are true; ids are not numbers
+    manuscript = pdf_text(main_pdf) or ""
+    if manuscript:
+        flat = re.sub(r"\s+", " ", manuscript)
+        absent = sorted({n for n in NUMBER.findall(body_only) if n.rstrip(".,") not in flat})
+        check("numbers match the manuscript", not absent, ", ".join(absent) or "every number is printed in the manuscript")
+    else:
+        check("numbers match the manuscript", False, "no manuscript text (pdftotext missing or no PDF)")
+    musts = list(profile.get("cover_letter_must_mention", [])) + list(cl.get("must_mention", []))
+    lacking = [m for m in musts if m.lower() not in (text + " " + letter["journal"]).lower()]
+    check("required mentions", not lacking, ", ".join(lacking) or "all present")
+    causal = sorted({m.group(0).lower() for m in CAUSAL.finditer(text)})
+    check("associational language", not causal, ", ".join(causal) or "no causal verbs")
+    process = sorted({m.group(0) for m in PROCESS.finditer(text)})
+    check("no process text", not process, ", ".join(process) or "clean")
+    cap = profile.get("page_cap")
+    if cap:
+        check("manuscript within the page cap", pages is not None and pages <= int(cap), f"{pages} of {cap} pages")
+    missing = [k for k in ("signatory", "affiliation", "email") if not letter[k]]
+    check("author block complete", not missing, ", ".join(missing) or "complete")
+
+    rc = None
+    if pdf_out:
+        pdf_out.parent.mkdir(parents=True, exist_ok=True)
+        tex = pdf_out.with_suffix(".tex")
+        most = int(profile.get("cover_letter_pages", 1))
+        for fit in range(len(FITS)):           # the first setting that prints within the pages, else the tightest
+            write_tex(tex, letter, fit)
+            r = run(["latexmk", "-xelatex", "-g", "-interaction=nonstopmode", "-halt-on-error", "-quiet", tex.name],
+                    cwd=tex.parent, capture_output=True, text=True)
+            rc, n = r.returncode, pdf_pages(pdf_out)
+            if rc or n is None or n <= most:
+                break
+        for junk in tex.parent.glob(tex.stem + ".*"):
+            if junk.suffix not in {".tex", ".pdf", ".log"}:
+                junk.unlink()
+        size = f", {FITS[fit][0]} pt, tighter spacing" if fit else ""
+        check(f"letter fits {'one page' if most == 1 else f'{most} pages'}", n is not None and n <= most,
+              f"{n} page(s){size}" if n is None or n <= most else f"{n} page(s) even at 11 pt: shorten the letter")
+    if docx_out:
+        docx_out.parent.mkdir(parents=True, exist_ok=True)
+        write_docx(docx_out, letter, fit if pdf_out else 0)   # the Word copy takes the setting the PDF fit with
+
+    return {
+        "round": rd, "source": str(source.relative_to(root)) if source else None, "from": where,
+        "ready": all(c["ok"] for c in checks) and rc in (0, None),
+        "latexmk_rc": rc, "checks": checks,
+        "outputs": {"pdf": out.get("cover_letter_pdf") if pdf_out and pdf_out.exists() else None,
+                    "docx": out.get("cover_letter_docx") if docx_out and docx_out.exists() else None},
+    }

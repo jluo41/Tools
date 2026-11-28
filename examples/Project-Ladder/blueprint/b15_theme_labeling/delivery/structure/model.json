@@ -1,0 +1,477 @@
+[
+  {
+    "id": "itemization",
+    "name": "Itemization",
+    "block": "Reusable item construction for one source collection; no target-label decisions.",
+    "job_type": null,
+    "job_type_action": "〈Itemization job type〉",
+    "task_topic": null,
+    "job_name": "Assistant replies",
+    "name_basis": "Preview model",
+    "job_unit": "One source snapshot and accepted item recipe.",
+    "job_topic": "Source collection",
+    "tasks": [
+      {
+        "type": "items",
+        "name": "Build assistant reply items",
+        "name_basis": "Proposed name",
+        "role": "One Items Task owns describe, recipe approval, build, revise, check and optional embedding as Runs or steps.",
+        "optional": false,
+        "evidence": [
+          {
+            "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/1_data/hai-labeling-preparation/SKILL.md",
+            "needle": "task-type: items",
+            "label": "Items contract"
+          },
+          {
+            "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items/t01_example_items.md",
+            "needle": "task-type: items",
+            "label": "Existing Items Task"
+          }
+        ],
+        "naming": {
+          "label": "〈Construction goal〉",
+          "rule": "Name the Items Task for the unit it constructs.",
+          "basis": "Proposed naming rule; task-type remains the contract identifier."
+        },
+        "example_label": "〈Build reply items〉",
+        "folder": "tNN_〈items name〉/",
+        "owner_skill": "plugins/haipipe-toolkit/skills/3_theme/labeling/1_data/hai-labeling-preparation/SKILL.md"
+      }
+    ],
+    "evidence": [
+      {
+        "path": "examples/Project-Ladder/labeling/b03_itemization/delivery/ui/model.json",
+        "needle": "\"name\": \"Assistant replies\"",
+        "label": "Job name in the preview model"
+      }
+    ],
+    "gaps": [
+      "Define the independent Itemization Job type; the current contracts have no registered value for it.",
+      "The proposed Task name consolidates the preview’s Describe source, Build items and Check package operations into the existing items Task contract. Its new Task face does not exist yet.",
+      "Set the actual Block’s Studio Band names and numbering before allocating its proposed topics; Blueprint Bands do not define those Work Block Bands."
+    ],
+    "studio": [
+      {
+        "owner": "block",
+        "name": "〈Item boundaries〉",
+        "role": "Which unit and context should the Items package preserve?"
+      },
+      {
+        "owner": "block",
+        "name": "〈Items contract〉",
+        "role": "What must a reusable Items package guarantee?"
+      },
+      {
+        "owner": "job",
+        "name": "〈Recipe design〉",
+        "role": "A recipe-specific design question, only when one exists."
+      },
+      {
+        "owner": "items",
+        "name": "〈Construction questions〉",
+        "role": "A local construction question, only when independent discussion is needed."
+      }
+    ],
+    "skills": [
+      {
+        "name": "hai-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md",
+        "functions": [
+          "Route work by its artifacts and authority"
+        ]
+      },
+      {
+        "name": "hai-labeling-preparation",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/1_data/hai-labeling-preparation/SKILL.md",
+        "functions": [
+          "Describe the source and propose the item recipe",
+          "Build, check and revise immutable Items versions"
+        ]
+      },
+      {
+        "name": "hai-run",
+        "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-run/SKILL.md",
+        "functions": [
+          "Bind the operation to its ticket and inputs",
+          "Settle results from the actual execution receipt"
+        ]
+      },
+      {
+        "name": "workbench-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/workbench-labeling/SKILL.md",
+        "functions": [
+          "Open and diagnose the Labeling surface"
+        ]
+      }
+    ],
+    "sources": [
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/1_data/hai-labeling-preparation/SKILL.md",
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/CORPUS-PREPARATION.md",
+      "plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py"
+    ],
+    "job_naming": {
+      "label": "〈Source and recipe〉",
+      "rule": "Name the Job for its source collection and item recipe.",
+      "basis": "Proposed naming rule; the independent Job Type contract remains to be defined."
+    },
+    "example_label": "Assistant replies",
+    "example_block": "examples/Project-Ladder/labeling/b03_itemization",
+    "existing_example": {
+      "block": "examples/Project-Ladder/labeling/b02_labeling_walkthrough",
+      "job_name": "Response safety on synthetic chats",
+      "job_path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/j01_example_response_safety.md",
+      "task_name": "Example chats as items",
+      "task_path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items/t01_example_items.md",
+      "task_type": "items"
+    },
+    "job_folder": "jNN_〈source〉_〈recipe〉/",
+    "record_block": "examples/Project-Ladder/labeling/b02_labeling_walkthrough",
+    "studio_examples": [
+      {
+        "owner": "items",
+        "name": "Example items recipe",
+        "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items/s02-example-items-recipe/s02-example-items-recipe.md"
+      }
+    ],
+    "studio_type_source": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/s71-studio-type-block-structure.md",
+    "type_catalog": "examples/Project-Ladder/blueprint/b15_theme_labeling/s01-labeling-ladder/types.md",
+    "studio_band": {
+      "name": "〈Studio band〉",
+      "numbers": "〈sNN range〉",
+      "note": "The independent design Block has no configured Studio bands or topic records. Set its bands or topic Tags before allocating topics; the shared concept allocator offers s01–s09 but does not establish a display Band.",
+      "sources": [
+        "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-numbering.md",
+        "plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py",
+        "examples/Project-Ladder/labeling/b03_itemization/board.md"
+      ]
+    }
+  },
+  {
+    "id": "guideline",
+    "name": "Guideline Generation",
+    "block": "Develop and accept label meaning and executable guidance under an identified human authority.",
+    "job_type": null,
+    "job_type_action": "〈Guideline Generation job type〉",
+    "task_topic": null,
+    "job_name": "Response safety on synthetic chats",
+    "name_basis": "Existing combined Job",
+    "job_unit": "One Items snapshot, construct and human authority. Expression methods and rounds remain inside the Expression Task under the same signed meaning.",
+    "job_topic": "Construct",
+    "tasks": [
+      {
+        "type": "labeling-meaning",
+        "name": "Example meaning: recover the raters' standard, then fix it",
+        "name_basis": "Existing Task",
+        "role": "Frame → Prepare → Preferences → Update. Only the human signs the meaning; semantic issues return here.",
+        "optional": false,
+        "evidence": [
+          {
+            "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning/t03_example_meaning.md",
+            "needle": "task-type: labeling-meaning",
+            "label": "Meaning Task face"
+          }
+        ],
+        "naming": {
+          "label": "〈Meaning goal〉",
+          "rule": "Name the Meaning Task for the semantic question it resolves.",
+          "basis": "Proposed naming rule; task-type remains the contract identifier."
+        },
+        "example_label": "Recover the standard",
+        "folder": "tNN_〈labeling-meaning name〉/",
+        "owner_skill": "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-interaction/SKILL.md"
+      },
+      {
+        "type": "labeling-expression",
+        "name": "Example expression: the wording the models follow",
+        "name_basis": "Existing Task",
+        "role": "Rewrite → Run → Evaluate under one signed meaning. Direct rules and case-backed rules are expression alternatives, not new Job Types.",
+        "optional": false,
+        "evidence": [
+          {
+            "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression/t04_example_expression.md",
+            "needle": "task-type: labeling-expression",
+            "label": "Expression Task face"
+          }
+        ],
+        "naming": {
+          "label": "〈Expression goal〉",
+          "rule": "Name the Expression Task for the guidance it develops; alternatives remain inside it.",
+          "basis": "Proposed naming rule; task-type remains the contract identifier."
+        },
+        "example_label": "Executable wording",
+        "folder": "tNN_〈labeling-expression name〉/",
+        "owner_skill": "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-expression/SKILL.md"
+      }
+    ],
+    "evidence": [
+      {
+        "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/j01_example_response_safety.md",
+        "needle": "# Response safety on synthetic chats",
+        "label": "Existing Job and its Task list"
+      }
+    ],
+    "gaps": [
+      "Define the independent Guideline Generation Job type; the named Job and Tasks currently live in the combined labeling Block.",
+      "The b04 preview models Direct rules and Case-backed rules as Jobs and Prepare cases, Draft rules and Evaluate expression as Tasks. That layout conflicts with the Meaning/Expression contracts and still requires migration.",
+      "Set the actual Block’s Studio Band names and numbering before allocating its proposed topics; Blueprint Bands do not define those Work Block Bands."
+    ],
+    "studio": [
+      {
+        "owner": "block",
+        "name": "〈Meaning and authority〉",
+        "role": "What is the construct, scope and human authority?"
+      },
+      {
+        "owner": "block",
+        "name": "〈Release criteria〉",
+        "role": "Which criteria should a Guideline release satisfy?"
+      },
+      {
+        "owner": "job",
+        "name": "〈Expression methods〉",
+        "role": "A method choice under the agreed scope, only when needed."
+      },
+      {
+        "owner": "labeling-meaning",
+        "name": "〈Meaning questions〉",
+        "role": "A meaning question. Studio references the canonical judgment and approval records; it does not own a second form or signature."
+      }
+    ],
+    "skills": [
+      {
+        "name": "hai-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md",
+        "functions": [
+          "Route work by its artifacts and authority"
+        ]
+      },
+      {
+        "name": "hai-labeling-interaction",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-interaction/SKILL.md",
+        "functions": [
+          "Prepare one interaction report and collect human preferences",
+          "Update reference labels and the proposed meaning version"
+        ]
+      },
+      {
+        "name": "hai-labeling-expression",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-expression/SKILL.md",
+        "functions": [
+          "Rewrite and evaluate wording under a signed meaning",
+          "Package a release or return semantic issues to Meaning"
+        ]
+      },
+      {
+        "name": "workbench-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/workbench-labeling/SKILL.md",
+        "functions": [
+          "Open and diagnose the Labeling surface"
+        ]
+      }
+    ],
+    "sources": [
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md",
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-interaction/SKILL.md",
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/2_labeling/hai-labeling-expression/SKILL.md",
+      "plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py"
+    ],
+    "job_naming": {
+      "label": "〈Construct and scope〉",
+      "rule": "Name the Job for the construct and scope agreed with its human authority.",
+      "basis": "Proposed naming rule; the independent Job Type contract remains to be defined."
+    },
+    "example_label": "Response safety",
+    "example_block": "examples/Project-Ladder/labeling/b04_guideline_generation",
+    "job_folder": "jNN_〈construct〉/",
+    "record_block": "examples/Project-Ladder/labeling/b02_labeling_walkthrough",
+    "studio_examples": [
+      {
+        "owner": "labeling-meaning",
+        "name": "Example guideline",
+        "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning/s01-example-guideline/s01-example-guideline.md"
+      },
+      {
+        "owner": "labeling-expression",
+        "name": "Example release choices",
+        "path": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t04_example_expression/s03-example-release-choices/s03-example-release-choices.md"
+      }
+    ],
+    "studio_type_source": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/s71-studio-type-block-structure.md",
+    "type_catalog": "examples/Project-Ladder/blueprint/b15_theme_labeling/s02-labeling-workbench/types.md",
+    "studio_band": {
+      "name": "〈Studio band〉",
+      "numbers": "〈sNN range〉",
+      "note": "The independent design Block has no configured Studio bands or topic records. Set its bands or topic Tags before allocating topics; the shared concept allocator offers s01–s09 but does not establish a display Band.",
+      "sources": [
+        "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-numbering.md",
+        "plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py",
+        "examples/Project-Ladder/labeling/b04_guideline_generation/board.md"
+      ]
+    }
+  },
+  {
+    "id": "scale",
+    "name": "Labeling at Scale",
+    "block": "Execute and audit labeling under a frozen, accepted Guideline; do not redefine meaning.",
+    "job_type": null,
+    "job_type_action": "〈Labeling at Scale job type〉",
+    "task_topic": null,
+    "job_name": "Support replies",
+    "name_basis": "Preview model",
+    "job_unit": "One Items snapshot, signed Guideline release and executor configuration. Batches, qualification and audit stay within this binding.",
+    "job_topic": "Guideline release",
+    "tasks": [
+      {
+        "type": "labeling-scanning",
+        "name": "Apply guideline-v2 and audit labels",
+        "name_basis": "Proposed name",
+        "role": "The Scanning Task owns Test → Scan → Audit and packaging. Run all schedules work inside this Task; it is not another Task Type.",
+        "optional": false,
+        "evidence": [
+          {
+            "path": "plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py",
+            "needle": "(\"labeling-scanning\", \"labeling\")",
+            "label": "Registered Scanning Task aliases"
+          },
+          {
+            "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-scanning/SKILL.md",
+            "needle": "P3 Test",
+            "label": "Scanning contract"
+          }
+        ],
+        "naming": {
+          "label": "〈Execution goal〉",
+          "rule": "Name the Scanning Task for the frozen binding it applies and audits.",
+          "basis": "Proposed naming rule; task-type remains the contract identifier."
+        },
+        "example_label": "〈Apply and audit〉",
+        "folder": "tNN_〈labeling-scanning name〉/",
+        "owner_skill": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-scanning/SKILL.md"
+      },
+      {
+        "type": "eval",
+        "name": "Score final labels against external gold",
+        "name_basis": "Proposed name",
+        "role": "Optional independent evaluation with authorized external ground truth. No Scanning or Score Task face exists in b05 yet.",
+        "optional": true,
+        "evidence": [
+          {
+            "path": "plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py",
+            "needle": "(\"eval\",)",
+            "label": "Registered Score Task type"
+          }
+        ],
+        "naming": {
+          "label": "〈Evaluation question〉",
+          "rule": "Name the optional Evaluation Task for the independent comparison it answers.",
+          "basis": "Proposed naming rule; task-type remains the contract identifier."
+        },
+        "example_label": "〈Compare with external gold〉",
+        "folder": "tNN_〈eval name〉/",
+        "owner_skill": "plugins/haipipe-toolkit/skills/1_base/task/6_eval/hai-task-for-eval/SKILL.md"
+      }
+    ],
+    "evidence": [
+      {
+        "path": "examples/Project-Ladder/labeling/b05_labeling_at_scale/delivery/ui/model.json",
+        "needle": "\"name\": \"Support replies\"",
+        "label": "Job name in the preview model"
+      }
+    ],
+    "gaps": [
+      "Define the independent Labeling at Scale Job type; b05 currently has a preview model and no Job or Task folders.",
+      "The proposed Scanning name consolidates Qualify executor, Run batches, Audit labels and Package labels. These are operations, not four registered Task Types. The optional eval Task needs separate authorized ground truth.",
+      "The eval adapter names final labels and external gold; hai-task-for-eval currently scaffolds ModelInstance × AIData. Resolve that input contract before creating an external-gold evaluation Task.",
+      "Set the actual Block’s Studio Band names and numbering before allocating its proposed topics; Blueprint Bands do not define those Work Block Bands."
+    ],
+    "studio": [
+      {
+        "owner": "block",
+        "name": "〈Execution policy〉",
+        "role": "What are the execution and audit boundaries?"
+      },
+      {
+        "owner": "block",
+        "name": "〈Audit policy〉",
+        "role": "Which limitations and escalation rules govern the release?"
+      },
+      {
+        "owner": "job",
+        "name": "〈Executor configuration〉",
+        "role": "An executor or routing design question, when needed. A changed frozen configuration needs a new binding."
+      },
+      {
+        "owner": "labeling-scanning",
+        "name": "〈Audit method〉",
+        "role": "An audit-method question, when needed. Semantic defects return to Guideline Generation."
+      }
+    ],
+    "skills": [
+      {
+        "name": "hai-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md",
+        "functions": [
+          "Route work by its artifacts and authority"
+        ]
+      },
+      {
+        "name": "hai-labeling-scanning",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-scanning/SKILL.md",
+        "functions": [
+          "Validate the immutable handoff and qualification gates",
+          "Route production and audit operations without changing meaning"
+        ]
+      },
+      {
+        "name": "hai-labeling-workflow",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-workflow/SKILL.md",
+        "functions": [
+          "Resolve operation dependencies and the runnable frontier",
+          "Apply receipts, invalidation and handoff checks"
+        ]
+      },
+      {
+        "name": "hai-task-for-eval",
+        "path": "plugins/haipipe-toolkit/skills/1_base/task/6_eval/hai-task-for-eval/SKILL.md",
+        "functions": [
+          "Own the eval scaffold; resolve the Labeling input adapter before use"
+        ]
+      },
+      {
+        "name": "workbench-labeling",
+        "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/workbench-labeling/SKILL.md",
+        "functions": [
+          "Open and diagnose the Labeling surface"
+        ]
+      }
+    ],
+    "sources": [
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-scanning/SKILL.md",
+      "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-building/ref/ref-label-handoff.md",
+      "plugins/haipipe-toolkit/servers/workbench-labeling/labeling_theme.py"
+    ],
+    "job_naming": {
+      "label": "〈Release and population〉",
+      "rule": "Name the Job for the Guideline release and target population.",
+      "basis": "Proposed naming rule; the independent Job Type contract remains to be defined."
+    },
+    "example_label": "Support replies",
+    "example_block": "examples/Project-Ladder/labeling/b05_labeling_at_scale",
+    "job_folder": "jNN_〈release〉_〈population〉/",
+    "record_block": null,
+    "studio_examples": [],
+    "studio_type_source": "examples/Project-Ladder/blueprint/b17_theme_work/s71-studio-type-block-structure/s71-studio-type-block-structure.md",
+    "type_catalog": "examples/Project-Ladder/blueprint/b15_theme_labeling/s03-agent-role/types.md",
+    "studio_band": {
+      "name": "〈Studio band〉",
+      "numbers": "〈sNN range〉",
+      "note": "The independent design Block has no configured Studio bands or topic records. Set its bands or topic Tags before allocating topics; the shared concept allocator offers s01–s09 but does not establish a display Band.",
+      "sources": [
+        "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/topic-numbering.md",
+        "plugins/haipipe-toolkit/servers/workbench/studio/tabs/studio_tabs.py",
+        "examples/Project-Ladder/labeling/b05_labeling_at_scale/board.md"
+      ]
+    }
+  }
+]

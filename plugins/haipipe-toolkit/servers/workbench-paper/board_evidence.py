@@ -1,5 +1,5 @@
 """A paper Board's evidence layer (j01 displays, j02 values, j03 citations): each item's drawn file, its body to
-read, and the LaTeX table as HTML. haipipe-paper-evidence's build_displays_pdf.py reads the same files through here."""
+read, and the LaTeX table as HTML. hai-paper-evidence's build_displays_pdf.py reads the same files through here."""
 from __future__ import annotations
 
 import filecmp
@@ -102,9 +102,9 @@ def empty_job(job: Path) -> str:
     """An evidence Job with no Task yet: its face's state, and the script that makes its Tasks."""
     md = face(job)
     state = _field(md.read_text(encoding="utf-8", errors="ignore"), "state") if md else ""
-    how = ("write a value map, tNN_<group>/scripts/value_map.yaml, then run haipipe-paper-evidence gen_value_runs.py"
+    how = ("write a value map, tNN_<group>/scripts/value_map.yaml, then run hai-paper-evidence gen_value_runs.py"
            if re.search(r"value", job.name) else
-           "write a claim group, tNN_<group>/scripts/claim_group.yaml, then run haipipe-paper-evidence cite_tasks.py gen"
+           "write a claim group, tNN_<group>/scripts/claim_group.yaml, then run hai-paper-evidence cite_tasks.py gen"
            if re.search(r"cite|citation", job.name) else "")
     return f'<p class=mut>No Tasks yet{(" (state: " + esc(state) + ")") if state else ""}.' + (f" To make them: {esc(how)}." if how else "") + "</p>"
 
@@ -400,7 +400,7 @@ def evidence_body(task: Path, root: Path):
     body = ""
     ledger = ledger_file(task)
     if ledger is not None:                       # a value or citation Task: its Run's ledger page, tall, with a pop-out
-        head = ledger.parent / "headline.txt"    # (haipipe-paper-evidence values_ledger.py, cite_tasks.py; JL 261103)
+        head = ledger.parent / "headline.txt"    # (hai-paper-evidence values_ledger.py, cite_tasks.py; JL 261103)
         line = head.read_text(encoding="utf-8", errors="ignore").strip().split(": ", 1)[-1] if head.is_file() else ""
         if line and (not status or status.startswith("see runs/")):
             status = line
@@ -414,7 +414,7 @@ def evidence_body(task: Path, root: Path):
         body += f'<p><a class=fd-btn href="{esc(_task_url(task, root))}">Open {esc(task.name)} ↗</a></p>'
         return label, status, body
     # a display's newest version shows as its preview.pdf, both pages: the display with its caption, then how it was
-    # made (haipipe-display scripts/build_preview.py; JL 261101: "I want to make this to be things like the pdf")
+    # made (hai-display scripts/build_preview.py; JL 261101: "I want to make this to be things like the pdf")
     preview, forced = display_pick(task, text)
     shown = None if preview else (forced or _evidence_file(task, text))
     if preview is not None:
@@ -496,7 +496,7 @@ def latex_table_html(tex: str) -> str:
 def display_pick(task: Path, text: str) -> tuple:
     """A display Task's shown version, as (preview.pdf, None) or (None, a picture) or (None, None): the face's
     `printed: <run> [· <stem>]` wins over the newest alternative (JL 261101: Figure 1 showed its r02 alternative, Table
-    1 an unprinted table1-patients); else the newest preview.pdf. The Evidence view and haipipe-paper-evidence
+    1 an unprinted table1-patients); else the newest preview.pdf. The Evidence view and hai-paper-evidence
     build_displays_pdf.py both read it, so the all-displays PDF prints the version the paper prints (pp-LBP-JAMA 261103:
     t05 prints r07 but the PDF showed r08, its newest)."""
     previews = sorted(task.glob("runs/*/result/preview.pdf")) + sorted(task.glob("display/*/preview.pdf"))

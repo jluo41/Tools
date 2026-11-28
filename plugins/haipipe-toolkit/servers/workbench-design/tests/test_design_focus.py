@@ -1,5 +1,5 @@
 """The design theme on the focus page (design_focus.py, b12 j01 s51 to s58): the Block, a Job and each Task type in the
-cells' letters on the shared page rules (haipipe-ui, 261106): every bar a state word, Report the Results only, Work ⚙️
+cells' letters on the shared page rules (hai-ui, 261106): every bar a state word, Report the Results only, Work ⚙️
 Process then the same 📊 Results, a person's sign a Process step (never a 🙋 section of the view's own), 🙋 Interaction
 last with the view's own forms, side tabs with no count in a label, the MindMap at every level; a Task never asks you."""
 from __future__ import annotations
@@ -147,7 +147,7 @@ class DesignFocusTest(unittest.TestCase):
                     page = FP.render(THEME, self.root, folder, section, key)
                     heads = [title(h) for h in HEADS.findall(page.split('class="focus-card', 1)[-1])]
                     if folder == self.block:
-                        self.assertIn('🧭 Around the Work', page)
+                        self.assertNotIn('🧭 Around the Work', page)   # the side pane holds it (hai-block A01)
                         self.assertIn('🙋 Interactions', page)
                         self.assertNotIn('🙋 Interaction', heads)
                         continue

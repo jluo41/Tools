@@ -27,10 +27,10 @@ limitations: Two agents of the same model may share blind spots; a person still 
 Applied to AI
 -------------
 
-agent: haipipe-discovery-reviewer-agent for cards and Runs; haipipe-draft-check-agent for reports.
+agent: hai-discovery-reviewer-agent for cards and Runs; hai-draft-check-agent for reports.
 steps: 1. Read the card or report. 2. Check it against the Results. 3. Return ready or a route.
 returns: a verdict with its route.
 verify: The reviewer differs from every writer of the thing (T4, T7).
 risk: A reviewer that sees the writer's reasoning may adopt it; it reads only the files (ours).
 evidence on ai: Self-preference [Panickssery 2024] is why the writer never reviews its own work.
-skill: haipipe-discovery-review
+skill: hai-discovery-review

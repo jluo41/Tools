@@ -35,4 +35,4 @@ returns: locked answers and closed predictions
 verify: the test was never opened before (T3)
 risk: Rerunning until a model passes turns the test into tuning (ours).
 evidence on ai: Leaked tests overstate models [Kapoor 2023].
-skill: haipipe-labeling-test
+skill: hai-labeling-test

@@ -1,6 +1,6 @@
 """
 Progress tracking for the describe-food pipeline.
-Inspired by haipipe-probe-loop LOOP_LOG pattern and scan_status.py JSON pattern.
+Inspired by hai-probe-loop LOOP_LOG pattern and scan_status.py JSON pattern.
 
 Tracks per-stage: status, count, metric, timestamp, error.
 File-based (JSON): ~/.food-description/status.json (persistent across invocations).

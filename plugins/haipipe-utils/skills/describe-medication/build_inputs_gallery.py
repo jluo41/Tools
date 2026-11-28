@@ -5,7 +5,7 @@ Build `_MedInfo/0-inputs/`: one specimen of every SHAPE that can arrive.
     source .venv/bin/activate && source env.sh
     python Tools/plugins/haipipe-utils/skills/describe-medication/build_inputs_gallery.py
 
-The engine is haipipe-norm/inputs_gallery.py, shared by all four nouns. This
+The engine is hai-norm/inputs_gallery.py, shared by all four nouns. This
 file holds only the list of shapes, because the list is the part that differs:
 medication arrives as a pharmacy catalogue string keyed by an internal id.
 
@@ -19,7 +19,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = next(a for a in HERE.parents
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SKILLS = ROOT / "Tools/plugins/haipipe-utils/skills"
-sys.path[:0] = [str(HERE), str(SKILLS / "haipipe-norm")]
+sys.path[:0] = [str(HERE), str(SKILLS / "hai-norm")]
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_MedInfo"
 
 import pandas as pd                                       # noqa: E402

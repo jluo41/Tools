@@ -58,4 +58,4 @@ risk: AI designs converge [Doshi & Hauser 2024]; designs that differ only in wor
 evidence on AI: Asking the AI for an output unlike the last beat independent generation
   [Boussioux 2024]. AI ideas made each story better and all stories more
   alike [Doshi & Hauser 2024].
-skill: haipipe-design-by-exploring (proposed)
+skill: hai-design-by-exploring (proposed)

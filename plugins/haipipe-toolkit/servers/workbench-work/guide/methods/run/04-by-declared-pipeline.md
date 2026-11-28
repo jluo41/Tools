@@ -37,11 +37,11 @@ limitations: A tree costs folders; a quick look at the data still needs a Task (
 Applied to AI
 -------------
 
-agent: haipipe-task-creator-agent places each new Task in its Job.
+agent: hai-task-creator-agent places each new Task in its Job.
 steps: 1. Find or open the Job. 2. Open the Task Folder. 3. Add the Run's config and Ticket.
 returns: the Task Folder and its Tickets.
 verify: Every Run has a Ticket in its Task's runs/ and a Result beside it (T3).
 risk: An agent may start a script outside the tree to save time, and its output is then
   invisible (ours).
 evidence on ai: No study tests this layout with agents (ours).
-skill: haipipe-task
+skill: hai-task

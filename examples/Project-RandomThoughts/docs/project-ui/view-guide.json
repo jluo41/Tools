@@ -1,0 +1,118 @@
+{
+  "proposed": true,
+  "sections": {
+    "🎯 Purpose": {
+      "what": "What this Theme contributes to the Project mission.",
+      "layout": "One prominent sentence.",
+      "example": "hai-project owns the Project; the Theme owner supplies its contribution.",
+      "example_title": "Owner / contract"
+    },
+    "🧭 Plan": {
+      "what": "How this Theme intends to make its contribution.",
+      "layout": "Ordered proposed steps. The Blocks section opens the source work; step-to-Block bindings are not assigned in this preview.",
+      "example": "The Theme owner defines the plan. The preview shows proposed sequences, not commissioned work.",
+      "example_title": "Owner / contract"
+    },
+    "🗂️ Themes": {
+      "what": "The Themes within this Project.",
+      "layout": "One link per Theme.",
+      "example": "hai-project owns the boundary. Project is above Themes.",
+      "example_title": "Owner / contract"
+    },
+    "🧱 Blocks": {
+      "what": "The Blocks carrying out the selected Theme’s plan.",
+      "layout": "Block goal and recorded state, opening the source Block.",
+      "example": "The preview links existing Work Blocks (Blueprint); it does not invent their state.",
+      "example_title": "Owner / contract"
+    },
+    "🔗 Handoffs": {
+      "what": "Inputs from other Themes and outputs this Theme supplies.",
+      "layout": "Producer → artifact → consumer, with its recorded state.",
+      "example": "hai-delivery and the producer/consumer contracts own the records; missing bindings remain unbound.",
+      "example_title": "Owner / contract"
+    },
+    "🎨 Studio": {
+      "what": "Thinking connected to this view.",
+      "layout": "Shared Studio component.",
+      "example": "hai-studio; Themes aggregate Block topics and create no Theme-local Studio.",
+      "example_title": "Owner / contract"
+    },
+    "🙋 Interactions": {
+      "what": "Questions requiring a response.",
+      "layout": "Shared interaction component.",
+      "example": "hai-interaction",
+      "example_title": "Owner / contract"
+    },
+    "⚖️ Decisions": {
+      "what": "Recorded decisions and their source.",
+      "layout": "Shared decision component.",
+      "example": "hai-studio; proposals are never shown as agreed.",
+      "example_title": "Owner / contract"
+    },
+    "📚 Things to Know": {
+      "what": "Notes relevant to this view.",
+      "layout": "Shared notes component.",
+      "example": "workbench shared context",
+      "example_title": "Owner / contract"
+    },
+    "📝 Checklist": {
+      "what": "Recorded actions still to complete.",
+      "layout": "Shared checklist component.",
+      "example": "workbench shared context",
+      "example_title": "Owner / contract"
+    },
+    "🕒 Timeline": {
+      "what": "Dated source records.",
+      "layout": "Shared timeline component.",
+      "example": "workbench shared context",
+      "example_title": "Owner / contract"
+    },
+    "🧰 Skills": {
+      "what": "The owning skills for this view.",
+      "layout": "Links to the actual skill files.",
+      "example": "Each Theme’s owner and workbench contract, plus hai-project for the Project.",
+      "example_title": "Owner / contract"
+    },
+    "📂 Files": {
+      "what": "Source files supporting this view.",
+      "layout": "Shared file browser.",
+      "example": "workbench",
+      "example_title": "Owner / contract"
+    }
+  },
+  "skills": {
+    "Project": [
+      "hai-project",
+      "hai-ui",
+      "workbench"
+    ],
+    "Work": [
+      "hai-work",
+      "workbench-work"
+    ],
+    "Discovery": [
+      "hai-discovery",
+      "workbench-discovery"
+    ],
+    "CoWork": [
+      "hai-cowork",
+      "workbench-cowork"
+    ],
+    "Insight": [
+      "hai-insight",
+      "workbench-insight"
+    ],
+    "Design": [
+      "hai-design",
+      "workbench-design"
+    ],
+    "Labeling": [
+      "hai-labeling",
+      "workbench-labeling"
+    ],
+    "Paper": [
+      "hai-paper",
+      "workbench-paper"
+    ]
+  }
+}

@@ -1,0 +1,38 @@
+status: ok
+question: K01
+run: r04_cross
+partition: cross
+release: question-v1
+data: data-v2
+ticket: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t06_K01_gap-holds/runs/r04_cross/run.sh
+job: Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1
+prototype: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions
+extract: _WorkSpace/insight-ready/Example_data-v2@prep-v1/example.parquet
+spec: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t05_K01_gap-holds/question.md
+spec_sha256: 5865a8f5a29b258c70873687d3d8266b356900abdabf55afd702c388ca6a98bd
+scripts: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j01_question-v1_example-questions/t05_K01_gap-holds/scripts
+scripts_sha256: 7b203b6b85c9ec323830c7ff168acb5664f2b0ccfe9fed23b0a5618887072f31
+shared_sha256: fc3dd755d0b8ac952017e6fb7eef5600b9affe28f650cb64e8490b5f87050f84
+git_sha: unknown
+started: '2026-11-26T14:43:53Z'
+rows_before: 0
+rows_after: 0
+power: ok
+reads:
+  ? Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t04_I01_outcome-by-arm/runs/r02_first/result/gap.csv
+  : b5a6f8d9b86dd772abdea86be3bee261aa7e29f96a5d5f62e17632952fd8c016
+  ? Tools/examples/Project-Ladder/insight/Insight-Example/j03_data-v2_prep-v1_question-v1/t04_I01_outcome-by-arm/runs/r03_second/result/gap.csv
+  : 6d3f69e9ab72374b431ae7c3573e3d94f9bd30ec6d410229c77b6e2a039d58fa
+outputs:
+- pooling.csv
+- verdict.json
+- partition_power.csv
+figures:
+- need: E2
+  table: pooling.csv
+  file: fig_E2_pooling.png
+  kind: estimate
+tables_sha256: ce5dba82d68a8b493457101ae24b58a27279f0293cf7296c6e73d57059e3358c
+ended: '2026-11-26T14:43:53Z'
+duration_s: 0.3
+content_since: '2026-11-26T14:43:53Z'

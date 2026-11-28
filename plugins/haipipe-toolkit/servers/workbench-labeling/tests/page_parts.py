@@ -5,11 +5,21 @@ from __future__ import annotations
 import re
 
 SEC = "<section class=fd-sec>"
+# where 📋 Review Content ends: the view's shared 🙋 Interactions fold, or the page card's end (the side pane holds
+# the rest, hai-block A01)
+END = re.compile(r'<details class=band-sec><summary><span class=bt>🙋 Interactions|</section><footer>')
 
 
 def review(page: str) -> str:
-    """The open view's 📋 Review Content, without 🧭 Around the Work under it."""
-    return page.split("📋 Review Content", 1)[-1].split("🧭 Around the Work", 1)[0]
+    """The open view's 📋 Review Content, without the shared 🙋 Interactions fold under it."""
+    return END.split(page.split("📋 Review Content", 1)[-1], 1)[0]
+
+
+def asks(page: str) -> str:
+    """The view's shared 🙋 Interactions fold, empty when nothing is asked there."""
+    after = page.split("📋 Review Content", 1)[-1]
+    found = re.search(r'<details class=band-sec><summary><span class=bt>🙋 Interactions', after)
+    return after[found.start():].split("</section><footer>", 1)[0] if found else ""
 
 
 def step(page: str) -> str:

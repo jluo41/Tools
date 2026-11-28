@@ -18,7 +18,7 @@ def _canvas(topic: Path, root: Path) -> str:
     mind = topic / f"{topic.name}.mindmap.md"
     if not mind.is_file():
         return (f'<p class=pb-state>No mind map yet: <code>mindmap.py from-topic {esc(topic.name)}</code> '
-                f'(haipipe-mindmap) makes {esc(mind.name)}.</p>')
+                f'(hai-mindmap) makes {esc(mind.name)}.</p>')
     try:
         html = frame.mindmap_module().fragment(mind, ds._rel(mind, root), editable=not frame.READ_ONLY_MAPS,
                                                url_of=lambda q: "/" + quote(ds._rel(q, root)))

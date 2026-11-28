@@ -59,4 +59,4 @@ risk: An agent can look at many segments quickly and report the striking ones, w
 evidence on AI: On 264 discovery tasks drawn from published papers, the best LLM system
   scored only 25% [Majumder 2024]. No study tests an agent's exploratory
   observations against known truth yet (ours).
-skill: haipipe-insight-data
+skill: hai-insight-data

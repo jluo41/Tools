@@ -1,0 +1,13 @@
+kind: direction-card
+id: direction
+title: Subgroup stress tests
+question: Do prespecified subgroup stress tests reveal model failures that an overall performance average
+  conceals?
+why_now: Explore this bounded question in the example portfolio.
+scope: Demonstration hypotheses for robustness under deployment change.
+observed_signals: []
+interpretations: []
+open_gaps:
+- question: No literature search, experiment or target assessment has been performed for this demonstration.
+  route: discovery
+bundle: bundle/evidence-bundle.yaml

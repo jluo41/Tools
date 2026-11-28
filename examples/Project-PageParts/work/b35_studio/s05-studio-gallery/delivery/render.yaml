@@ -1,0 +1,5 @@
+# Where s05's delivery goes (hai-studio scripts/render_delivery.py). The deck stays in deck/.
+pieces:
+  - from: skill/gallery.md
+    to: plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref/gallery.md
+    block: gallery

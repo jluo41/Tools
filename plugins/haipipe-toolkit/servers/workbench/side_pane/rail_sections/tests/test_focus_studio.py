@@ -15,6 +15,39 @@ import focus_page_fixtures as fixtures  # noqa: E402
 
 
 class FocusPageTest(fixtures.FocusPageCase):
+    def test_studio_bands_contain_folds_once_in_authored_group_order(self):
+        (self.block / '_studio_groups.txt').write_text('UI\nStructure\nEmpty\n')
+        for name, tags in [('s01-first', ['Structure']), ('s03-third', ['UI']),
+                           ('s02-second', ['Structure', 'UI']), ('s04-fourth', [])]:
+            topic = self.block / name
+            topic.mkdir()
+            (topic / (name + '.md')).write_text('# ' + name + '\n**Tags:** ' +
+                                                ', '.join('`' + tag + '`' for tag in tags) + '\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio')
+        bands = re.findall(r'<section class="studio-band".*?</section>', page, re.S)
+        self.assertEqual(len(bands), 3)
+        self.assertIn('>UI</h2>', bands[0])
+        self.assertIn('>Structure</h2>', bands[1])
+        self.assertIn('>Other</h2>', bands[2])
+        self.assertLess(bands[0].index('id="s02-second"'), bands[0].index('id="s03-third"'))
+        self.assertIn('id="s01-first"', bands[1])
+        self.assertIn('id="s04-fourth"', bands[2])
+        self.assertEqual(page.count('id="s02-second"'), 1)
+        self.assertNotIn('>Empty</h2>', page)
+        for band, count in zip(bands, (2, 1, 1)):
+            self.assertEqual(band.count('<details class=band-sec>'), count)
+
+    def test_studio_band_filter_keeps_secondary_tag_membership(self):
+        (self.block / '_studio_groups.txt').write_text('UI\nStructure\n')
+        topic = self.block / 's01-multi'
+        topic.mkdir()
+        (topic / 's01-multi.md').write_text('# Multi\n**Tags:** `UI`, `Structure`\n')
+        page = focus_page.studio_html(focus_page.topic_rows(self.block, self.root), self.root,
+                                      'Structure', tabs=True)
+        self.assertIn('>Structure</h2>', page)
+        self.assertNotIn('>UI</h2>', page)
+        self.assertEqual(page.count('id="s01-multi"'), 1)
+
     def test_a_topic_folder_with_no_face_never_takes_the_page_down(self):
         # 261031 review: b11's s32-insight-element-ui/ held a drawing and a builder but no .md, and its Block's Report
         # (MindMap first) dropped the connection; a bare folder is no topic (is_topic), so the map skips it
@@ -179,7 +212,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertNotIn('class="focus-goal', page)                            # no goal line under the title (block A03)
         self.assertIn('<p>the content</p>', page)
 
-    def test_studio_rows_show_topic_line_stage_and_preview(self):
+    def test_studio_rows_show_topic_line_and_preview_no_stage(self):
         topic = self.block / 'studio' / 's01-first'
         topic.mkdir(parents=True)
         (topic / 's01-first.md').write_text('# s01\n**Tags:** Alpha\n\n**Stage:** explore\n\n**Topic:** what the first topic asks\n')
@@ -187,7 +220,7 @@ class FocusPageTest(fixtures.FocusPageCase):
         (topic / 's01-first.png').write_bytes(b'png')
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'studio')
         self.assertIn('what the first topic asks', page)
-        self.assertIn('<span class="row-stage">explore</span>', page)   # the stage, one word (JL 261029: overwhelmed)
+        self.assertNotIn('class="row-stage"', page)   # no stage pill: no state word on a page (b17 trace 261127/1225)
         self.assertNotIn('rounds</span>', page)                            # no bookkeeping on the row
         self.assertIn('>Draw</button>', page)
         self.assertIn('s01-first.png', page)

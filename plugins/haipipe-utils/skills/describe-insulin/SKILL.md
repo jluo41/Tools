@@ -21,7 +21,7 @@ Turn an insulin product name into the parameters of its action curve.
     curl -sS localhost:8070/insulin/normalize -H 'content-type: application/json' \
          -d '{"item":"Insulin lispro-aabc"}'
 
-Member of the `haipipe-norm` family, and the second half of a CHAIN with
+Member of the `hai-norm` family, and the second half of a CHAIN with
 `describe-medication`.
 
 
@@ -199,7 +199,7 @@ THE EVENT JSON
 --------------------------------------------------------------------------------
 
 What an event door's JSON must hold (raw as it came, input normalized, output by
-local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+local hour) is one checklist for every type: hai-norm's THE EVENT JSON, with
 its table of where each type stands. Insulin's own (eventnorm/insulin, b51 s04, s14): the raw and the input are
 medication's; each drug goes through describe-medication, then this skill; a
 dose is spread over the hours it acts by its curve, a rate over the minutes it

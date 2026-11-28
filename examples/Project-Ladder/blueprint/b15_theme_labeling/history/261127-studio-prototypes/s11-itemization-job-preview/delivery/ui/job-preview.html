@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Itemization · Design preview</title><link rel="stylesheet" href="../../../delivery/ui/labeling-blocks/preview.css"></head>
+<body><main><div class="crumb"><span>Labeling</span><span>›</span><span>Itemization</span><button class="scope" type="button" data-action="about" title="Synthetic examples; memory-only actions">Design preview</button></div>
+<div class="title-line"><h1>Itemization</h1><button class="section-pick" type="button" popovertarget="sections"><span id="section-name">Jobs</span></button><button id="wait-tray" class="wait-tray" type="button" data-action="waits" title="Review waiting items" hidden></button></div>
+<div id="sections" popover><button data-section="Jobs">Jobs</button><button data-section="Studio">Studio</button><button data-section="Delivery">Delivery</button></div>
+<div id="navigation"><nav class="row topics" data-row="job-topic" aria-label="Job topics"></nav><nav class="row" data-row="job" aria-label="Jobs"></nav><nav class="row topics task-topics" data-row="task-topic" aria-label="Task topics"></nav><nav class="row tasks" data-row="task" aria-label="Tasks" hidden></nav></div><div id="body"></div></main>
+<dialog id="dialog" class="dialog"><button type="button" class="dialog-close" data-close aria-label="Close">×</button><h2 id="dialog-title"></h2><div id="dialog-body"></div></dialog><div id="toast" class="toast" role="status" hidden></div>
+<script type="application/json" id="preview-data">{
+  "kind": "items",
+  "name": "Itemization",
+  "topic": "s11-itemization-job-preview",
+  "goal": "Turn a source snapshot into reusable items without choosing a downstream label.",
+  "jobUnit": "One source snapshot × one accepted item recipe; recipe trials are Runs of the same Job.",
+  "jobGroups": "Source collection",
+  "taskGroups": "Source · Build · Check",
+  "input": "Source snapshot and an accepted item recipe",
+  "output": "Items package with stable IDs, context and source references",
+  "releaseName": "Items package",
+  "releaseRequirements": [
+    [
+      "Source",
+      "Immutable source snapshot"
+    ],
+    [
+      "Recipe",
+      "Accepted item boundaries and context"
+    ],
+    [
+      "Check",
+      "IDs, provenance, exclusions and coverage"
+    ]
+  ],
+  "baseline": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t01_example_items",
+  "baselineLabel": "task-items-current",
+  "baselineGroup": "items",
+  "folder": "bNN_itemization",
+  "jobs": [
+    {
+      "id": "j01",
+      "name": "Assistant replies",
+      "topic": "Conversations",
+      "goal": "Build one item per assistant reply with its preceding context.",
+      "inputs": [
+        [
+          "Source",
+          "conversations-v1"
+        ],
+        [
+          "Recipe",
+          "assistant-reply-v1"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Describe source",
+          "group": "Source",
+          "state": "done",
+          "output": "conversations-v1",
+          "facts": [
+            [
+              "Unit",
+              "Conversation turns"
+            ],
+            [
+              "Source snapshot",
+              "conversations-v1"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Read source and inspect fields",
+              "done"
+            ]
+          ],
+          "columns": [
+            "Conversation",
+            "Speaker",
+            "Text"
+          ],
+          "rows": [
+            [
+              "conversation-01",
+              "User",
+              "Can I share this password?"
+            ],
+            [
+              "conversation-01",
+              "Assistant",
+              "Keep the password private."
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Build items",
+          "group": "Build",
+          "state": "done",
+          "output": "items-v1",
+          "facts": [
+            [
+              "Recipe",
+              "assistant-reply-v1"
+            ],
+            [
+              "Context",
+              "Preceding turns, without labels"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Build stable item IDs",
+              "done"
+            ]
+          ],
+          "columns": [
+            "Item",
+            "Source turn",
+            "Context"
+          ],
+          "rows": [
+            [
+              "conversation-01/reply-01",
+              "turn-02",
+              "turn-01"
+            ],
+            [
+              "conversation-02/reply-01",
+              "turn-04",
+              "turn-01…03"
+            ]
+          ]
+        },
+        {
+          "id": "t03",
+          "name": "Check package",
+          "group": "Check",
+          "state": "done",
+          "output": "checks.json",
+          "facts": [
+            [
+              "Identity",
+              "Unique item IDs"
+            ],
+            [
+              "Coverage",
+              "All eligible assistant turns accounted for"
+            ],
+            [
+              "Isolation",
+              "Reference labels excluded"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Validate identity and provenance",
+              "done"
+            ]
+          ]
+        }
+      ],
+      "delivery": {
+        "title": "Items · items-v1",
+        "facts": [
+          [
+            "Source",
+            "conversations-v1"
+          ],
+          [
+            "Recipe",
+            "assistant-reply-v1"
+          ],
+          [
+            "Items",
+            "items.jsonl"
+          ],
+          [
+            "Provenance",
+            "source_refs.jsonl"
+          ],
+          [
+            "Manifest",
+            "manifest.yaml"
+          ],
+          [
+            "Used by",
+            "Guideline Generation · Labeling at Scale"
+          ]
+        ]
+      },
+      "recipe": {
+        "unit": "assistant reply",
+        "context": "preceding turns",
+        "boundary": "One assistant response per item",
+        "accepted": true
+      }
+    },
+    {
+      "id": "j02",
+      "name": "Whole conversations",
+      "topic": "Conversations",
+      "goal": "Build one item per complete conversation.",
+      "inputs": [
+        [
+          "Source",
+          "conversations-v1"
+        ],
+        [
+          "Recipe",
+          "whole-conversation draft"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Describe source",
+          "group": "Source",
+          "state": "done",
+          "output": "conversations-v1",
+          "facts": [
+            [
+              "Unit",
+              "Conversation turns"
+            ],
+            [
+              "Source snapshot",
+              "conversations-v1"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Read source and inspect fields",
+              "done"
+            ]
+          ],
+          "columns": [
+            "Conversation",
+            "Speaker",
+            "Text"
+          ],
+          "rows": [
+            [
+              "conversation-01",
+              "User",
+              "Can I share this password?"
+            ],
+            [
+              "conversation-01",
+              "Assistant",
+              "Keep the password private."
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Build items",
+          "group": "Build",
+          "state": "waiting",
+          "output": "Recipe to review",
+          "facts": [
+            [
+              "Recipe",
+              "whole-conversation draft"
+            ],
+            [
+              "Boundary",
+              "Full conversation"
+            ]
+          ],
+          "runs": [],
+          "columns": [
+            "Item",
+            "Source turn",
+            "Context"
+          ],
+          "rows": [
+            [
+              "conversation-01",
+              "entire conversation",
+              "all turns"
+            ]
+          ],
+          "action": "recipe",
+          "issue": "Choose the item boundary",
+          "reason": "A reply and a full conversation answer different labeling questions."
+        },
+        {
+          "id": "t03",
+          "name": "Check package",
+          "group": "Check",
+          "state": "planned",
+          "output": "",
+          "facts": [
+            [
+              "Reads",
+              "The next built item package"
+            ]
+          ],
+          "runs": []
+        }
+      ],
+      "delivery": null,
+      "recipe": {
+        "unit": "whole conversation",
+        "context": "all turns in source order",
+        "boundary": "One complete conversation per item",
+        "accepted": false
+      }
+    }
+  ]
+}</script><script src="../../../delivery/ui/labeling-blocks/preview.js"></script></body></html>

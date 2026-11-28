@@ -1,6 +1,6 @@
 # Outline human review packet
 
-For release, `../../../draft/haipipe-draft/ref/release-decisions.md` controls profile
+For release, `../../../draft/hai-draft/ref/release-decisions.md` controls profile
 precedence. The Shape approval rules below apply to the non-interactive/legacy
 profile; interactive Pages reuse acceptance of the exact Structure/Writing
 versions and a recorded release instruction.

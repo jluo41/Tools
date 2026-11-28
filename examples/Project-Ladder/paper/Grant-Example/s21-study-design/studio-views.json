@@ -1,0 +1,13 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Study design",
+          "path": "examples/Project-Ladder/paper/Grant-Example/s21-study-design/s21-study-design.md"
+        }
+      ]
+    }
+  ]
+}

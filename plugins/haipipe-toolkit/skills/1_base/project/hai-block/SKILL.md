@@ -1,0 +1,140 @@
+---
+name: hai-block
+description: "Owns the Block level: its face board.md, its six Spaces and buttons, a new-Block scaffold, and how a theme claims a Block. Use to create a Block, edit or check its face, add a Job, or say which theme reads it. Trigger: block, new block, board.md, block face, /hai-block, /hai-board."
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "2.3.0"
+  last_updated: "2026-11-21"
+  aliases: [hai-board]
+  # version history: ./CHANGELOG.md
+---
+
+# /hai-block · one Block, its face and its Spaces
+
+Read [CONSTITUTION.md](CONSTITUTION.md) first; it wins over this file.
+
+Delivery belongs to the Block (JL 261010; owner `hai-delivery`). Only the Block has a physical
+`delivery/` folder. A Job writes `delivery/jNN_<job>/`, a Task writes
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and a Report writes
+`delivery/reports/qNN_<report>/<lane>/`, all relative to its Block. Child
+Delivery views select their own source subtree. Runs and Results remain at
+their source; a build grants no acceptance or release. Use
+`hai-draft/src/common.py` for the path, never create Job/Task-local delivery.
+Standalone Pages without a Block retain their own output root.
+
+
+A Block is one topic in a Project's Theme folder, `bNN_<topic>/`, with its face `board.md`.
+It holds Jobs, its studio topics (each answering a Question holds that answer), its Questions register, its soft Runs and
+its delivery. A Block holds at most 9 sNN Studio topics (hai-studio; `new_topic.py` refuses a tenth
+unless `--over-limit`); the limit is a count, not a range of topic numbers.
+This skill owns the face and the Block level of the frame; the folder's shape
+is `hai-project`'s, and each theme adds its words over the face.
+
+```text
+<Project>/<theme folder>/bNN_<topic>/
+├── board.md             the face: # bNN · <title> · board-kind · spine · close · Topic
+├── sNN-<topic>/         Studio topics, beside the Jobs (hai-studio); a Question's answer is in its topic
+│                        (hai-report; an older Block: studio/sNN-<topic>/ and reports/qNN_<topic>/)
+├── runs/ delivery/      soft Runs (hai-run) · what it hands on
+├── trace/              one file per piece of work: prompts, plan, files, check (hai-trace)
+└── jNN_<job>/           its Jobs (hai-job)
+```
+
+**Special boards** (JL 261008: "Paper, Insight, (and Question Book), and Design, these four are the special boards; in
+the future, the Labeling will be the same"). A theme's own Board is named by its kind, not `bNN_`:
+
+```text
+<Project>/paper/Paper-<Slug>/                 a paper Board          (hai-paper)
+<Project>/insight/Insight-<name>[-<YYMMDD>]/  an insight Board       (hai-insight)
+<Project>/insight/InsightQuestionBook-<Topic>/         an insight Question Book   (hai-insight)
+<Project>/design/Design-<name>[-<YYMMDD>]/    a design Block         (hai-design)
+<Project>/labeling/Labeling-<name>/           a labeling Board, later (hai-labeling)
+```
+
+The name is a label: every reader knows the Block by its `board.md` (its `board-kind:`, or `workbench:`), and its
+Jobs and Tasks keep `jNN_` and `tNN_`. A `bNN_<topic>` folder of these themes stays readable; every other theme's
+Block is `bNN_<topic>/`. `new_board.py` makes a `bNN_` Block; a special board is made by its theme's scaffold.
+
+Read `ref/board-contract.md` before creating or editing a face: the fields, the six Spaces of the older
+tabbed screen (the focus page's sections are Report, Studio, Delivery, Interaction, Related), the buttons, which theme reads a Block.
+
+(Not the board skill deleted on 261005, which built a static `board/` site; that site is
+retired and never rebuilt. The name is reused for the Block level, b03 s21.)
+
+
+Create a Block
+--------------
+
+```bash
+S=Tools/plugins/haipipe-toolkit/skills/1_base/project/hai-block/scripts
+python $S/new_board.py <Project>/work --slug <topic> --title '<title>' [--no-questions] [--dry-run]
+```
+
+1. **Number**: the next free `bNN` in the Theme folder, or `--nn`; a taken one is refused.
+2. **Kind**: the Theme folder's default `board-kind`, or `--kind`.
+3. **Face only**: `board.md`; no empty folder until its first content.
+4. **Questions**: an empty register comes by default (`--no-questions` leaves it out); add each with
+   `hai-report`.
+5. **Born current**: a work Block's face also gets `workbench-layout: workflow` and an empty `## Deliverables`,
+   so `/wb update <Block>` reports nothing missing; later, as Jobs arrive, `/wb update` keeps it current.
+6. **Check**: `hai-project audit <block>` for its shape.
+
+
+The buttons it owns
+-------------------
+
+| Space | Button | Run | does |
+|---|---|---|---|
+| Description | Update the description | `run-face-<bNN>` | edit the face's fields and Topic |
+| Work Details | Add a Job | `run-add-<jNN>` | `hai-job`'s `new_job.py <block>` |
+| Delivery | Build the delivery | `run-delivery-<target>` | the theme's delivery rule (decided 261007: stays here) |
+
+The other Spaces' buttons are their skills': Idea Studio `hai-studio`, Audience Report
+`hai-report`, Runs `hai-run`. The full table, every level:
+`hai-run`'s `ref/run-types-by-space.md`.
+
+
+Which theme reads it
+--------------------
+
+An Ideation Block holds one bounded direction. Each admitted idea is one Job;
+`hai-ideation` owns its [contract](../../ideation/hai-ideation/references/idea-block.md).
+Use `--kind ideation-block`; its faces use the generic reader until a dedicated
+theme renderer is implemented. A Paper is a separate linked Block.
+
+```text
+Theme.claims(block)  ─▶  its Theme folder  ─▶  vanilla
+```
+
+A theme that reads a Block by what it holds says so with `claims=` on its `Theme(...)`; the
+frame asks every theme's claim before the Theme folder decides. To have a theme read a Block
+kept elsewhere, give the face that theme's field (`workbench: <theme>`); never move a Block
+only for its screen.
+
+
+Boundary
+--------
+
+| Owner | Owns |
+|---|---|
+| `hai-project` | the Project root, the Theme folders, the ladder's shape and its audit |
+| `hai-block` | the Block face, its Block-level Spaces and buttons, the scaffold, theme claims |
+| `hai-job` | the Jobs inside it |
+| `hai-report` | its Questions register · their reports |
+| `hai-studio` | its studio topics |
+| theme skills | their own Block template and fields over this one (work: `hai-task` `ref/block-board-template.md`) |
+| `servers/workbench/page/block_index_page/frame.py` | drawing the Spaces |
+
+
+Files
+-----
+
+```text
+hai-block/
+├── SKILL.md
+├── CHANGELOG.md
+├── agents/openai.yaml
+├── ref/board-contract.md     the face, the Spaces, the buttons, theme claims
+├── scripts/new_board.py      the new-Block scaffold
+└── tests/test_new_board.py
+```

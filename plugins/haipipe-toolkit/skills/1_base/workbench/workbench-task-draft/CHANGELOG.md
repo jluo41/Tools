@@ -50,7 +50,7 @@
 - Split bullet ids: every bullet-id pattern `B\d+` / `B(\d+)` now also takes trailing letters (`B4a`), so a split
   bullet is no longer read as missing or as "differ". 65 lines in draft_steps.py, outline.py (and its pinned test),
   runs_panel.py, haipipe-draft (cli/check.py, folder_health.py REALIZES, item_table.py, run_lifecycle.py,
-  page_renumber.py, plan_shape.py, page_adopt.py), haipipe-evidence from_items.py, excalidraw-draft
+  page_renumber.py, plan_shape.py, page_adopt.py), haipipe-evidence from_items.py, hai-draw draft
   section_canvas.py and read_revise.py, haipipe-paper import_fragments.py, haipipe-insight-check, draw-logic-tree.
   Moving a bullet renumbers `B4a` to a whole new number. Tests: no new failures against HEAD (draft 17 known,
   workbench 39 pass, workbench-paper 29 pass, insight-check 49 pass).
@@ -308,7 +308,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 - JL 261020, on the rubric and 1 · Plan's Result: "这个 rubric 你有没有想过怎么能把它改得更好一些？比如找一些相关的论文，
   把它们是怎么写的也放到这下面，做成一个 review", "这里可不可以找一些 examples?", then "here I will expect it to be a
   frame of the sNN studio". New `📚 Examples` card (`_examples_card`): the Studio topic that reads the published
-  papers (excalidraw-read's `reads/<pNN>/reading.yaml` under a topic naming the Task, or the topic a Section canvas
+  papers (hai-draw read's `reads/<pNN>/reading.yaml` under a topic naming the Task, or the topic a Section canvas
   names by `examples:`) opened as a frame onto its own drawing, as the Section canvas is; with none, the card copies
   the prompt that makes one. `📋 Requirement` became `📏 Requirement and Rubric` (`_rubric_card`): the desk rule,
   "Ours beside the examples" (size and each paragraph's move, ours against each paper, from `_examples`), a prompt
@@ -319,7 +319,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
   to work". Every step's Copy prompt now ends, after `user feedback:`, with `session: <name> runs this Task. If you
   are not <name>, send this whole message to <name> with SendMessage and stop; if <name> is not running, do it
   here.` (`draft_steps._session`, `_prompt_box`; the shared copy script appends a button's `data-tail`,
-  `servers/workbench/page/runs_panel.py`). The name is the Task face's `session:` line, else its Job face's; shown under
+  `servers/workbench/page/job_task_views/runs_panel.py`). The name is the Task face's `session:` line, else its Job face's; shown under
   the notes box as it is copied. The Studio tab shows each topic as its own card (no "The logic sketch" box around
   them), and a topic another one draws by `examples:` (s26 inside s22) is shown once, inside it: 1 · Plan's
   Examples card is then that Section canvas.
@@ -336,7 +336,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.104.1 · 2026-10-20 · a split sentence id counts in the step views
 
-- `servers/workbench/workbench-task-draft/draft_steps.py`: `_paragraphs` and `_sentence` read `S<n>` with a letter
+- `servers/workbench/workbench-task-draft/page_shell/draft_steps.py`: `_paragraphs` and `_sentence` read `S<n>` with a letter
   suffix (`S3a`, `S5b`), as Pages written before the grammar settled number a split sentence; the MISQ Abstract's
   Plan view counted 4 of its 10 Bullets before.
 
@@ -345,7 +345,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 - JL 261020, on the abstract Task's Work: "I think we need to make this as what we exected to see". The s41 design is
   now the screen: Work is Studio · 1 · Plan · 2 · Write · 3 · Evidence · 4 · Revise · Delivery, each Operation (Input,
   Sign, Prompt with `user feedback:`) over Result; Report has the same tabs with the Results only, plus Table and
-  Questions. New `servers/workbench/workbench-task-draft/draft_steps.py` reads the Task's files on every open;
+  Questions. New `servers/workbench/workbench-task-draft/page_shell/draft_steps.py` reads the Task's files on every open;
   `task_draft.py` lays the tabs out and maps the old tab links (`OLD_SUBS`). Description is the face alone; its Plan,
   Requirement and Records are cards of 1 · Plan (s41 Open 3). The paper theme's SUB-* rows moved there too.
 - Your own words in place: 2 · Write and 4 · Revise open, in Work and Report, with the Page's Revise boxes embedded (JL
@@ -376,7 +376,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.103.0 · 2026-10-16 · The draft Task type is one folder (JL 261016, s41-D15)
 
-- `servers/workbench/workbench-task-draft/task_draft.py` now holds the draft Task's layout, moved out of `frame.py`: `draft_task_spaces`, `DRAFT_TASK_SUBS`, `DRAFT_TASK_RUNS`, `PAGE_RUN_NAMES`, `PAGE_TASK_VIEWS`, the Delivery cards, the Page views (`PAGE_VIEWS`, `with_page_views`) and `VIEW_METHODS` (from `frame_view.py`). `frame.task_layouts()` finds every `workbench-task-<type>/task_<type>.py` through `host_registry.task_folders()`, so a new Task type is a new folder, base or theme.
+- `servers/workbench/workbench-task-draft/page_shell/task_draft.py` now holds the draft Task's layout, moved out of `frame.py`: `draft_task_spaces`, `DRAFT_TASK_SUBS`, `DRAFT_TASK_RUNS`, `PAGE_RUN_NAMES`, `PAGE_TASK_VIEWS`, the Delivery cards, the Page views (`PAGE_VIEWS`, `with_page_views`) and `VIEW_METHODS` (from `frame_view.py`). `frame.task_layouts()` finds every `workbench-task-<type>/task_<type>.py` through `host_registry.task_folders()`, so a new Task type is a new folder, base or theme.
 
 ## 0.102.0 · 2026-10-16 · Renamed from workbench-page (JL 261016, s41-D14)
 
@@ -393,7 +393,7 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.100.0 · 2026-10-07 · The Page views are the frame's Task Spaces (JL 261007)
 
-- One Page Task's views were a route and a page each (draft, evidence, value, runs, pageruns, delivery, folderstat; outline the old name of draft). They are now subspaces of the frame's Task level, drawn in place: Description › Folder, Audience Report › Draft, Work Details › Evidence · Value, Runs › Page Runs, Delivery › Lanes (`servers/workbench/page/frame.py` PAGE_VIEWS). A theme keeps them beside its own subspaces.
+- One Page Task's views were a route and a page each (draft, evidence, value, runs, pageruns, delivery, folderstat; outline the old name of draft). They are now subspaces of the frame's Task level, drawn in place: Description › Folder, Audience Report › Draft, Work Details › Evidence · Value, Runs › Page Runs, Delivery › Lanes (`servers/workbench/page/block_index_page/frame.py` PAGE_VIEWS). A theme keeps them beside its own subspaces.
 - One route serves them: `/_board/workbench?view=<view>&path=<page .md>` (`frame_view.py`). The old addresses answer as it on a GET or HEAD (`serve.py` PAGE_VIEW_ROUTES); the POST twins keep theirs. `/w/<block>/<page>/<tab>` of a Task's Page opens its Space in the frame.
 - Tests: `_host/tests/test_page_view_routes.py` (new), `_host/tests/test_frame.py`.
 
@@ -403,8 +403,8 @@ Links, commands and companions repointed at the helper skills merged into `haipi
 
 ## 0.98.0 · 2026-10-03 · RoadMap Draw holds two drawings
 
-- Draft › RoadMap Draw is two cards (JL 261003: "please update the section maps and view as well"): **Logic**, the person's logic tree (`studio/<stem>-roadmap.excalidraw`, editable, read left to right, each Bullet a row, a Text column and evidence cards), and **Section map**, generated by `excalidraw-draft` (`studio/<stem>-sections.excalidraw`, view only, with a note when the plan or its Evidence Items changed after it was drawn). Only one canvas on the page is editable, so neither can save into the other.
-- New run card `Page.section-map` and its Workbench Table row: Redraw the Section map (skill `excalidraw-draft`); `table-workbench --check --cards` PASS.
+- Draft › RoadMap Draw is two cards (JL 261003: "please update the section maps and view as well"): **Logic**, the person's logic tree (`studio/<stem>-roadmap.excalidraw`, editable, read left to right, each Bullet a row, a Text column and evidence cards), and **Section map**, generated by `hai-draw draft` (`studio/<stem>-sections.excalidraw`, view only, with a note when the plan or its Evidence Items changed after it was drawn). Only one canvas on the page is editable, so neither can save into the other.
+- New run card `Page.section-map` and its Workbench Table row: Redraw the Section map (skill `hai-draw draft`); `table-workbench --check --cards` PASS.
 
 ## 0.97.0 · 2026-10-03 · The Method page in Design's shape
 

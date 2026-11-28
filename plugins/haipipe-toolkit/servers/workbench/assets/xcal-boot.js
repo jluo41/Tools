@@ -166,7 +166,7 @@
     (document.head || document.documentElement).appendChild(bare);
   }
   var K_EL = "excalidraw", K_ST = "excalidraw-state";
-  var LOCK = "haipipe-xcal-edit", LOCK_MS = 6000;
+  var LOCK = "hai-xcal-edit", LOCK_MS = 6000;
   var SAVE = "/_board/excalidraw-save";
   var scene_url = "/" + board.replace(/^\/+/, "") +
                   (frame ? "?frame=" + encodeURIComponent(frame) : "");
@@ -392,7 +392,7 @@
   function linkedControls() {
     if (!linked || !edit || blocked || !document.body) return;
     var panel = document.createElement("div");
-    panel.id = "haipipe-linked-controls";
+    panel.id = "hai-linked-controls";
     panel.setAttribute("style",
       "position:fixed;left:12px;top:12px;z-index:2147483647;display:flex;gap:6px;" +
       "align-items:center;flex-wrap:wrap;max-width:calc(100vw - 24px);padding:8px;" +
@@ -514,7 +514,7 @@
   function arm(ev) {
     if (armed) return;
     var target = ev && ev.target;
-    if (target && target.closest && target.closest("#haipipe-linked-controls")) return;
+    if (target && target.closest && target.closest("#hai-linked-controls")) return;
     // Excalidraw normalizes loaded elements before the first human gesture.
     // Take that normalized scene as the baseline at gesture START, then save
     // only what the gesture changes. Toolbar navigation never arms a write.

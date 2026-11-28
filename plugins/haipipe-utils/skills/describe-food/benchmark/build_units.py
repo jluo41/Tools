@@ -61,7 +61,7 @@ sys.path.insert(0, str(HERE.parent))            # describe-food/
 # The SPACE root. Tools is shared by every SPACE, so a written-out path is
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
-# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+# the resolver. Same walk as hai-norm/paths.py:space_root().
 # resolve() unwinds a Tools symlink, so a SPACE that links Tools in is found from the cwd instead.
 ROOT = next(a for a in [*pathlib.Path(__file__).resolve().parents, pathlib.Path.cwd(), *pathlib.Path.cwd().parents]
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())

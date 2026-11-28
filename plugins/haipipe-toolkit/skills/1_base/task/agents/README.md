@@ -7,9 +7,9 @@ work done in CLEAN CONTEXT.
 Creator produces artifacts. Reviewer evaluates artifacts.
 
 ```
-haipipe-task-orchestrator-agent   🎯 ORCHESTRATE — dispatch target, coordinates lifecycle
-haipipe-task-creator-agent        🤖 CREATE      — produces plan, code, report
-haipipe-task-reviewer-agent       🔍 REVIEW      — evaluates plan, code (Gate 1), results (Gate 2)
+hai-task-orchestrator-agent   🎯 ORCHESTRATE — dispatch target, coordinates lifecycle
+hai-task-creator-agent        🤖 CREATE      — produces plan, code, report
+hai-task-reviewer-agent       🔍 REVIEW      — evaluates plan, code (Gate 1), results (Gate 2)
 ```
 
 Orchestrator dispatches creator + reviewer in loops. Creator never
@@ -55,15 +55,15 @@ Agent details
 
 | Agent | Stages | What it does |
 |-------|--------|-------------|
-| `haipipe-task-orchestrator-agent` | all | Clean-context dispatch target. Routes to creator/reviewer per stage and returns the Run/Result receipt. |
-| `haipipe-task-creator-agent` | 1, 2, 4 | Plan: drafts Run Specs. Build: writes/fixes code. Report: drafts the report. |
-| `haipipe-task-reviewer-agent` | 1, 2, 3, 4 | Plan: checks Run Specs. Build: Gate 1 code review. Execute: Gate 2 Result audit. Report: accuracy. |
+| `hai-task-orchestrator-agent` | all | Clean-context dispatch target. Routes to creator/reviewer per stage and returns the Run/Result receipt. |
+| `hai-task-creator-agent` | 1, 2, 4 | Plan: drafts Run Specs. Build: writes/fixes code. Report: drafts the report. |
+| `hai-task-reviewer-agent` | 1, 2, 3, 4 | Plan: checks Run Specs. Build: Gate 1 code review. Execute: Gate 2 Result audit. Report: accuracy. |
 
 
 Shared across task
 ---------------------
 
-These agents are used by `haipipe-task` (single task lifecycle) and by
-all type specialists (`haipipe-task-for-*`) that invoke them during
+These agents are used by `hai-task` (single task lifecycle) and by
+all type specialists (`hai-task-for-*`) that invoke them during
 their scaffold flow. They live at `1_base/task/agents/` (shared), not inside
 any single skill.

@@ -16,7 +16,7 @@ from live.board_read import (_rq_table, _after_table, _face, _field, _label_rows
 
 def _story_arc(topic: Path, body: str, md=None) -> str:
     """The whole paper's story arc, the first tab of Story by Section (JL 261109: "at the top of the tab, to describe the
-    narrative of this paper, what is the story arc of it"): the Section Narrative's `#### Story arc` (haipipe-paper-story);
+    narrative of this paper, what is the story arc of it"): the Section Narrative's `#### Story arc` (hai-paper-story);
     else the ```text block that opens it (identity, question, headline, boundaries); else where to write it."""
     m = re.search(r"(?ims)^#{2,5}[ \t]*(?:[\d.]+[ \t]*·[ \t]*)?(?:story|argument)[ \t]+arc\b[^\n]*\n(.*?)(?=^#{2,5}[ \t]|\Z)", body)
     if m and m[1].strip():
@@ -27,7 +27,7 @@ def _story_arc(topic: Path, body: str, md=None) -> str:
     if block:
         return f'<pre style="white-space:pre-wrap;margin:0">{esc(block[1].rstrip())}</pre>'
     return ('<p class=mut>No story arc yet: the Story\'s Section Narrative opens with <code>#### Story arc</code> '
-            '(haipipe-paper-story).</p>')
+            '(hai-paper-story).</p>')
 
 
 def _drop_section_table(text: str) -> str:
@@ -124,7 +124,7 @@ def _section_story(board: Path, body: str) -> list:
                                 for v in versions if (v / f"{v.name}.md").is_file()]
     for owner, src in sources:
         rows = [r for r in md_table(src, "Section") or md_table(src, "section")       # a row still all <placeholders>
-                if _said(r.get("Section", r.get("section", "")))                       # (a new Section's, haipipe-paper
+                if _said(r.get("Section", r.get("section", "")))                       # (a new Section's, hai-paper
                 and any(_said(v) for k, v in r.items() if k.lower() != "section")]      # task) tells nothing yet
         if rows:
             version = owner

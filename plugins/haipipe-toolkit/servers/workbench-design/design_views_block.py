@@ -13,14 +13,14 @@ from live.design_views_report import _questions, _costs, _summary, _rounds, _pre
 
 
 # ── Block (s11) ──────────────────────────────────────────────────────────────────────────────
-B_SKILLS = {"add-goal": ("haipipe-design-goal",), "setup-rules": ("haipipe-design-goal",), "add-inputs": ("haipipe-design-goal",),
-            "add-job": ("haipipe-design",), "propose": ("haipipe-design-method",), "propose-questions": ("haipipe-report",),
-            "report": ("haipipe-report", "haipipe-draft"), "add-observed": ("haipipe-design-method",),
-            "score": ("haipipe-design-method",), "draw": ("haipipe-studio",), "release": ("haipipe-design-delivery",)}
+B_SKILLS = {"add-goal": ("hai-design-goal",), "setup-rules": ("hai-design-goal",), "add-inputs": ("hai-design-goal",),
+            "add-job": ("hai-design",), "propose": ("hai-design-method",), "propose-questions": ("hai-report",),
+            "report": ("hai-report", "hai-draft"), "add-observed": ("hai-design-method",),
+            "score": ("hai-design-method",), "draw": ("hai-studio",), "release": ("hai-design-delivery",)}
 
 
 def _bk(b: dict, root: Path, label: str, rtype: str, prompt: str) -> dict:
-    return _kind(label, prompt, *B_SKILLS.get(rtype, ("haipipe-design",)), rows=_rows(b["runs"], root, rtype),
+    return _kind(label, prompt, *B_SKILLS.get(rtype, ("hai-design",)), rows=_rows(b["runs"], root, rtype),
                  level="Block")
 
 
@@ -71,7 +71,7 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Block", d_open, block)),
         "Idea Studio": Space(run_types=(_bk(b, root, "Add a topic", "draw", "Add or redraw a studio topic of {folder} with "
-                                            "/haipipe-studio: sNN-<topic>/ beside its Jobs (new_topic.py topic); save each "
+                                            "/hai-studio: sNN-<topic>/ beside its Jobs (new_topic.py topic); save each "
                                             "working session as a round, sNN-<topic>/passes/pNN-<MMDD>/."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Block", a_open, block), note="" if a_runs else "No run writes this view: it reads the Jobs' receipts and scores."),
@@ -90,7 +90,7 @@ def block_spaces(block: Path, root: Path, sub: str, href) -> dict:
                           + "<h3>Released designs</h3>" + _block_delivery(b, href), page=True,
                           disk=_disk("Block", "Delivery", block),
                           run_types=(_kind("run-release-<jNN>", "Release a Job's kept designs into {folder}/delivery/ "
-                                           "(the Job's run-release-jNN; a person signs).", "haipipe-design"),)),
+                                           "(the Job's run-release-jNN; a person signs).", "hai-design"),)),
     }
 
 

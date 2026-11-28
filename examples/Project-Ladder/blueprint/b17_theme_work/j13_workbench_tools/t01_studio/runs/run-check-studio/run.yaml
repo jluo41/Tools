@@ -1,0 +1,16 @@
+run: run-check-studio
+kind: soft
+type: check
+scope: null
+target: studio
+ticket: run-check-studio.md
+skill: hai-ui
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1125
+- p02-1125
+- p03-1125
+writes: []
+feeds: []

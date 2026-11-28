@@ -1,0 +1,16 @@
+run: run-write-t05
+kind: soft
+type: write
+scope: Tools/examples/Project-Ladder/insight/Insight-Example/j02_question-v1-example-questions_data-v2/t05_K01_gap-holds
+target: t05
+ticket: run-write-t05.md
+skill: hai-insight-knowledge
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t05_K01_gap-holds/t05_K01_gap-holds.md
+feeds: []

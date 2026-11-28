@@ -1,0 +1,108 @@
+{
+  "views": [
+    {
+      "name": "hai-knowledge",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/knowledge/hai-knowledge/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/knowledge/hai-knowledge/CONSTITUTION.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-studio",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/SKILL.md"
+        },
+        {
+          "name": "CONSTITUTION.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CONSTITUTION.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/scripts"
+        },
+        {
+          "name": "agents/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/agents"
+        },
+        {
+          "name": "constitution/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/constitution"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/1_base/project/hai-studio/CHANGELOG.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-discovery",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/ref"
+        },
+        {
+          "name": "scripts/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/scripts"
+        },
+        {
+          "name": "feedback/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/feedback"
+        },
+        {
+          "name": "fn/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/fn"
+        },
+        {
+          "name": "tests/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/tests"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/CHANGELOG.md"
+        },
+        {
+          "name": "PREFERENCES.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/discovery/hai-discovery/PREFERENCES.md"
+        }
+      ]
+    },
+    {
+      "name": "hai-work",
+      "items": [
+        {
+          "name": "SKILL.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/work/hai-work/SKILL.md"
+        },
+        {
+          "name": "ref/",
+          "folder": "plugins/haipipe-toolkit/skills/2_work/work/hai-work/ref"
+        },
+        {
+          "name": "CHANGELOG.md",
+          "path": "plugins/haipipe-toolkit/skills/2_work/work/hai-work/CHANGELOG.md"
+        }
+      ]
+    }
+  ]
+}

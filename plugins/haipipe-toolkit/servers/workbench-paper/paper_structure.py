@@ -190,7 +190,7 @@ def _read_only(html: str) -> str:
 
 def _plan_mind_map(task: Path, name: str) -> str:
     """The Section's Plan mind map, drawn by the draft Task's own code (JL 261111: "the same mindmap from the plan view
-    of the draft task"; draft_steps._plan_map over haipipe-mindmap's mapview), read-only here: nothing typed in place."""
+    of the draft task"; draft_steps._plan_map over hai-mindmap's mapview), read-only here: nothing typed in place."""
     try:
         from live import draft_steps as dst
         d = dst.read_draft(task)

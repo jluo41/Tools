@@ -93,12 +93,12 @@ class FocusPageTest(fixtures.FocusPageCase):
                             'layout': 'Left tabs · Right content', 'example': 'Show {result}.'},
                 'Skills': {'what': 'Relevant skills.'}},
             'types': {'Data': {'result': 'a dataset'}},
-            'skills': {'Findings': ['haipipe-{level} — Check the work.']}}))
+            'skills': {'Findings': ['hai-{level} — Check the work.']}}))
         page = focus_page.ui_matrix_html(source, self.root)
         self.assertEqual(page.count('class="matrix-section"'), 2)
         self.assertIn('data-context="Job · Data · Findings"', page)
         self.assertIn('data-example="Show a dataset."', page)
-        self.assertIn('haipipe-job — Check the work.', page)
+        self.assertIn('hai-job — Check the work.', page)
         self.assertIn('data-layout="Left tabs · Right content"', page)
         self.assertIn('&lt;script&gt;alert(1)&lt;/script&gt;', page)
         self.assertNotIn('<script>alert(1)</script>', page)
@@ -215,16 +215,16 @@ class FocusPageTest(fixtures.FocusPageCase):
         self.assertNotIn('📈 Statistical Analysis', job)
 
     def test_a_tools_blueprint_names_its_example_from_the_tools_root_in_any_space(self):
-        """261105: a Tools theme Block names its placeholder as `blueprints/...`; inside a SPACE, Tools sits at `Tools/`,
+        """261105: a Tools theme Block names its placeholder as `examples/...`; inside a SPACE, Tools sits at `Tools/`,
         so the path is found from the Block's own checkout and framed by its path from the SPACE root."""
         tools = self.root / 'Tools'
-        block = tools / 'blueprints/Project-X/work/b16_theme_x'
-        example = tools / 'blueprints/Project-X/paper/Paper-Example'
+        block = tools / 'examples/Project-X/blueprint/b16_theme_x'
+        example = tools / 'examples/Project-X/paper/Paper-Example'
         block.mkdir(parents=True)
         example.mkdir(parents=True)
-        html = focus_page.ui_view('blueprints/Project-X/paper/Paper-Example', 'Block UI', self.root, block)
-        self.assertRegex(html, r'<iframe class="ui-page" title="Block UI[^"]*"[^>]*src="[^"]*path=Tools%2Fblueprints%2FProject-X%2Fpaper%2FPaper-Example')
-        for bad in ('../outside', 'blueprints/../../outside', '/etc', 'blueprints/Project-X/paper/Missing'):
+        html = focus_page.ui_view('examples/Project-X/paper/Paper-Example', 'Block UI', self.root, block)
+        self.assertRegex(html, r'<iframe class="ui-page" title="Block UI[^"]*"[^>]*src="[^"]*path=Tools%2Fexamples%2FProject-X%2Fpaper%2FPaper-Example')
+        for bad in ('../outside', 'examples/../../outside', '/etc', 'examples/Project-X/paper/Missing'):
             self.assertIn('is not a page here', focus_page.ui_view(bad, 'Block UI', self.root, block), bad)
 
     def test_each_kind_of_page_at_a_level_is_a_side_tab(self):
@@ -306,8 +306,8 @@ class FocusPageTest(fixtures.FocusPageCase):
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'skills')
         self.assertIn('>🧰 Skills<', page)
         self.assertIn('Copy prompt', page)
-        self.assertIn('/haipipe-work', page)                         # the theme's door first
-        self.assertIn('/haipipe-block', page)                        # then the level's skill
+        self.assertIn('/hai-work', page)                         # the theme's door first
+        self.assertIn('/hai-block', page)                        # then the level's skill
         self.assertIn('Copy prompt', page)
         work = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'work')
         self.assertNotIn('Skills that do it', work)                  # shown once: the rail, not every view's Process

@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>s32 Trace section previews</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--accent:#1f5fbf;--bg:#fff}
+@media (prefers-color-scheme:dark){:root{--line:#3a3a37;--muted:#a3a39c;--ink:#ecece8;--accent:#8ab4ff;--bg:#1b1b19}}
+body{margin:0;background:var(--bg);color:var(--ink);font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+nav{display:flex;flex-wrap:wrap;gap:6px;padding:10px 12px;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg)}
+nav button{border:1px solid var(--line);background:none;color:var(--muted);border-radius:999px;padding:4px 12px;font:inherit;font-size:12px;cursor:pointer}
+nav button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+nav .earlier{display:flex;align-items:center;gap:6px;margin-left:8px;font-size:11px;color:var(--muted);letter-spacing:.04em}
+nav .earlier::before{content:"";width:1px;height:16px;background:var(--line)}
+nav button.old{opacity:.5}nav button.old:hover,nav button.old[aria-pressed=true]{opacity:1}
+iframe{display:block;width:100%;height:calc(100vh - 50px);border:0}
+</style></head><body>
+<nav aria-label="Previews">
+ <button type="button" data-src="delivery/ui/trace-metro.html?v=wide" aria-pressed="true">A · Wide metro</button>
+ <button type="button" data-src="delivery/ui/trace-metro.html?v=topic">B · By topic</button>
+ <button type="button" data-src="delivery/ui/trace-metro.html?v=read">C · Read beside</button>
+ <span class="earlier">earlier</span>
+ <button type="button" class="old" data-src="delivery/ui/trace-topics.html">List by topic</button>
+</nav>
+<iframe id="f" src="delivery/ui/trace-metro.html?v=wide" title="Preview"></iframe>
+<script>
+var bs=document.querySelectorAll('nav button'),f=document.getElementById('f');
+bs.forEach(function(b){b.onclick=function(){bs.forEach(function(x){x.setAttribute('aria-pressed',x===b);});f.src=b.dataset.src;};});
+</script>
+</body></html>

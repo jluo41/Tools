@@ -61,4 +61,4 @@ risk: Readers' records are protected health information: use only what the desig
 evidence on AI: Messages a language model tailored to a reader from one short prompt
   were more persuasive [Matz 2024]. No study tests an AI tailoring health messages from
   readers' records yet (ours).
-skill: haipipe-design-by-tailoring (proposed)
+skill: hai-design-by-tailoring (proposed)

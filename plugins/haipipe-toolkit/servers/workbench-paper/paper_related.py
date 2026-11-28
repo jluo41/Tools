@@ -84,7 +84,7 @@ def _scalar_yaml(v):
 
 
 def logic_work_data(path):
-    """A Paper Run's logic-work.yaml (haipipe-discovery 0.20): top-level `key: value` scalars and
+    """A Paper Run's logic-work.yaml (hai-discovery 0.20): top-level `key: value` scalars and
     `key:` lists of `- item` strings, as the Discovery builder writes them. {} when absent."""
     out, key = {}, None
     for line in read(path).splitlines():
@@ -308,7 +308,7 @@ def roadmap_html(d):
     files = files or [own]
 
     def generated(f):
-        """A drawing a script writes (its `source` names the script, as excalidraw-draft's paper
+        """A drawing a script writes (its `source` names the script, as hai-draw draft's paper
         map does) opens view only: it is redrawn from its files, never edited (JL 261003)."""
         try:
             return str(json.loads(f.read_text(encoding="utf-8")).get("source", "")).endswith(".py")

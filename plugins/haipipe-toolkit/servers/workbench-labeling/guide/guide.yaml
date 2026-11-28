@@ -1,6 +1,6 @@
 # The Labeling family's Guide (servers/workbench-labeling). Loaded by servers/workbench/guide/guide_families.py.
 # Paths: guide/… related/… or a module are relative to servers/workbench-labeling; skill:<name>/<rest>
-# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in blueprints/Project-Ladder/work/b15_theme_labeling).
+# is a skill's file; Tools/… is SPACE-relative (the RoadMap drawing, built in examples/Project-Ladder/blueprint/b15_theme_labeling).
 family: labeling
 label: Labeling
 presenter: workbench-task-labeling/labeling.py
@@ -18,9 +18,9 @@ description: 'The Labeling Workbench runs one subjective-labeling job on one Pag
 skills:
 - skill: workbench-labeling
   role: The Page-local labeling job and its Spaces
-- skill: haipipe-labeling-building
+- skill: hai-labeling-building
   role: 'Building the labels: meanings, rounds and guideline'
-- skill: haipipe-labeling-scanning
+- skill: hai-labeling-scanning
   role: 'Scanning: the final test, production and audit'
 method:
 - - Prepare the corpus
@@ -65,7 +65,7 @@ folders:
 explain:
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/labeling-workbench-ui.excalidraw
+  - board: Tools/examples/Project-Ladder/blueprint/b15_theme_labeling/s02-labeling-workbench/labeling-workbench-ui.excalidraw
   - Workbench design
   - first
   method:

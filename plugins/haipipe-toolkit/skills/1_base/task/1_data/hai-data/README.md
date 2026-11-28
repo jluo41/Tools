@@ -1,0 +1,311 @@
+hai-data -- Unified Data Pipeline Skill
+============================================
+
+Covers all 5 data pipeline stages (Stage 0' raw + 4 pipeline) in one skill.
+Functions: dashboard, load, understand, cook, design-chef, design-kitchen, explain, review, hand-off.
+
+---
+
+Commands
+--------
+
+  /hai-data                          <- dashboard (default): _WorkSpace status
+  /hai-data dashboard                <- status at all 4 stages
+  /hai-data load [stage]             <- inspect existing Set asset
+  /hai-data cook [stage]             <- run Pipeline with config
+  /hai-data design-chef [stage]      <- create new Fn via builder
+  /hai-data design-kitchen [stage]   <- modify Pipeline infrastructure
+  /hai-data explain [concept]        <- explain a concept (asks if no arg given)
+  /hai-data review [file_path]       <- structural code review (asks for path if not given)
+  /hai-data understand 0-raw <cohort> <- iterative dialogue -> datapoint-timeline.txt
+  /hai-data hand-off 0-raw <cohort>   <- derive SourceFn checklist from timeline
+  /hai-data 0-overview               <- architecture + pipeline map
+  /hai-data 0-raw                    <- raw cohort layer reference
+  /hai-data 1-source                 <- source layer reference
+  /hai-data 2-record                 <- record layer reference
+  /hai-data 3-case                   <- case layer reference
+  /hai-data 4-aidata                 <- aidata layer reference
+
+---
+
+Stages
+------
+
+  0-raw       Raw cohort extract -> single-data-point lifecycle understanding
+              Specialist: hai-data raw  |  Output: datapoint-timeline.txt
+              Store:      _WorkSpace/0-RawDataStore/
+              Domain-agnostic: CGM streams, EHR encounters, claims lines,
+              sensor sessions, messaging extracts, vendor drops, etc.
+              (Run BEFORE 1-source design-chef when onboarding a new cohort.)
+
+  1-source    Raw files -> SourceSet
+              Kitchen: Source_Pipeline  |  Chef: SourceFn
+              Store:   _WorkSpace/1-SourceStore/
+
+  2-record    SourceSet -> RecordSet
+              Kitchen: Record_Pipeline  |  Chef: HumanFn + RecordFn
+              Store:   _WorkSpace/2-RecStore/
+
+  3-case      RecordSet -> CaseSet (event-triggered feature extraction)
+              Kitchen: Case_Pipeline    |  Chef: TriggerFn + CaseFn
+              Store:   _WorkSpace/3-CaseStore/
+
+  4-aidata    CaseSet -> AIDataSet (train/val/test splits)
+              Kitchen: AIData_Pipeline  |  Chef: TfmFn + SplitFn
+              Store:   _WorkSpace/4-AIDataStore/
+
+---
+
+File Map
+--------
+
+  SKILL.md                  <- router + dispatch table
+  README.md                 <- this file
+  ref/0-overview.md         <- architecture map + cooking metaphor
+  Per-stage references (specialist-owned):
+    _parts/{source,record,case,aidata}/ref/concepts.md
+  fn/fn-0-dashboard.md      <- dashboard function
+  fn/fn-1-load.md           <- load function (all stages)
+  fn/fn-2-cook.md           <- cook function (all stages)
+  fn/fn-3-design-chef.md    <- design-chef function (workflow, source, record, universal rules)
+  fn/fn-3-design-chef-case-aidata.md <- design-chef stage references for case and aidata
+  fn/fn-4-design-kitchen.md <- design-kitchen function (all stages)
+  fn/fn-explain.md          <- explain function (25-concept pool, ask-then-explain)
+  fn/fn-review.md           <- review function (detect type, apply checklist, PASS/WARN/FAIL)
+  Config templates (specialist-owned):
+    _parts/{source,record,case,aidata}/templates/config.yaml
+
+---
+
+Use Cases
+---------
+
+**1.
+Morning status check -- what data is ready?**
+
+  Situation:  You sit down to work and want to know which pipeline stages have
+              cached assets and which are missing.
+  Command:    /hai-data
+  What it does: Scans all 4 _WorkSpace store directories, lists available
+                assets, versions, and row counts at a glance.
+
+**2.
+Debug a missing or empty asset**
+
+  Situation:  Training failed because the AIDataSet is empty or a CaseSet
+              has fewer rows than expected.
+  Command:    /hai-data load 3-case   (or 4-aidata)
+  What it does: Loads the Set, prints shape, split sizes, feature columns,
+                and flags any obvious issues (zero rows, missing splits, etc.)
+
+**3.
+Run a pipeline stage with a config**
+
+  Situation:  You have a YAML config and want to execute one stage
+              (e.g., regenerate the CaseSet after fixing a CaseFn).
+  Command:    /hai-data cook 3-case
+  What it does: Walks through environment setup, config validation,
+                pipeline.run() call, and output verification.
+
+**4.
+Onboard a new raw dataset (new cohort)**
+
+  Situation:  A new CSV/XML data dump has arrived and you need to build
+              a SourceFn so the pipeline can ingest it. (For business-level
+              understanding of what one row means -- events, fog of war,
+              eligibility vs drop-off -- run `understand 0-raw` first;
+              see use case 16.)
+  Command:    /hai-data design-chef 1-source
+  What it does: Guides you through creating and running the builder script
+                in the project's b01_sourcestore/j5N_<cohort>_v<yymmdd>_source/t01_sourcefn_develop_and_use/ Task
+                that generates the SourceFn in code/haifn/fn_source/ (or
+                fn_source/<fn_version>/ when the Run config sets fn_version:).
+
+**5.
+Add a new patient record type (new sensor / new data stream)**
+
+  Situation:  A new data stream (e.g., CGM from a new device, a new lab table)
+              needs to be wired into the RecordSet.
+  Command:    /hai-data design-chef 2-record
+  What it does: Helps decide whether to build a HumanFn or RecordFn, then
+                guides through the 9-step processing skeleton, schema
+                consistency rules, and builder execution.
+
+**6.
+Engineer a new feature for model training**
+
+  Situation:  You want to add a new time-window feature (e.g., CGM variance
+              in the 2h before a trigger) to the CaseSet.
+  Command:    /hai-data design-chef 3-case
+  What it does: Guides CaseFn construction -- ROName setup, Ckpd window
+                config, fn_CaseFn signature, suffix-only return keys,
+                MetaDict, and builder execution.
+
+**7.
+Build a new ML-ready transform for a new model architecture**
+
+  Situation:  A new model needs a different input format (e.g., a tensor
+              sequence instead of flat tabular features).
+  Command:    /hai-data design-chef 4-aidata
+  What it does: Guides InputTfmFn / OutputTfmFn / SplitFn construction
+                with correct signatures, vocab building, and config wiring.
+
+**8.
+Inspect a Set before using it in model training**
+
+  Situation:  You're about to hand an AIDataSet to a model trainer and want
+              to verify splits, vocab size, feature columns, and row counts.
+  Command:    /hai-data load 4-aidata
+  What it does: Loads AIDataSet, prints DatasetDict splits, feat_vocab,
+                cf_to_cfvocab, and flags structural issues.
+
+**9.
+Understand a pipeline concept or API**
+
+  Situation:  You forgot how SplitFn works, or what ROName means, or how
+              the train/val/test split labeling works.
+  Command:    /hai-data explain ROName
+              /hai-data explain SplitFn
+              /hai-data explain            (shows concept menu)
+  What it does: Draws on all 4 stage refs to explain the concept accurately
+                with code examples.
+
+**10.
+Review a file before committing**
+
+  Situation:  You've written a new CaseFn or RecordFn builder and want to
+              check it for structural issues before running it.
+  Command:    /hai-data review code/haifn/fn_case/case_casefn/MyFn.py
+              /hai-data review examples/<Project>/work/b03_casestore/j02_casefn_<family>/t01_casefn_MyFeature/scripts/build_casefn_MyFeature.py
+              /hai-data review <task>/scripts/config/my_caseset.yaml
+  What it does: Auto-detects the file type, applies the matching checklist
+                (70+ criteria across all Fn types), and reports
+                PASS / WARN / FAIL per criterion with a score.
+
+**11.
+Review a YAML config for correctness**
+
+  Situation:  A pipeline run failed with a cryptic error. You suspect the
+              YAML config has a wrong key name or missing required section.
+  Command:    /hai-data review <task>/scripts/config/my_aidata.yaml
+  What it does: Checks SplitArgs structure, InputArgs/OutputArgs keys,
+                method names, casefn_list entries, and split_ai values.
+
+**12.
+Modify pipeline infrastructure**
+
+  Situation:  You need to change how the pipeline caches data, add a new
+              pipeline mode, or fix a bug in the base Pipeline class.
+  Command:    /hai-data design-kitchen 3-case
+  What it does: Identifies the correct file to edit in code/haipipe/,
+                explains the impact on downstream stages, and guides the
+                change safely (no builder regeneration needed).
+
+**13.
+Re-run a specific stage after a bug fix**
+
+  Situation:  You fixed a bug in a CaseFn builder and re-generated it.
+              Now you need to re-run the Case pipeline to refresh the CaseSet.
+  Command:    /hai-data cook 3-case
+  What it does: Walks through cache invalidation (use_cache=False), config
+                validation, run call, and output row count verification.
+
+**14.
+Explore the full pipeline architecture**
+
+  Situation:  You are new to the codebase and want to understand how all
+              4 stages connect, what the cooking metaphor means, and how
+              _WorkSpace is organized.
+  Command:    /hai-data 0-overview
+              /hai-data explain
+  What it does: Loads the architecture map, cooking metaphor, _WorkSpace
+                layout, and design principles. Explain mode then lets you
+                drill into any specific concept.
+
+**15.
+Validate a new cohort end-to-end**
+
+  Situation:  You have added a new cohort (e.g., OhioT1DM) and want to
+              walk through all 4 stages to confirm the data flows correctly
+              from raw files to AIDataSet.
+  Command:    /hai-data cook 1-source  (then 2-record, 3-case, 4-aidata)
+              /hai-data load 4-aidata  (final verification)
+  What it does: Runs each stage sequentially, checking output at each step
+                before proceeding to the next.
+
+**16.
+Understand a new raw cohort BEFORE pipeline-building**
+
+  Situation:  A new raw extract just landed in _WorkSpace/0-RawDataStore/<cohort>-v<yymmdd>/
+              (parquet/csv + description .txts). The extract can be from any
+              domain -- CGM stream, EHR encounter table, claims lines, sensor
+              session log, messaging / engagement extract, vendor drop, etc.
+              You need to understand what one data point means at the business
+              level -- what events generate one row, what is observable vs
+              hidden (fog of war), what eligibility / treatment confounders
+              live in the data -- BEFORE wrapping it as a SourceFn.
+  Command:    /hai-data understand 0-raw <cohort>
+              /hai-data hand-off 0-raw <cohort>     (after understand)
+  What it does: Iterative dialogue with you to draft a single-data-point
+                lifecycle diagram (datapoint-timeline.txt) covering pre-T_0
+                background, in-data events, fog of war, late-visible
+                signals, cross-cutting events. Validates every claim
+                (column existence, prevalence rate) against the parquet.
+                hand-off then derives a SourceFn-ready checklist:
+                columns to keep, derived fields to compute, eligibility
+                flags to keep separate, upstream asks. Run this BEFORE
+                use case 4 (design-chef 1-source).
+
+---
+
+How to Request Changes to This Skill
+--------------------------------------
+
+You do not need to edit the skill files manually.
+Describe what you want in plain language -- Claude will assess feasibility and make the changes.
+
+Workflow:
+
+  1. Describe your requirement in natural language
+       e.g. "I want to see raw data file counts in the dashboard"
+            "Can we add a shortcut for reviewing case functions?"
+            "The cook command is slow -- can we add a dry-run mode?"
+
+  2. Claude runs two checks and reports back:
+
+       Check 1 -- Capability: can Claude Code technically do this?
+         (file I/O, bash, Python -- yes; background daemons, external APIs -- no)
+
+       Check 2 -- Skill coverage: does the current skill support this?
+         New command?        -> needs dispatch table + fn file change
+         New behavior?       -> needs fn/*.md change only
+         New knowledge?      -> needs ref/*.md change only
+         Combination?        -> Claude lists all files to touch
+
+  3. If the requirement is unclear or out of scope, Claude will ask
+     clarifying questions or suggest a scoped alternative.
+
+  4. Claude proposes a plan. You approve. Claude edits the files.
+
+What makes a good requirement:
+
+  - Describe the situation ("I only want to see source stage info")
+  - Describe the expected output ("just show file counts, not columns")
+  - Mention what triggered the need ("the full dashboard is too slow")
+
+You do NOT need to know which files to edit or how the dispatch table works.
+
+---
+
+Key Files (codebase)
+--------------------
+
+  Source_Pipeline:    code/haipipe/source_base/source_pipeline.py
+  Record_Pipeline:    code/haipipe/record_base/record_pipeline.py
+  Case_Pipeline:      code/haipipe/case_base/case_pipeline.py
+  AIData_Pipeline:    code/haipipe/aidata_base/aidata_pipeline.py
+  Asset base:         code/haipipe/assets.py
+  Generated Fns:      code/haifn/        (NEVER edit directly)
+  Builder scripts:    examples/<Project>/work/b0[1-4]_*/j*/t*/scripts/  (legacy: code-dev/1-PIPELINE/)
+
+  Always activate .venv first: source .venv/bin/activate && source env.sh

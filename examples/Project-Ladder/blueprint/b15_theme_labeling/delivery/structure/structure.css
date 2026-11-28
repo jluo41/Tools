@@ -1,0 +1,14 @@
+/* Content containers only. Map geometry, text, wires and folding belong to mapview. */
+#labeling-structure-design{padding:8px;min-width:0}
+#labeling-structure-design>.sd-content[hidden]{display:none!important}
+#labeling-structure-design .sd-map-frame{overflow:auto;max-width:100%;padding:4px}
+#labeling-structure-design .sd-notes{margin:14px 4px}
+#labeling-structure-design .sd-notes summary{cursor:pointer}
+#labeling-structure-design .sd-notes dl{display:grid;grid-template-columns:max-content 1fr;gap:8px 16px}
+#labeling-structure-design .sd-notes dt{color:var(--mut)}
+#labeling-structure-design .sd-notes dd{margin:0}
+#labeling-structure-design .sd-notes li{margin:6px 0}
+#labeling-structure-design .sd-example{margin:14px 4px}
+#labeling-structure-design .sd-example>summary{cursor:pointer;margin-bottom:8px}
+/* b17's folder tree reads its colours from these names; point them at the shared page's own. */
+#labeling-structure-design{--accent:var(--acc);--muted:var(--mut)}

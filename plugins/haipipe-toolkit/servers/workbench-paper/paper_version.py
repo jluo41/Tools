@@ -32,7 +32,7 @@ def build_running(vdir: Path) -> bool:
     import hashlib, os, tempfile
     digest = hashlib.sha1(str(vdir.resolve()).encode("utf-8")).hexdigest()[:12]
     try:
-        held = re.match(r"build pid (\d+) ", (Path(tempfile.gettempdir()) / f"haipipe-paper-build-{digest}.lock").read_text(encoding="utf-8"))
+        held = re.match(r"build pid (\d+) ", (Path(tempfile.gettempdir()) / f"hai-paper-build-{digest}.lock").read_text(encoding="utf-8"))
         if held:
             os.kill(int(held.group(1)), 0)
         return bool(held)
@@ -384,7 +384,7 @@ def paper_map(title: str, kids: list, note=(), key: str = "map") -> str:
     root, then a branch per kid, each leaf a "[role] words" line; ids relative to the page (no folder path in the
     HTML)."""
     from live import frame
-    mm_ = frame.mindmap_module()                 # puts haipipe-mindmap's scripts on the path first
+    mm_ = frame.mindmap_module()                 # puts hai-mindmap's scripts on the path first
     import mmbuild
     import mmtree
     node = mmbuild.built(".", breakable(title), kids, list(note))
@@ -407,7 +407,7 @@ def _version_mindmap(version: Path, root: Path) -> str:
     from live import frame
     from live.board_read import _field, _section_state, _state_words
     from live.address_links import href
-    frame.mindmap_module()                       # puts haipipe-mindmap's scripts on the path first
+    frame.mindmap_module()                       # puts hai-mindmap's scripts on the path first
     import mmbuild
     text = _face_of(version)
     v = version.name

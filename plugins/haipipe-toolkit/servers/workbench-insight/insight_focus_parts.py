@@ -18,21 +18,21 @@ from live.insight_view_parts import _pill, _section
 VIEWS = (("overall", "Findings"), ("vs-previous", "Changes"), ("grid", "Progress"))   # plain words; keys stay for links
 # the skills each view's work calls on (the rail's Skills: focus_page.page_skills reads it, 261106)
 VIEW_SKILLS = {
-    "answers": (("haipipe-insight", "writes the Overall Report from the answers below it"),),
-    "questions": (("haipipe-insight-question", "proposes questions and segments for the next question version"),
-                  ("haipipe-insight-evidence-plan", "plans each question's evidence before any Run")),
-    "jobs": (("haipipe-insight", "adds a Job: a signed question version × a data version, one clock moved"),),
-    "data": (("haipipe-insight-meta", "adds a data version and counts its rows per segment"),),
-    "handoff": (("haipipe-insight-wisdom", "writes the advice and drafts it for your sign"),),
-    "overall": (("haipipe-insight", "writes the Overall Report and closes the Job"),),
-    "grid": (("haipipe-insight-data", "writes a Data page from its Runs"),
-             ("haipipe-insight-information", "writes an Information page"),
-             ("haipipe-insight-knowledge", "writes a Knowledge page"),
-             ("haipipe-insight-check", "checks each page against its question")),
-    "vs-previous": (("haipipe-insight-knowledge", "compares each answer with the Job before"),),
-    "answer": (("haipipe-insight-check", "runs the alignment check"), ("haipipe-insight", "runs the question on a segment")),
-    "across-jobs": (("haipipe-insight-check", "draws the question's track across the Jobs"),),
-    "plan": (("haipipe-insight-evidence-plan", "plans and agrees the evidence"),),
+    "answers": (("hai-insight", "writes the Overall Report from the answers below it"),),
+    "questions": (("hai-insight-question", "proposes questions and segments for the next question version"),
+                  ("hai-insight-evidence-plan", "plans each question's evidence before any Run")),
+    "jobs": (("hai-insight", "adds a Job: a signed question version × a data version, one clock moved"),),
+    "data": (("hai-insight-meta", "adds a data version and counts its rows per segment"),),
+    "handoff": (("hai-insight-wisdom", "writes the advice and drafts it for your sign"),),
+    "overall": (("hai-insight", "writes the Overall Report and closes the Job"),),
+    "grid": (("hai-insight-data", "writes a Data page from its Runs"),
+             ("hai-insight-information", "writes an Information page"),
+             ("hai-insight-knowledge", "writes a Knowledge page"),
+             ("hai-insight-check", "checks each page against its question")),
+    "vs-previous": (("hai-insight-knowledge", "compares each answer with the Job before"),),
+    "answer": (("hai-insight-check", "runs the alignment check"), ("hai-insight", "runs the question on a segment")),
+    "across-jobs": (("hai-insight-check", "draws the question's track across the Jobs"),),
+    "plan": (("hai-insight-evidence-plan", "plans and agrees the evidence"),),
 }
 
 # a button that writes (data-post, as runs_panel's): the old frame carries it, the focus page needs its own copy
@@ -215,7 +215,7 @@ def _page_word(t: dict) -> str:
 
 
 def _dot(cls: str, title: str) -> str:
-    """One mark, its meaning in its hover title and in the key beside it (haipipe-ui rule 5)."""
+    """One mark, its meaning in its hover title and in the key beside it (hai-ui rule 5)."""
     return f'<span class="in-dot {cls}" title="{esc(title)}"></span>'
 
 

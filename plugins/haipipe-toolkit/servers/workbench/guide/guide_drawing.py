@@ -64,7 +64,7 @@ class Scene:
             self.text(x + (dx / 2 - 24 if dx else 12), y + (dy / 2 - 10 if dy else -25), label, 14)
 
     def data(self):
-        return dict(type="excalidraw", version=2, source="haipipe-workbench-guide",
+        return dict(type="excalidraw", version=2, source="hai-workbench-guide",
                     elements=self.elements, appState={"viewBackgroundColor": "#ffffff", "gridSize": None}, files={})
 
     def vector(self, title):

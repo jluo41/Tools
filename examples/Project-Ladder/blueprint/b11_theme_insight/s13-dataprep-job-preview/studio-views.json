@@ -1,0 +1,74 @@
+{
+  "views": [
+    {
+      "name": "Page-Job",
+      "items": [
+        {
+          "name": "job-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightDataPrep-Example&layout=focus&section=jobs&group=j01&mark=jobs-rows%2Cjob-ttopics%2Cjob-subs"
+        },
+        {
+          "name": "job-overview",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightDataPrep-Example&layout=focus&section=jobs&group=j01&mark=view%3Doverview"
+        },
+        {
+          "name": "job-tasks",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightDataPrep-Example&layout=focus&section=jobs&group=j01&mark=view%3Dstanding"
+        },
+        {
+          "name": "job-findings",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightDataPrep-Example&layout=focus&section=jobs&group=j01&mark=view%3Dfindings"
+        }
+      ]
+    },
+    {
+      "name": "Page-Task",
+      "items": [
+        {
+          "name": "Prep step",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Finsight%2FInsightDataPrep-Example&layout=focus&section=jobs&group=j01&task=t01"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Prep-code version",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/dataprep.md"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Prep step",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/ref/dataprep.md"
+        }
+      ]
+    },
+    {
+      "name": "QuickHtml",
+      "items": [
+        {
+          "name": "Steps and Runs",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s13-dataprep-job-preview/delivery/ui/steps-and-runs.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "MindMap",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s13-dataprep-job-preview/s13-dataprep-job-preview.mindmap.md"
+        },
+        {
+          "name": "Canvas",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s13-dataprep-job-preview/s13-dataprep-job-preview.excalidraw"
+        }
+      ]
+    }
+  ]
+}

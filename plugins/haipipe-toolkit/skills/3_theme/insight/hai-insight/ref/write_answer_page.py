@@ -1,0 +1,410 @@
+#!/usr/bin/env python3
+"""write_answer_page — lay one answering page out in the hai-draft shape, from a spec.
+
+The writer authors a YAML spec: the title, the Opening, and one Content
+division per evidence need, each with its paragraphs and Bullets, every Bullet
+carrying its Draft sentence and either its Evidence Item or the judge need it
+makes. This tool only formats what the writer wrote (ref/report.md § The flow,
+steps 2 and 3):
+
+    draft/<stem>-draft-v<G>.<S>.md     the plan: Structure · Scratch · Draft
+    draft/<stem>-evidence-items.md     one Evidence Item per compute or cite need
+    <stem>.md                          header, Opening, Content skeleton whose
+                                       tagged lines `page.py adopt` then fills
+
+A page written before this shape is archived whole to
+`draft/_archive/<stem>-page-before-<YYMMDD>.md`, and its `## Log` entries are
+appended to `draft/records/<stem>-log.md`. A current plan is moved to
+`draft/previous/` before the new one is written. Run `page.py adopt <page>`
+and `page.py health <page>` afterwards.
+
+    write_answer_page.py <page folder> <spec.yaml> [--version v0.1]
+
+A question Task of an insight Board Job (ref/insight-ladder.md: `<Board>/jNN_question-vN-…_data-vM/tNN_<L><NN>_<slug>/`)
+is written in its own shape instead (`build_task_page`): its face `tNN_….md` with `question:`, its `goal:` kept,
+`answer-status:`, `answer:`, `how-sure:`, `check:` (reset, since the page changed), `takeaways:` (one line per segment) and, for an
+Executive question, `figures:`; then `# <QID> · <name>`, `**The ask**`, the opening, and one `## <Segment>` section per hard
+Run of the Task, in rNN order, each its takeaway and its bullets; a question with no Run (it cites the answers below
+it) has titled sections instead. A bullet names its evidence and the tool writes the citation: `file:` a table its
+segment's Run wrote (`(r01_full · rates_by_arm.csv)`, refused when the Run is not ok or the file is missing), `cite:` a
+question of the same Job (`(K01 · t05)`, refused when the Job has no such Task). The spec, for a Board Task:
+
+    answer-status: answered | partial | written | drafted
+    answer: <one plain line>
+    how-sure: <one line>
+    opening: [<sentence>, ...]
+    figures: [...]                                # an Executive page only: overall_figures.py's specs, as written
+    divisions:
+      - partition: full                           # one per hard Run, in rNN order, every Run named once
+        takeaway: <one line: what this segment adds up to; a refused or planned Run says so>
+                                                  # omitted: its Run's report headline (ref/run-report.md)
+        bullets: [{draft: <sentence>, file: rates_by_arm.csv}, ...]
+      - title: What it rests on                   # titled sections after the segments (or alone, with no Run)
+        bullets: [{draft: <sentence>, cite: K01}, ...]
+
+An Insight Block question page (ref/block-contract.md: the question's task folder,
+one run per dataset x segment) needs no answers:, state: or ticket: keys: its
+header carries question: and partitions: (its runs) and no state: line (status is
+computed). It has one division per run the question is asked on, datasets in
+board.md order and segments in meta/partitions.md order, each naming its run as
+`partition:` (`<dataset>_<segment>`). Each item and figure names its `partition:`,
+and reads results/<run>/<file> unless it names
+another `artifact:`.
+
+Spec (YAML):
+
+    title: "<subject>: <deliverable>"          # three to five words
+    folder-kind: information | knowledge | data | wisdom
+    answers: [QI4]
+    strength: MODERATE                          # Knowledge only
+    state: "🟡 CHECK pending"
+    arc: <the argument the divisions make, one sentence>
+    opening: [<sentence>, <sentence>, ...]      # the visible paragraph, one sentence per line
+    sits: <Where this Page sits>
+    matters: <Why it matters>
+    covered: <Covered elsewhere>
+    items:
+      - {id: E01-VALUE-<slug>, target: C1.P1.B1, name: <what it supplies>, need: QI4.E1,
+         ticket: <page ticket stem>, file: <result file>, columns: <columns read>,
+         expected: <the need's pass>, accept: <the observable check>, supporting: b51j21t01r01}
+    divisions:
+      - title: <subject in plain words>
+        map: <division map caption>
+        diagram: <one or two lines of text>
+        figure: {caption: <caption>, ticket: <page ticket stem>, file: fig_<name>.png}   # optional
+        paragraphs:
+          - label: <paragraph label>
+            job: <the job this paragraph performs>
+            bullets:
+              - {role: <Role>, point: <4-11 words>, note: <constraint>, item: E01-VALUE-<slug>,
+                 accept: <check>, draft: <one sentence>}
+              - {role: <Role>, point: ..., note: ..., judge: QK2.E2, from: "E1", draft: ...}
+"""
+
+import argparse
+import datetime
+import re
+import sys
+from pathlib import Path
+
+import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import run_report  # noqa: E402  (a Run's report: ref/run-report.md)
+
+
+KEYS = {
+    "task": {"answer-status", "answer", "how-sure", "opening", "figures", "divisions"},
+    "task-division": {"partition", "title", "takeaway", "paragraphs", "bullets"},
+    "task-bullet": {"draft", "file", "cite"},
+    "spec": {"title", "folder-kind", "answers", "strength", "state", "arc", "opening", "sits",
+             "matters", "covered", "items", "divisions"},
+    "item": {"id", "target", "name", "need", "ticket", "file", "artifact", "columns", "expected", "accept",
+             "supporting", "partition"},
+    "division": {"title", "map", "diagram", "figure", "paragraphs", "partition"},
+    "figure": {"caption", "ticket", "file", "partition"},
+    "paragraph": {"label", "job", "bullets"},
+    "bullet": {"role", "point", "note", "item", "accept", "judge", "from", "none", "draft"},
+}
+
+
+def validate(spec: dict) -> None:
+    """Refuse a key the format does not know. In a YAML flow mapping an unquoted comma
+    splits one value into stray keys, so `{note: a, b}` silently becomes note: "a";
+    quote any value that holds a comma or a colon."""
+    def check(obj, kind, where):
+        bad = [k for k in obj if k not in KEYS[kind]] if isinstance(obj, dict) else ["(not a mapping)"]
+        if bad:
+            raise SystemExit(f"{where}: unknown key(s) {bad}; quote values that contain commas or colons")
+        for k, v in obj.items():
+            if v is None and k not in ("covered", "strength"):
+                raise SystemExit(f"{where}.{k}: empty value (an unquoted comma or colon?)")
+    check(spec, "spec", "spec")
+    for i, it in enumerate(spec.get("items", [])):
+        check(it, "item", f"items[{i}]")
+    for c, div in enumerate(spec["divisions"], 1):
+        check(div, "division", f"division {c}")
+        for m, para in enumerate(div["paragraphs"], 1):
+            check(para, "paragraph", f"division {c} paragraph {m}")
+            for k, b in enumerate(para["bullets"], 1):
+                check(b, "bullet", f"division {c} paragraph {m} bullet {k}")
+
+
+TASK_STATES = ("drafted", "partial", "written", "answered")
+
+
+def _board_task(page):
+    """A question Task of an insight Board Job: its Job's name reads jNN_question-vN-…_data-vM, its Board's
+    board.md says board-kind: insight-board (ref/insight-ladder.md)."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from open_job import JOB
+    board = page.parents[1] / "board.md"
+    text = board.read_text(encoding="utf-8") if board.is_file() else ""
+    three = re.match(r"^j\d+_data-v\d+_prep-v\d+_question-v\d+$", page.parent.name)    # a Job of three versions
+    return bool(JOB.match(page.parent.name) or three) and bool(re.search(r"(?m)^board-kind:\s*insight-board\s*$", text))
+
+
+def _front(md):
+    text = md.read_text(encoding="utf-8") if md.is_file() else ""
+    m = re.match(r"(?s)^---\n(.*?)\n---\n?(.*)$", text)
+    return ((yaml.safe_load(m.group(1)) or {}), m.group(2)) if m else ({}, text)
+
+
+def build_task_page(page: Path, spec: dict) -> None:
+    """Write a Board Task's page from its spec (the module docstring): the face's fields, then the sections. Every
+    citation is made here from what is on disk, so a page cannot cite a table its Run did not write."""
+    def check(obj, kind, where):
+        bad = [k for k in obj if k not in KEYS[kind]] if isinstance(obj, dict) else ["(not a mapping)"]
+        if bad:
+            raise SystemExit(f"{where}: unknown key(s) {bad}; quote values that contain commas or colons")
+    check(spec, "task", "spec")
+    if spec.get("answer-status") not in TASK_STATES:
+        raise SystemExit(f"answer-status: one of {', '.join(TASK_STATES)}")
+    if not str(spec.get("answer") or "").strip():
+        raise SystemExit("answer: the one plain line is missing")
+    md = page / f"{page.name}.md"
+    face, body = _front(md)
+    qid = face.get("question") or page.name.split("_")[1]
+    title = next((ln for ln in body.splitlines() if ln.startswith("# ")), f"# {qid}")
+    ask = next((ln for ln in body.splitlines() if ln.startswith("**The ask**")), "")
+    runs = sorted(p for p in (page / "runs").glob("r[0-9][0-9]_*") if p.is_dir() and "_collect_" not in p.name)
+    cards = {r.name.split("_", 1)[1]: (r, (yaml.safe_load((r / "run.yaml").read_text(encoding="utf-8")) or {})
+                                         if (r / "run.yaml").is_file() else {}) for r in runs}
+    named = [d.get("partition") for d in spec["divisions"] if d.get("partition")]
+    if named != list(cards):
+        raise SystemExit(f"{page.name}: one division per hard Run, in rNN order: {list(cards)}; the spec names {named}")
+    tasks = {p.name.split("_")[1]: p.name.split("_")[0] for p in page.parent.iterdir()
+             if p.is_dir() and re.match(r"^t\d+_[DIKWX]\d+_", p.name)}
+    out, takeaways = [title, "", *( [ask, ""] if ask else []), *spec.get("opening", []), ""], {}
+    for k, div in enumerate(spec["divisions"], 1):
+        check(div, "task-division", f"division {k}")
+        part = div.get("partition")
+        if part:
+            run, card = cards[part]
+            rep = run_report.state(run) if (run / "report.md").is_file() else ""
+            if rep in ("stale", "returned"):          # the Run's report is what the takeaway rests on (ref/run-report.md)
+                raise SystemExit(f"{run.name}/report.md is {rep}: write it again (run_report.py) before the page")
+            if not str(div.get("takeaway") or "").strip() and rep:
+                div["takeaway"] = str(run_report.front(run / "report.md").get("headline") or "")
+            if not str(div.get("takeaway") or "").strip():
+                raise SystemExit(f"division {k} ({part}): its takeaway is missing")
+            takeaways[part] = div["takeaway"].strip()
+            out += [f"## {part[:1].upper()}{part[1:]}", "", div["takeaway"].strip(), ""]
+        else:
+            if not div.get("title"):
+                raise SystemExit(f"division {k}: a segment or a title")
+            out += [f"## {div['title']}", ""]
+        out += [*(div.get("paragraphs") or [])] + ([""] if div.get("paragraphs") else [])
+        for b, bullet in enumerate(div.get("bullets") or [], 1):
+            check(bullet, "task-bullet", f"division {k} bullet {b}")
+            where = ""
+            if bullet.get("file"):
+                if not part:
+                    raise SystemExit(f"division {k} bullet {b}: a file is cited under its segment's division")
+                if str(card.get("status")) != "ok":
+                    raise SystemExit(f"{run.name} is {card.get('status') or 'planned'}: its takeaway says so; it has no table to cite")
+                if not (run / "result" / bullet["file"]).is_file():
+                    raise SystemExit(f"{run.name}/result/{bullet['file']}: no such table")
+                where = f" ({run.name} · {bullet['file']})"
+            elif bullet.get("cite"):
+                if bullet["cite"] not in tasks:
+                    raise SystemExit(f"division {k} bullet {b}: {bullet['cite']} is not a question of {page.parent.name}")
+                where = f" ({bullet['cite']} · {tasks[bullet['cite']]})"
+            out.append(f"- {bullet['draft'].strip().rstrip('.')}{where}.")
+        out.append("")
+    fields = {"question": qid, **({"goal": face["goal"]} if face.get("goal") else {}),   # its goal line stays (261106)
+              "answer-status": spec["answer-status"], "answer": spec["answer"].strip(),
+              "how-sure": str(spec.get("how-sure") or "").strip(), "check": ""}
+    if takeaways:
+        fields["takeaways"] = takeaways
+    if spec.get("figures"):
+        fields["figures"] = spec["figures"]
+    fields["results-read"] = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    md.write_text("---\n" + yaml.safe_dump(fields, sort_keys=False, allow_unicode=True, width=10_000) + "---\n\n"
+                  + "\n".join(out).rstrip() + "\n", encoding="utf-8")
+    print(f"{page.name}: {spec['answer-status']} · {len(spec['divisions'])} sections · {len(takeaways)} segments")
+
+
+def _bound_tickets(page):
+    """The page's runs the header lists: the tickets its answers.yaml binds, not every file in runs/."""
+    amap = yaml.safe_load((page / "answers.yaml").read_text(encoding="utf-8")) if (page / "answers.yaml").is_file() else {}
+    found = set()
+    for needs in (amap or {}).values():
+        for b in (needs or {}).values():
+            if isinstance(b, dict):
+                found.update([b["ticket"]] if b.get("ticket") else [])
+                found.update(b.get("tickets") or [])
+    return {t for t in found if (page / "runs" / f"{t}.sh").is_file()}
+
+
+def _instance_page(page):
+    """A question's task folder in an Insight Block: board.md two levels up is a task Block with
+    `workbench: insight`."""
+    board = page.parents[1] / "board.md"
+    text = board.read_text(encoding="utf-8") if board.is_file() else ""
+    return (re.search(r"(?m)^board-kind:\s*task-block\s*$", text)
+            and re.search(r"(?m)^workbench:\s*insight\s*$", text))
+
+
+def _partition_runs(page):
+    """The page's runs (<dataset>_<segment>), datasets in board.md order, segments in meta order."""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from run_question import META, block_meta, front
+    runs = {t.stem for t in (page / "runs").glob("*.sh") if not t.stem.startswith("run-")}
+    block = page.parents[1]
+    parts = [x["name"] for x in front(block / META / "partitions.md")[0]["partitions"]]
+    order = [f"{d}_{p}" for d in block_meta(block)["datasets"] for p in parts]
+    return [n for n in order if n in runs] + sorted(runs - set(order))
+
+
+def _qid(page):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from run_question import question_id
+    return question_id(page)
+
+
+def _item_rows(items):
+    rows = []
+    for i in items:
+        if i.get("partition"):
+            i.setdefault("ticket", i["partition"])
+        i.setdefault("supporting", i.get("ticket", "cited page"))
+        art = i.get("artifact") or f"results/{i['ticket']}/{i['file']}"
+        rows += [f"### {i['id']} · {i['target']} · {i['name']}", "",
+                 f"- **Need**: {i['need']}", f"- **Artifact**: `{art}` · {i['columns']}",
+                 f"- **Expected**: {i['expected']}", f"- **Accept**: {i['accept']}",
+                 f"- **Supporting Runs**: Execution · reuse · {i['supporting']}",
+                 f"- **Local Run**: Page · Evidence Item · reuse · {i.get('ticket', 'cited page')} → {art}",
+                 "- **Status**: landed", ""]
+    return rows
+
+
+def build(page: Path, spec: dict, version: str) -> None:
+    validate(spec)
+    stem = page.name
+    draft = page / "draft"
+    (draft / "records").mkdir(parents=True, exist_ok=True)
+    today = datetime.date.today().strftime("%y%m%d")
+    md = page / f"{stem}.md"
+
+    # an old page is kept whole, and its log carries over
+    if md.is_file() and "<!-- realizes:" not in md.read_text(encoding="utf-8"):
+        old = md.read_text(encoding="utf-8")
+        (draft / "_archive").mkdir(exist_ok=True)
+        (draft / "_archive" / f"{stem}-page-before-{today}.md").write_text(old, encoding="utf-8")
+        log = re.search(r"(?ms)^## Log\s*\n(.*?)(?=^## |\Z)", old)
+        if log and log.group(1).strip():
+            rec = draft / "records" / f"{stem}-log.md"
+            prev = rec.read_text(encoding="utf-8") if rec.is_file() else f"# {stem} · log\n"
+            rec.write_text(prev.rstrip() + "\n\n" + log.group(1).strip() + "\n", encoding="utf-8")
+    supersedes = "none"
+    for current in sorted(draft.glob(f"{stem}-draft-v*.md")):
+        (draft / "previous").mkdir(exist_ok=True)
+        target = draft / "previous" / current.name
+        if not target.exists():
+            current.rename(target)
+        supersedes = current.stem.rsplit("-draft-", 1)[1]
+
+    items = {i["id"]: i for i in spec.get("items", [])}
+    overview, structure, scratch, drafts, content = [], [], [], [], []
+    p = figures = 0
+    for c, div in enumerate(spec["divisions"], 1):
+        overview.append(f"- C{c} · {div['title']}")
+        content += [f"### {c} · {div['title']}", "", f"**Division map**: {div['map']}", "",
+                    "```text", div["diagram"].rstrip(), "```", ""]
+        fig = div.get("figure")
+        if fig and fig.get("partition"):
+            fig.setdefault("ticket", fig.pop("partition"))
+        if fig:
+            figures += 1                                   # figures are numbered in reading order, not by division
+            content += [f"Figure {figures} · {fig['caption'].rstrip('.')}.", "",
+                        f"![{fig['caption'].rstrip('.')}](results/{fig.get('ticket', 'compute')}/{fig['file']})", ""]
+        for m, para in enumerate(div["paragraphs"], 1):
+            p += 1
+            addr = f"C{c}.P{p}"
+            overview.append(f"- {addr} · {para['label']}")
+            structure.append(f"### {addr} · {para['label']}")
+            scratch.append(f"### {addr} · {para['label']}\n")
+            drafts.append(f"### {addr} · {para['label']}")
+            content += [f"#### {c}.{m} · {para['label']}", f"({para['job']})"]
+            for k, b in enumerate(para["bullets"], 1):
+                structure += [f"- B{k} · [{b['role']}] {b['point']}", f"  Note: {b['note']}"]
+                if b.get("item"):
+                    if b["item"] not in items:
+                        raise SystemExit(f"{addr}.B{k}: item {b['item']} is not declared under items:")
+                    structure += [f"  Evidence: {b['item']} · {items[b['item']]['name']}",
+                                  f"  Accept: {b.get('accept') or items[b['item']]['accept']}"]
+                elif b.get("judge"):
+                    structure.append(f"  Evidence: none · judge {b['judge']} from {b.get('from', 'the needs above')}")
+                else:
+                    structure.append(f"  Evidence: none · {b.get('none', 'orientation, asserts no value')}")
+                drafts.append(f"- B{k} · {b['draft'].strip()}")
+                content.append(f"pending <!-- realizes: {addr}.B{k} -->")
+            structure.append("")
+            drafts.append("")
+            content.append("")
+
+    plan = [f"# {stem} · draft {version}", f"draft-version: {version}", f"supersedes: {supersedes}", f"date: {today}",
+            "approved: ⬜", "status: ⬜", f"arc: {spec['arc']}", "",
+            "## 1 · Structure · Bullet Point Table", "", "### Structure Overview", "", *overview, "", *structure,
+            "## 2 · Scratch · What to write here", "", "", *scratch, "## 3 · Draft · Reading and Revise", "", *drafts]
+    (draft / f"{stem}-draft-{version}.md").write_text("\n".join(plan).rstrip() + "\n", encoding="utf-8")
+
+    rows = [f"# {stem} · Evidence Items", "", f"page: {stem}", f"plan: draft/{stem}-draft-{version}.md · {version}",
+            "state: ✅ every item landed from a bound task result", "",
+            "One item per bound file of a compute or cite need; a judge need has no item. Each item's Need",
+            "line names the need it answers; its Artifact is a file the need's run wrote.", "",
+            "## Citations", ""]
+    cites = [i for i in spec.get("items", []) if "←" in str(i["need"])]      # a cite need's item reads another page
+    values = [i for i in spec.get("items", []) if i not in cites]
+    for section, group in (("Citations", cites), ("Values", values)):
+        if section == "Values":
+            rows += ["", "## Displays", "", "", "## Values", ""]
+        rows += _item_rows(group)
+    (draft / f"{stem}-evidence-items.md").write_text("\n".join(rows).rstrip() + "\n", encoding="utf-8")
+
+    read = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    if _instance_page(page):
+        tickets = _partition_runs(page)
+        named = [d.get("partition") for d in spec["divisions"]]
+        if named != tickets:
+            raise SystemExit(f"an Insight Block page has one division per run, in order: {tickets}; "
+                             f"the spec's divisions name {named}")
+        head = [f"# {spec['title']}", "", f"folder-kind: {spec['folder-kind']}",
+                f"question: {_qid(page)}", f"partitions: {', '.join(tickets)}"]
+    else:
+        tickets = sorted(_bound_tickets(page))
+        head = [f"# {spec['title']}", "", f"state: {spec.get('state', '🟡 CHECK pending')}",
+                f"folder-kind: {spec['folder-kind']}",
+                f"answers: {', '.join(spec['answers'])}"]
+    if spec.get("strength"):
+        head.append(f"strength: {spec['strength']}")
+    if tickets:
+        head.append(f"runs: {', '.join(tickets)}")
+    head += [f"results-read: {read}", "", "## Opening", "", *spec["opening"], "",
+             f"**Where this Page sits:** {spec['sits']}", "", f"**Why it matters:** {spec['matters']}", ""]
+    if spec.get("covered"):
+        head += [f"**Covered elsewhere:** {spec['covered']}", ""]
+    md.write_text("\n".join(head + ["## Content", ""] + content).rstrip() + "\n", encoding="utf-8")
+    print(f"{stem}: {len(spec['divisions'])} divisions, {p} paragraphs, {len(items)} items · now run page.py adopt")
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.splitlines()[1])
+    ap.add_argument("page", type=Path)
+    ap.add_argument("spec", type=Path)
+    ap.add_argument("--version", default="v0.1")
+    a = ap.parse_args(argv)
+    if not a.page.is_dir():
+        print(f"{a.page}: not a page folder", file=sys.stderr)
+        return 2
+    spec = yaml.safe_load(a.spec.read_text(encoding="utf-8"))
+    if _board_task(a.page.resolve()):
+        build_task_page(a.page.resolve(), spec)
+    else:
+        build(a.page.resolve(), spec, a.version)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -25,8 +25,8 @@ from mednorm.bank import stats
 from mednorm.constants import BANK, LEXICON
 
 for _base in (Path(__file__).absolute(), Path(__file__).resolve()):      # eventnorm, beside describe-medication
-    if (_base.parents[2] / "skills" / "haipipe-norm" / "eventnorm").is_dir():
-        _sys.path.insert(0, str(_base.parents[2] / "skills" / "haipipe-norm"))
+    if (_base.parents[2] / "skills" / "hai-norm" / "eventnorm").is_dir():
+        _sys.path.insert(0, str(_base.parents[2] / "skills" / "hai-norm"))
         break
 from eventnorm import medication as medication_events  # noqa: E402
 

@@ -2,9 +2,9 @@
 
 A person can run the ladder without an agent. Review and approve was signed through an agent ("signed: … · in chat"); here the person reads each kept design,
 its prediction and its why on the Job's Delivery, ticks that they did, and approves once. The write is
-haipipe-design-delivery's own `release.py` (it checks every design before it writes anything, freezes the
+hai-design-delivery's own `release.py` (it checks every design before it writes anything, freezes the
 predictions with today's date, writes the Job's and the Block's delivery/ and marks each design released), then a
-pass of `run-freeze-predictions-jNN` and `run-release-jNN` through haipipe-run's soft_run.py, each card saying
+pass of `run-freeze-predictions-jNN` and `run-release-jNN` through hai-run's soft_run.py, each card saying
 `by: a person` and `signed: ✅ <YYMMDD> · a person, in the workbench`. Board files carry no names. The route is
 `POST /_board/design-ladder-act`; serve.py refuses a request from another site or with no page behind it.
 
@@ -21,8 +21,8 @@ from pathlib import Path
 from live import design_reader as DR
 
 SKILLS = Path(__file__).resolve().parents[2] / "skills"
-_RELEASE = SKILLS / "2_theme/design/haipipe-design-delivery/scripts/release.py"
-_SOFT = SKILLS / "1_base/project/haipipe-run/scripts/soft_run.py"
+_RELEASE = SKILLS / "3_theme/design/hai-design-delivery/scripts/release.py"
+_SOFT = SKILLS / "1_base/project/hai-run/scripts/soft_run.py"
 WHO = "a person"
 
 
@@ -51,7 +51,7 @@ def _pass(job: Path, rtype: str, target: str, title: str, summary: str, changed:
     soft = _load(_SOFT, "haipipe_soft_run")
     run = job / "runs" / f"run-{rtype}-{target}"
     if not (run / "run.yaml").is_file():
-        soft.new(job, rtype, target, skill="haipipe-design-delivery", agent=WHO, signs=[WHO],
+        soft.new(job, rtype, target, skill="hai-design-delivery", agent=WHO, signs=[WHO],
                  ask="Review and approve, in the workbench", close="the release signed once")
     soft.add_pass(run, title, ask="a person, in the workbench", summary=summary, changed=changed, status="done")
     c = soft.read_card(run)

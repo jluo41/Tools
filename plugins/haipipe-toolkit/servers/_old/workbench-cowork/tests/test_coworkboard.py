@@ -1,4 +1,4 @@
-"""The CoWork Block workbench over a small Block built from the haipipe-cowork templates:
+"""The CoWork Block workbench over a small Block built from the hai-cowork templates:
 Jobs from their page headers, every View, the file reader, the Project view, the
 resource form over real HTTP, and the Project audit's Block rule."""
 import importlib.util
@@ -18,7 +18,7 @@ from live.cowork_views import render_block, spaces
 from serve import Handler
 from host_paths import skill_dir
 
-AUDIT = skill_dir("haipipe-project") / "scripts/audit_projects.py"
+AUDIT = skill_dir("hai-project") / "scripts/audit_projects.py"
 
 
 def write(path: Path, text: str) -> Path:
@@ -163,7 +163,7 @@ def test_a_questions_answer_lives_in_its_studio_topic(demo):
     sNN-data-flow/ whose face holds the Q01 answer part; nothing is written under reports/."""
     from argparse import Namespace
     root, block = demo
-    helper = skill_dir("haipipe-report") / "ref/block_questions.py"
+    helper = skill_dir("hai-report") / "ref/block_questions.py"
     spec = importlib.util.spec_from_file_location("block_questions_rule", helper)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

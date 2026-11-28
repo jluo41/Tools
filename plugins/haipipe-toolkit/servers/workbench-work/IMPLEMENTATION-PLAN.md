@@ -12,9 +12,9 @@ storage, ownership and authoring workflow as the running interface.
 
 | Owner | Responsibility |
 |---|---|
-| `haipipe-task` | Block Questions, their links to native Jobs / Tasks, and the Block report placement contract. Native P-B-E-R and Run identity stay at Task level. |
-| `haipipe-draft` | Report Page structure, Draft, evidence references, Content adoption, CHECK and release. Reuse this skill; introduce no second report-writing lifecycle. |
-| `haipipe-draft` | Board membership and source navigation. Report Pages are reading material, never executable `tNN` Tasks or inferred Jobs. |
+| `hai-task` | Block Questions, their links to native Jobs / Tasks, and the Block report placement contract. Native P-B-E-R and Run identity stay at Task level. |
+| `hai-draft` | Report Page structure, Draft, evidence references, Content adoption, CHECK and release. Reuse this skill; introduce no second report-writing lifecycle. |
+| `hai-draft` | Board membership and source navigation. Report Pages are reading material, never executable `tNN` Tasks or inferred Jobs. |
 | `workbench-work` | Read and navigate the four Views; explain how Questions, Reports, resources and drawings correspond to disk. |
 | Shared Guide / Studio | Reuse family Guide mounting and the existing Excalidraw service and save mechanism. |
 

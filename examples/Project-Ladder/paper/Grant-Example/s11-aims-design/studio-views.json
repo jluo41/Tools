@@ -1,0 +1,13 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Aims design",
+          "path": "examples/Project-Ladder/paper/Grant-Example/s11-aims-design/s11-aims-design.md"
+        }
+      ]
+    }
+  ]
+}

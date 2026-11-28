@@ -1,0 +1,218 @@
+## 0.12.0 · 2026-11-18 · 🧩 Elements first in each UI view
+
+b17's Block, Job, Task and Run UI views open with 🧩 Elements, from `ui/<level>-elements.md`; each part is a tab with
+marks and the b90 page live with the part outlined. focus_ui_elements.py; test_ui_elements.py.
+
+## 0.11.0 · 2026-11-16 · rows, tabs and paragraphs take cards
+
+- A Job, Task or Run row in Plan + Results carries 🙋 N (its question form, answered under the row), ℹ️ N, 💬 N, 📝 N and ✓; the row's Interaction button and "waiting for you" words are gone.
+- A Findings tab (values, maps, questions, design) carries marks after its name; its cards open above its content.
+- A paragraph or one-line item of a face's own sections carries marks once `/haipipe-work update` gave it an id (`paragraph_ids.py`).
+
+## 0.10.3 · 2026-11-15 · a Question Book opens as a work page
+
+- Wrote down that the work theme claims every `board-kind: prototype` Block (an insight Question Book) for its page only; `/hai-lab` and the insight skills treat it as insight (`lab.py` `lab_theme()`). Reported by Insight-QB-SMS.
+
+## 0.10.2 · 2026-11-11 · Findings is Values and Displays
+
+- 🧠 Maps returns to Findings, after Displays and only when the work drew maps (JL 261111).
+- A work Block's Findings leads with 🗄️ Data: one row per store from board.md's `data:` block (name, where, holds, access, link), counts read from a Result file and key (JL 261111).
+- A work page's Findings is exactly 🔢 Values and 🖼️ Displays, each keeping its slot when empty (JL 261111).
+
+## 0.10.1 · 2026-11-09 · Plan + Results and Findings order
+
+- Status is now Plan + Results, one section per Job type; View BJTR removed; Findings order 🗂️ Data, 🖼️ Displays, 🧠 Maps; no ❓ or ✍️ Answers sections on a work Block.
+
+## 0.10.0 · 2026-11-09 · current format and update door
+
+- Lead with current focus pages, Work/Blueprint UI types, and shared view-versus-rail scope.
+- Route format alignment to `/haipipe-work update`; keep classic workbench and workflow guidance explicitly separate.
+- Clarify authored skill-based checklists versus derived walkthrough presence.
+
+## 0.9.0 · 2026-11-08 · the focus page's work pages
+
+- New section "The focus page's work pages": the rules JL decided on 261108 for the Block, Job and Task pages, each
+  pointing at b17 `s04-workbench-page-structure` s04-D12 to s04-D19 (two groups Review Content and Around the Work;
+  Interactions and Decisions with topics as left tabs; readable Decisions; a view's own Studio topics; 📝 Checklist;
+  Skills read in place; Status Jobs first in the 261105 look; a Job's name is its folder's words).
+
+## 0.8.4 · 2026-10-31 · the question map is retired
+
+- `servers/workbench-work/question_map.py` writes nothing now: `main()` prints why and exits 1 (JL 261031, b35 r02 Q2:
+  "Just delete them"; the coordinator deleted the nine `studio/question-map.excalidraw` it wrote, with every
+  `studio/` folder). It wrote only that map, and the Report's MindMap draws each Question with its answer and Jobs,
+  so it gets no new home; a run would have made `studio/` again. Nothing imports it: the old board flags a generated
+  drawing by its own `source` field (`task_questions.py:248-255`). README, SKILL.md and ref/workbench-table.md no
+  longer send anyone to it.
+
+## 0.8.2 · 2026-10-22 · a planned Task's deliverables stay in the Goal tree
+
+- `work_progress.task_nodes`: an item whose Task folder is not made yet sits under its Job, never dropped. Before,
+  Proj11's b12, b13, b21 and b31 each showed one done item and read ✅ "1 of 1" while 2 or 3 planned items were
+  hidden; now they read 🔶 "1 of 3" or "1 of 4", the planned items ☐.
+
+## [0.8.3] — 2026-10-26
+
+Shorter description (780 -> 417 characters): what it does, when to use it, its trigger words; aliases and old command names kept (diagnostics/descriptions/261026.yaml). (describe 261026)
+
+## 0.8.1 · 2026-10-22 · Job and Task reports show every Studio drawing that names them
+
+- The Goal tree's "📄 About this Job" and "📄 About this Task" pop out a Job's overview and a Task's report
+  (`work_progress.render_about`, `render_task_about`, built 261022). JL 261022, sending b51's s01-food-api drawing:
+  "we also need to have the so called job level report and task level report, right?". `topic_pictures` now puts
+  every Studio topic that names the Job under its `## Drawings` (its own `sNN-jNN-…` topic first; it showed only the
+  first one), and the topics that name a Task and its Job under the Task's. b51 j01 shows s21, s01-food-api and s11.
+
+## 0.8.0 · 2026-10-21 · the workflow layout, and where an older Block is updated
+
+- SKILL.md: a Block with `workbench-layout: workflow` opens on Goal · Plan · Execution · Results (the Goal a
+  to-do tree from each Job's `## Deliverables`); this skill only shows a Block, and `/wb update <Block>` is the door
+  that brings an older one up to today's structure (JL 261021: "should I call the skill of /workbench-work to update
+  the old block structure?").
+
+## 0.7.4 · 2026-10-09 · No hand-drawn font
+
+- JL 261009: "do not use the hand written font, it is very hard to read"; "could you write to the related skill to do not use that font?". `servers/workbench-work/question_map.py` writes its words in Nunito (`fontFamily` 6), not Comic
+  Shanns (8); the Guide's tables (`servers/workbench/guide/workbench_guide.py`, shared by every theme) too, with
+  Cascadia (3) kept for code.
+
+## 0.7.3 · 2026-10-09 · RoadMap Draw lists the studio topics and their sessions
+
+- RoadMap Draw also reads the haipipe-studio topic folders: the Block's `sNN-<topic>/` and each Job's
+  `jNN_*/sNN-<topic>/` under the Job's name, each row titled from its face, with its saved sessions
+  (`runs/run-draw-<sNN>/passes/`, newest first) and its preview picture, so a Block keeping its drawings in topic
+  folders no longer reads "No drawings yet". Topics stay editable (their builders keep a person's marks).
+
+## 0.7.2 · 2026-10-09 · Theme folders are singular
+
+- Docs name the singular Theme folders (s01-D29, JL 261007): `work/`, `discovery/`, `paper/`, `insight/`,
+  `design/`, `labeling/`, `ideation/`; the older plural names still read.
+
+## 0.7.1 · 2026-10-07 · The board page answers at `/_board/work-board` (JL 261007)
+
+- Every theme's board page is now `/_board/<theme>-board`, named as its theme is: this one moved from `/_board/task-board` to `/_board/work-board`. The old name still answers (serve.py renames it before any route reads it), so older links keep working; every link the server writes uses the new name.
+
+## 0.7.0 · 2026-10-07 · Renamed to workbench-work: the task theme is the work theme (JL 261007)
+
+- The skill is `workbench-work` (was `workbench-task`), its folder `1_base/task/workbench-work/`, its trigger `/workbench-work`; it pairs with `servers/workbench-work/` (was `servers/workbench-task/`). The level keeps its name: a `tNN_<task>/` folder is a Task in every theme. Every live reference in Tools follows; older entries below keep the old names.
+
+## 0.6.0 · 2026-10-07 · Renamed from haipipe-workbench-task (JL 261007)
+
+- The skill is `workbench-task` (was `haipipe-workbench-task`), its folder `task/workbench-task/`, its trigger `/workbench-task`; every live reference in Tools follows. Older entries below keep the old name.
+
+# Changelog
+
+## 0.5.5 · 2026-10-05 · One drawing per Question
+
+- Report column shows a report's one drawing; a second drawing or a linked picture is a finding
+  in Check (`task_questions.report_snapshot`, shared with CoWork; JL 261005).
+
+## 0.5.4 · 2026-10-05 · Databricks receipts read truthfully
+
+- `servers/workbench-page/runs.py`: a `.cmd` ticket is a ticket; a receipt `status: ok` (the
+  Databricks runner's word) is complete; a receipt listing a non-empty `outputs:` is its
+  Result when the output stays on the server by rule; a receipt whose `host` is a selftest
+  reads as planned, not complete. `servers/workbench-task/taskboard.py` names `ok` in the
+  receipt message. Tests: `servers/workbench-task/tests/test_run_receipts.py` (5). On
+  REACH-SPACE, Check now shows b01_reach_jhu 125 complete (was 0), PD2D b00 61 complete,
+  ADHD b00's 28 selftest seeds as planned.
+
+## 0.5.3 · 2026-10-04
+
+- Report cell: a drawing the report links under Evidence shows as its `.png` preview when
+  one sits beside the `.excalidraw` (JL 261004: "they make the draw to be the preview"), as
+  the CoWork workbench does; clicking it opens the drawing in the pop-out. Without a `.png`
+  it stays a text link. `task_questions.py` (`png`), `task_views.py` (`.rp-thumb`),
+  `90-task-workbench.css`. Test: `test_add_report_frames_a_registered_question_with_its_drawing`.
+  First used by b51_externalstore, whose `studio/_build/make.sh` writes the previews.
+
+## 0.5.2 · 2026-10-04
+
+- `assets/js/90-task-workbench.js` reads `home` (the working Space a bare address opens,
+  default `task`) and `route` (where its forms POST, default `/_board/task-board`) from
+  the page config, so the CoWork Workbench reuses the script unchanged. Task pages are
+  unaffected.
+
+## 0.5.1 · 2026-10-04
+
+- Named Question ids (JL 261004): `Q-food-1` and `Q-exercise-2` open beside `Q01` (rule
+  in `servers/workbench-task/task_questions.py`, owned by `haipipe-report`); the Logic
+  cell shows a named id as itself, and a Question with no `title` prints its question
+  once instead of twice. Guide's Task › Report folder row matches `reports/q*_*/*.md`.
+  Test: `test_named_question_ids_and_a_question_without_a_title`.
+- The pop-out opens a drawing (`/_excalidraw/…`, e.g. a report's linked `.excalidraw`) with
+  no referrer, as the RoadMap Draw frames and the Design and Insight pop-outs do; it showed
+  Excalidraw's "I'm not a pretzel!" refusal (`assets/js/90-task-workbench.js`).
+- A register `aim:` shows under the question in the Logic cell ("Aim …", `.q-aim`).
+
+## 0.5.0 · 2026-10-03
+
+- The page follows the Insight Workbench (the Haipipe-Insight-v5 work): the title alone in
+  the header, the Spaces Guide · Scope · Task · Check · Delivery, every View opened by a
+  heading and one lead line, Insight's colors, sizes and class names (`.hl` table, `.kind`,
+  `.q-more`, `.bj` tree, `details.draw`, the pop box), and the Runs panel folded at first.
+- Task › each group: the register's optional `group:` makes one Task View per group, each
+  a table with a row per Question (Logic │ Task Work │ Report), replacing the stacked
+  cards; a heading and no lead, as Insight's partition Views. Clicking a row narrows the
+  Task Runs panel to that Question's Runs and names it in the prompts.
+- Scope › RoadMap Draw replaces Task › Studio. Its first row is the question map, written
+  only by `servers/workbench-task/studio/question_map.py` and shown view only, with a
+  stale note when board.md is newer.
+- Delivery › Reports: the answered reports, word for word, with their evidence.
+- Guide › Method is the shared method page: `ref/task-method.md` (the eight steps, Run
+  and Report methods, the tests T0 to T8, why it works, Reference), seven method cards in
+  `ref/methods/`, and `ref/task-methods.excalidraw`, first drawn by
+  `workbench-shared/studio/method-canvas.py`. `ref/task-papers.md` is grouped by card.
+- Workbench Table: Ask a Question uses `haipipe-report`, Review the questions
+  `haipipe-report`; Draw and "Draw the question map" sit in Scope › RoadMap Draw;
+  Task rows are "each group"; Delivery › Reports runs "Build the report".
+
+## 0.4.0 · 2026-10-03
+
+- Three working Spaces in the shared shell: Scope (Block · Questions · Resources), Task
+  (Questions · Studio) and Check (Runs · Tasks · Reports), each Space's Views and content in
+  one box, with the shared Runs panel on the right built from `ref/workbench-table.md`.
+- The Workbench Table gains the full Task lifecycle (plan, review, build, code review, run,
+  report) and report planning, after an independent review; planned skills marked `(new)`.
+- `task` leaves the conformance test's RUNS_GAPS.
+- The page uses the shared shell exactly as Insight, Design and Shared draw it: 📋 title with
+  all boards · board index, the Block band, the Space row, `wtab` View tabs inside one box,
+  Insight's colors and tab sizes; the bespoke heading, search and refresh controls are gone.
+- Scope › Resources lists the _WorkSpace folders each Job declares and the Block's
+  ProjectResult folder, read-only: data files named and sized, the rest in the pop-out.
+
+## 0.3.0 · 2026-10-03
+
+- Guide meets the shared workbench rules: a Description and a five-step Method in the
+  `task` registry entry; the Workbench Table `ref/workbench-table.md` (Scope · Task ·
+  Check); the Related Paper table `ref/task-papers.md` (14 papers, checked online); and a
+  generated "Workbench design" drawing, `servers/workbench-task/studio/task-workbench-design.py`,
+  replacing the earlier four-View design. `task` leaves the conformance test's GAPS.
+
+## 0.2.2 · 2026-10-03
+
+- Work follows Insight's Task Work: one light Block → Job → Task → Run tree per
+  Question, each level once, Runs folded, no status.
+- Report shows only the title and the Opening's first paragraph; the title opens
+  the report in the same pop-out as a Run. Status stays in Progress.
+
+## 0.2.1 · 2026-10-02
+
+- Share Paper's Work row markup and CSS: type pill, short name, explanation,
+  shared-Question tags and counts; reveal the indented native tree on expansion.
+- Open a selected Run's exact Result in a pop-out. Preserve native store
+  resolution, and keep Task navigation and audit details inside their fold.
+
+## 0.2.0 · 2026-10-02
+
+- Task Space now has Task, Roadmap Studio, Related Paper and Progress; each
+  Question has side-by-side Logic / Work / Report columns.
+- Reports are ordinary Block-owned Pages under `reports/`. The register and
+  reports supply one snapshot for Question cards and Progress.
+- Add freeform drawing rows, resource authoring, session context and source
+  warnings while preserving native Task and Page ownership.
+
+## 0.1.0 · 2026-10-02
+
+- Introduce the read-only Task Block Workbench contract: Progress, Runs and
+  Scope, using existing Job/Task folders and Ticket/Result records.

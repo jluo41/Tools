@@ -4,15 +4,15 @@ One door, five renderers, one constitution, and the tooling beside them.
 A display is one UNIT: a folder holding the approved inputs, the recipe that draws, and the winning render.
 
 ```
-haipipe-display/            🚪 THE DOOR · say what you want, it routes by kind
+hai-display/            🚪 THE DOOR · say what you want, it routes by kind
                                (a caller who knows the kind may skip it)
-haipipe-display/_parts/table/      📊 renderer · aggregated CSV/JSON → booktabs LaTeX
-haipipe-display/_parts/figure/     📈 renderer · results → plot (line/bar/scatter/heatmap)
-haipipe-display/_parts/diagram/    📐 renderer · FigureSpec JSON → editable SVG
-haipipe-display/_parts/illustration/ 🎨 renderer · AI concept figure via the codex bridge
-haipipe-display/_parts/tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
+hai-display/_parts/table/      📊 renderer · aggregated CSV/JSON → booktabs LaTeX
+hai-display/_parts/figure/     📈 renderer · results → plot (line/bar/scatter/heatmap)
+hai-display/_parts/diagram/    📐 renderer · FigureSpec JSON → editable SVG
+hai-display/_parts/illustration/ 🎨 renderer · AI concept figure via the codex bridge
+hai-display/_parts/tex/        ✒️ renderer · hand-authored TeX: TikZ, algorithm
                                blocks, display equations · the writer is a person
-haipipe-display-method/      🕒 renderer · how the study works: timeline on one clock,
+hai-display-method/      🕒 renderer · how the study works: timeline on one clock,
                                workflow of the dataset, regression design (YAML spec)
 ref/                        📜 THE CONSTITUTION · display-unit-output-contract.md
                                + display-intake-contract.md; every renderer obeys them
@@ -20,19 +20,19 @@ ref/                        📜 THE CONSTITUTION · display-unit-output-contrac
 html-ppt/                   🔧 vendored runtime (MIT, upstream github) · the board's
                                slide decks link its assets AT THIS PATH · do not move
                                not a listed skill: its guide is html-ppt/PART.md, read by path
-haipipe-display/_parts/html-to-svg/ · haipipe-display/_parts/icon-to-svg/ 🔧 converters
-haipipe-display/_parts/figure-to-svg/              🔧 converter
+hai-display/_parts/html-to-svg/ · hai-display/_parts/icon-to-svg/ 🔧 converters
+hai-display/_parts/figure-to-svg/              🔧 converter
 (retired 260816)            🗃 the poster and slides renderers, their paper-side doors, and the
                                content-plan spec that only they used; no longer on disk
                                (git history). `_parts/slide/` is a newer, different renderer
 ```
 
 Why `ref/` stays at the family root, not under the door: the door, its `_parts/` renderers,
-`haipipe-display-method`, `agents/haipipe-display-unit-agent.md` and paper-side skills all cite
+`hai-display-method`, `agents/hai-display-unit-agent.md` and paper-side skills all cite
 `display/ref/`, and `<Project-SPACE>` review notes cite it by that path.
 
-Start at `haipipe-display/SKILL.md`. The Excalidraw drawing skills (excalidraw-studio, -report, -section, -read,
--revise, -workflow, -job, -task, -slide, -ideation) live in `../excalidraw/` since 2026-10-16.
+Start at `hai-display/SKILL.md`. The Excalidraw drawing skills (hai-draw, -report, -section, -read,
+-revise, -workflow, -job, -task, -slide, -ideation) live in `../draw/hai-draw/gallery/` since 2026-10-16.
 Page DISPLAY Results, View pages, and Paper sections are callers; each supplies
 its unit path and owns the resulting acceptance decision. A draft Task's unit is
 `<task>/display/Display<n>-<slug>/` (JL 261016; an older Page: a DISPLAY Result's

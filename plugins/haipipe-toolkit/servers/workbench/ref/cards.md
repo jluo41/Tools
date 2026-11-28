@@ -19,7 +19,7 @@ session content, it is the structure, maybe we don't need the element emoji card
 might want to add them").
 
 A content item is a **Brick** (JL 261117): its types, its three places (file, cards, page), 📍 and its life are in
-[`haipipe-paper/ref/bricks.md`](../../../skills/2_theme/paper/haipipe-paper/ref/bricks.md).
+[`hai-paper/ref/bricks.md`](../../../skills/3_theme/paper/hai-paper/ref/bricks.md).
 
 | Content: marks and cards | Structure: no marks of its own |
 | --- | --- |
@@ -34,14 +34,14 @@ A content item is a **Brick** (JL 261117): its types, its three places (file, ca
   after its state mark it carries 🙋 N (the questions waiting at it or below; its card is the question form itself,
   answered in place), ℹ️ N (things to know there) and its own 💬 📝 ✓. Its address is its place from the Block
   (`j02.t01.r05`) and its cards live in the Block's `records/`, so the Block, Job and Task pages show one thread.
-  `servers/workbench/page/ladder_cards.py` draws them.
+  `servers/workbench/page/element_marks/ladder_cards.py` draws them.
 - A left tab that holds content (a value table, a map, a question, a design) is content too: its marks sit after its
   name and its cards open at the top of its content on the right (`ui_parts._side_tabs(..., cards=(page, root,
   prefix))`, `tab_cards.py`). Its address is `<prefix>.<its name>` (`findings.values.Main-estimates`). Tabs that
   only switch views, files or skills pass no `cards`.
 - A paragraph or a one-line list item of a page's own sections is content once it has an id: marks at its end, its
   cards under it (`paragraph_cards.py`). Its address is `<view>.<id>` (`findings.p32`); the id is written once by
-  `/haipipe-work update` (`servers/workbench-work/paragraph_ids.py`), never by a click.
+  `/hai-work update` (`servers/workbench-work/paragraph_ids.py`), never by a click.
 - Any other structure row that links to another page shows at most the orange roll-up of that page (🙋 N, 📝 N).
 - When unsure, ask: would a person comment on these words, or change them? If yes, it is content.
 
@@ -104,7 +104,7 @@ Rules:
 
 ## 6. Card file format
 
-The three files keep Draft Lab's existing format (`workbench-task-draft/draft_step_revise_notes.py`), so the MISQ
+The three files keep Draft Lab's existing format (`workbench-task-draft/revise_steps/draft_step_revise_notes.py`), so the MISQ
 records and the skills that write them stay as they are.
 
 `<stem>-comments.md`:

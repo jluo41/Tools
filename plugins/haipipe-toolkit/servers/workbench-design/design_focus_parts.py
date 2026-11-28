@@ -147,7 +147,7 @@ def _step(title: str, rows: list, extra: str = "") -> str:
 
 
 def _big(line: str, state: str = "") -> str:
-    """A view's main point, large, first (haipipe-ui rule 1: seen at a glance), and its state as a mark or an ask.
+    """A view's main point, large, first (hai-ui rule 1: seen at a glance), and its state as a mark or an ask.
     A view whose point is only a count of its rows has no line: each row carries its own mark."""
     you = " you" if "for you" in state or "your" in state else ""
     state = state_mark(state)

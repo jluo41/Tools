@@ -39,4 +39,4 @@ verify: the engine refuses any round before G0 (T0)
 risk: The agent can steer the meaning toward what models already label well; the person
   writes the final words (ours).
 evidence on ai: No study tests agent-led definition of label meanings (ours).
-skill: haipipe-labeling-definition
+skill: hai-labeling-definition

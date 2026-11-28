@@ -1,0 +1,16 @@
+run: run-check-render
+kind: soft
+type: check
+scope: null
+target: render
+ticket: run-check-render.md
+skill: hai-ui
+agent: claude
+signs: null
+status: done
+passes:
+- p01-1126
+writes:
+- plugins/haipipe-toolkit/servers/workbench/checks/render_check.py
+- examples/Project-Ladder/blueprint/b17_theme_work/delivery/page-spec/file-formats.md
+feeds: []

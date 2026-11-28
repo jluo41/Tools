@@ -160,7 +160,7 @@ class VersionAndJobsTest(unittest.TestCase):
         self.assertIn("pm-root", page)                                      # the Section's Plan mind map, the draft's own
         self.assertNotIn("contenteditable", page.split("pm-root", 1)[1][:4000])   # read-only here
         import sys as _s
-        _s.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/1_base/draft/haipipe-draft"))
+        _s.path.insert(0, str(Path(__file__).resolve().parents[3] / "skills/1_base/draft/hai-draft"))
         from src.page_sign import sign_narrative
         self.assertTrue(sign_narrative(self.version, "this order")["ok"])
         page = self.render(self.version, "report", "structure")

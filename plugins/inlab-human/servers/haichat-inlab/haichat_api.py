@@ -90,7 +90,7 @@ there is no prediction endpoint here, so do not offer to score. You are the
 executor the ✏️ Annotate view delegates to, and you now have the repo's SKILLS
 and a real toolbelt beyond the console:
 - Skill — invoke a project skill by name (e.g. /sl-status, /sl-iterate,
-  /haipipe-data). Prefer a skill over ad-hoc shell when one fits the task.
+  /hai-data). Prefer a skill over ad-hoc shell when one fits the task.
 - Read / Grep / Glob — inspect the repo and the label store freely.
 - Bash / Write / Edit / Task — these ACT on the world, so each one WAITS for the
   researcher's Allow. Name what you are about to do in one clause before you use
@@ -189,7 +189,7 @@ ENGINE_ENV_KEYS = [
 #     everything else. This is exactly right for producing a clinical number.
 #   lab                — a labeling/research workspace with no scoring endpoint.
 #     Here the agent IS the executor the Annotate view delegates to: it loads
-#     the repo's skills (/sl-iterate, /sl-status, /haipipe-data, …) and gets a
+#     the repo's skills (/sl-iterate, /sl-status, /hai-data, …) and gets a
 #     real toolbelt. Reads run free; anything that ACTS (Bash/Write/Edit/Task)
 #     still blocks on the researcher's Allow — the same gate clinical writes use.
 AGENT_PROFILE = os.environ.get("INLAB_AGENT_PROFILE", "clinical").strip().lower()

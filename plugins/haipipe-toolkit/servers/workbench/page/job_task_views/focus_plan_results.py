@@ -218,18 +218,18 @@ def steps_word(notes: list) -> str:
 
 def answer_verb(row: dict, path, stage: str, folder: Path, root: Path) -> str:
     """The verb on an answer's row in Work › Findings: Agree when its answer is proposed and waits for the person,
-    Write when it has none yet; each a Copy prompt for haipipe-report, which owns a report's answer-status (round 3:
+    Write when it has none yet; each a Copy prompt for hai-report, which owns a report's answer-status (round 3:
     "agree it: dead end, no Agree anywhere")."""
     from live.ui_parts import copy_verb
     title = task_questions.words(row.get("title")) or task_questions.words(row.get("question"))
     where = frame.rel(path, root) if path else frame.rel(folder, root)
     if stage == "proposed":
-        return copy_verb("Agree", f"/haipipe-report {where} I agree the proposed answer to \"{title}\": mark it agreed "
+        return copy_verb("Agree", f"/hai-report {where} I agree the proposed answer to \"{title}\": mark it agreed "
                                   "(answer-status: answered) and keep its words.",
-                         "Copies a prompt that asks /haipipe-report to mark this answer agreed")
-    return copy_verb("Write", f"/haipipe-report {where} write the answer to \"{title}\" from the Results of its work, "
+                         "Copies a prompt that asks /hai-report to mark this answer agreed")
+    return copy_verb("Write", f"/hai-report {where} write the answer to \"{title}\" from the Results of its work, "
                               "as proposed, for me to agree.",
-                     "Copies a prompt that asks /haipipe-report to write this answer")
+                     "Copies a prompt that asks /hai-report to write this answer")
 
 
 def work_process(folder: Path, root: Path, level: str, view: str, questions: list, inbox: list, start_number=1) -> str:

@@ -116,7 +116,7 @@ class LabelingThemeTest(unittest.TestCase):
             with self.subTest(tab=tab):
                 page = frame.render(self.theme, self.root, self.task, "Work Details", tab)
                 self.assertIn(title, page)
-                self.assertIn("/haipipe-labeling-building", page)
+                self.assertIn("/hai-labeling-building", page)
                 self.assertIn("👁", page)
                 self.assertIn(">Operation<", page)
                 self.assertIn(">Result<", page)
@@ -145,7 +145,7 @@ class LabelingThemeTest(unittest.TestCase):
         self.assertEqual(T.spaces("Task", other, self.root, ""), {})
 
 
-    # ── the Task types of a labeling Job (b15 s13-labeling-task) ─────────────────────────────────
+    # ── the Task types of a labeling Job (b15 s13-labeling-task, removed 261127) ─────────────────────────────────
     def test_a_task_type_comes_from_its_task_type_line(self):
         job = self.task.parent
         self.assertEqual(T.types_of(self.task), ("building", "scanning"))
@@ -212,7 +212,7 @@ class LabelingThemeTest(unittest.TestCase):
         self.assertEqual(s["Work Details"]["subspaces"], ["1 · Data", "2 · Items", "3 · Embedding"])
         where = "Project-X/labeling/b61_demo_label/j01_building_demo/t02_demo_items"
         tabs = {"1 · Data": ("📥 Step 1 · Data", "→ next", "Input",
-                             "next: 🧱 Step 2 · Items", f"/haipipe-labeling-preparation {where} describe:"),
+                             "next: 🧱 Step 2 · Items", f"/hai-labeling-preparation {where} describe:"),
                 "2 · Items": ("🧱 Step 2 · Items", "✓ done", "Recipe, signed · r01_demo", "📋 All items",
                               "scripts/items_transform.py", "Each row becomes one placeholder item.", "📦 Version",
                               "Yes 5 · No 5", "🧱 Revise the items", f"{where} revise: read my notes"),

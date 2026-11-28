@@ -72,13 +72,13 @@ All of it is exercise information, none of it is in an `Exercise` frame, and
 `describe-exercise` therefore never sees it. That is the largest single gap in
 this folder and it is a plumbing gap, not a resolver gap."""]
 
-# The folder's SHAPE belongs to haipipe-norm, not to this file. Three
+# The folder's SHAPE belongs to hai-norm, not to this file. Three
 # normalizers writing three folders produced three schemas that shared two keys;
 # xinfo-v1 is the one shape all four now emit, so a benchmark reading coverage,
 # confidence or basis is written once.
 import pathlib as _pl
 import sys as _sys
-_sys.path.insert(0, str(_pl.Path(__file__).resolve().parent.parent / "haipipe-norm"))
+_sys.path.insert(0, str(_pl.Path(__file__).resolve().parent.parent / "hai-norm"))
 from xinfo import CohortStats, copy_api_examples, write   # noqa: E402
 
 

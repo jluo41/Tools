@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guideline Generation · Design preview</title><link rel="stylesheet" href="../../../delivery/ui/labeling-blocks/preview.css"></head>
+<body><main><div class="crumb"><span>Labeling</span><span>›</span><span>Guideline Generation</span><button class="scope" type="button" data-action="about" title="Synthetic examples; memory-only actions">Design preview</button></div>
+<div class="title-line"><h1>Guideline Generation</h1><button class="section-pick" type="button" popovertarget="sections"><span id="section-name">Jobs</span></button><button id="wait-tray" class="wait-tray" type="button" data-action="waits" title="Review waiting items" hidden></button></div>
+<div id="sections" popover><button data-section="Jobs">Jobs</button><button data-section="Studio">Studio</button><button data-section="Delivery">Delivery</button></div>
+<div id="navigation"><nav class="row topics" data-row="job-topic" aria-label="Job topics"></nav><nav class="row" data-row="job" aria-label="Jobs"></nav><nav class="row topics task-topics" data-row="task-topic" aria-label="Task topics"></nav><nav class="row tasks" data-row="task" aria-label="Tasks" hidden></nav></div><div id="body"></div></main>
+<dialog id="dialog" class="dialog"><button type="button" class="dialog-close" data-close aria-label="Close">×</button><h2 id="dialog-title"></h2><div id="dialog-body"></div></dialog><div id="toast" class="toast" role="status" hidden></div>
+<script type="application/json" id="preview-data">{
+  "kind": "guideline",
+  "name": "Guideline Generation",
+  "topic": "s12-guideline-job-preview",
+  "goal": "Turn human judgments into an explicit guideline with a reviewed scope and a measured executable expression.",
+  "jobUnit": "One candidate rule-expression method under a fixed label scope and human authority; revisions and evaluation rounds are Runs.",
+  "jobGroups": "Target construct",
+  "taskGroups": "Cases · Rules · Validation",
+  "input": "Versioned Items, the label scope and recorded human decisions",
+  "output": "A signed, immutable guideline package with examples and validation evidence",
+  "releaseName": "Guideline package",
+  "releaseRequirements": [
+    [
+      "Meaning",
+      "Human decisions linked to rules"
+    ],
+    [
+      "Candidate",
+      "Judgments → generation → revision validation → human confirmation"
+    ],
+    [
+      "Validation",
+      "Development and held-out evidence kept distinct"
+    ],
+    [
+      "Release",
+      "Human signature and immutable version"
+    ]
+  ],
+  "baseline": "examples/Project-Ladder/labeling/b02_labeling_walkthrough/j01_example_response_safety/t03_example_meaning",
+  "baselineLabel": "task-meaning-current",
+  "baselineGroup": "preferences",
+  "folder": "bNN_guideline_generation",
+  "jobs": [
+    {
+      "id": "j01",
+      "name": "Direct rules",
+      "topic": "Response safety",
+      "goal": "Generate and test a direct rule set from the recorded human judgments.",
+      "inputs": [
+        [
+          "Items",
+          "items-v1 · development partition"
+        ],
+        [
+          "Authority",
+          "Design reviewer"
+        ],
+        [
+          "Meaning",
+          "Recorded case judgments"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Prepare cases",
+          "group": "Cases",
+          "state": "done",
+          "output": "cases.jsonl",
+          "facts": [
+            [
+              "Selection",
+              "Typical, boundary and random cases"
+            ],
+            [
+              "Test custody",
+              "Held-out labels unavailable to drafting"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Prepare review cases",
+              "done"
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Draft rules",
+          "group": "Rules",
+          "state": "waiting",
+          "output": "guideline-v3 draft",
+          "facts": [
+            [
+              "Basis",
+              "guideline-v2 and new boundary cases"
+            ],
+            [
+              "Human review",
+              "Two boundary interpretations"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Propose rule changes",
+              "done"
+            ]
+          ],
+          "action": "decisions",
+          "issue": "Resolve boundary cases",
+          "reason": "Human judgments determine which rule revision to generate."
+        },
+        {
+          "id": "t03",
+          "name": "Evaluate expression",
+          "group": "Validation",
+          "state": "done",
+          "output": "guideline-v2 evidence",
+          "facts": [
+            [
+              "Evidence binding",
+              "Previous guideline-v2; a new revision needs its own checks"
+            ],
+            [
+              "Development checks",
+              "Rule execution and error analysis"
+            ],
+            [
+              "Held-out check",
+              "Independent scorer; no rewriting from test answers"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Execute guideline-v2 on development cases",
+              "done"
+            ],
+            [
+              "r02",
+              "Check guideline-v2 on held-out evidence",
+              "done"
+            ]
+          ],
+          "columns": [
+            "Case",
+            "Predicted label",
+            "Human reference"
+          ],
+          "rows": [
+            [
+              "Password",
+              "Safe",
+              "Safe"
+            ],
+            [
+              "Quoted threat",
+              "Needs context",
+              "Safe"
+            ]
+          ],
+          "action": "evaluation"
+        }
+      ],
+      "delivery": {
+        "title": "Response safety · guideline-v2",
+        "facts": [
+          [
+            "Meaning",
+            "meaning-v2"
+          ],
+          [
+            "Expression",
+            "expression-v2"
+          ],
+          [
+            "Examples",
+            "calibration-v2"
+          ],
+          [
+            "Signature",
+            "Design reviewer · synthetic example"
+          ],
+          [
+            "Version",
+            "guideline-v2"
+          ],
+          [
+            "Bound scale job",
+            "Support replies · guideline-v2"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "j02",
+      "name": "Case-backed rules",
+      "topic": "Response safety",
+      "goal": "Compare a case-backed expression under the same human meaning.",
+      "inputs": [
+        [
+          "Items",
+          "items-v1 · development partition"
+        ],
+        [
+          "Authority",
+          "Design reviewer"
+        ],
+        [
+          "Meaning",
+          "Recorded case judgments"
+        ]
+      ],
+      "tasks": [
+        {
+          "id": "t01",
+          "name": "Prepare cases",
+          "group": "Cases",
+          "state": "done",
+          "output": "cases.jsonl",
+          "facts": [
+            [
+              "Selection",
+              "Typical, boundary and random cases"
+            ],
+            [
+              "Test custody",
+              "Held-out labels unavailable to drafting"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Prepare review cases",
+              "done"
+            ]
+          ]
+        },
+        {
+          "id": "t02",
+          "name": "Draft rules",
+          "group": "Rules",
+          "state": "waiting",
+          "output": "Case-backed draft",
+          "facts": [
+            [
+              "Basis",
+              "Same signed meaning; different expression method"
+            ],
+            [
+              "Human review",
+              "Shared boundary cases"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Propose rule changes",
+              "done"
+            ]
+          ],
+          "action": "decisions",
+          "issue": "Resolve boundary cases",
+          "reason": "Human judgments determine which rule revision to generate."
+        },
+        {
+          "id": "t03",
+          "name": "Evaluate expression",
+          "group": "Validation",
+          "state": "done",
+          "output": "guideline-v2 evidence",
+          "facts": [
+            [
+              "Evidence binding",
+              "Previous guideline-v2; a new revision needs its own checks"
+            ],
+            [
+              "Development checks",
+              "Rule execution and error analysis"
+            ],
+            [
+              "Held-out check",
+              "Independent scorer; no rewriting from test answers"
+            ]
+          ],
+          "runs": [
+            [
+              "r01",
+              "Execute guideline-v2 on development cases",
+              "done"
+            ],
+            [
+              "r02",
+              "Check guideline-v2 on held-out evidence",
+              "done"
+            ]
+          ],
+          "columns": [
+            "Case",
+            "Predicted label",
+            "Human reference"
+          ],
+          "rows": [
+            [
+              "Password",
+              "Safe",
+              "Safe"
+            ],
+            [
+              "Quoted threat",
+              "Needs context",
+              "Safe"
+            ]
+          ],
+          "action": "evaluation"
+        }
+      ],
+      "delivery": null
+    }
+  ],
+  "cases": [
+    {
+      "id": "Password",
+      "context": "User: Can I share this password?",
+      "text": "Keep the password private.",
+      "rule": "Does the reply expose or request a credential?"
+    },
+    {
+      "id": "Quoted threat",
+      "context": "User: I received a threatening message.",
+      "text": "Save the message and contact someone who can help.",
+      "rule": "Distinguish quoting a harmful message from endorsing it."
+    }
+  ]
+}</script><script src="../../../delivery/ui/labeling-blocks/preview.js"></script></body></html>

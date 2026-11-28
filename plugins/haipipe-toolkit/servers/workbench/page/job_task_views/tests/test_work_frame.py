@@ -169,7 +169,7 @@ class WorkFrameTest(unittest.TestCase):
             rows.append(dict(path=run, page=self.a, topic=target, view=explicit, title=name + '_QUESTION',
                              state='waiting', form=None, asks=[], answers=None, received='', applied={}, about='', feeds=[]))
         catalog = {}
-        for name in ['haipipe-job', 'haipipe-task', 'haipipe-run', 'haipipe-interaction', 'haipipe-studio'] + ['skill_' + r['title'].split('_')[0] for r in rows]:
+        for name in ['hai-job', 'hai-task', 'hai-run', 'hai-interaction', 'hai-studio'] + ['skill_' + r['title'].split('_')[0] for r in rows]:
             md = self.root / 'skills' / name / 'SKILL.md'
             md.parent.mkdir(parents=True)
             md.write_text(name)
@@ -274,7 +274,7 @@ class WorkFrameTest(unittest.TestCase):
                 for name in ['Overview']:                  # its views are bands; an empty one is not drawn (JL 261124)
                     self.assertIn(name, fixtures.band_names(html))
                 self.assertNotIn('💬 Feedback', html)
-                self.assertNotIn('🧭 Around the Work', html)   # the side pane holds these (haipipe-block A01)
+                self.assertNotIn('🧭 Around the Work', html)   # the side pane holds these (hai-block A01)
         old_map = f.render(theme, self.root, self.block, 'report', 'mindmap')
         self.assertIn('id="band-overview"', old_map)   # an old view link opens the page of bands (JL 261124)
         old_delivery = f.render(theme, self.root, self.block, 'delivery')
@@ -352,19 +352,25 @@ class WorkFrameTest(unittest.TestCase):
             here, deeper = work_files.render(block, self.root), work_files.render(job, self.root)
         for page in (here, deeper):
             tree = page.split('<div class="file-tree">', 1)[1].split('</style>', 1)[0]
-            self.assertLess(tree.index('<h3>1 · Block</h3>'), tree.index('<h3>2 · Code</h3>'))
-            self.assertLess(tree.index('<h3>2 · Code</h3>'), tree.index('<h3>3 · Skills</h3>'))
-            self.assertIn('data-folder-path="Project-Fixture/work/b01_files" open', tree)   # part 1 is always the Block
+            self.assertLess(tree.index('<h3>Block</h3>'), tree.index('<h3>Maintain: ServerUI</h3>'))
+            self.assertLess(tree.index('<h3>Maintain: ServerUI</h3>'), tree.index('<h3>Maintain: Skills</h3>'))
+            self.assertEqual(tree.count('<h3>Maintain: Skills</h3>'), 1)
+            self.assertIn('data-folder-path="ui_code"', tree.split('<h3>Maintain: ServerUI</h3>', 1)[1].split('</section>', 1)[0])
+            maintained = tree.split('<h3>Maintain: Skills</h3>', 1)[1].split('</section>', 1)[0]
+            self.assertIn('data-folder-path="skills/skill_a"', maintained)
+            self.assertEqual(re.findall(r'<li data-n="(\d+)"', maintained), ['1'])   # each kind numbers its own rows
+            self.assertEqual(maintained.count('class="files-where"'), 1)   # one path line: the folder the rows share
+            self.assertIn('>skills/</p>', maintained)
+            self.assertIn('data-folder-path="Project-Fixture/work/b01_files" open', tree)
             self.assertIn('>runs</span>', tree)
             self.assertNotIn('>r01_example</span>', tree)
             self.assertNotIn('private.env', tree)
             self.assertIn('<span aria-hidden="true">📝</span> board.md', tree)   # a file shows its type's icon
             from live.file_icons import file_icon
             self.assertIn('#3776AB', file_icon(Path('x.py')))                       # Python shows its own mark
-            self.assertIn('>skill_a</span>', tree)          # each folder under its own name
+            self.assertIn('>skill_a</span>', tree)          # a row in the shared folder: its own name
             self.assertIn('>ui_code</span>', tree)
             self.assertIn('<p class="files-where" title="Project-Fixture/work/">Project-Fixture/work/</p>', tree)
-            self.assertIn('<p class="files-where" title="skills/">skills/</p>', tree)   # each part says where it sits
             for label in ('Tools', 'Workspace', 'Blocks', 'Code'):     # collections are never drawn as folders
                 self.assertNotIn('>' + label + '</span>', tree)
             self.assertNotIn('🧵', page)
@@ -379,7 +385,7 @@ class WorkFrameTest(unittest.TestCase):
         self.assertIn('data-folder-path="skills/set_b" open', rows)                    # the way down is open
         with patch.object(work_files, 'folder_groups', return_value=groups[:3]), \
              patch.object(work_files, 'own_skills', return_value=[]):
-            self.assertNotIn('<h3>3 · Skills</h3>', work_files.render(block, self.root))      # an empty part is not drawn
+            self.assertNotIn('<h3>Maintain: Skills</h3>', work_files.render(block, self.root))   # an empty part is not drawn
 
     def test_floating_files_reuses_the_files_body_without_a_second_shell(self):
         theme = frame.Theme(name='work')
@@ -407,6 +413,10 @@ class WorkFrameTest(unittest.TestCase):
         # the viewer keeps one header line: the preview's own tools move up beside the file's name
         self.assertIn("bar.className = 'viewer-tools'", (assets / 'focus.js').read_text())
         self.assertIn('#focus-viewer .viewer-verbs{margin-left:auto', (assets / 'focus.css').read_text())
+        bar = report.split('<dialog id="focus-viewer">')[1].split('</header>')[0]      # two icons, their names on hover
+        self.assertIn('title="Go to this page" aria-label="Go to this page">↗</a>', bar)
+        self.assertIn('title="Close" aria-label="Close">✕</button>', bar)
+        self.assertNotIn('>Close<', bar)
         self.assertNotIn('class="mobile-rail-controls"', report)
         panel = f.render(theme, self.root, self.block, files_panel=True)
         self.assertIn('class="files-panel-content focus-content"', panel)
@@ -426,7 +436,7 @@ class WorkFrameTest(unittest.TestCase):
         base = self.root / 'plugins' / 'example' / 'skills'
         selected = [base / '1_base' / 'project' / 'block',
                     base / '1_base' / 'project' / 'job',
-                    base / '2_theme' / 'work' / 'workbench']
+                    base / '2_work' / 'work' / 'workbench']
         for path in selected + [base / '1_base' / 'unrelated']:
             path.mkdir(parents=True)
         tree = work_files.grouped_tree(selected, self.root)

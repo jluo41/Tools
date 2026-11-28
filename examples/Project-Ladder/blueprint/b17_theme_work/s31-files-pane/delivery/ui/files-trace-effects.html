@@ -1,0 +1,81 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trace effects</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--link:#1f5fbf;--plan:#9a9a94;--edit:#2f6fd6;--done:#2f9e5b;--off:#d98a12;--kept:#b9b9b3}
+body{margin:0;background:#f4f4f2;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+.wrap{display:flex;gap:28px;justify-content:center;padding:24px;flex-wrap:wrap}
+.pane{width:440px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px 30px;box-sizing:border-box}
+.legend{width:300px;font-size:12.5px}.legend h2{font-size:13px;margin:0 0 8px}.legend li{margin:7px 0;display:flex;gap:8px;align-items:center}
+ul{list-style:none;margin:0;padding:0}
+.chip{display:flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--line);border-radius:999px;font-size:12px;width:max-content;margin-bottom:10px;cursor:pointer}
+.chip small{color:var(--muted)}.chip .x{margin-left:6px;color:var(--muted)}
+h3{margin:12px 0 2px;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.where{margin:0 0 4px;font:12px ui-monospace,Menlo,monospace;color:var(--muted)}
+.ext{display:flex;align-items:center;gap:8px;margin:14px 0 0;font-size:11px;color:var(--muted);letter-spacing:.06em}
+.ext:before,.ext:after{content:"";flex:1;border-top:1px dashed #cfcfca}
+.row{display:flex;align-items:center;gap:7px;padding:5px 6px;border-radius:6px;position:relative}
+.kids{margin-left:10px;padding-left:12px;border-left:1px solid var(--line)}
+.tw{width:10px;color:var(--ink);font-size:10px}.f{width:18px;height:15px;background:#f8c44f;border:1.3px solid #996515;border-radius:2px 3px 3px 3px;flex:none}
+.name{flex:1}.file .name{color:var(--link);padding-left:17px}
+.mk{width:12px;height:12px;flex:none}
+.dot{width:6px;height:6px;border-radius:50%;flex:none}
+/* effects */
+.ghost .name{color:var(--plan);font-style:italic}
+.ghost .name{animation:fade 2.6s ease-in-out infinite}
+.ghost .name:before{content:"+";display:inline-block;width:12px;margin-left:-14px;color:var(--plan);font-style:normal}
+@keyframes fade{50%{opacity:.45}}
+.editing{background:linear-gradient(90deg,transparent,rgba(47,111,214,.10),transparent);background-size:200% 100%;animation:shine 2.4s ease-in-out infinite}
+@keyframes shine{0%{background-position:150% 0}100%{background-position:-50% 0}}
+.editing .mk{animation:breathe 1.8s ease-in-out infinite}
+@keyframes breathe{50%{filter:drop-shadow(0 0 4px rgba(47,111,214,.8));transform:scale(1.15)}}
+.dot.live{animation:ping 1.8s ease-out infinite;box-shadow:0 0 0 0 rgba(47,111,214,.5)}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(47,111,214,.55)}100%{box-shadow:0 0 0 6px rgba(47,111,214,0)}}
+.justdone .mk{animation:pop .7s cubic-bezier(.3,1.6,.5,1) 1}
+@keyframes pop{0%{transform:scale(.3)}100%{transform:scale(1)}}
+.struck .name{text-decoration:line-through;opacity:.55}
+.card{position:absolute;left:62%;top:-6px;z-index:5;width:270px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.14);padding:10px 12px;font-size:12px;opacity:0;pointer-events:none;transition:opacity .15s .4s}
+.row:hover .card{opacity:1;pointer-events:auto}
+.card b{font-size:13px}.card p{margin:4px 0}.card code{font:11px ui-monospace,Menlo,monospace;color:var(--muted)}.card li{display:flex;gap:6px;align-items:center;margin:3px 0}
+.hint{font-size:11px;color:var(--muted);margin:16px 0 0}
+</style></head><body><div class="wrap">
+<div class="pane">
+ <div class="chip">MK_EDIT<b>trace timeline</b><small>11-25 14:18</small></div>
+ <h3>1 · Block</h3><p class="where">examples/Project-Ladder/work/</p>
+ <ul><li><div class="row"><span class="tw">▾</span><i class="f"></i><span class="name"><b>b17_theme_work</b></span><i class="dot live" style="background:var(--edit)"></i></div>
+  <ul class="kids">
+   <li><div class="row"><span class="tw">▸</span><i class="f"></i><span class="name">j01_work_ladder_contract</span></div></li>
+   <li><div class="row"><span class="tw">▾</span><i class="f"></i><span class="name">trace</span><i class="dot live" style="background:var(--edit)"></i></div>
+    <ul class="kids"><li><div class="row file editing"><span class="name">📝 1418_trace_timeline.md</span>MK_EDIT</div></li>
+     <li><div class="row file ghost"><span class="name">📝 1500_hover_card.md</span>MK_PLAN</div></li></ul></li>
+  </ul></li></ul>
+ <div class="ext">extends into</div>
+ <h3>↳ 2 · UI</h3><p class="where">plugins/haipipe-toolkit/servers/workbench/page/</p>
+ <ul>
+  <li><div class="row file editing"><span class="name"><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> trace_view.py</span>MK_EDIT
+   <div class="card"><b><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> trace_view.py</b><p>A trace in the Files pane: one piece of work's files on the real tree, each with its state.</p>
+   <code>plugins/haipipe-toolkit/servers/workbench/side_pane/files_tree/trace_view.py</code>
+   <p>● not committed · last commit 11-24 "Files split pane"</p><ul><li>MK_EDIT 14:18 trace timeline</li><li>MK_DONE 10:51 trace view</li></ul></div></div></li>
+  <li><div class="row file ghost"><span class="name"><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> file_info.py</span>MK_PLAN</div></li>
+  <li><div class="row file justdone"><span class="name"><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> file_icons.py</span>MK_DONE</div></li>
+  <li><div class="row file offplan"><span class="name"><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> work_files.py</span>MK_OFF</div></li>
+  <li><div class="row file struck"><span class="name"><svg class="file-icon" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false" style="vertical-align:-2px"><path fill="#3776AB" d="M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z"/><path fill="#FFD43B" d="M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z"/></svg> old_switch.py</span>MK_PLAN</div></li>
+ </ul>
+ <div class="ext" style="visibility:hidden;margin:0"></div>
+ <h3>↳ 3 · Skills</h3><p class="where">plugins/haipipe-toolkit/skills/1_base/workbench/hai-ui/</p>
+ <ul><li><div class="row file"><span class="name">📝 CONSTITUTION.md</span>MK_PLAN</div></li></ul>
+</div>
+<div class="legend"><h2>Effects</h2><ul>
+ <li>MK_PLAN<span><b>+ grey italic, slowly fading in and out</b>: a file still to be created</span></li>
+ <li>MK_EDIT<span><b>A light sweeping across, the mark breathing</b>: being worked on now</span></li>
+ <li>MK_DONE<span><b>Pops in once</b>: just finished (trace closed)</span></li>
+ <li>MK_OFF<span><b>Amber diamond</b>: touched, but the trace's plan did not list it</span></li>
+ <li>MK_PLAN<span><b>Struck through</b>: to be deleted</span></li>
+ <li><i class="dot live" style="background:var(--edit)"></i><span><b>Pinging dot</b> on a folder: work is inside</span></li>
+</ul></div></div>
+<script>
+const M={PLAN:'<svg class="mk" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#9a9a94" stroke-width="1.4" stroke-dasharray="2 1.6"/></svg>',
+EDIT:'<svg class="mk" viewBox="0 0 12 12"><circle cx="6" cy="6" r="4.5" fill="none" stroke="#2f6fd6" stroke-width="1.5"/><path d="M6 1.5a4.5 4.5 0 0 1 0 9z" fill="#2f6fd6"/></svg>',
+DONE:'<svg class="mk" viewBox="0 0 12 12"><circle cx="6" cy="6" r="5" fill="#2f9e5b"/><path d="M3.6 6.2l1.6 1.6 3.2-3.3" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+OFF:'<svg class="mk" viewBox="0 0 12 12"><path d="M6 1l5 5-5 5-5-5z" fill="#d98a12"/></svg>'};
+document.body.innerHTML=document.body.innerHTML.replace(/MK_(PLAN|EDIT|DONE|OFF)/g,(m,k)=>M[k]);
+document.querySelector('.justdone').addEventListener('click',e=>{const r=e.currentTarget;r.classList.remove('justdone');void r.offsetWidth;r.classList.add('justdone');});
+</script></body></html>

@@ -371,7 +371,7 @@ Historical `<instance>#<rNN_stem>@<vNNN>` references remain readable.
 `Insight · reuse · <full-id>` may
 support another Page; instance-local Execution supports use `Execution` with
 the same qualified identity dialect. The item schema and workflow are owned
-by `haipipe-page-insight/ref/instance-items.md`. Never flatten such a reference
+by `hai-page-insight/ref/instance-items.md`. Never flatten such a reference
 to a BJTR id or drop its dataset instance/version. A research Insight Item is
 not one of this table's typed Evidence Items.
 

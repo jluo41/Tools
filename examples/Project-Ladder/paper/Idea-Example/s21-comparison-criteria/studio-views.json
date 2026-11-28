@@ -1,0 +1,13 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Comparison criteria",
+          "path": "examples/Project-Ladder/paper/Idea-Example/s21-comparison-criteria/s21-comparison-criteria.md"
+        }
+      ]
+    }
+  ]
+}

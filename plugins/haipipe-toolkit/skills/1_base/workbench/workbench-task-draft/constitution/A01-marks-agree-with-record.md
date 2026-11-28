@@ -15,8 +15,8 @@ The s6 row read ★– 📊1 📝1 💬1 ✓?. Pass 7 (`## Pass 7 · 2026-11-18 
 Read the Pass title's date first and fall back to the body only when the title has none: `seen = {"": _when(title) or _when(head)}`. A sentence whose words did change after the review is still caught by the separate words test (`scored_words` on the Pass's `on draft vN`).
 
 ## 5. Update
-- `servers/workbench/workbench-task-draft/draft_step_revise.py`: review date from the Pass title
-- `servers/workbench/tests/test_draft_lab_mustcheck.py`: `ReviewDateFromPassTitleTest`, fails without the fix and passes with it
+- `servers/workbench/workbench-task-draft/revise_steps/draft_step_revise.py`: review date from the Pass title
+- `servers/workbench/workbench-task-draft/revise_steps/tests/test_draft_lab_mustcheck.py`: `ReviewDateFromPassTitleTest`, fails without the fix and passes with it
 - host 5602 restarted; t00_abstract s6 now renders ★8 (`data-scores="logic 8 · read 8 · human 8"`, no `data-stale`)
 
 ## 6. Never again

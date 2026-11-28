@@ -117,7 +117,7 @@ class AuthMixin:
                 for username, password in sorted(cls.auth_users.items())
             ).encode("utf-8")
             cls.auth_cookie_key = hashlib.sha256(
-                b"haipipe-board-cookie-v1\0" + material
+                b"hai-board-cookie-v1\0" + material
             ).digest()
         else:
             cls.auth_cookie_key = None

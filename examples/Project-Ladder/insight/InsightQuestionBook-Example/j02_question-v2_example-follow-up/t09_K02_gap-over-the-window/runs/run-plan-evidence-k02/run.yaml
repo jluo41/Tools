@@ -1,0 +1,16 @@
+run: run-plan-evidence-k02
+kind: soft
+type: plan-evidence
+scope: Tools/examples/Project-Ladder/insight/InsightQuestionBook-Example/j02_question-v2_example-follow-up/t09_K02_gap-over-the-window
+target: k02
+ticket: run-plan-evidence-k02.md
+skill: hai-insight-evidence-plan
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- t09_K02_gap-over-the-window/question.md
+feeds: []

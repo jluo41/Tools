@@ -19,27 +19,27 @@ from live.board_interactions import answers_of
 # Work: what waits on you), 2 its open points or where each item stands, 3 the skills that do it (Work; JL 261101:
 # "show what is the skills related to each UI"). PROCESS is Work's only (s32-D27) ─────────────────────
 VIEW_SKILLS = {
-    "idea": (("haipipe-paper-ideation", "projects candidate directions and the recorded selection"),
-             ("haipipe-ideation", "finds candidate ideas and tests their novelty and fit"),
-             ("haipipe-paper-related", "positions candidate directions against the closest related work")),
-    "story": (("haipipe-paper-story", "writes the questions, hypotheses, claims and Section narrative"),
-              ("haipipe-paper-venue", "keeps each journal's desk rules, venues/<venue>/call.md"),
-              ("haipipe-paper-related", "maps the closest related papers, beside ours")),
-    "plan": (("haipipe-paper-plan", "draws how the data becomes each answer, then the Sections and dated steps to the send"),
-             ("haipipe-report", "keeps each Board Question and its report"),
-             ("haipipe-task", "runs each Task's Runs and keeps their Results"),
-             ("haipipe-paper", "routes the paper's work to the skill that owns it")),
-    "explore": (("haipipe-work", "the work Blocks, Jobs, Tasks and Runs"),
-                ("haipipe-discovery", "the discovery Blocks: each paper read by a Run")),
-    "evidence": (("haipipe-paper-evidence", "checks the values and citations as one ledger"),
-                 ("haipipe-evidence", "lands each Evidence Item from its Results")),
-    "displays": (("haipipe-paper-plan", "plans each display against the venue's rules (the display plan)"),
-                 ("haipipe-paper-story", "owns the shared Story by Section that the displays support"),
-                 ("haipipe-display", "draws each table and figure, then its review loop"),
-                 ("haipipe-paper-evidence", "each version's preview.pdf, as the paper prints it")),
-    "draft": (("haipipe-paper-draft", "drafts one Section through its steps"),
-              ("haipipe-draft-writing", "writes and revises the prose"),
-              ("haipipe-paper-assemble", "builds the whole paper: the PDF and the Word files")),
+    "idea": (("hai-paper-ideation", "projects candidate directions and the recorded selection"),
+             ("hai-ideation", "finds candidate ideas and tests their novelty and fit"),
+             ("hai-paper-related", "positions candidate directions against the closest related work")),
+    "story": (("hai-paper-story", "writes the questions, hypotheses, claims and Section narrative"),
+              ("hai-paper-venue", "keeps each journal's desk rules, venues/<venue>/call.md"),
+              ("hai-paper-related", "maps the closest related papers, beside ours")),
+    "plan": (("hai-paper-plan", "draws how the data becomes each answer, then the Sections and dated steps to the send"),
+             ("hai-report", "keeps each Board Question and its report"),
+             ("hai-task", "runs each Task's Runs and keeps their Results"),
+             ("hai-paper", "routes the paper's work to the skill that owns it")),
+    "explore": (("hai-work", "the work Blocks, Jobs, Tasks and Runs"),
+                ("hai-discovery", "the discovery Blocks: each paper read by a Run")),
+    "evidence": (("hai-paper-evidence", "checks the values and citations as one ledger"),
+                 ("hai-evidence", "lands each Evidence Item from its Results")),
+    "displays": (("hai-paper-plan", "plans each display against the venue's rules (the display plan)"),
+                 ("hai-paper-story", "owns the shared Story by Section that the displays support"),
+                 ("hai-display", "draws each table and figure, then its review loop"),
+                 ("hai-paper-evidence", "each version's preview.pdf, as the paper prints it")),
+    "draft": (("hai-paper-draft", "drafts one Section through its steps"),
+              ("hai-draft-writing", "writes and revises the prose"),
+              ("hai-paper-assemble", "builds the whole paper: the PDF and the Word files")),
 }
 
 
@@ -121,36 +121,36 @@ def _plan_steps(board: Path, root: Path) -> list:
     ask = "Show me the plan first; change nothing until I say yes."
     steps = []
     if flow is not None:
-        steps.append(("🗂️ Design the dataset", "the data, the linking and the tables each question reads", "haipipe-paper-plan",
+        steps.append(("🗂️ Design the dataset", "the data, the linking and the tables each question reads", "hai-paper-plan",
                       url(mind) if mind and mind.is_file() else wb(flow),
-                      f"Use /haipipe-paper-plan. Open the data-flow mind map {rel(mind) if mind and mind.is_file() else rel(flow)} "
+                      f"Use /hai-paper-plan. Open the data-flow mind map {rel(mind) if mind and mind.is_file() else rel(flow)} "
                       f"and take a screenshot of it" + (f"; read {rel(yaml_)}" if yaml_ else "") + ". Check the dataset design: "
                       "the data, the linking and the tables each question reads. Propose how to update the plan, and which work "
-                      f"Block, Job and Task builds each table (/haipipe-work). {ask}"))
+                      f"Block, Job and Task builds each table (/hai-work). {ask}"))
     if main is not None:
         steps.append(("📈 Design the regressions", f"{main.parent.name} · {main.name}: outcome, treatment, estimator, windows",
-                      "haipipe-task", wb(main),
-                      f"Use /haipipe-task. Open {rel(main)}, its src/ design files, and the research questions (§3) of "
+                      "hai-task", wb(main),
+                      f"Use /hai-task. Open {rel(main)}, its src/ design files, and the research questions (§3) of "
                       f"{rel(smd) if smd else 'the Story'}. For each question, check the regression design: outcome, treatment, "
                       f"estimator, windows, and which Task and Run test it. Propose the changes as Tasks and Runs in the work theme. {ask}"))
     if smd is not None and smd.is_file():
-        steps.append(("⚙️ Make them run", "the Task Roadmap: each Run, its ticket, its state", "haipipe-run", _page_url(smd, root),
-                      f"Use /haipipe-run. Read the Task Roadmap (§7, the T table) of {rel(smd)}. For each row not done, check that "
+        steps.append(("⚙️ Make them run", "the Task Roadmap: each Run, its ticket, its state", "hai-run", _page_url(smd, root),
+                      f"Use /hai-run. Read the Task Roadmap (§7, the T table) of {rel(smd)}. For each row not done, check that "
                       "its Run ticket exists and is ready, and build what is missing. Never start a Run: I press Run. Tell me what "
                       "to press, in order."))
         plan = next(iter(sorted(board.glob("s??-paper-displays"))), None)
         pface = plan / f"{plan.name}.md" if plan is not None else None
-        steps.append(("🖼️ Plan the displays", "each display, its Run, and the venue's display rules", "haipipe-paper-plan",
+        steps.append(("🖼️ Plan the displays", "each display, its Run, and the venue's display rules", "hai-paper-plan",
                       _page_url(pface, root) if pface and pface.is_file() else _page_url(smd, root),
-                      (f"Use /haipipe-paper-plan. Open {rel(pface)} and run display_plan.py check on the Board. "
+                      (f"Use /hai-paper-plan. Open {rel(pface)} and run display_plan.py check on the Board. "
                        if pface and pface.is_file() else
-                       f"Use /haipipe-paper-plan. Make s06-paper-displays for this Board from the questions of {rel(smd)}. ")
+                       f"Use /hai-paper-plan. Make s06-paper-displays for this Board from the questions of {rel(smd)}. ")
                       + "For each research question, check which display carries its answer, what it shows, where it goes "
                         "(main or supplement) and the Run that makes it, against the venue's display rules (venues/<venue>/"
                         f"call.md, its Displays table). {ask}"))
-        steps.append(("🔎 Plan the reading", "the Discovery Roadmap: what each question must read", "haipipe-discovery",
+        steps.append(("🔎 Plan the reading", "the Discovery Roadmap: what each question must read", "hai-discovery",
                       _page_url(smd, root),
-                      f"Use /haipipe-discovery. Read the Discovery Roadmap (§6, the D table) of {rel(smd)}. For each row with no "
+                      f"Use /hai-discovery. Read the Discovery Roadmap (§6, the D table) of {rel(smd)}. For each row with no "
                       f"folder yet, propose its discovery Block and Job: the question and the first papers to read. {ask}"))
     return steps
 

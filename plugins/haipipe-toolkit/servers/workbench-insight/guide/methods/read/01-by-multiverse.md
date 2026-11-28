@@ -58,4 +58,4 @@ risk: An agent may list only the paths it already ran; flexibility in analysis r
 evidence on AI: On 12 research questions with expert analyses as ground truth, LLMs were
   often limited to basic analyses, and agents that work on the data made more
   diverse but still not optimal decisions [Gu 2024 BLADE].
-skill: haipipe-insight-by-multiverse (proposed)
+skill: hai-insight-by-multiverse (proposed)

@@ -1,0 +1,61 @@
+{
+  "snapshot_on": "2026-11-22",
+  "purpose": "Read-only source snapshots for a self-contained UI design preview; edit the canonical sources, not these copies.",
+  "files": [
+    {
+      "file": "principle.md",
+      "source": "PRINCIPLE.md",
+      "sha256": "9c1a3a805bdd3bfb05406ab4343114942a66c80bd35cfe5fe87990f1359cb087"
+    },
+    {
+      "file": "chat.md",
+      "source": "b10_project_workbench/c01_plugin_principle_and_chat/c01_plugin_principle_and_chat.md (removed 261126)",
+      "sha256": "ec9e4af09c81005a318b0f64158ae027567a88c477bb46a32dd1dd2287c6a582"
+    },
+    {
+      "file": "skill.md",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/SKILL.md",
+      "sha256": "b929c44032d1e9ddae4d74301f4cd15b7025e1120af51ddcbf98fc8afb1b527b"
+    },
+    {
+      "file": "chat-contract.md",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/ref/chat-contract.md",
+      "sha256": "60daddfea0c1da7ad8aa4ec91ad3e0925873f7d5fe0ca47cff3e2a549154633b"
+    },
+    {
+      "file": "frame_sessions.py",
+      "source": "plugins/haipipe-toolkit/servers/workbench/side_pane/rail_sections/frame_sessions.py",
+      "sha256": "5329be3357be46df45fa642e18931a419657fb21fdf7670690380da62987111c"
+    },
+    {
+      "file": "qa.py",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/scripts/qa.py",
+      "sha256": "d38f0b02b3c09f149422a885aa79a33cc424daa087069b3bbeb987c5f2fd0f3a"
+    },
+    {
+      "file": "block.md",
+      "source": "b10_project_workbench/board.md (removed 261126)",
+      "sha256": "64856362b0e73739560f7f9434c98b2a6a121e09b31872193e1cd618154207ee"
+    },
+    {
+      "file": "element-ui.md",
+      "source": "b10_project_workbench/s32-element-ui/s32-element-ui.md (removed 261126)",
+      "sha256": "2506014da715998ab2a8b5b4b121bfb4c7f236500685c5b6fab8a02225c1448e"
+    },
+    {
+      "file": "new_chat.py",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/scripts/new_chat.py",
+      "sha256": "b89f023500a506f2ef0b34e6fb09d57ccf9885744c60918593b2e7a34c829a07"
+    },
+    {
+      "file": "chat_hook.py",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/scripts/chat_hook.py",
+      "sha256": "0e03749d13957889cacccca7aae23b989ebf9890fe3f8cdd841809f48b8ad06d"
+    },
+    {
+      "file": "test_new_chat.py",
+      "source": "plugins/haipipe-toolkit/skills/1_base/project/hai-chat/tests/test_new_chat.py",
+      "sha256": "de61eacb45ba2bbe1d0203b709b48d5f71f0334e07b174611dd2299edd434887"
+    }
+  ]
+}

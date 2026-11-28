@@ -1,0 +1,213 @@
+Paper ladder: the paper theme's Board · version · Task · Run
+
+New idea development precedes this Paper ladder in an Ideation Block: one
+Idea Job, its evaluation Tasks and assessment Runs. After human selection,
+Paper is a linked Block; this ladder's Jobs retain their Paper meanings.
+See [the source adapter](../../hai-paper-ideation/ref/idea-job-source.md).
+The `s01-ideation/` below is a Paper projection (or an existing Paper-local
+portfolio), not a replacement for the source Idea Job.
+
+=============================================================
+
+Delivery storage (JL 261010)
+---------------------------
+
+Only the Block owns a physical `delivery/` directory. Job, Task and Report
+outputs retain their source identity under it: `delivery/jNN_<job>/`,
+`delivery/jNN_<job>/tNN_<task>/<lane>/`, and
+`delivery/reports/qNN_<report>/<lane>/`. The Block's own output uses
+`delivery/<lane>/`. Job and Task Delivery views select their source subtree
+and link to the whole Block Delivery; they never create local delivery folders.
+Runs and Results remain with their source. Every writer and reader uses the
+shared `hai-draft/src/common.py` Delivery helpers. Standalone Pages without
+a Block keep their own output root; an orphan jNN/tNN must acquire a Block.
+
+In this skill, a Page's or Job's `delivery/<lane>/` means its source subtree
+inside Block Delivery. Old local lanes are read-only migration inputs. Rebuild
+from source before removing generated output; preserve a hand-owned fragment
+when the source cannot reproduce it. A storage migration grants no acceptance,
+release, send or submission approval.
+
+
+
+(JL 261007, designed in Tools/examples/Project-Ladder/blueprint/b16_theme_paper: s11 Board, s12 version, s13 Section, s21 skills and Runs;
+Q01 and Q04, and Q05 for this file; was paper-structure.md.) A paper sits on the shared ladder: one Board per
+paper, three evidence Jobs (j01-j03), one writing Job per version (one send to one venue, from j11), one Task per Section, the Abstract or a letter, and the Runs
+that make and check them. On screen every level shows the shared frame's two rows (b10_project_workbench (removed 261126) s02,
+s01, s04-D05): the top row `Guide · Studio | Paper Board · Version ▾ · Section ▾ | Delivery`, whose Studio
+(with Related folded under its topic cards) and Delivery are the Board's alone and open the same from every
+level; and each level's own work row, `Description | Report | Runs` (Work is retired, JL 261111; workbench-paper). The paper workbench fills them (servers/workbench-paper/paper_theme.py).
+`scripts/paper_ladder.py` makes each folder.
+
+Read this reference when creating, naming or auditing a paper folder. `hai-paper` keeps only the routing in
+its entrypoint; the Page, Story, Venue, comments and assembly owners stay authoritative for their own records.
+
+
+The tree
+--------
+
+```text
+paper/Paper-<Slug>/                  Board: one paper (a grant: paper/Grant-<Slug>/, board-kind: grant-board)
+├── board.md                         its face (hai-block): board-kind: paper-board · dialect: paper ·
+│                                    story-current · venue · spine · close · work-block · discovery-block ·
+│                                    ## Pages (### J01 · j01_evidence_display, … ### J11 · j11_writing_v<MMDD>_<desk>)
+│                                    · ## Questions (group: <topic>)
+├── s01-ideation/                    a topic: the ideas, ranked, admitted and eliminated (hai-paper-ideation)
+├── s02-story-<desk>-<idea>/         a telling (hai-paper-story): identity · pitch · stakes · roadmaps;
+│                                    feeds: its Questions; an earlier telling is an ended topic
+├── s03-paper-dataflow/              how the data becomes each answer (hai-paper-plan)
+├── s04-paper-workflow/              the Sections, displays and dates to the send (hai-paper-plan)
+├── s05-paper-checklist/             where the paper stands: the person's head, paper_check.py --write below it
+├── s10-related-work-map/            the closest work on one map beside ours (hai-paper-related);
+│                                    s11-s19: one topic per type of closest work, each paper read in full
+├── sNN-<topic>/                     any other topic. Topics sit in the Board folder itself, beside the Jobs
+│                                    (no studio/ folder); each face has **Tags:** and **Stage:** (hai-studio)
+├── reports/qNN_<question>/          Audience Report: one per research question (Answer · Evidence · Limits · Next)
+├── runs/run-<type>-<target>/        a soft Run (hai-run, soft_run.py): run.yaml · its ticket .md · passes/pNN-<MMDD>/
+├── venues/<venue>/                  call.md (dates, limits, format, review rules) · kit/ (hai-paper-venue)
+├── related/                         what came in, kept once as it came, read only (/hai-related; b10
+│                                    s04-D01, D02): related.md, one row per item (kind · date · item · link ·
+│                                    feeds · group; a paper row adds key · venue · why here · read ↗ its
+│                                    discovery deep read) · meetings/ · papers/ · files/ · emails/ (an .eml as
+│                                    it came, b10 s04-D09) · any subfolder. A row's groups on the Studio's bar:
+│                                    its subfolder first, then its group cell, comma-separated, a paper's
+│                                    research questions among them (b10 s04-D07, D08)
+├── delivery/                        Block-owned: delivery/<writing Job>/ manuscript, Task outputs, receipt
+├── j01_evidence_display/            evidence Job: one Task per figure or table (tNN_display-<letter>-<slug>),
+│                                    each drawn by its own Run from returned, aggregated Results
+├── j02_evidence_value/              evidence Job: the printed numbers, one Task per value group
+├── j03_evidence_cite/               evidence Job: the citations, one Task per claim group (verified CITE Results)
+└── j11_writing_v<MMDD>_<desk>/      writing Job: one version, one send to one venue, named for the day it is sent
+    ├── j11_writing_v<MMDD>_<desk>.md  its face (hai-job): send · desk · venue · state · tells · from · goal ·
+    │                                close · responds-to (the review Job it answers) · ## Tasks (in order) ·
+    │                                ## Narrative (the layout: points at the Story Section Narrative, claims to displays,
+    │                                one row per Section, the compile order; copies no claim) · ## Questions
+    ├── reports/ · runs/             the version's own Questions (the standing J1-J5 first) and Runs; its
+    │                                drawings are Board topics (sNN-<topic>/, b10 s09-D01)
+    │   └── reports/qNN_<kind>-<MMDD>/   an older Board's comments batch; now a review Job on the Board,
+    │                                jNN_review_<kind>_v<MMDD>/ (hai-paper-comments); feedback/ · sent/ inside; a meeting's
+    │                                notes sit once in the Board's related/meetings/ (b10 s04-D01)
+    ├── t00_abstract/                Task: the Abstract
+    ├── t0N_<title>/                 Task: a Main Section, in reading order (t01-t19)
+    ├── t2N_<title>/                 Task: an Appendix Section, A = t21 (t20-t29)
+    ├── t3N_<title>/                 Task: a letter (t30-t39): t31_cover-letter · t32_response
+    │   ├── tNN_<title>.md           its face: task-type: draft · page-type: section · the reader contract · story-row
+    │   ├── draft/ · reports/        its writing and its own Questions (no topics here: they are the Board's)
+    │   └── runs/ · results/         Page workflow; outputs in Block delivery/<writing Job>/tNN/
+    └── (no delivery here)          generated paper in Block delivery/j11_writing_v<MMDD>_<desk>/
+        ├── paper-build.toml         [pages] main = appendix = "../../j11_writing_v<MMDD>_<desk>"
+        └── latex/ · word/           generated, never edited
+```
+
+The next send (a revision, or another venue) is a new version, `j12_writing_v<MMDD>_<desk>/`, made by `paper_ladder.py
+next`: it starts from the one it follows (each Section's own writing copied, never its Runs, Results or build)
+and answers that version's comments.
+
+Each send also has one submission Job, `j21_submission_v<MMDD>_<desk>/` (face `for: <writing Job>`), made by `paper_ladder.py
+submission`; it is not a version (`hai-paper` § The submission Job).
+
+
+Each level
+----------
+
+```text
+level     folder                    face                       made by                       its Runs
+Board     Paper-|Grant-<Slug>/      board.md                   paper_ladder.py board         runs/run-<type>-<target>/
+evidence  j01_evidence_display/ …  j01_evidence_display.md    paper_ladder.py evidence      runs/run-<type>-<target>/
+version   j11_writing_v<MMDD>_<desk>/  j11_writing_….md       paper_ladder.py version|next  runs/run-<type>-<target>/
+Task      tNN_<title>/              tNN_<title>.md             paper_ladder.py task          the Page workflow's (page.py open-run)
+Run       runs/run-<type>-<target>/  run.yaml · ticket          paper_ladder.py run           passes/pNN-<MMDD>/ inside
+```
+
+A Space folder (`reports/`, `runs/`, `venues/`, `related/`, `delivery/`) comes with its first item,
+never ahead of it (hai-block, hai-job): `paper_ladder.py` writes faces only. Topics (`sNN-<topic>/`),
+`related/` and `delivery/` exist only at the Board; every level keeps its own `reports/` and `runs/` (b10 s09-D01, D02, D05). `answers:` on a face names a
+Question id it answers (hai-report); a version that answers a review Job says `responds-to:` instead.
+
+Every Run is `run-<type>-<target>`, with no date (JL 261007). Where a paper button does a base button's job it
+makes the base Run (run-face-*, run-add-<jNN>, run-add-<tNN>, run-draw-<sNN>, run-ask-<qNN>, run-report-<qNN>,
+run-figures-<qNN>, run-check-<qNN>, run-delivery-<target>; hai-run `ref/run-types-by-space.md`). A Board's or a version's Run is a folder in the shared Run
+contract's shape (`hai-run`); a Section's Runs are the Page engine's, one ticket `runs/run-<kind>-<slug>.md` each. The run types of each level and Space, with the
+skill, agent and sign of each, are `hai-paper-workflow/ref/run-cards.md`. Only a supporting Run of another
+theme keeps its hard `rNN_` name, in its own work or discovery Task.
+
+
+Naming and routing invariants
+-----------------------------
+
+- The evidence Jobs come first, one per kind: `j01_evidence_display`, `j02_evidence_value`, `j03_evidence_cite`
+  (JL 261031: "you can call them j01_evidnece_xxx j02_evidnece_xxx j03—evidence_xxx j11_writing_xxx").
+- A version is a writing Job `j11_writing_v<MMDD>_<desk>` (then j12, …): its series number from 11, the day it is sent,
+  its desk (JL 261007: "just use MMDD"). An older `jNN_v<MMDD>_<desk>` still reads.
+- A Task is named by series (JL 261007: "no more S-xxx"): `t00_abstract`; `t0N_<title>` for the Main Sections in
+  reading order; `t2N_<title>` for the Appendix (A = t21); `t3N_<title>` for letters (t31 cover letter, t32
+  response). The number band says the part; the title is lowercase-kebab.
+- A comments batch is not a Task: it is a review Job on the Board, `jNN_review_<kind>_v<MMDD>/`, its face `for:` the
+  version it serves (JL 261110; an older Board: a report `reports/qNN_<kind>-<MMDD>/` in the version that answers it).
+- Group headings in board.md name their folder: `### J11 · j11_writing_v<MMDD>_<desk>`, not a display title. The Paper
+  Workbench binds the token after `·` to disk.
+- A Section's story-row is its row in its version face's `## Narrative`; the row is recognized only when the
+  Section's stem is its first table cell.
+- Compile order is read only from the version face's `<!-- haipipe:compile-order:start -->` / `end` markers with
+  `- ` ids.
+- `reports/` (every level) and the topics `sNN-<topic>/` (the Board only) are level folders, not Page groups:
+  board.md lists neither. A report answers one
+  Question in the shape `hai-report` gives every board's questions (`state:`, `answers:`,
+  `answer-status:`, an Opening whose first paragraph is the answer, then Answer · Evidence · Limits · Next, and a
+  `page.toml`). A research question's report is the G2 record.
+- Task Roadmap work lives in the work theme's Task folders. The paper records the evidence need and consumes the
+  accepted Result; it never executes the Task.
+
+
+Source and delivery law
+-----------------------
+
+Section Tasks own the manuscript wording and their Page-local Evidence Results. Each Section's
+`delivery/latex/<stem>.tex` body fragment is the version build's input. `hai-paper-assemble` regenerates the
+version's `delivery/` from those fragments, the version face's compile order, the accepted display assets and the
+declared build config, into the Board's `delivery/jNN_<version>/`. Generated Word and PDF files, frozen sends and old desk-room copies are never wording or
+evidence sources.
+
+Assembly may run early, but its manifest stays `DRAFT` until the intended Sections have current outlines,
+evidence, display previews, Page delivery and Page CHECK closure. A send freezes the current build in the
+comments batch's `sent/`; the answering build is frozen in `released/`.
+
+
+Older layouts
+-------------
+
+Older layouts (history; never made new) are still read by the Paper Workbench, and the carry-over scripts move a Board onto the ladder
+once (`hai-paper/scripts/carry_over/`, each with a dry run, a record and an exact rollback):
+
+```text
+Paper-<Slug>/
+├── board.md                         paper-root: .
+├── A1-Story/  (or j00_story/)       → sNN- topics beside the Jobs, reports/ Questions  topics_paper.py
+├── studio/sNN-<topic>/              → sNN-<topic>/ in the Board folder (an empty studio/ is removed)
+├── Ba-<desk>-Main/                  → jNN_v<N>_<desk>/  (S-<desk>-Main-<N>-<Title>)  migrate_paper.py
+├── Bb-<desk>-Appendix/              → jNN_v<N>_<desk>/  (S-<desk>-Appendix-<L>-<Title>)
+├── Bc-<desk>-Round/                 → jNN_v<N>_<desk>/  (RD<NN> feedback Rounds)
+└── delivery/                        → stays at Block; rebuild each version in delivery/jNN_v<N>_<desk>/
+then: rename_tasks.py <board> --date MMDD   the version dated, S-… → t0N_/t2N_, RD<NN>-… → reports/qNN_<kind>-<MMDD>/
+then: sweep_names.py <board> --apply        the old names out of draft/records/, draft/previous/ and Run tickets
+then: paper_ladder.py update <board>        jNN_v<MMDD>_<desk> → jNN_writing_v<MMDD>_<desk> (from j11), the evidence
+                                            Jobs, the checklist topic (all of it in order: hai-paper SKILL.md)
+and, when a Section's words live only in its old Page-local delivery/latex/<stem>.tex (a carved manuscript):
+      import_fragments.py <board> --apply   each fragment into its Draft's § 3, one Bullet per line (content-format: latex)
+      page.py adopt <section> …             Content from the Draft
+      import_fragments.py <board> --verify  the LaTeX lane prints each fragment again, line for line
+      import_fragments.py <board> --retire  the old Page-local delivery/ leaves, so page.py export writes Block Delivery
+```
+
+`migrate_paper.py` moves folders and keeps names; `rename_tasks.py` then renames each Page once (folder, face, plan
+files, every source line that names it), recording the old names, so a receipt written before still resolves
+through the record. Roll back newest first. The older `S-<desk>-…`, `RD<NN>-…` and dated `run-<kind>-<MMDD>-<slug>`
+names stay readable; `page.py run-names` drops a dated Run's day.
+
+
+Migration boundary
+------------------
+
+The former S01-S10 runtime, old desk-room layouts, SD/SA/NA aliases and shadow Page names are historical inputs.
+Migrate active Pages in place, keep Story, Section, claim, Evidence and Run identities, and never edit a frozen
+send or generated delivery by hand.

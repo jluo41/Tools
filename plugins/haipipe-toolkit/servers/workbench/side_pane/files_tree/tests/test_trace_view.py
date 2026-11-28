@@ -104,9 +104,13 @@ class TraceViewTest(unittest.TestCase):
         self.assertEqual(data["m"]["tools/skills/s/SKILL.md"].get("o"), 1)   # an open trace opens the tree to its files
         self.assertIn("M[k].o", html)
         also = trace_view.render(self.block, self.root, "<div class=file-tree>TREE</div>", [self.block, self.root / "tools" / "skills"])
-        part = also.split('class="files-part tm-also"')[1].split("</section>")[0]
-        self.assertIn('<p class="files-where" title="tools/">tools/</p>', part)   # grouped under the folder they share
-        self.assertIn("> servers/page.py</a>", part)                         # each file by its path below it
+        part = also.split('class="files-part files-touch tm-also files-first"')[1].split("</section>")[0]
+        self.assertIn("<h3>Touch</h3>", part)                               # the role once, its folders numbered
+        self.assertNotIn("Also touched", also)
+        self.assertIn('<p class="files-where" data-n="1" title="tools/">tools/</p>', part)   # grouped under the folder they share
+        self.assertIn('data-folder-path="tools/servers" open', part)         # each file inside its real folder
+        self.assertIn("> page.py</a>", part)
+        self.assertNotIn("> servers/page.py</a>", part)
         self.assertEqual(trace_view._group("plugins/x/servers/w/a.py"), "plugins/x/servers/")
         self.assertEqual(trace_view._group("AGENTS.md"), "")
         self.assertNotIn("SKILL.md", part)                                  # under a part: marked in place
@@ -127,10 +131,10 @@ class TraceViewTest(unittest.TestCase):
     def test_the_skills_part_lists_the_shared_skills_and_the_metro_zooms_five_levels(self):
         from live import work_files
         tools = Path(__file__).resolve().parents[7]                       # the Tools-SPACE root
-        block = tools / "blueprints/Project-Ladder/work/b17_theme_work"
+        block = tools / "examples/Project-Ladder/blueprint/b17_theme_work"
         if block.is_dir():
             names = [p.name for p in work_files.own_skills(block, tools)]
-            self.assertIn("hai-trace", names)                              # skills/0_utils/ in 3 · Skills
+            self.assertIn("hai-trace", names)                              # skills/0_utils/ is a Maintain part
             self.assertIn("hai-stack", names)
         self.write()
         html = trace_view.render(self.block, self.root, "<div class=file-tree>TREE</div>")
@@ -150,15 +154,20 @@ class TraceViewTest(unittest.TestCase):
         self.assertIn('class="tm-more"', html)                              # untouched files beside its files fold under ⋯
         self.assertIn('.tm-wrap>.file-tree{min-width:0;overflow-x:auto', html)  # the tree scrolls sideways, names whole                       # the filter's own timer: the marks timer cannot cancel it
 
-    def test_a_traced_file_outside_the_owned_parts_is_also_touched(self):
+    def test_a_traced_file_outside_the_owned_parts_is_a_touch_part(self):
         root = self.root
         for rel in ("plugins/k/skills/1_base/w/ui/SKILL.md", "plugins/k/skills/1_base/w/ui/ref/a.md"):
             (root / rel).parent.mkdir(parents=True, exist_ok=True)
             (root / rel).write_text("x\n")
         marks = {"plugins/k/skills/1_base/w/ui/ref/a.md": {}, "AGENTS.md": {}}
         html = trace_view.also_touched(marks, root, [self.block])
-        self.assertIn("ui/ref/a.md", html)                  # a skill the page does not own: Also touched, not Skills
+        self.assertIn(">1_base/w/ui/ref</span>", html)      # a run of single folders is one row
+        self.assertIn('data-folder-path="plugins/k/skills/1_base/w/ui/ref" open', html)
+        self.assertIn("> a.md</a>", html)                   # a skill the page does not own: a Touch part, not Maintain
+        self.assertIn(">AGENTS.md<", html)                  # not on disk: one row, by its path
         self.assertFalse(hasattr(trace_view, "touched_homes"))
+        self.assertEqual(html.count("<h3>Touch</h3>"), 1)                   # one part, one line per folder
+        self.assertLess(html.index('data-n="1"'), html.index('data-n="2"'))
 
     def test_a_block_without_traces_keeps_the_bar(self):
         html = trace_view.render(self.block, self.root, "TREE")
@@ -167,20 +176,20 @@ class TraceViewTest(unittest.TestCase):
         self.assertTrue(html.endswith("TREE"))
 
     def test_another_blocks_trace_marks_only_this_blocks_files(self):
-        work = self.root / "blueprints" / "P" / "work"
+        work = self.root / "examples" / "P" / "work"
         here, there = work / "b11_here", work / "b17_there"
         (here / "a.md").parent.mkdir(parents=True)
         (here / "a.md").write_text("x\n")
         (there / "trace" / "261126").mkdir(parents=True)
         (there / "trace" / "261126" / "0900_move.md").write_text(
             "---\ntitle: move\ndate: 2026-11-26 09:00\naim: a\nclosed: false\nplan:\n"
-            "  - {do: edit, path: blueprints/P/work/b11_here/a.md, what: w}\n"
+            "  - {do: edit, path: examples/P/work/b11_here/a.md, what: w}\n"
             "  - {do: edit, path: tools/servers/page.py, what: w}\n---\n")
         self.assertEqual([f.stem for f, _ in trace_view.visiting(here, self.root)], ["0900_move"])
         self.assertEqual(trace_view.visiting(there, self.root), [])
         html = trace_view.render(here, self.root, '<div class="file-tree"></div>')
         data = json.loads(html.split('class="tm-data">')[1].split("</script>")[0])
-        self.assertEqual(sorted(data["m"]), ["blueprints/P/work/b11_here/a.md"])   # page.py is b17's business
+        self.assertEqual(sorted(data["m"]), ["examples/P/work/b11_here/a.md"])   # page.py is b17's business
 
 
 if __name__ == "__main__":

@@ -27,10 +27,10 @@ limitations: A topic can grow past its spine; a split is a new Block, and a Bloc
 Applied to AI
 -------------
 
-agent: haipipe-cowork-agent (planned) writes the header; the person agrees the spine and the close condition.
+agent: hai-cowork-agent (planned) writes the header; the person agrees the spine and the close condition.
 steps: 1. Read the Project's cowork/README.md. 2. Write the header lines. 3. Name the waits-for Block. 4. Stop for the person.
 returns: the Block's board.md header.
 verify: Spine, close and waits-for are all filled in (T0).
 risk: An agent may write a close condition that nothing can test, such as "all done" (ours).
 evidence on ai: No study tests agents bounding coordination topics (ours).
-skill: haipipe-cowork
+skill: hai-cowork

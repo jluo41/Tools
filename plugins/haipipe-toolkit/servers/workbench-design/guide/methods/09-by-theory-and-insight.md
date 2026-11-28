@@ -64,4 +64,4 @@ risk: A theory picked after the row only decorates it, so name the theory's pred
   before writing (ours). Two sources that say the same thing make a longer reason, not a
   stronger one (ours).
 evidence on AI: No study tests an AI designing from both kinds of insight yet (ours).
-skill: haipipe-design-by-theory-and-insight (proposed)
+skill: hai-design-by-theory-and-insight (proposed)

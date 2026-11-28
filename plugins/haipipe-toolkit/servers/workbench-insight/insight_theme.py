@@ -1,4 +1,4 @@
-"""The insight theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
+"""The insight theme on the base frame (servers/workbench/page/block_index_page/frame.py): only what differs from vanilla.
 
 Two layouts (b11, 261007). Plan C (a Board whose board.md names its `prototype:`, or whose Jobs pair a
 release and a data version, jNN_question-vN-<slug>_data-vM/): every level is drawn by insight_views.py
@@ -9,7 +9,7 @@ gates as chips on each question row; its Jobs and Tasks stay the base's own.
 
 The notes below describe today's layout.
 
-An insight Board reads one dataset (Tools/blueprints/Project-Ladder/work/b11_theme_insight). b11 proposes (s11, 261007) a Job
+An insight Board reads one dataset (Tools/examples/Project-Ladder/blueprint/b11_theme_insight). b11 proposes (s11, 261007) a Job
 per pair, Question Book version × data version; no Board has those Jobs on disk yet, so this theme fills
 the Block tab from today's folders, with the old page's content (JL: carry over what exists) drawn in
 the base's look only (no theme stylesheet): the frame's .topic folds, .wf-table, .q-row,
@@ -307,7 +307,7 @@ def claims(block):
     return board_workbench_route(block) == "insight-board"
 
 
-# today's layout's buttons (the old page's run cards), named by the Run each makes (haipipe-run ref/run-types-by-space.md
+# today's layout's buttons (the old page's run cards), named by the Run each makes (hai-run ref/run-types-by-space.md
 # rule 6, b11 s21's names); a hard Run keeps its rNN_ name. Plan C's are named in insight_views.RUNS.
 RUN_NAMES = {"Prepare extract": "run-add-version-data-v<M>", "Ask": "run-ask-<L><NN>", "Carry a board over": "run-carry-<board>",
              "Register a segment": "run-set-segments-question-v<N>", "Review the questions": "run-review-questions-question-v<N>",

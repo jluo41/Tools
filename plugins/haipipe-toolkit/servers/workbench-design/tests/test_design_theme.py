@@ -15,7 +15,7 @@ bootstrap()
 from live import frame  # noqa: E402
 from live.design_theme import THEME  # noqa: E402
 
-SKILL = Path(__file__).resolve().parents[3] / "skills/2_theme/design/haipipe-design/scripts/carry_over"
+SKILL = Path(__file__).resolve().parents[3] / "skills/3_theme/design/hai-design/scripts/carry_over"
 sys.path.insert(0, str(SKILL))
 import design_ladder_by_method as design_ladder  # noqa: E402   the old `_by-<method>` scaffold, which this test reads
 

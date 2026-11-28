@@ -1,0 +1,41 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Design Board structure</title><style>
+:root{color-scheme:light dark;--paper:#fff;--ink:#223047;--muted:#637187;--line:#d9e2ee;--accent:#275f9f;--soft:#edf5ff}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:14px/1.5 system-ui,sans-serif}
+main{padding:16px 20px}h1{font-size:19px;margin:0 0 14px}.tree,.tree ul{list-style:none}.tree{margin:0;padding:0}
+.tree ul{margin:4px 0 4px 11px;padding-left:19px;border-left:1px solid var(--line)}.tree li{position:relative;margin:4px 0}
+.tree ul>li:before{content:'';position:absolute;left:-19px;top:16px;width:19px;border-top:1px solid var(--line)}
+summary,.leaf{border:1px solid var(--line);border-radius:6px;padding:4px 9px;background:var(--paper);overflow-wrap:anywhere}
+summary{cursor:pointer;list-style-position:inside;width:fit-content}summary:hover{border-color:var(--accent)}.leaf{display:inline-block}
+.tree>li>details>summary{background:var(--soft);color:var(--accent);border-color:var(--accent)}small{font-size:11px;color:var(--muted);margin-left:12px;white-space:nowrap}
+p{color:var(--muted);font-size:13px;margin:14px 0 0}section[hidden]{display:none}
+.mindmap{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--paper)}
+.map-tools{display:flex;justify-content:flex-end;gap:6px;padding:6px;border-bottom:1px solid var(--line)}
+.map-tools button{border:1px solid var(--line);background:var(--paper);color:var(--accent);border-radius:7px;min-width:38px;height:32px;cursor:pointer}
+.map-tools button:hover{background:var(--soft)}.map-viewport{overflow:auto;max-height:72vh;padding:8px;overscroll-behavior:contain}
+.map-canvas{transform-origin:top left}.map-headings{height:46px;position:relative;font-weight:650;font-size:14px;color:var(--muted)}
+.map-headings>div{position:absolute;top:12px;width:190px;text-align:center}
+.map-body{position:relative}.map-edges{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.map-edges path{fill:none;stroke:var(--branch);stroke-width:2;opacity:.65}
+.branch-0{--branch:#3677b5}.branch-1{--branch:#478b72}.branch-2{--branch:#9367ad}.branch-3{--branch:#b57d37}
+.map-node{position:absolute;transform:translateY(-50%);width:190px;min-height:42px;max-height:102px;border:1.5px solid var(--branch);border-radius:10px;background:var(--paper);display:flex;align-items:center;justify-content:center;text-align:center;overflow:auto;font-size:13px;line-height:18px;box-shadow:0 2px 6px #00000008}
+.map-node{padding:10px;overflow-wrap:anywhere}
+.map-node>a{text-decoration:none;color:var(--ink)}.map-node>a:hover{text-decoration:underline;background:var(--soft)}
+.map-node[data-level="0"]{background:var(--soft);font-weight:650}.map-node[data-level="2"]{font-weight:600}
+
+@media(prefers-color-scheme:dark){:root{--paper:#19232f;--ink:#e3eaf4;--muted:#abb9cb;--line:#3b4b60;--soft:#243c55;--accent:#9bc9ff}}
+@media(max-width:500px){main{padding:12px}.tree ul{padding-left:13px;margin-left:7px}.tree ul>li:before{left:-13px;width:13px}small{margin-left:7px}}
+</style></head><body><main><section id="jobs"><h1>Design Board</h1><div class="mindmap"><div class="map-tools"><button type="button" data-map-fit title="Fit to width" aria-label="Fit to width">⤢</button><button type="button" data-map-actual title="Actual size" aria-label="Actual size">1:1</button></div><div class="map-viewport" tabindex="0" aria-label="Job and Task mind map"><div class="map-space"><div class="map-canvas" data-width="960" style="width:960px"><div class="map-headings"><div style="left:8px">Job Type</div><div style="left:248px">Job Name</div><div style="left:488px">Task Type</div><div style="left:728px">Task Name</div></div><div class="map-body" style="height:420px"><svg class="map-edges" width="960" height="420" aria-hidden="true"><path class="branch-0" d="M678,60.0 C703,60.0 703,60 728,60"/><path class="branch-0" d="M678,210.0 C703,210.0 703,160 728,160"/><path class="branch-0" d="M678,210.0 C703,210.0 703,260 728,260"/><path class="branch-0" d="M678,360.0 C703,360.0 703,360 728,360"/><path class="branch-0" d="M438,210.0 C463,210.0 463,60.0 488,60.0"/><path class="branch-0" d="M438,210.0 C463,210.0 463,210.0 488,210.0"/><path class="branch-0" d="M438,210.0 C463,210.0 463,360.0 488,360.0"/><path class="branch-0" d="M198,210.0 C223,210.0 223,210.0 248,210.0"/></svg><div class="map-node branch-0" data-role="Task Name" style="left:728px;top:60px">reason ideas</div><div class="map-node branch-0" data-role="Task Type" style="left:488px;top:60.0px">Reason ideas</div><div class="map-node branch-0" data-role="Task Name" style="left:728px;top:160px">reply-first-short</div><div class="map-node branch-0" data-role="Task Name" style="left:728px;top:260px">reminder-one-ask</div><div class="map-node branch-0" data-role="Task Type" style="left:488px;top:210.0px">Design</div><div class="map-node branch-0" data-role="Task Name" style="left:728px;top:360px">review whole</div><div class="map-node branch-0" data-role="Task Type" style="left:488px;top:360.0px">Review whole</div><div class="map-node branch-0" data-role="Job Name" style="left:248px;top:210.0px">Confirm by reply, by Overall performance</div><div class="map-node branch-0" data-role="Job Type" style="left:8px;top:210.0px">Design execution</div></div></div></div></div></div></section>
+<section id="folder" hidden><h1>Folder</h1><ul class="tree"><li><details open><summary>Design-Example/</summary><ul><li><details open><summary>j03_confirm-by-reply_M02-overall-performance-m1_inputs-v2/</summary><ul><li><span class="leaf">t00_reason-ideas/</span></li><li><span class="leaf">t01_d01_reply-first-short/</span></li><li><span class="leaf">t02_d02_reminder-one-ask/</span></li><li><span class="leaf">t99_review-whole/</span></li></ul></details></li></ul></details></li></ul></section>
+<section id="studio" hidden><h1>Studio Organization</h1><ul class="tree"><li><details open><summary>Design Board<small>Block</small></summary><ul><li><span class="leaf">Block Studio topics</span></li><li><details open><summary>Design execution Job<small>Owner</small></summary><ul><li><span class="leaf">Job Studio topics</span></li><li><details open><summary>Reason ideas / Design / Review whole<small>Task owner</small></summary><ul><li><span class="leaf">Task Studio topics</span></li></ul></details></li></ul></details></li></ul></details></li></ul></section></main><script>function pick(){const key=['jobs','folder','studio'].includes(location.hash.slice(1))?location.hash.slice(1):'jobs';
+document.querySelectorAll('main>section').forEach(s=>s.hidden=s.id!==key)}
+function sizeMap(map,fit){
+ const viewport=map.querySelector('.map-viewport'),canvas=map.querySelector('.map-canvas'),space=map.querySelector('.map-space');
+ const width=Number(canvas.dataset.width),scale=fit?Math.min(1,Math.max(.2,(viewport.clientWidth-16)/width)):1;
+ canvas.style.transform='scale('+scale+')';space.style.width=(width*scale)+'px';space.style.height=(canvas.offsetHeight*scale)+'px';map.dataset.fit=String(fit);
+}
+document.querySelectorAll('.mindmap').forEach(map=>{
+ map.querySelector('[data-map-fit]').onclick=()=>sizeMap(map,true);
+ map.querySelector('[data-map-actual]').onclick=()=>sizeMap(map,false);
+ new ResizeObserver(()=>{if(map.getBoundingClientRect().width)sizeMap(map,map.dataset.fit!=='false')}).observe(map);
+});
+addEventListener('hashchange',pick);pick();</script></body></html>

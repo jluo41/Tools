@@ -10,14 +10,14 @@ Each view contains Review Content followed by the eight shared Around the Work s
 
 Job and Task pages retain their existing workflows and human release approval. Older six-Space and Design Folder pages are unchanged. Replacing the six business views, introducing a method-development Block, and adding a four-state Checklist approval workflow remain proposals.
 
-The authored contract lives in [`b12_theme_design/ui/structure.md`](../../../../blueprints/Project-Ladder/work/b12_theme_design/ui/structure.md), with its Block matrix, source and skill explanations, and routed examples beside it. Earlier blueprint drawings remain historical and have not been redrawn.
+The authored contract lives in [`b12_theme_design/delivery/page-spec/structure.md`](../../../../examples/Project-Ladder/blueprint/b12_theme_design/delivery/page-spec/structure.md), with its Block matrix, source and skill explanations, and routed examples beside it. Earlier blueprint drawings remain historical and have not been redrawn.
 
 ## Validation
 
 From the repository root, with Python, pytest and the host dependencies installed:
 
 ```sh
-python -B -m pytest -q plugins/haipipe-toolkit/servers/workbench-design/tests plugins/haipipe-toolkit/servers/workbench/tests/test_work_frame.py
+python -B -m pytest -q plugins/haipipe-toolkit/servers/workbench-design/tests plugins/haipipe-toolkit/servers/workbench/page/job_task_views/tests/test_work_frame.py
 ```
 
 On 2026-11-08, this check passed with **73 tests and 298 subtests**. After removing a duplicated pending instruction in the merged Block content, the four `test_design_context.py` tests passed again. The tests cover explicit scope precedence, aggregate rail retention, consistent supporting sections, legacy routes, preserved Job approval wording, real matrix/example routes, and read-only rendering of the fixture.

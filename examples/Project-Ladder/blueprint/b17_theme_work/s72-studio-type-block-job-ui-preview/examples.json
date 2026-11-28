@@ -1,0 +1,72 @@
+{
+  "Page-Job / job-rows": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Job",
+    "item": "job-rows"
+  },
+  "Page-Job / job-overview": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Job",
+    "item": "job-overview"
+  },
+  "Page-Job / job-tasks": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Job",
+    "item": "job-tasks"
+  },
+  "Page-Job / job-findings": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Job",
+    "item": "job-findings"
+  },
+  "Page-Task / task-rows": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Task",
+    "item": "task-rows"
+  },
+  "Page-Task / task-overview": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Task",
+    "item": "task-overview"
+  },
+  "Page-Task / task-runs": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Task",
+    "item": "task-runs"
+  },
+  "Page-Task / task-findings": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Page-Task",
+    "item": "task-findings"
+  },
+  "Job types / 〈Job group type〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Job types",
+    "item": "Version"
+  },
+  "Job types / 〈Job type〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Job types",
+    "item": "code"
+  },
+  "Task types / 〈Task group type〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Task types",
+    "item": "Make"
+  },
+  "Task types / 〈Task type〉": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Task types",
+    "item": "code"
+  },
+  "QuickHtml": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "QuickHtml",
+    "item": "Task states"
+  },
+  "Draw": {
+    "topic": "examples/Project-Ladder/blueprint/b17_theme_work/s11-work-job-preview",
+    "view": "Draw",
+    "item": "Draw"
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "jobs"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "studio"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": []
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "labeling-scanning",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/s03-agent-role/delivery/types/task-type--labeling-scanning.html"
+        },
+        {
+          "name": "eval",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/s03-agent-role/delivery/types/task-type--eval.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "draw-jobs"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/structure/scale.html",
+          "fragment": "draw-studio"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-labeling",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling/SKILL.md"
+        },
+        {
+          "name": "hai-labeling-scanning",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-scanning/SKILL.md"
+        },
+        {
+          "name": "hai-labeling-workflow",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/hai-labeling-workflow/SKILL.md"
+        },
+        {
+          "name": "hai-task-for-eval",
+          "path": "plugins/haipipe-toolkit/skills/1_base/task/6_eval/hai-task-for-eval/SKILL.md"
+        },
+        {
+          "name": "workbench-labeling",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/labeling/workbench-labeling/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

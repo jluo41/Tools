@@ -82,6 +82,9 @@ def scope(board, root, view, topics, every, knows):
 
 
 def skill_rows(board, root, level, view, selected):
+    from live import idea_block
+    if idea_block.is_idea_block(board):
+        return [("hai-ideation", "the Idea Jobs and their selection")]
     if not view:
         names = [name for rows in board_process.VIEW_SKILLS.values() for name, _ in rows]
         return skills_section.relevant(board, 'paper', level, names, topics=bool(selected['topics']),
@@ -91,9 +94,9 @@ def skill_rows(board, root, level, view, selected):
     rows += [(f.TYPE_SKILLS.get(f.frame.task_type(page), ''), 'linked Task')
              for page in selected['pages'] if f.page_level(page) == 'Task']
     if selected['topics']:
-        rows.append(('haipipe-studio', 'linked Topics'))
+        rows.append(('hai-studio', 'linked Topics'))
     if selected['interactions']:
-        rows.append(('haipipe-interaction', 'linked Interactions'))
+        rows.append(('hai-interaction', 'linked Interactions'))
     seen = set()
     return [(name, why) for name, why in rows
             if name in skills_section.catalog() and not (name in seen or seen.add(name))]
@@ -114,6 +117,10 @@ def shared(folder, root, theme, level, view, topics, own, knows, events, every):
 
 def report_views(board, root):
     """Keep content and authorized actions together; Studio is rendered once below."""
+    from live import idea_block
+    from live.address_links import linked_views, page_linker
+    if idea_block.is_idea_block(board):              # an Idea Block in paper/: its one Ideas view (hai-ideation)
+        return linked_views(idea_block.report_views(board, root), page_linker(board, root))
     md = lambda text, base: f.markdown(text, base, root)
     items = f.interactions(board, root)
     views = board_views.board_report_views(board, root, md, items)
@@ -136,6 +143,5 @@ def report_views(board, root):
                 + board_views.SIDE_CSS + board_views.PAGE_CSS + result + process + board_views.PB_JS + board_views.JS)
         return '<h2>📋 Review Content</h2>' + body
 
-    from live.address_links import linked_views, page_linker
     return linked_views({key: (name, lambda k=key: build(k)) for key, (name, _) in views.items()},
                         page_linker(board, root))

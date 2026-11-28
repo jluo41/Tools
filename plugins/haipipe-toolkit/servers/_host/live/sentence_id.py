@@ -6,8 +6,8 @@ through ``sid()``, every writer writes ``s``. Paragraph ``P``, Section ``C`` and
 Bullet ``B`` stay uppercase, and Studio topic ids (``s01``, ``s02-D01``) are a
 different thing that never passes through here.
 
-The same helper lives in the haipipe-draft skill at
-``skills/1_base/draft/haipipe-draft/src/sentence_id.py``; keep the two alike.
+The same helper lives in the hai-draft skill at
+``skills/1_base/draft/hai-draft/src/sentence_id.py``; keep the two alike.
 """
 from __future__ import annotations
 

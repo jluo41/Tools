@@ -114,7 +114,7 @@ def test_a_message_out_shows_in_delivery_with_its_attachments(tmp_path):
 
 
 def test_only_a_person_marks_a_message_sent_and_a_built_table_is_no_message(tmp_path):
-    """Sent is a person's word (haipipe-delivery): a message with no mark is not called sent, a row marked sent in
+    """Sent is a person's word (hai-delivery): a message with no mark is not called sent, a row marked sent in
     delivery/delivery.md is; a table built into delivery/<job>/ is a file, not a message (JL 261012, b32 EB-1A)."""
     root, block = demo(tmp_path)
     job = block / "j01_request"

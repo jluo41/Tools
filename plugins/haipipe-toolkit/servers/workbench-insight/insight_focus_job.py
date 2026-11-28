@@ -247,8 +247,8 @@ def _vs_proc(x: dict) -> str:
             ("Propose questions", f"run-propose-{x['me']} · each change or gap to the Question Book's Ideas"
              + (" · changed answers to turn into ideas" if compared and changed else ""),
              "done" if proposed else "ready" if compared else "waits on Compare", "")]
-    prompts = ("" if compared else _ask(x, "Compare with the Job before", "Compare", "use /haipipe-insight")) + \
-        ("" if proposed or not compared else _ask(x, "Propose questions", "Propose", "use /haipipe-insight"))
+    prompts = ("" if compared else _ask(x, "Compare with the Job before", "Compare", "use /hai-insight")) + \
+        ("" if proposed or not compared else _ask(x, "Propose questions", "Propose", "use /hai-insight"))
     return _step("🔁 Compare, then propose", rows, prompts)
 
 

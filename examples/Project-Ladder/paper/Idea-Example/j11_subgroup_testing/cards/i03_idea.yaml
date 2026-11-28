@@ -1,0 +1,54 @@
+kind: idea-card
+id: i03
+canonical_id: i03
+legacy_ids: []
+title: Subgroup stress tests
+question: Do prespecified subgroup stress tests reveal model failures that an overall performance average
+  conceals?
+claim: Prespecified subgroup evaluations may identify practically important error gaps hidden by the overall
+  average.
+hypothesis: Prespecified subgroup evaluations may identify practically important error gaps hidden by
+  the overall average.
+method: Define subgroups before analysis; measure uncertainty for each; compare individual gaps with the
+  aggregate result.
+minimum_experiment: A fixed evaluation protocol using one dataset, declared subgroup boundaries and uncertainty
+  intervals.
+expected_outcome: The declared comparison can support, narrow or reject the proposed effect; no result
+  is asserted.
+failure_interpretation: A null or reversed contrast rejects the claim within the tested boundary.
+novelty_delta: Unverified; closest-work assessment is required.
+core_claims:
+- id: c01
+  contribution_role: central
+  claim: Prespecified subgroup evaluations may identify practically important error gaps hidden by the
+    overall average.
+  evidence: []
+  novelty_check:
+    status: unverified
+    evidence_depth: none
+    search_question: Do prespecified subgroup stress tests reveal model failures that an overall performance
+      average conceals?
+    limitation: No literature search, experiment or target assessment has been performed for this demonstration.
+    receipt: null
+identification:
+  credibility: unknown
+  fatal_assumptions: []
+  repair_path: Specify the comparison and alternatives in the assessment Tasks.
+feasibility:
+  evidence: []
+  pilot: pending
+  receipt: null
+  pressure_receipt: null
+venue_fit:
+  card: null
+  broad_screen: pending
+  deep_fit: pending
+  overall: unknown
+  recommended_target: unresolved
+  human_target: open
+risk: The proposed contrast may be uninformative or already established.
+reviewer_objection: A simpler baseline or a different data shift may explain the apparent gain.
+recommendation: unresolved
+state: open
+decision_ref: null
+evidence_bundle: ../bundle/evidence-bundle.yaml

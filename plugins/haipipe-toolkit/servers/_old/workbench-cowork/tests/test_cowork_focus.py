@@ -147,7 +147,7 @@ def test_the_shared_page_finds_these_parts(demo):
     assert "Traceback" not in F.status_now_html(block, root, "Block", [])
 
 
-EXAMPLE = Path(__file__).resolve().parents[5] / "blueprints" / "Project-Ladder" / "cowork" / "b01_example_cowork"
+EXAMPLE = Path(__file__).resolve().parents[5] / "examples" / "Project-Ladder" / "cowork" / "b01_example_cowork"
 
 
 @pytest.mark.skipif(not EXAMPLE.is_dir(), reason="the prototype Block is not in this checkout")

@@ -1,0 +1,65 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job / Task Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "studio-rules"
+        },
+        {
+          "name": "DesignMethodBook-Example",
+          "block": "examples/Project-Ladder/design/DesignMethodBook-Example"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "folder-rules-draw"
+        },
+        {
+          "name": "Job / Task Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "jobs-rules-draw"
+        },
+        {
+          "name": "Studio Organization",
+          "path": "examples/Project-Ladder/blueprint/b12_theme_design/delivery/structure/design-methodbook.html",
+          "fragment": "studio-rules-draw"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-design-method",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design-method/SKILL.md"
+        },
+        {
+          "name": "hai-design",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/hai-design/SKILL.md"
+        },
+        {
+          "name": "workbench-design",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/design/workbench-design/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

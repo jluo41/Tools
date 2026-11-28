@@ -143,7 +143,7 @@ def _round_cards(d):
 
 
 def _cover(d):
-    """The cover letter as the paper build recorded it (haipipe-paper-assemble 0.9.0,
+    """The cover letter as the paper build recorded it (hai-paper-assemble 0.9.0,
     run-delivery-coverletter): build-manifest.json `cover_letter`, or None."""
     man = d["delivery"]["manifest"] or {}
     return man.get("cover_letter") if isinstance(man.get("cover_letter"), dict) else None

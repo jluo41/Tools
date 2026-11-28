@@ -20,7 +20,7 @@ its own unit.
     curl -sS localhost:8070/medication/normalize -H 'content-type: application/json' \
          -d '{"item":"612997","dose":39}'
 
-Member of the `haipipe-norm` family; read that contract first. Siblings:
+Member of the `hai-norm` family; read that contract first. Siblings:
 `describe-food`, `describe-exercise`, and `describe-insulin`, which is the
 second half of a CHAIN with this one.
 
@@ -170,7 +170,7 @@ THE EVENT JSON
 --------------------------------------------------------------------------------
 
 What an event door's JSON must hold (raw as it came, input normalized, output by
-local hour) is one checklist for every type: haipipe-norm's THE EVENT JSON, with
+local hour) is one checklist for every type: hai-norm's THE EVENT JSON, with
 its table of where each type stands. Medication's own (eventnorm/medication/schema.py, b51 s03, s13):
 
     item      {"id", "drug", "ndc", "dose", "unit", "delivery"}: the drug's words

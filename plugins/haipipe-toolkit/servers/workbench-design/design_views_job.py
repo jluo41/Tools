@@ -13,12 +13,12 @@ from live.design_views_disk import _disk
 
 
 # ── Job (s12) ────────────────────────────────────────────────────────────────────────────────
-J_SKILLS = {"setup-goal": ("haipipe-design-goal",), "setup-method": ("haipipe-design-method",), "setup-inputs": ("haipipe-design-goal",),
-            "open-designs": ("haipipe-design",), "reason": ("haipipe-design-unit",), "generate": ("haipipe-design-unit",),
-            "verify": ("haipipe-design-unit",), "revise": ("haipipe-design-unit",), "rank": ("haipipe-design-unit",),
-            "freeze-predictions": ("haipipe-design-delivery",), "release": ("haipipe-design-delivery",),
-            "close": ("haipipe-design-workflow",),
-            "draw": ("haipipe-studio",)}
+J_SKILLS = {"setup-goal": ("hai-design-goal",), "setup-method": ("hai-design-method",), "setup-inputs": ("hai-design-goal",),
+            "open-designs": ("hai-design",), "reason": ("hai-design-unit",), "generate": ("hai-design-unit",),
+            "verify": ("hai-design-unit",), "revise": ("hai-design-unit",), "rank": ("hai-design-unit",),
+            "freeze-predictions": ("hai-design-delivery",), "release": ("hai-design-delivery",),
+            "close": ("hai-design-workflow",),
+            "draw": ("hai-studio",)}
 
 
 def _task_runs(j: dict) -> list:
@@ -31,7 +31,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
     jid = j["id"]
 
     def k(label, rtype, prompt, rows=None):
-        return _kind(label, prompt, *J_SKILLS.get(rtype, ("haipipe-design",)),
+        return _kind(label, prompt, *J_SKILLS.get(rtype, ("hai-design",)),
                      rows=rows if rows is not None else _rows(j["runs"], root, rtype), level="Job")
 
     desc = ("Goal", "Method", "Inputs")
@@ -79,7 +79,7 @@ def job_spaces(jdir: Path, root: Path, sub: str, href) -> dict:
         "Description": Space(html=d_html, subspaces=desc, open=d_open, run_types=d_runs, page=True,
                              disk=_disk("Job", d_open, jdir)),
         "Idea Studio": Space(run_types=(k("Add a topic", "draw", "Add or redraw a studio topic of {folder} with "
-                                          "/haipipe-studio: sNN-<topic>/ beside its Tasks (new_topic.py topic); save each "
+                                          "/hai-studio: sNN-<topic>/ beside its Tasks (new_topic.py topic); save each "
                                           "working session as a round, sNN-<topic>/passes/pNN-<MMDD>/."),), page=True),
         "Audience Report": Space(html=a_html, subspaces=ar, open=a_open, run_types=a_runs, page=True,
                                  disk=_disk("Job", a_open, jdir)),

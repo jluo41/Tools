@@ -15,17 +15,17 @@ description: The Design workbench turns a design task into designs a person can 
   and theory); each element of a design records where it came from and whether it was reasoned or intuitive. An
   agent generates, a different agent evaluates, a person releases, and the Exp tests the design in use.
 skills:
-- skill: haipipe-design
+- skill: hai-design
   role: 'The door: the design ladder (Block · Job · Task · Run), its scaffold, launching a Job and opening its design Tasks'
-- skill: haipipe-design-goal
+- skill: hai-design-goal
   role: 'What a design reads: the goal list (signed), the shared rules, inputs versions and a Job''s inputs/ fence'
-- skill: haipipe-design-method
+- skill: hai-design-method
   role: 'The registered methods and their versions (the five steps), proposals, the Exp''s results and the scorecard'
-- skill: haipipe-design-unit
+- skill: hai-design-unit
   role: 'One step of a method on one target: reason ② · generate ③ · verify ④ · rank ⑤'
-- skill: haipipe-design-workflow
+- skill: hai-design-workflow
   role: 'Which Run comes next at each level, the run cards, a design''s state and the Job''s close'
-- skill: haipipe-design-delivery
+- skill: hai-design-delivery
   role: 'The release: frozen predictions and designs.json, the one file another system reads'
 - skill: workbench-design
   role: 'The theme on the shared frame: the six Spaces at each level; the theory of design, the method cards and their papers'
@@ -118,7 +118,7 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b12_theme_design/s02-workbench-ui/design-workbench-ui.excalidraw
+  - board: Tools/examples/Project-Ladder/blueprint/b12_theme_design/s02-workbench-ui/design-workbench-ui.excalidraw
   - Workbench design
   - first
   related-paper:

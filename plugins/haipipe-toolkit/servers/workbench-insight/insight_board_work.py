@@ -26,7 +26,7 @@ def page_cells(snap: dict, page: dict) -> list[tuple[str, str]]:
     return out
 
 
-# ─── the workbench: four Spaces, one dataset (b11 s02-insight-workbench) ─
+# ─── the workbench: four Spaces, one dataset (studio/insight-workbench-design.py) ─
 
 # A refused or deferred cell, said in words: the head goes where a run would
 # be, the reason under it.  Tokens from MT02/MT03's legends.
@@ -212,7 +212,7 @@ def _run_lines(snap: dict, runs: list[dict]) -> str:
 
 def _bindings(page: dict | None, qid: str) -> dict:
     """The page's answers.yaml entry for one question: need id -> binding
-    (haipipe-insight ref/evidence-needs.md § 2).  Empty when the page binds none."""
+    (hai-insight ref/evidence-needs.md § 2).  Empty when the page binds none."""
     if not page:
         return {}
     path = page["path"].parent / "answers.yaml"
@@ -333,7 +333,7 @@ def _work_cell(snap: dict, q: dict, pid: str, answered: dict) -> str:
 
 _DIVISION = re.compile(r"(?m)^#{3,4}\s+\d+\s+·\s+(Q[DIKW]\d+)\s+·\s+(.+?)\s*$")
 _FIELD = re.compile(r"(?m)^\*\*([^*]{2,60})\*\*:\s*(.+?)\s*$")
-# an evidence need under "What would answer it" (haipipe-insight ref/evidence-needs.md)
+# an evidence need under "What would answer it" (hai-insight ref/evidence-needs.md)
 _NEED = re.compile(r"(?m)^- (E\d+) · (compute|cite|judge) · (.+?)\s*$")
 
 

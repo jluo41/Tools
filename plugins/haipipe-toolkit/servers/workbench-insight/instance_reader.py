@@ -1,6 +1,6 @@
 """Read an Insight Block for the Insight workbench (no UI of its own).
 
-An Insight Block (haipipe-insight ref/block-contract.md) is a task Block: one Job per DIKW level
+An Insight Block (hai-insight ref/block-contract.md) is a task Block: one Job per DIKW level
 (j01_data … j04_wisdom), one Task per question (tNN_<name>/: question.md, scripts/, runs/<dataset>_
 <segment>.sh, results/, reports/, the page). It is drawn by the SAME Insight workbench as every
 InsightBoard: insightboard.render_insight_board, its Spaces, Insight › Questions one table per
@@ -9,7 +9,7 @@ Block and returns the snapshot shape insightboard.py already renders, for one da
 (board.md `datasets:`, the first unless one is named), so a segment stays the screen's unit:
 
     questions   one row per question, id `Q<L><N>` (I03 → QI3), its cells computed by
-                haipipe-insight-check ref/check_block.py
+                hai-insight-check ref/check_block.py
     pages       the question's page in its task folder, plus the meta page the Dataset view reads
                 (meta/meta.md, carried word for word from the board it was made from)
     work        one run per question × segment of the dataset (runs/<dataset>_<segment>.sh)
@@ -35,8 +35,8 @@ import yaml
 
 from host_paths import skill_dir
 
-_REF = skill_dir("haipipe-insight") / "ref"
-_CHECK = skill_dir("haipipe-insight-check") / "ref"
+_REF = skill_dir("hai-insight") / "ref"
+_CHECK = skill_dir("hai-insight-check") / "ref"
 _LEVEL = {"D": "data", "I": "information", "K": "knowledge", "W": "wisdom"}
 _STAGE = {"D": "Data", "I": "Information", "K": "Knowledge", "W": "Wisdom"}
 _TEXT = {".md", ".csv", ".tsv", ".json", ".yaml", ".yml", ".py", ".sh", ".txt", ".lock"}

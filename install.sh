@@ -22,8 +22,9 @@
 #
 # Skills are enumerated dynamically: every SKILL.md under a plugin's skills/ tree,
 # at any depth, so adding or moving a skill needs no edits here — just re-run.
-# haipipe-toolkit nests its skills in three layers (skills/0_utils/<skill>,
-# skills/1_base/<family>/<skill>, skills/2_theme/<theme>/<skill>); each skill is
+# haipipe-toolkit nests its skills in four layers (skills/0_utils/<skill>,
+# skills/1_base/<family>/<skill>, skills/2_work/<theme>/<skill>,
+# skills/3_theme/<theme>/<skill>); each skill is
 # linked flat under its folder name, so skill names must be unique. Any folder
 # whose name starts with "_" (_old, _archive, _todo, _legacy, ...) is skipped,
 # as is node_modules/. The link set is OS/machine-specific; gitignore
@@ -33,7 +34,7 @@
 # symlink" guard below skip them, so they silently drift from Tools — keep the
 # dir gitignored and regenerate, exactly like .claude/skills/.)
 # A skill may also answer to short names: `aliases: [wb]` under `metadata:` in its
-# SKILL.md makes one more link per alias to the same folder (/wb is /workbench).
+# SKILL.md makes one more link per alias to the same folder (/wb is /hai-workbench).
 #
 # Sound hooks work on macOS (afplay), Linux (paplay/aplay), and Windows via
 # install.ps1. The per-OS table lives in install-hooks.json so both installers
@@ -176,7 +177,7 @@ fi
 
 # Enumerate every skill dir (containing SKILL.md) under a plugin's skills/ tree.
 # Discovery is recursive because haipipe-toolkit nests skills in layers and
-# families, e.g. skills/2_theme/paper/haipipe-paper-draft.
+# families, e.g. skills/3_theme/paper/hai-paper-draft.
 # A folder whose name starts with "_" is never descended (one rule instead of a
 # list of retired folders, so a layer move cannot leave a prune pointing nowhere).
 # Prints one line per skill: "<absolute_skill_dir>\t<plugin_name>\t<rel_path_from_plugin_skills>"
@@ -219,7 +220,7 @@ enumerate_skills() {
 }
 
 # A skill may carry short names: `aliases: [wb]` under `metadata:` in its SKILL.md
-# (JL 261009: /wb is /workbench). Each alias is one more link to the SAME folder,
+# (JL 261009: /wb is /hai-workbench). Each alias is one more link to the SAME folder,
 # so both names load one file and can never drift. An alias that is already some
 # skill's own name is skipped (the real skill wins).
 # Reads enumerate_skills' lines on stdin; prints "<alias>\t<skill_dir>\t<plugin>\t<rel_path>".

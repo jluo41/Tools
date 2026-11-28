@@ -141,7 +141,7 @@ def ideation(d):
             for idea in out["ideas"]:
                 if idea["address"] and item["target"].startswith(idea["address"] + "."):
                     idea["items"].append(item)
-        # ⑤ the I3 receipt and handoff files haipipe-paper-ideation names
+        # ⑤ the I3 receipt and handoff files hai-paper-ideation names
         for rel, what in (("workflow/selection.yaml", "I3 selection receipt"),
                           ("handoff/paper-ideation.yaml", "final handoff"),
                           ("projection/paper-ideation-sync.yaml", "working sync packet")):

@@ -57,4 +57,4 @@ risk: Choosing a test, a segment or an exclusion after seeing the data makes a f
 evidence on AI: LLM agents that design falsification tests under sequential Type-I error
   control were run in six domains, and matched human scientists on complex
   biological hypotheses in a tenth of the time [Huang 2025].
-skill: haipipe-insight-by-hypothesis-test (proposed)
+skill: hai-insight-by-hypothesis-test (proposed)

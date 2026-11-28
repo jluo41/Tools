@@ -60,4 +60,4 @@ verify: A second agent, not told the code, codes the technique it finds in the d
 risk: A design can name a theory it does not use: most interventions did not link their
   techniques to the theory [Prestwich 2013].
 evidence on AI: No study tests an AI designing by theory yet (ours).
-skill: haipipe-design-by-theory (proposed)
+skill: hai-design-by-theory (proposed)

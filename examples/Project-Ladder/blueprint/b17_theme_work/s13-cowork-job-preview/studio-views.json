@@ -1,0 +1,172 @@
+{
+  "views": [
+    {
+      "name": "Page-Job",
+      "items": [
+        {
+          "name": "job-rows",
+          "url": "/_board/workbench?path=examples%2FProject-Ladder%2Fcowork%2Fb01_example_cowork&layout=focus&section=jobs&group=j01&mark=jobs-rows,job-ttopics,job-subs"
+        },
+        {
+          "name": "job-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/job-overview.html",
+          "old": true
+        },
+        {
+          "name": "job-tasks",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/job-tasks.html",
+          "old": true
+        },
+        {
+          "name": "job-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/job-findings.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "Page-Task",
+      "items": [
+        {
+          "name": "task-rows",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/no-task-level.html",
+          "old": true
+        },
+        {
+          "name": "task-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/no-task-level.html",
+          "old": true
+        },
+        {
+          "name": "task-runs",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/no-task-level.html",
+          "old": true
+        },
+        {
+          "name": "task-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/no-task-level.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Group · j0N",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-group-0.html"
+        },
+        {
+          "name": "Type · cowork-job",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/job-type-cowork-job.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Task types",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/types/no-task-level.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "QuickHtml",
+      "items": [
+        {
+          "name": "〈quick page〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview/delivery/quickhtml.html",
+          "old": true
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/s13-cowork-job-preview.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Check",
+      "items": [
+        {
+          "name": "Page-Job › job-rows",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-0"
+        },
+        {
+          "name": "Page-Job › job-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-1"
+        },
+        {
+          "name": "Page-Job › job-tasks",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-2"
+        },
+        {
+          "name": "Page-Job › job-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-3"
+        },
+        {
+          "name": "Page-Task › task-rows",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-4"
+        },
+        {
+          "name": "Page-Task › task-overview",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-5"
+        },
+        {
+          "name": "Page-Task › task-runs",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-6"
+        },
+        {
+          "name": "Page-Task › task-findings",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-7"
+        },
+        {
+          "name": "Job types › 〈Job group type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-8"
+        },
+        {
+          "name": "Job types › 〈Job type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-9"
+        },
+        {
+          "name": "Task types › 〈Task group type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-10"
+        },
+        {
+          "name": "Task types › 〈Task type〉",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-11"
+        },
+        {
+          "name": "QuickHtml",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-12"
+        },
+        {
+          "name": "Draw",
+          "path": "examples/Project-Ladder/blueprint/b17_theme_work/s13-cowork-job-preview/delivery/check.html",
+          "fragment": "check-13"
+        }
+      ]
+    }
+  ],
+  "check_type": "examples/Project-Ladder/blueprint/b17_theme_work/s72-studio-type-block-job-ui-preview",
+  "check_layout": "elements"
+}

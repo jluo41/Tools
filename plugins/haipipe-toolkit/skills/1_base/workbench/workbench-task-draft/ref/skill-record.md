@@ -24,7 +24,7 @@ A row ending ` · removed` is the person's ✕: it stays in the store as a tombs
 ## ⚖️ The one law · the scan seeds, the person ranks
 
 The scan-seed never invents: it lists only names the page's text actually writes, matched against real SKILL.md folders and agent definitions across every installed `Tools/plugins/*/skills` tree, and a page that names none seeds empty.
-A plugin-level `agents/` directory participates in the same index, so a Board hosted by `haipipe-toolkit` can cite the skills and agents of a sibling workbench such as `haipipe-labeling`; the hosting workbench is not an index boundary.
+A plugin-level `agents/` directory participates in the same index, so a Board hosted by `haipipe-toolkit` can cite the skills and agents of a sibling workbench such as `hai-labeling`; the hosting workbench is not an index boundary.
 A scanned name lands at the BOTTOM of the list, because everything above it is the person's order; a refresh never edits, reorders, or removes a row.
 The earlier vocabulary — uses/designs relations, the aligned ✓, drift dates — was removed on JL's ruling (260816: "we just need to show these skills and the user can drag and rank them themselves"); the drag is the one judgment, and it is always a person's.
 

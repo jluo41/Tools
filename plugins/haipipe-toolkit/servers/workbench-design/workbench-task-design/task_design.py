@@ -28,7 +28,7 @@ EMOJI = {"See input": "📥", "Reason": "🧠", "Fence check": "🚧", "Generate
          "Predict": "🎯", "Rank": "📊", "Keep": "🗂", "Release": "🙋"}
 OLD = {"Chains": "2 · Reason", "Elements": "1 · Generate", "Kept · Dropped": "2 · Keep"}   # the Work views before steps
 DONE = ("closed", "done", "ok", "passed")
-# a step's prompt when no run card names its Run (haipipe-design-workflow/references/run-cards.md is the authority)
+# a step's prompt when no run card names its Run (hai-design-workflow/references/run-cards.md is the authority)
 FALLBACK = {"reason": "Reason ideas for the Job of {folder} (② run-reason-t00): from inputs/ only, topic by topic, to N + 5 "
                       "ideas, each naming its source.",
             "open-designs": "Check the fence of {folder}'s ideas (every source in inputs/), then open one design Task per "

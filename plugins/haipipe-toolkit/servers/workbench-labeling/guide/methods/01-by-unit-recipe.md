@@ -39,4 +39,4 @@ verify: a checker agent confirms counts, unique ids and that no context runs pas
 risk: An agent can pick the unit that is easiest to make, not the one the question needs;
   the person signs the recipe (ours).
 evidence on ai: No study tests agents choosing the labeling unit (ours).
-skill: haipipe-labeling-preparation
+skill: hai-labeling-preparation

@@ -27,10 +27,10 @@ limitations: It follows the seed's own habits of citing, so a narrow seed gives 
 Applied to AI
 -------------
 
-agent: haipipe-discovery-search-worker-agent follows the links and returns candidates; it opens no Run.
+agent: hai-discovery-search-worker-agent follows the links and returns candidates; it opens no Run.
 steps: 1. Read the seed. 2. List backward and forward links. 3. Return candidates with the seed named. 4. Stop.
 returns: candidate papers with the seed named for each.
 verify: Every candidate names the seed paper that led to it (T1).
 risk: An agent may follow links without limit; a round count is written first (ours).
 evidence on ai: No study tests agents snowballing literature (ours).
-skill: haipipe-discovery-search
+skill: hai-discovery-search

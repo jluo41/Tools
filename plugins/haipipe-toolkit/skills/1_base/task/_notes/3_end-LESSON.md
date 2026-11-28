@@ -80,7 +80,7 @@ Input2SrcFn  — JSON payload → ProcName_to_ProcDf (deserialization)
 PostFn       — raw model scores → client-facing JSON response
 ```
 
-Tools: `/haipipe-end <fn-type> design` or manual builder scripts in `code-dev/`.
+Tools: `/hai-end <fn-type> design` or manual builder scripts in `code-dev/`.
 
 ### Phase 2: Package (c_endpoint_nb.py steps 1-4)
 
@@ -108,9 +108,9 @@ The Endpoint_Set is self-contained: model weights, PreFn pipeline, code snapshot
 ### Phase 4: Deploy
 
 ```
-/haipipe-end deploy local       — Flask/FastAPI on localhost
-/haipipe-end deploy databricks  — Unity Catalog → Model Serving
-/haipipe-end deploy sagemaker   — ECR → SageMaker Endpoint
+/hai-end deploy local       — Flask/FastAPI on localhost
+/hai-end deploy databricks  — Unity Catalog → Model Serving
+/hai-end deploy sagemaker   — ECR → SageMaker Endpoint
 ```
 
 ---
@@ -221,7 +221,7 @@ Or better: make shared packages a git submodule.
    Fix: pass `df_case_raw` to Src2InputFn.
 
 **Root cause of wrong admissions in ProcName_to_ProcDf (resolved):** `extract_example_from_source` didn't filter by time — kept ALL patient admissions including future ones.
-See haipipe-task-for-fit/LESSON.md L1 for the temporal filtering fix.
+See hai-task-for-fit/LESSON.md L1 for the temporal filtering fix.
 
 **After all fixes:** 6/6 examples match with zero delta:
 ```
@@ -304,10 +304,10 @@ Synthetic tests pass trivially — they don't catch:
    predictions against training `prediction_results.json`. Warns on
    mismatch so the issue is always visible.
 
-3. **Skill docs** (`haipipe-end/_parts/src2input/PART.md`,
-   `haipipe-end/_parts/input2src/PART.md`): Roundtrip test with real data is
+3. **Skill docs** (`hai-end/_parts/src2input/PART.md`,
+   `hai-end/_parts/input2src/PART.md`): Roundtrip test with real data is
    REQUIRED in the design and review protocol. Also documented in
-   `haipipe-end/ref/0-overview.md` as a first-class invariant.
+   `hai-end/ref/0-overview.md` as a first-class invariant.
 
 **Rule:** Every Src2InputFn/Input2SrcFn pair must pass a roundtrip test on real ModelInstanceStore examples before deployment.
 Synthetic-only testing is insufficient — it catches parsing bugs but not data loss bugs.

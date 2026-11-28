@@ -1,0 +1,4 @@
+interface:
+  display_name: "HAIPipe Run"
+  short_description: "Define and audit one addressable Level-4 Run"
+  default_prompt: "Use $hai-run to resolve the owner and target, choose reuse, resume, or new work, and apply its Ticket, Result, closure, and inventory rules."

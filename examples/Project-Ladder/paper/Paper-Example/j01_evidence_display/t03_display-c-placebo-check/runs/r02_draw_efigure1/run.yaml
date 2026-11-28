@@ -1,0 +1,21 @@
+run: r02_draw_efigure1
+kind: hard
+role: make
+type: display
+scope: examples/Project-Ladder/paper/Paper-Example/j01_evidence_display/t03_display-c-placebo-check
+skill: hai-display
+ticket: r02_draw_efigure1.sh
+worker: draw_placebo_check.py
+says: draw Display C, the placebo check, with the policy-year estimate by id from the value Run (placeholder placebo years)
+host: this machine
+time: a few seconds
+status: done
+started_by: '261110: the evidence chain rules, placeholders only'
+reads:
+- j02_evidence_value/t01_values-sample/runs/r01_read_values (result/values.yaml)
+writes:
+- result/assets/figure.png
+- result/float.tex
+- result/method.md
+- result/values_used.csv
+- result/preview.pdf

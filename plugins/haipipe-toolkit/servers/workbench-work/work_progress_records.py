@@ -205,7 +205,7 @@ def _records(task):
         receipt = receipt_of(receipt_path)
         types = card.get("type") or receipt.get("operation") or source.get("operation") or []
         types = types if isinstance(types, list) else [types]
-        purpose = (card.get("goal") or card.get("aim") or source.get("goal")   # excalidraw-job writes a Run's purpose as aim
+        purpose = (card.get("goal") or card.get("aim") or source.get("goal")   # hai-draw job writes a Run's purpose as aim
                    or next((PURPOSES[t] for t in types if t in PURPOSES), ""))
         result.append(dict(row, task=task, card=card, receipt=receipt, receipt_path=receipt_path,
                            source=source, types=types, purpose=purpose,

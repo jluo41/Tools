@@ -136,7 +136,7 @@ def _job_root(page_src: Path) -> tuple[Path, str]:
 def _canonical_job_module():
     """Load the subjective-label writer's read-only status API.
 
-    The engine lives with the labeling skills (``skills/2_theme/labeling/engine``),
+    The engine lives with the labeling skills (``skills/3_theme/labeling/engine``),
     found by folder name.  Loading the small, dependency-stable ``job.py``
     module by path keeps the presenter from maintaining a second integrity
     implementation and from depending on the engine's Python package layout.
@@ -294,7 +294,7 @@ def inspect(page_src: Path) -> dict:
     if meaning_open and not checkpoints and not round_dirs:
         phase_i = 0
     if not root.exists():
-        next_action = "P0 Contract · create the page-local labeling/ job through /haipipe-labeling"
+        next_action = "P0 Contract · create the page-local labeling/ job through /hai-labeling"
     elif canonical_integrity_errors:
         next_action = "P0 Contract · " + str(
             canonical.get("next_action") or "repair canonical P0 integrity"

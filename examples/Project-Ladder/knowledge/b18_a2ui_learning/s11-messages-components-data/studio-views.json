@@ -1,0 +1,52 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Three things to distinguish",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/01-three-things-to-distinguish.md"
+        },
+        {
+          "name": "A small thought experiment",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/02-a-small-thought-experiment.md"
+        },
+        {
+          "name": "Compare two explanations",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/03-compare-two-explanations.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/page/04-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Messages, Components and Data",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/s11-messages-components-data.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "Messages, Components and Data",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/s11-messages-components-data.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "Messages, Components and Data",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s11-messages-components-data/delivery/deck/s11-messages-components-data.slides.html"
+        }
+      ]
+    }
+  ]
+}

@@ -35,4 +35,4 @@ returns: the round manifest and its seed
 verify: the batch holds no test item (T3)
 risk: A non-random first round bakes in the drawer's guess (ours).
 evidence on ai: Active selection gains most once a model exists [Ein-Dor 2020].
-skill: haipipe-labeling-rounds
+skill: hai-labeling-rounds

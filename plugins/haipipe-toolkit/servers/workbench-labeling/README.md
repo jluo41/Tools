@@ -1,6 +1,6 @@
 # servers/workbench-labeling · the browser-facing layer of the labeling theme
 
-The labeling theme's skills and engine live in `skills/2_theme/labeling/`; this folder is
+The labeling theme's skills and engine live in `skills/3_theme/labeling/`; this folder is
 their served face, one `workbench-<theme>` beside the others.
 
 ```
@@ -27,7 +27,7 @@ servers/
         ├── labeling_page.py   one labeling page (`render`); its CSS and JS in page-assets/
         ├── labeling_board.py  every labeling job on one Board
         └── assets/js/10-drawer/60-workbench-labeling.js   the drawer row a Board page shows
-    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/)
+    (its design studio, labeling-workbench-ui.py and its drawing, lives in Tools/examples/Project-Ladder/blueprint/b15_theme_labeling/s02-labeling-workbench/)
 ```
 
 ## Two ways to serve it
@@ -66,7 +66,7 @@ and `<page>` a Page id (`S-Label-1`). The server fills in `path=`, `file=` and
 `workbench-labeling/workbench-task-labeling/labeling.py` is a mixin for the shared host: it takes
 `target()`, `reply()` and the HTTP plumbing from `haipipe-toolkit/servers/_host`,
 and reads a Board's page list through one adapter, `_board_pages()` (in `labeling_job.py`), which is
-the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/draft/haipipe-draft/src`).
+the only place it touches the Board grammar (`haipipe-toolkit/skills/1_base/draft/hai-draft/src`).
 The dedicated Page-folder route uses its own checked resolver and does not
 call the Board parser.
 The shared Guide Space is mounted through
@@ -74,12 +74,12 @@ The shared Guide Space is mounted through
 and its cards are `guide/method.md`, `guide/methods/` and `guide/methods.excalidraw`, the papers
 `related/papers.md` (moved here from the skill's `ref/`, 261007). Its methods and UI diagrams describe
 the labeling family; folder links retain this host's private-source boundary.
-Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/page/runs_panel.py`
+Each Space's Runs panel is the shared one, `haipipe-toolkit/servers/workbench/page/job_task_views/runs_panel.py`
 (`panel_markup`, `PANEL_CSS`, `PANEL_JS`, `SPLIT_CSS`), with Labeling's own gated Run
 cards passed in. Both follow the rules every workbench shares
 (`haipipe-toolkit/servers/README.md` "Adding a workbench"); how they were met is
-recorded in `Tools/blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/labeling-shared-rules.md`.
-The engine under `../../skills/2_theme/labeling/engine/` imports nothing from the servers. So:
+recorded in `Tools/examples/Project-Ladder/blueprint/b15_theme_labeling/s02-labeling-workbench/labeling-shared-rules.md`.
+The engine under `../../skills/3_theme/labeling/engine/` imports nothing from the servers. So:
 
 - **runtime**: independent. The labeling host (`serve.py --only labeling`) is its own process
   and origin: own port, DOMAIN and auth file; terminal, chat and Board writes answer 404.
@@ -135,6 +135,6 @@ current Block or Job scope. Unassigned records remain in the rail. The shared
 Files browser, Studio tabs, and mobile navigation are reused.
 
 The design matrices and migration boundaries live in
-`blueprints/Project-Ladder/work/b15_theme_labeling/ui/`. Items, Meaning,
+`examples/Project-Ladder/blueprint/b15_theme_labeling/delivery/page-spec/`. Items, Meaning,
 Expression and legacy Task screens still retain their existing Report/Work
 workflow; their table describes the alignment target, not a completed migration.

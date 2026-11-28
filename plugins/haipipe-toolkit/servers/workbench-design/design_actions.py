@@ -1,11 +1,11 @@
 """🎨 Design · the writer behind the Design tab's buttons.
 
 Every action here writes exactly the files the Design contract already names
-(``haipipe-design`` register, ``haipipe-design-workflow`` Tickets and
-decisions, ``haipipe-design-unit`` v2 config/receipt shapes) and nothing else.
+(``hai-design`` register, ``hai-design-workflow`` Tickets and
+decisions, ``hai-design-unit`` v2 config/receipt shapes) and nothing else.
 A person's Commission decision is written with the person's name and words;
 agent steps (Generate, Verify) are only *queued* as planned Tickets for
-``haipipe-designer-agent`` to execute. A passed Verify becomes ready for
+``hai-designer-agent`` to execute. A passed Verify becomes ready for
 Delivery without a second human decision. Nothing here generates content,
 judges a candidate, or marks a Run complete on the agent's behalf.
 """
@@ -351,7 +351,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
     approval = folder / "results" / released["id"] / "decision.yaml"
     _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "generate",
-        "worker": "haipipe-design-unit", "actor": "designer-context-pending",
+        "worker": "hai-design-unit", "actor": "designer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
         "approval": {"actor": released["actor"], "record": _ref(folder, approval)},
         "inputs": inputs + extra_inputs, "targets": [],
@@ -361,7 +361,7 @@ def queue_generate(folder: Path, stem: str, item: dict, runs: list[dict],
         "target": item.get("title"), "status": "planned",
         "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
         "inputs": [_ref(folder, config_path), _ref(folder, approval)] + inputs + extra_inputs,
-        "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": "designer-context-pending"},
+        "worker": {"kind": "skill", "name": "hai-design-unit", "actor": "designer-context-pending"},
         "queued_at": _now(),
     })
     return {"run": run, "mode": _load(config_path)["mode"]}
@@ -391,7 +391,7 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
         raise ActionError("evidence named at release is gone: " + ", ".join(missing))
     _dump(folder / "runs" / f"{run}.yaml", {
         "schema": TICKET_SCHEMA, "run": run, "sequence": number, "operation": "verify",
-        "worker": "haipipe-design-unit", "actor": "reviewer-context-pending",
+        "worker": "hai-design-unit", "actor": "reviewer-context-pending",
         "item": item["id"], "target": item.get("title"), "config": _ref(folder, config_path),
         "approval": {"actor": released["actor"], "record": _ref(folder, approval)},
         "inputs": inputs, "targets": [target],
@@ -401,7 +401,7 @@ def queue_verify(folder: Path, stem: str, item: dict, runs: list[dict]) -> dict:
         "target": item.get("title"), "status": "planned",
         "ticket": f"runs/{run}.yaml", "result": f"results/{run}/",
         "inputs": [_ref(folder, config_path), _ref(folder, approval)] + inputs + [target],
-        "worker": {"kind": "skill", "name": "haipipe-design-unit", "actor": "reviewer-context-pending"},
+        "worker": {"kind": "skill", "name": "hai-design-unit", "actor": "reviewer-context-pending"},
         "queued_at": _now(),
     })
     return {"run": run, "verifies": generated["id"]}

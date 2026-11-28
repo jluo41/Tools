@@ -1,0 +1,15 @@
+run: run-check-02-name
+kind: soft
+type: check
+scope: null
+target: 02-name
+ticket: run-check-02-name.md
+skill: hai-task
+agent: claude
+signs: null
+status: waiting
+passes:
+- p01-1120
+- p02-1125
+writes: []
+feeds: []

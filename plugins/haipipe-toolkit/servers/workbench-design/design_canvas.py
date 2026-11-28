@@ -11,7 +11,7 @@ canvas). Both read the folders only; nothing here writes.
                         Hover a card to light what it rests on (green) and what rests on it (orange); click to pin
                         and read it in the side panel; `#d=d01` opens with a design pinned.
 
-Full names on screen (excalidraw-studio look rule 5): "version 2", "inputs version 1", "design 4 · fewest words";
+Full names on screen (hai-draw look rule 5): "version 2", "inputs version 1", "design 4 · fewest words";
 an id is only a key or a folder name. Plain HTML, SVG and a little JavaScript; no package.
 """
 from __future__ import annotations

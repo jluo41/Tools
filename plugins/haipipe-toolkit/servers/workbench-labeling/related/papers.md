@@ -25,7 +25,7 @@ by Morgan & Claypool, 2012). Each `why here` line was judged from the abstract o
 publisher's page only, not from the full text, except YouTA: added 2026-11-12 after
 checking the author-uploaded methods and limitations and matching its title and year
 against DOI registry records. Its design implications and reading scope are recorded in
-`blueprints/Project-Ladder/work/b15_theme_labeling/s02-labeling-workbench/youta-2026.md`.
+`examples/Project-Ladder/blueprint/b15_theme_labeling/s02-labeling-workbench/youta-2026.md`.
 
 | group | role | key | paper | venue | doi | why here | pdf |
 | --- | --- | --- | --- | --- | --- | --- | --- |

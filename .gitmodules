@@ -184,7 +184,7 @@
 	url = https://github.com/AIScientists-Dev/academic-humanizer
 	update = none
 [submodule "plugins/haipipe-toolkit/skills/paper/venue"]
-	path = plugins/haipipe-toolkit/skills/2_theme/paper/venue
+	path = plugins/haipipe-toolkit/skills/3_theme/paper/venue
 	url = git@github.com:jluo41/Venue-Paper.git
 	update = none
 [submodule "references/sepia"]
@@ -249,3 +249,12 @@
 	path = references/edithere
 	url = https://github.com/Inginnng/EditHere.git
 	update = none
+[submodule "references/dsh-remote"]
+	path = references/dsh-remote
+	url = https://github.com/flymysql/dsh-remote.git
+[submodule "references/dsh-a2ui"]
+	path = references/dsh-a2ui
+	url = https://github.com/ChimeSky/dsh-a2ui.git
+[submodule "references/dsh-genui-a2ui"]
+	path = references/dsh-genui-a2ui
+	url = https://github.com/Geekhyt/dsh-genui-a2ui.git

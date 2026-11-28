@@ -1,0 +1,52 @@
+{
+  "views": [
+    {
+      "name": "Page",
+      "items": [
+        {
+          "name": "Follow one round trip",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/01-follow-one-round-trip.md"
+        },
+        {
+          "name": "An observation sheet",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/02-an-observation-sheet.md"
+        },
+        {
+          "name": "Compare two debugging routes",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/03-compare-two-debugging-routes.md"
+        },
+        {
+          "name": "Try explaining",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/page/04-try-explaining.md"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Tracing a User Interaction",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/s21-tracing-interaction.excalidraw"
+        }
+      ]
+    },
+    {
+      "name": "Map",
+      "items": [
+        {
+          "name": "Tracing a User Interaction",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/s21-tracing-interaction.mindmap.md"
+        }
+      ]
+    },
+    {
+      "name": "Slides",
+      "items": [
+        {
+          "name": "Tracing a User Interaction",
+          "path": "examples/Project-Ladder/knowledge/b18_a2ui_learning/s21-tracing-interaction/delivery/deck/s21-tracing-interaction.slides.html"
+        }
+      ]
+    }
+  ]
+}

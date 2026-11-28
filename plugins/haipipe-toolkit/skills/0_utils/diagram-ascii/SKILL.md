@@ -102,7 +102,7 @@ worked pattern and its history remain in `ref/09-reply-boxes.txt`.
 
 ## Folder convention: one `diagram/` per module
 
-This convention is for a code module only. Inside a Project ladder (a Block, Job or Task) `diagram/` is retired: a drawing there is a Studio topic, `sNN-<topic>/` beside the Jobs (haipipe-studio). When a repo or module accumulates 4+ ASCII diagrams describing it, put them in a dedicated **`diagram/`** folder at the module's root — not in `docs/` next to prose docs. This keeps the "things you scan visually" separate from the "things you read line-by-line."
+This convention is for a code module only. Inside a Project ladder (a Block, Job or Task) `diagram/` is retired: a drawing there is a Studio topic, `sNN-<topic>/` beside the Jobs (hai-studio). When a repo or module accumulates 4+ ASCII diagrams describing it, put them in a dedicated **`diagram/`** folder at the module's root — not in `docs/` next to prose docs. This keeps the "things you scan visually" separate from the "things you read line-by-line."
 
 ```
 my-module/
@@ -255,24 +255,24 @@ code/
 ```
 plugins/haipipe-toolkit/skills/
 └── task/
-    ├── haipipe-task/SKILL.md
+    ├── hai-task/SKILL.md
     │
     ├── 1_data/
     │  (umbrella)
-    │   ├── haipipe-data/SKILL.md
-    │   ├── haipipe-data/_parts/source/PART.md
-    │   ├── haipipe-data/_parts/record/PART.md
-    │   ├── haipipe-data/_parts/case/PART.md
-    │   └── haipipe-data/_parts/aidata/PART.md
+    │   ├── hai-data/SKILL.md
+    │   ├── hai-data/_parts/source/PART.md
+    │   ├── hai-data/_parts/record/PART.md
+    │   ├── hai-data/_parts/case/PART.md
+    │   └── hai-data/_parts/aidata/PART.md
     │
     ├── 2_nn/
-    │   └── haipipe-nn/SKILL.md
+    │   └── hai-nn/SKILL.md
     │
     ├── 3_end/
-    │   └── haipipe-end/SKILL.md
+    │   └── hai-end/SKILL.md
     │
     └── 4_individual/
-        └── haipipe-individual/SKILL.md
+        └── hai-individual/SKILL.md
 ```
 
 **Folder tree — annotated + grouped** (combines both: role labels and blank-line clusters)
@@ -447,11 +447,11 @@ For a worked-through method section using all of the above, see `ref/08-paper-se
 
 ## See Also
 
-- **`haipipe-draft`** — owns the **board FOLDER** and its Pages; this skill owns **how to draw the diagrams that go inside it**. Clean split:
+- **`hai-draft`** — owns the **board FOLDER** and its Pages; this skill owns **how to draw the diagrams that go inside it**. Clean split:
 
   ```
-  📁 haipipe-draft      the CONTAINER      a Page Folder (a Block's Page, or a Studio topic `sNN-<topic>/`)
+  📁 hai-draft      the CONTAINER      a Page Folder (a Block's Page, or a Studio topic `sNN-<topic>/`)
   ✏️  diagram-ascii     the CONTENT        the boxes, arrows, trees, emoji inside a drawing block
   ```
 
-  When design decisions must persist, put them on a board (`haipipe-draft`) — do **not** invent a per-session log file here.
+  When design decisions must persist, put them on a board (`hai-draft`) — do **not** invent a per-session log file here.

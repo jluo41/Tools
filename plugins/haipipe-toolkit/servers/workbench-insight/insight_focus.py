@@ -1,5 +1,5 @@
 """The insight pages on the focus page (b11 j01): a Board, a Job and a Task, each with its Report and its Work, on the
-shared page rules every theme's page follows (haipipe-ui "The person's page rules", 261106):
+shared page rules every theme's page follows (hai-ui "The person's page rules", 261106):
 
   every section a numbered bar, closed until opened, its state word on its right; what waits on the person under the
   closed bar (ui_parts._section's `word` and `waits`); the fold script on Report too.

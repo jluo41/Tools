@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Marks · Insight Systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Space+Grotesk:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="bar" id="bar"></header>
+<div class="shell">
+  <nav class="side" id="side" aria-label="Pages"></nav>
+  <main class="main" id="main" data-page="work-marks.html">
+    <h2>Marks, not words</h2>
+    <p class="intro">A page shows a state with a mark beside the item, never a sentence about it. Words stay only for a
+      required action or the reason something failed.</p>
+    <ul class="marks">
+      <li><span>✅</span><b>done</b><em>a Run ok, a page checked, a version signed</em></li>
+      <li><span>⬜</span><b>not yet, or stopped</b><em>a planned Run, a page not written</em></li>
+      <li><span>🏃</span><b>running</b><em>a Run in progress</em></li>
+      <li><span>❗</span><b>void or stale</b><em>a failed Run, a report written before its result changed</em></li>
+      <li><span>🙋</span><b>waits on you</b><em>a signature, a decision; gathered in the tray beside the title</em></li>
+      <li><span>🧵</span><b>a chat touched it</b><em>a kept chat or a pass wrote here; a click opens those sessions</em></li>
+    </ul>
+    <footer class="foot">Read from <span class="mono">PRINCIPLE.md</span>, <span class="mono">hai-insight/ref/</span>, <span class="mono">hai-chat/ref/chat-contract.md</span>, <span class="mono">servers/workbench/ref/three-views.md</span> and <span class="mono">servers/workbench-insight/</span>. Names in angle brackets are placeholders.</footer>
+  </main>
+  <aside class="outline" id="outline" aria-label="On this page"></aside>
+</div>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
-"""The work theme on the base frame (servers/workbench/page/frame.py): only what differs from vanilla.
+"""The work theme on the base frame (servers/workbench/page/block_index_page/frame.py): only what differs from vanilla.
 
-A work Task (s13, Tools/blueprints/Project-Ladder/work/b10_project_workbench/s13-task-variants): Description is Scope · Plan,
+A work Task (s13, b10_project_workbench/s13-task-variants (removed 261126)): Description is Scope · Plan,
 Audience Report is Draft · Report, Work Details is Code · Review · Notebooks; its Runs are grouped
 by type by the frame itself. The Block and Job levels read as vanilla (Questions as
 Question │ Work │ Report, the child Jobs and Tasks). Its Guide is the `work` family (once `task`, still an alias).
@@ -11,10 +11,10 @@ from pathlib import Path
 from live.frame import (Space, Theme, esc as _e, face, link as _link, reader as _reader, report_view,
                         table as _table)
 
-TASK_RUNS = ({"label": "Plan a Task", "prompt": "/haipipe-task plan {folder}"},
-             {"label": "Build the Task", "prompt": "/haipipe-task build {folder}"},
-             {"label": "Run a Task", "prompt": "/haipipe-task run {folder}"},
-             {"label": "Check a Task", "prompt": "/haipipe-task check {folder}"})
+TASK_RUNS = ({"label": "Plan a Task", "prompt": "/hai-task plan {folder}"},
+             {"label": "Build the Task", "prompt": "/hai-task build {folder}"},
+             {"label": "Run a Task", "prompt": "/hai-task run {folder}"},
+             {"label": "Check a Task", "prompt": "/hai-task check {folder}"})
 
 
 def _section(md: Path, word: str) -> str:
@@ -58,7 +58,7 @@ def spaces(level, folder, root, sub):
         (f'<p>The report is its face: {_link(_reader(md, root), md.name)}</p>' if md else "")
         + report_view("Task", folder, root, THEME),          # its Questions under the group bar (b10 s05-D17)
         subspaces=("Draft", "Report"), open=ar_sub,
-        run_types=({"label": "Write the report", "prompt": "/haipipe-task report {folder}"},))
+        run_types=({"label": "Write the report", "prompt": "/hai-task report {folder}"},))
     wd_sub = sub if sub in ("Code", "Review", "Notebooks") else "Code"
     body = {"Code": lambda: _table(("file", "bytes"), _files(folder, root, "scripts/**/*") + _files(folder, root, "workflow/**/*")
                                    + _files(folder, root, "tests/**/*")),
@@ -67,23 +67,27 @@ def spaces(level, folder, root, sub):
             "Notebooks": lambda: _table(("notebook (generated)", "bytes"), _files(folder, root, "notebooks/*.ipynb"))}
     out["Work Details"] = Space(html=body[wd_sub](), subspaces=("Code", "Review", "Notebooks"), open=wd_sub,
                                 run_types=TASK_RUNS[1:2] + ({"label": "Review the Task code",
-                                                             "prompt": "/haipipe-task review {folder}"},))
+                                                             "prompt": "/hai-task review {folder}"},))
     out["Runs"] = Space(run_types=TASK_RUNS[2:])
     return out
 
 
-# each button's Run (haipipe-run rule 6); a hard Run keeps its rNN_ name
+# each button's Run (hai-run rule 6); a hard Run keeps its rNN_ name
 RUN_NAMES = {"Plan a Task": "run-plan-<tNN>", "Build the Task": "run-build-<tNN>", "Run a Task": "rNN_<slug>",
              "Check a Task": "run-check-<tNN>", "Write the report": "run-write-<tNN>",
              "Review the Task code": "run-review-code-<tNN>"}
 
 def claims(block) -> bool:
-    """A Question Book Block (`board-kind: prototype`, insight's questions and their scripts) wherever it sits: since JL
-    261109 it lives in insight/ beside the Board it serves, and still opens on the work page with insight's
-    prototype_ parts (focus_page.page_module)."""
+    """A Block this theme reads wherever it sits: a Question Book Block (`board-kind: prototype`, insight's questions and
+    their scripts; since JL 261109 it lives in insight/ beside the Board it serves, and still opens on the work page with
+    insight's prototype_ parts, focus_page.page_module), or a Block whose face names this theme (`theme: work` or
+    `workbench: work`), such as a Work Block (Knowledge) in knowledge/, a folder no theme owns by name."""
     face_md = Path(block) / "board.md"
-    return face_md.is_file() and bool(re.search(r"(?m)^board-kind:\s*prototype\s*$",
-                                                 face_md.read_text(encoding="utf-8", errors="ignore")[:2000]))
+    if not face_md.is_file():
+        return False
+    head = face_md.read_text(encoding="utf-8", errors="ignore")[:2000]
+    return bool(re.search(r"(?m)^board-kind:\s*prototype\s*$", head)
+                or re.search(r"(?m)^(theme|workbench):\s*work\s*$", head))
 
 
 # the Report's suggested groups, the kinds of question a work Block keeps asking (b10 s05-D07)

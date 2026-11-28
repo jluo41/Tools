@@ -109,6 +109,29 @@ class JobsSectionTest(fixtures.FocusPageCase):
         one = page.split('data-job-pane="j12"', 1)[1]
         self.assertNotIn('aria-label="Task topics"', one.split('data-job-pane', 1)[0])    # a Job with no Task has no rows 3, 4
 
+    def test_a_job_type_row_sits_above_the_groups_when_jobs_name_a_type(self):
+        # b17 trace 261127/1310: a Job's type (job-type:) is apart from its group (board.md bands:)
+        (self.block / 'board.md').write_text('# b\nbands: j0N First version · j1N Second version\n')
+        for name, kind in (('j01_cli', 'code'), ('j02_docs', 'doc'), ('j11_checks', 'check'), ('j12_speed', 'code')):
+            (self.block / name).mkdir()
+            (self.block / name / f'{name}.md').write_text(f'# {name}\njob-type: {kind}\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'jobs')
+        self.assertIn('aria-label="Job types"', page)
+        self.assertLess(page.index('aria-label="Job types"'), page.index('aria-label="Job topics"'))   # above the groups
+        self.assertIn('data-type-to="" aria-current="page">All</a>', page)
+        for kind in ('code', 'doc', 'check'):
+            self.assertIn(f'data-type-to="{kind}">{kind}</a>', page)
+        self.assertIn('data-job-to="j02"', page)
+        self.assertRegex(page, r'data-job-to="j02"[^>]*data-jtype="doc"')
+        self.assertRegex(page, r'data-topic-to="1" data-types="check code"')   # a group knows its Jobs' types
+
+    def test_no_job_type_row_when_no_job_names_one(self):
+        for name in ('j01_first', 'j02_second'):
+            (self.block / name).mkdir()
+            (self.block / name / f'{name}.md').write_text(f'# {name}\n')
+        page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'jobs')
+        self.assertNotIn('aria-label="Job types"', page)
+
     def test_a_block_with_no_jobs_has_no_jobs_section(self):
         page = focus_page.render(frame.Theme(name='work'), self.root, self.block, 'report')
         self.assertNotIn('data-side-key="jobs"', page)

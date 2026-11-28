@@ -1,4 +1,4 @@
-"""Draft Lab against haipipe-paper ref/must-check.md M-D18: every VALUE, CITE and DISPLAY in a Section renders with
+"""Draft Lab against hai-paper ref/must-check.md M-D18: every VALUE, CITE and DISPLAY in a Section renders with
 its support state. A DISPLAY Result (results/re-display-<n>/) answers \\ref with its name and shows its picture and Run;
 an Extended Data name is a reference to its Section; each evidence item that targets a sentence is resolved or not; a
 printed number no VALUE item covers is marked; a citation the citation Job has not verified carries a quiet mark; an old
@@ -18,7 +18,7 @@ from live.draft_card_text import ref_names  # noqa: E402
 from src import float_image  # noqa: E402
 from src.result_displays import ref_map, web_figures  # noqa: E402
 
-TESTS = Path(__file__).resolve().parents[5] / "skills" / "1_base" / "draft" / "haipipe-draft" / "tests"
+TESTS = Path(__file__).resolve().parents[5] / "skills" / "1_base" / "draft" / "hai-draft" / "tests"
 
 BOARD = "Project-X/paper/Paper-Demo"
 DRAFT = ("# Note · draft v1.0\n\n## 3 · Draft\n\n### C1.P1 · Data · s1 to s3\n"

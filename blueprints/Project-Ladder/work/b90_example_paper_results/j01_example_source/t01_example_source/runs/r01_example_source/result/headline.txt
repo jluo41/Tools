@@ -1,1 +1,0 @@
-3 source tables; the sample holds 12,480 units

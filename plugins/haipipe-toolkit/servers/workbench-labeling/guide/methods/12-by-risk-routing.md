@@ -35,4 +35,4 @@ returns: reviewed labels for the risky items
 verify: every routed item gets the person's label before release (T2)
 risk: A threshold set too high leaves the person little to review (ours).
 evidence on ai: Verification and routing raised label quality [Wang 2024].
-skill: haipipe-labeling-scan
+skill: hai-labeling-scan

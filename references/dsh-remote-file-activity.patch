@@ -1,0 +1,433 @@
+diff --git a/lib/client.js b/lib/client.js
+index 946a93b..a717a48 100644
+--- a/lib/client.js
++++ b/lib/client.js
+@@ -674,6 +674,8 @@ window.__ModuleLoader__.load({
+         'picker.feedback': '反馈 / 提 issue',
+         'explorer.refresh': '刷新',
+         'explorer.newDir': '新建目录',
++        'explorer.activitySaving': '正在保存',
++        'explorer.activityChanged': '最近已更改',
+         'explorer.more': '…',
+         'explorer.pickRemote': '选择远程工作区',
+         'explorer.pickRemoteHint': '在远程主机上选择要浏览的目录（只影响这个会话的文件面板，不改动会话的工作区绑定）',
+@@ -1297,6 +1299,8 @@ window.__ModuleLoader__.load({
+         'picker.feedback': 'Feedback / report issue',
+         'explorer.refresh': 'Refresh',
+         'explorer.newDir': 'New directory',
++        'explorer.activitySaving': 'Saving',
++        'explorer.activityChanged': 'Recently changed',
+         'explorer.more': '…',
+         'explorer.pickRemote': 'Pick a remote workspace',
+         'explorer.pickRemoteHint': 'Pick a directory on the remote host (affects only this session’s file panel; the session’s workspace binding is untouched)',
+@@ -1584,6 +1588,11 @@ window.__ModuleLoader__.load({
+           '.dsh-rw-select-anchor{min-width:0;max-width:100%}.dsh-rw-search-scope>.dsh-rw-select-anchor{flex:1;min-width:0}.dsh-rw-search-scope>.dsh-rw-select-anchor>.dsh-rw-select{width:100%}.dsh-rw-settings-field>.dsh-rw-select-anchor,.dsh-rw-settings-field>select{justify-self:start;min-width:0}.dsh-rw-settings-field>.dsh-rw-check{justify-self:start}',
+           '.dsh-rw-disclosure{width:100%;min-width:0}.dsh-rw-disclosure-head{display:flex;align-items:center;gap:8px;min-width:0;flex-wrap:wrap}.dsh-rw-disclosure-head[data-open]{margin-bottom:8px}.dsh-rw-disclosure-head>*:not(.dsh-rw-disclosure-row){flex-shrink:0;white-space:nowrap}.dsh-rw-disclosure-row{flex:1 1 auto;display:inline-flex;align-items:center;gap:6px;min-width:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}.dsh-rw-disclosure-row:hover{opacity:.78}.dsh-rw-disclosure-row:focus-visible{outline:2px solid var(--dsw-alias-button-primary-fill,#2563eb);outline-offset:2px;border-radius:4px}.dsh-rw-disclosure-title{font-size:13px;font-weight:600;color:var(--dsw-alias-label-primary,#e4e4e7)}.dsh-rw-disclosure-label{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.dsh-rw-disclosure-chevron,.dsh-rw-disclosure-icon{flex:none;color:var(--dsw-alias-label-tertiary,#929298)}.dsh-rw-disclosure-icon{display:inline-flex}',
+           '.dsh-rw-check{display:inline-flex;align-items:center;gap:8px;font-size:12px;line-height:20px;color:inherit;cursor:pointer}.dsh-rw-check input{width:16px;height:16px;margin:0;flex:none;accent-color:var(--dsw-alias-button-primary-fill,#2563eb);cursor:inherit}',
++          '.dsh-rw-file-activity{display:inline-block;flex:none;width:10px;height:10px;box-sizing:border-box;color:var(--dsw-alias-button-primary-fill,currentColor)}',
++          '.dsh-rw-file-activity[data-rw-activity=saving]{border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:dsh-rw-file-saving .8s linear infinite}',
++          '.dsh-rw-file-activity[data-rw-activity=changed]{background:currentColor;border-radius:50%;width:6px;height:6px;margin-inline:2px;opacity:.75}',
++          '@keyframes dsh-rw-file-saving{to{transform:rotate(360deg)}}',
++          '@media(prefers-reduced-motion:reduce){.dsh-rw-file-activity[data-rw-activity=saving]{animation:none}}',
+           '.dsh-rw-tree-row:hover{background:var(--dsw-alias-interactive-bg-hover,rgba(128,128,128,.10))!important}',
+           '.dsh-rw-tree-row[aria-selected=true]{background:color-mix(in srgb,var(--dsw-alias-button-primary-fill,#2563eb) 10%,transparent)!important}',
+           '.dsh-rw-tree-row .dsh-rw-row-meta{opacity:0;transition:opacity .1s}',
+@@ -5201,6 +5210,73 @@ window.__ModuleLoader__.load({
+           })
+       }, [sessionId])
+ 
++      const [activity, setActivity] = React.useState(null)
++      React.useEffect(() => {
++        if (!sessionId || !root || props.visible === false || localWorkspaceSession(sessionId)) return
++        const controller = new AbortController()
++        let timer, signature = '', previous = new Map()
++        const poll = async () => {
++          let delay = 400
++          try {
++            const result = await api('GET', withSessionQuery('/dsh-remote/file-activity', sessionId), undefined, controller.signal)
++            if (controller.signal.aborted) return
++            const files = Array.isArray(result?.files) ? result.files : []
++            const next = JSON.stringify(files)
++            if (next !== signature) {
++              signature = next
++              const revisions = new Map(), refresh = new Set()
++              for (const item of files) {
++                if (item.revision) {
++                  revisions.set(item.path, item.revision)
++                  if (previous.get(item.path) !== item.revision) {
++                    for (const dir of item.parents) {
++                      if (dataRef.current[dir]?.entries) refresh.add(dir)
++                    }
++                  }
++                }
++              }
++              previous = revisions
++              setActivity({ viewKey, root, files })
++              for (const dir of refresh) loadDir(dir, { force: true, quiet: true })
++            }
++          } catch {
++            if (controller.signal.aborted) return
++            signature = ''
++            setActivity(null)
++            delay = 2000
++          }
++          if (!controller.signal.aborted) timer = setTimeout(poll, delay)
++        }
++        poll()
++        return () => { controller.abort(); clearTimeout(timer) }
++      }, [viewKey, root, sessionId, props.visible, loadDir])
++      const activityRows = React.useMemo(() => {
++        const rows = new Map()
++        if (activity?.viewKey !== viewKey || activity.root !== root) return rows
++        const open = new Set(expanded)
++        for (const item of activity.files) {
++          const value = item.pending ? 'saving' : item.revision ? 'changed' : ''
++          if (!value) continue
++          const chain = [...item.parents].reverse().concat(item.path)
++          const start = chain.indexOf(root)
++          if (start < 0) continue
++          let visible = root
++          for (const child of chain.slice(start + 1)) {
++            if (!(visible === root ? rootOpen : open.has(visible))) break
++            if (!data[visible]?.entries?.some(entry => entry.path === child)) break
++            visible = child
++          }
++          if (value === 'saving' || !rows.has(visible)) rows.set(visible, value)
++        }
++        return rows
++      }, [activity, viewKey, root, rootOpen, expanded, data])
++      const activityMark = (path) => {
++        const value = activityRows.get(path)
++        if (!value) return null
++        const label = tr(value === 'saving' ? 'explorer.activitySaving' : 'explorer.activityChanged')
++        return React.createElement('span', { className: 'dsh-rw-file-activity', 'data-rw-activity': value, role: 'img', 'aria-label': label, title: label })
++      }
++
+       // Resolve this session's remote root, then load it and every expanded dir.
+       // Re-runs whenever the session scope changes (switching conversations, or
+       // the async sessionCwd fetch landing), so the sidebar follows the session's
+@@ -5501,6 +5577,7 @@ window.__ModuleLoader__.load({
+               React.createElement('span', { className: 'dsh-rw-tree-chevron' }, React.createElement(Chevron, { dir: isOpen ? 'down' : 'right', size: 12 })),
+               React.createElement('span', { style: { flexShrink: 0, color: T.label, display: 'inline-flex' } }, IconFolder(isOpen)),
+               React.createElement('span', { style: { overflow: 'hidden', textOverflow: 'ellipsis', flex: 1, fontWeight: 500 } }, entry.name),
++              activityMark(entry.path),
+               copiedMark(entry.path),
+             ),
+             isOpen ? renderLevel(entry.path, depth + 1) : null,
+@@ -5519,6 +5596,7 @@ window.__ModuleLoader__.load({
+           React.createElement('span', { className: 'dsh-rw-tree-chevron' }),
+           React.createElement('span', { style: { flexShrink: 0, display: 'inline-flex' } }, IconFile(entry.name)),
+           React.createElement('span', { style: { overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 } }, entry.name),
++          activityMark(entry.path),
+           copiedMark(entry.path),
+           (entry.size != null || entry.mtime)
+             ? React.createElement('span', { className: 'dsh-rw-row-meta', style: { fontSize: 10, flexShrink: 0, fontFamily: 'monospace' }, title: entry.mtime ? fmtTime(entry.mtime) : '' }, humanSize(entry.size))
+@@ -5637,6 +5715,7 @@ window.__ModuleLoader__.load({
+                   React.createElement('span', { className: 'dsh-rw-tree-chevron' }, React.createElement(Chevron, { dir: rootOpen ? 'down' : 'right', size: 12 })),
+                   React.createElement('span', { style: { flexShrink: 0, color: T.label, display: 'inline-flex' } }, IconFolder(rootOpen)),
+                   React.createElement('span', { style: { overflow: 'hidden', textOverflow: 'ellipsis', flex: 1 } }, rootName || root),
++                  activityMark(root),
+                 ),
+                 rootLevel && rootOpen ? renderLevel(root, 1) : null,
+               ),
+diff --git a/lib/file-activity.js b/lib/file-activity.js
+new file mode 100644
+index 0000000..c5896a6
+--- /dev/null
++++ b/lib/file-activity.js
+@@ -0,0 +1,81 @@
++import { normalizeRemotePath, relPathUnder, remoteDirname, toDisplayPath } from './paths.js'
++import { requestSessionHint } from './binding.js'
++
++// Presentation only: never store file contents or make additional SSH calls.
++export function createFileActivity({ now = Date.now, retentionMs = 5 * 60_000 } = {}) {
++  const pools = new WeakMap()
++  let revision = 0
++  function entries(binding, create = false) {
++    if (!binding.bound || binding.local || !binding.ws) return
++    let roots = pools.get(binding.pool)
++    if (!roots && create) pools.set(binding.pool, roots = new Map())
++    const root = normalizeRemotePath(binding.ws)
++    let files = roots?.get(root)
++    if (!files && create) roots.set(root, files = new Map())
++    if (!files) return
++    const cutoff = now() - retentionMs
++    for (const [path, item] of files) if (!item.pending && (item.savedAt == null || item.savedAt <= cutoff)) files.delete(path)
++    return files
++  }
++  async function run(binding, path, write) {
++    const relative = binding.ws && relPathUnder(binding.ws, path)
++    if (!relative) return write()
++    const files = entries(binding, true)
++    if (!files) return write()
++    const canonical = normalizeRemotePath(path)
++    const item = files.get(canonical) || { pending: 0 }
++    files.set(canonical, item)
++    item.pending++
++    try {
++      const result = await write()
++      if (result?.ok && !result.change?.unchanged) {
++        item.savedAt = now()
++        item.revision = ++revision
++      }
++      return result
++    } finally {
++      item.pending--
++      if (!item.pending && item.savedAt == null) files.delete(canonical)
++      if (files.size > 256) {
++        const completed = [...files].filter(([, value]) => !value.pending).sort((a, b) => a[1].revision - b[1].revision)
++        for (const [oldPath] of completed) {
++          if (files.size <= 256) break
++          files.delete(oldPath)
++        }
++      }
++    }
++  }
++  function snapshot(binding) {
++    const files = entries(binding)
++    const display = (path) => toDisplayPath(path, binding.pool.platform)
++    return [...(files || [])].map(([path, item]) => {
++      const parents = []
++      let dir = remoteDirname(path)
++      while (relPathUnder(binding.ws, dir) != null) {
++        parents.push(display(dir))
++        const next = remoteDirname(dir)
++        if (next === dir || !relPathUnder(binding.ws, dir)) break
++        dir = next
++      }
++      return { path: display(path), parents, pending: !!item.pending, revision: item.revision || 0 }
++    })
++  }
++  return { run, snapshot }
++}
++
++export function fileActivityRoute({ activity, sendJson, resolveRequestBinding }) {
++  return {
++    kind: 'exact', path: '/dsh-remote/file-activity',
++    async handler(req, res) {
++      if (req.method !== 'GET') return sendJson(res, 405, { error: 'method not allowed' })
++      if (!requestSessionHint(req).sessionId) return sendJson(res, 400, { error: 'sessionId is required' })
++      try {
++        const binding = await resolveRequestBinding(req)
++        res.setHeader?.('Cache-Control', 'no-store')
++        return sendJson(res, 200, { files: activity.snapshot(binding) })
++      } catch (err) {
++        return sendJson(res, err.httpStatus || 500, { error: String(err.message || err) })
++      }
++    },
++  }
++}
+diff --git a/lib/main.js b/lib/main.js
+index 5b572c0..9e337a6 100644
+--- a/lib/main.js
++++ b/lib/main.js
+@@ -74,6 +74,7 @@ import { createForwardRoutes } from './routes-forwards.js'
+ import { createMachineRoutes } from './routes-machines.js'
+ import { createMiscRoutes } from './routes-misc.js'
+ import { createFsRoutes } from './routes-fs.js'
++import { createFileActivity, fileActivityRoute } from './file-activity.js'
+ import { createUpdateRoutes } from './routes-update.js'
+ import { createWebAttachRoutes } from './routes-web-attach.js'
+ import { createWorkspaceRoutes } from './routes-workspace.js'
+@@ -2189,6 +2190,7 @@ export async function apply(ctx, config) {
+     presentationMeta: (_args, value) => value.execution,
+   }
+ 
++  const fileActivity = createFileActivity()
+   const tools = [
+     defineTool({
+       name: 'rw_info',
+@@ -2793,14 +2795,16 @@ export async function apply(ctx, config) {
+         const p = resolveRemoteArg(b, args.path)
+         if (!p || p === '/') throw new Error('rw_write_file: a file path is required')
+         const content = String(args.content == null ? '' : args.content)
+-        const sftp = await b.pool.sftp()
+-        const before = await captureRemoteFile(sftp, p)
+-        if (args.mkdir !== false) await mkdirRemoteDirs(sftp, remoteDirname(p))
+-        const buf = encodeText(content, args.encoding || config.encoding)
+-        await atomicRemoteWrite(sftp, before, buf)
+-        const bytes = buf.byteLength
+-        audit('write_file', `write ${p} (${bytes}B)`, 0, b)
+-        return { ok: true, bytes, change: fileChange(p, 'write', before.bytes === null ? null : before.bytes === undefined ? undefined : decodeBuf(before.bytes, args.encoding || config.encoding), content), text: `wrote ${bytes} bytes to ${p}` }
++        return fileActivity.run(b, p, async () => {
++          const sftp = await b.pool.sftp()
++          const before = await captureRemoteFile(sftp, p)
++          if (args.mkdir !== false) await mkdirRemoteDirs(sftp, remoteDirname(p))
++          const buf = encodeText(content, args.encoding || config.encoding)
++          await atomicRemoteWrite(sftp, before, buf)
++          const bytes = buf.byteLength
++          audit('write_file', `write ${p} (${bytes}B)`, 0, b)
++          return { ok: true, bytes, change: fileChange(p, 'write', before.bytes === null ? null : before.bytes === undefined ? undefined : decodeBuf(before.bytes, args.encoding || config.encoding), content), text: `wrote ${bytes} bytes to ${p}` }
++        })
+       },
+     }),
+ 
+@@ -2849,29 +2853,31 @@ export async function apply(ctx, config) {
+         const oldS = String(oldRaw)
+         const newS = String(newRaw)
+         if (oldS === '') throw new Error('rw_edit: old text must not be empty')
+-        const sftp = await b.pool.sftp()
+-        const before = await captureRemoteFile(sftp, p, { read: true, maxReadBytes: config.maxFileBytes })
+-        if (!before.stat) throw new Error('rw_edit: file not found')
+-        if (config.maxFileBytes > 0 && before.stat.size > config.maxFileBytes) throw new Error('rw_edit: file exceeds maxFileBytes')
+-        const buf = before.bytes
+-        const content = decodeBuf(buf, args.encoding || config.encoding)
+-        const count = args.count == null ? 0 : Math.max(Number(args.count) || 1, 1)
+-        const idxs = []
+-        let from = 0
+-        let hit
+-        while ((hit = content.indexOf(oldS, from)) !== -1) { idxs.push(hit); from = hit + oldS.length }
+-        if (!idxs.length) throw new Error(`rw_edit: old text not found in ${p}`)
+-        if (count === 0 && idxs.length > 1) {
+-          throw new Error(`rw_edit: "old" appears ${idxs.length} times in ${p} — pass count=<n> to pick how many to replace`)
+-        }
+-        const n = count === 0 ? 1 : Math.min(count, idxs.length)
+-        let out = content
+-        for (let i = n - 1; i >= 0; i--) {
+-          out = out.slice(0, idxs[i]) + newS + out.slice(idxs[i] + oldS.length)
+-        }
+-        await atomicRemoteWrite(sftp, before, encodeText(out, args.encoding || config.encoding))
+-        audit('edit', `edit ${p} (${n} occurrence(s))`, 0, b)
+-        return { ok: true, bytes: encodeText(out, args.encoding || config.encoding).byteLength, change: fileChange(p, 'edit', content, out), text: `edited ${p}: replaced ${n} occurrence(s)` }
++        return fileActivity.run(b, p, async () => {
++          const sftp = await b.pool.sftp()
++          const before = await captureRemoteFile(sftp, p, { read: true, maxReadBytes: config.maxFileBytes })
++          if (!before.stat) throw new Error('rw_edit: file not found')
++          if (config.maxFileBytes > 0 && before.stat.size > config.maxFileBytes) throw new Error('rw_edit: file exceeds maxFileBytes')
++          const buf = before.bytes
++          const content = decodeBuf(buf, args.encoding || config.encoding)
++          const count = args.count == null ? 0 : Math.max(Number(args.count) || 1, 1)
++          const idxs = []
++          let from = 0
++          let hit
++          while ((hit = content.indexOf(oldS, from)) !== -1) { idxs.push(hit); from = hit + oldS.length }
++          if (!idxs.length) throw new Error(`rw_edit: old text not found in ${p}`)
++          if (count === 0 && idxs.length > 1) {
++            throw new Error(`rw_edit: "old" appears ${idxs.length} times in ${p} — pass count=<n> to pick how many to replace`)
++          }
++          const n = count === 0 ? 1 : Math.min(count, idxs.length)
++          let out = content
++          for (let i = n - 1; i >= 0; i--) {
++            out = out.slice(0, idxs[i]) + newS + out.slice(idxs[i] + oldS.length)
++          }
++          await atomicRemoteWrite(sftp, before, encodeText(out, args.encoding || config.encoding))
++          audit('edit', `edit ${p} (${n} occurrence(s))`, 0, b)
++          return { ok: true, bytes: encodeText(out, args.encoding || config.encoding).byteLength, change: fileChange(p, 'edit', content, out), text: `edited ${p}: replaced ${n} occurrence(s)` }
++        })
+       },
+     }),
+ 
+@@ -2892,15 +2898,17 @@ export async function apply(ctx, config) {
+         requireRemoteSandbox(exec, 'write', { tool: 'rw_append', path: String(args.path || '') })
+         const p = resolveRemoteArg(b, args.path)
+         if (!p || p === '/') throw new Error('rw_append: a file path is required')
+-        const sftp = await b.pool.sftp()
+-        const before = await captureRemoteFile(sftp, p, { read: true, maxReadBytes: config.maxFileBytes })
+-        const existing = before.bytes ? decodeBuf(before.bytes, args.encoding || config.encoding) : ''
+-        const content = existing + String(args.content ?? '')
+-        const encoded = encodeText(content, args.encoding || config.encoding)
+-        await atomicRemoteWrite(sftp, before, encoded)
+-        const bytes = encoded.byteLength
+-        audit('append', `append ${p}`, 0, b)
+-        return { ok: true, bytes, change: fileChange(p, 'append', before.bytes === null ? null : existing, content), text: `appended to ${p} (now ${bytes} bytes)` }
++        return fileActivity.run(b, p, async () => {
++          const sftp = await b.pool.sftp()
++          const before = await captureRemoteFile(sftp, p, { read: true, maxReadBytes: config.maxFileBytes })
++          const existing = before.bytes ? decodeBuf(before.bytes, args.encoding || config.encoding) : ''
++          const content = existing + String(args.content ?? '')
++          const encoded = encodeText(content, args.encoding || config.encoding)
++          await atomicRemoteWrite(sftp, before, encoded)
++          const bytes = encoded.byteLength
++          audit('append', `append ${p}`, 0, b)
++          return { ok: true, bytes, change: fileChange(p, 'append', before.bytes === null ? null : existing, content), text: `appended to ${p} (now ${bytes} bytes)` }
++        })
+       },
+     }),
+ 
+@@ -4513,6 +4521,7 @@ export async function apply(ctx, config) {
+     }),
+     ...createSearchRoutes({ searches: workspaceSearches, sendJson, readBody, resolveRequestBinding: resolveWorkbenchBinding, isIgnoredFor: searchIgnoreMatcher }),
+     ...createGitRoutes({ sendJson, resolveRequestBinding: resolveWorkbenchBinding, decodeBuf, config }),
++    fileActivityRoute({ activity: fileActivity, sendJson, resolveRequestBinding }),
+     ...createFsRoutes({
+       sendJson, readBody, resolveRequestBinding: resolveWorkbenchBinding, decodeBuf, encodeText, audit, config, mirrorDirFor,
+       onRemoteMutation: () => { if (remoteSkills) remoteSkills.invalidate() },
+diff --git a/test/file-activity.test.js b/test/file-activity.test.js
+new file mode 100644
+index 0000000..5f1a1b3
+--- /dev/null
++++ b/test/file-activity.test.js
+@@ -0,0 +1,61 @@
++import assert from 'node:assert/strict'
++import test from 'node:test'
++import { createFileActivity, fileActivityRoute } from '../lib/file-activity.js'
++
++const workspace = { bound: true, ws: '/project', pool: { platform: 'posix' } }
++const path = '/project/reports/week/report.md'
++const done = { ok: true, change: { unchanged: false } }
++
++test('reports pending writes and collapsed ancestors, then retains a bounded changed mark', async () => {
++  let time = 200
++  const activity = createFileActivity({ now: () => time, retentionMs: 100 })
++  const pending = Promise.withResolvers()
++  const operation = activity.run(workspace, path, () => pending.promise)
++  assert.deepEqual(activity.snapshot(workspace), [{ path, parents: ['/project/reports/week', '/project/reports', '/project'], pending: true, revision: 0 }])
++  assert.deepEqual(activity.snapshot({ ...workspace, ws: '/other' }), [])
++  assert.deepEqual(activity.snapshot({ ...workspace, pool: {} }), [])
++  pending.resolve(done)
++  assert.equal(await operation, done)
++  assert.equal(activity.snapshot(workspace)[0].pending, false)
++  assert.equal(activity.snapshot(workspace)[0].revision, 1)
++  time += 100
++  assert.deepEqual(activity.snapshot(workspace), [])
++})
++
++test('failed, unchanged and out-of-workspace writes do not claim a change', async () => {
++  const activity = createFileActivity()
++  await assert.rejects(activity.run(workspace, path, () => { throw new Error('conflict') }), /conflict/)
++  await activity.run(workspace, path, () => ({ ok: true, change: { unchanged: true } }))
++  await activity.run(workspace, '/project-other/report.md', () => done)
++  assert.deepEqual(activity.snapshot(workspace), [])
++})
++
++test('overlapping writes keep the ring until the last operation settles', async () => {
++  const activity = createFileActivity()
++  const first = Promise.withResolvers()
++  const second = Promise.withResolvers()
++  const left = activity.run(workspace, path, () => first.promise)
++  const right = activity.run(workspace, path, () => second.promise)
++  first.resolve(done)
++  await left
++  assert.equal(activity.snapshot(workspace)[0].pending, true)
++  second.reject(new Error('conflict'))
++  await assert.rejects(right, /conflict/)
++  assert.equal(activity.snapshot(workspace)[0].pending, false)
++  assert.equal(activity.snapshot(workspace)[0].revision, 1)
++})
++
++test('the read endpoint requires a session and passes binding errors through', async () => {
++  const activity = createFileActivity()
++  await activity.run(workspace, path, () => done)
++  const route = fileActivityRoute({ activity, sendJson: (_, status, json) => ({ status, json }),
++    resolveRequestBinding(req) {
++      if (!req.url.includes('sessionId=accepted')) throw Object.assign(new Error('mismatch'), { httpStatus: 403 })
++      return workspace
++    },
++  })
++  const call = (query) => route.handler({ method: 'GET', url: route.path + query }, {})
++  assert.equal((await call('')).status, 400)
++  assert.equal((await call('?sessionId=wrong')).status, 403)
++  assert.equal((await call('?sessionId=accepted')).json.files[0].path, path)
++})
+diff --git a/test/routes-matrix.test.js b/test/routes-matrix.test.js
+index f818837..a384b09 100644
+--- a/test/routes-matrix.test.js
++++ b/test/routes-matrix.test.js
+@@ -60,6 +60,7 @@ const ROUTES = [
+   { path: '/dsh-remote/git', allow: ['GET'] },
+   { path: '/dsh-remote/search', allow: ['GET', 'POST'], body: true },
+   // fs surface (lib/routes-fs.js)
++  { path: '/dsh-remote/file-activity', allow: ['GET'] },
+   { path: '/dsh-remote/ls', allow: ['GET', 'POST'], noMethodGuard: true },
+   { path: '/dsh-remote/read', allow: ['GET', 'POST'], body: true },
+   { path: '/dsh-remote/write', allow: ['POST'], body: true },

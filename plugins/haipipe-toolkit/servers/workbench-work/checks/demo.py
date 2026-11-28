@@ -73,7 +73,7 @@ def build_demo(root):
     root = Path(root).resolve()
     project = root / "TaskWorkbench-Demo"
     project.mkdir(parents=True, exist_ok=False)
-    write(project / "project.yaml", "schema: haipipe-project/v1\nid: TaskWorkbench-Demo\nprofile: research\nstate: active\ngit_mode: workspace\n")
+    write(project / "project.yaml", "schema: hai-project/v1\nid: TaskWorkbench-Demo\nprofile: research\nstate: active\ngit_mode: workspace\n")
     board = project / "tasks/b11_model_comparison"
     write(board / "board.md", """# Model comparison · demo
 board-kind: task-block

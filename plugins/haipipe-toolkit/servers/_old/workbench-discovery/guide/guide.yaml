@@ -16,9 +16,9 @@ description: 'The Discovery Workbench reads one Discovery Block: one reading top
   and the Block''s BibTeX. It reads the Block on every open and stores nothing; each run is a prompt
   the person copies.'
 skills:
-- skill: haipipe-discovery
+- skill: hai-discovery
   role: The Block, its Jobs, Task Pages and Paper Runs
-- skill: haipipe-report
+- skill: hai-report
   role: A Block's Questions, their register and report folders
 - skill: workbench-discovery
   role: Scope, Work, Check and Delivery over the Block's Runs
@@ -74,7 +74,7 @@ folders:
   - studio/*.excalidraw
   - studio/*.excalidraw
 boundary: 'One Discovery Block owns this workbench: Scope, Work, Check and Delivery Spaces, each with
-  the shared Runs panel on the right. Task Pages and Paper Runs keep their haipipe-discovery owners
+  the shared Runs panel on the right. Task Pages and Paper Runs keep their hai-discovery owners
   and receipts; the workbench reads them and writes nothing but a related resource. A citation a Run
   could not verify stays visible until a person signs it.'
 explain:
@@ -86,6 +86,6 @@ explain:
   - only
   roadmap-draw:
   - /_excalidraw/
-  - board: Tools/blueprints/Project-Ladder/work/b14_theme_discovery/s02-discovery-workbench/discovery-workbench-design.excalidraw
+  - board: Tools/examples/Project-Ladder/work/b14_theme_discovery/s02-discovery-workbench/discovery-workbench-design.excalidraw
   - Workbench design
   - first

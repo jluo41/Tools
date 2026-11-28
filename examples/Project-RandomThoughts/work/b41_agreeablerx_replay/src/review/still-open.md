@@ -1,0 +1,42 @@
+# Still open
+
+- Several Sections still wait on an independent check before they can close.
+- Workbench fixes asked of the UI session are not yet confirmed done.
+- The Round 3 Word file and the send to the co-authors are unfinished.
+- **🙋 Each open item**
+- 🙋 Abstract D39 ("beyond the star rating"): the AI picked B, leave it out; no JL ruling appears in the log.
+- 🙋 Tracking sentence splits and merges in Draft Lab (t00, 2026-11-13 21:08): asked, no answer recorded.
+- 🙋 Editing a sentence directly in Draft Lab (t01, 2026-11-13 22:21): discussed, not built in this log.
+- 🙋 One shared plan structure across Block, Job and Task (t00, 2026-11-13 19:52): AI said "not yet".
+- 🙋 History grouping on a sentence (t00, 2026-11-13 21:23): planned, not shown done.
+- 🙋 Old paragraph index look (t00, 2026-11-13 23:04): asked, outcome unclear.
+- 🙋 Co-author comments in the 💬 thread with names (t01, 2026-11-13 23:05): plan given, completion unclear.
+- 🙋 AI rating does not yet judge a sentence's role in its paragraph or its link to the next sentence (t01, 2026-11-14 00:07).
+- 🙋 Counts consistency between Abstract and Introduction: Abstract ended with full counts (226,149 physicians); Intro S24 card proposed 4.1 million and 226,999; the subagent's check result is not shown (unclear).
+- 🙋 S23's 📊 cards belong on S33 (t01, 2026-11-14 00:45): fix not shown.
+- 🙋 Abstract and Introduction closure: both wait on an independent blind CHECK.
+- 🙋 Word version into Round3-v1112: "comes next" at 2026-11-14 03:48; the Round 3 send to Ritu (due Fri 11-13) is not yet done.
+- 🙋 Theory and Literature Review still had small gaps before the final PDF and diff (main, 2026-11-14 03:31).
+- 🙋 Port 5623 needed JL's restart and two places still printed "N to fix" (main, 2026-11-13 22:37).
+- 🙋 Ritu's "Confirm this is accurate" lost its reply when the AI comments were removed (main, 2026-11-13 02:41).
+- 🙋 Meyer reference duplicate to be fixed in the PDF build (main, 2026-11-13 02:44): not shown done.
+- 🙋 Osteoarthritis-first paragraph and the "downplay them" items (main, 2026-11-13 02:45 and 02:59): unclear whether applied.
+- 🙋 Figure 1 redraw: the Word file still had the old picture (main, 2026-11-13 02:46).
+- 🙋 Structural rewrite Ritu and Gordon asked for: "has not started" at 2026-11-11 00:15; later status unclear.
+- 🙋 AI-writing flag step in `/hai-paper-draft` (main, 2026-11-11 00:52): proposal only.
+- 🙋 Moving the co-author round out of `reports/` into a Job or Studio (main, 2026-11-10 23:45): not shown done.
+- 🙋 Splitting the long workbench code into 5 page subfolders and committing after the splits (WorkBench-Paper-UI, 2026-11-13 21:19 and 22:20): completion not shown.
+- 🙋 cathrynlavery/diagram-design: JL asked whether to generate diagrams and put them in Excalidraw (WorkBench-Paper-UI, 2026-11-11 18:03); not answered in the log.
+- 🙋 The replay documentation and website (WorkBench-Paper-UI, 2026-11-14 04:01): in progress.
+- 🙋 t07_conclusion: JL still has to sign the version Narrative and decide the S3 card; then a fresh CHECK.
+- 🙋 t03_theory: result of the final checks; Theory not yet closed.
+- 🙋 t03_theory: whether Figure 1 and the text should say "clinical discretion" or "uncertainty" consistently (01:32 question; unclear if settled).
+- 🙋 t03_theory: auto-fold after one idle minute, and reasons on each edit card; neither answered.
+- 🙋 t05_results: main session must name the run behind 2.79 and 9.26.
+- 🙋 t02_literature-review: S8, S16 and later changes queued for the main session's LaTeX build; reviewer result on the rewritten last paragraph not reported.
+- 🙋 t02_literature-review: S18 (Eddy 1984 Run, "definition stack") and S42 (Xu 2021 only partly supports) not reported fixed.
+- 🙋 WorkBench-Paper-UI requests not confirmed in these timelines: ★ rescore on change, no self-reload, paragraph-only fold, LaTeX in the "Suggested" line, math typesetting, low-score background, hiding cards on ✓.
+- 🙋 t06_discussion: why changes do not feel real-time / auto-reload (unclear); C2.P4 re-adopt, cards opening in the UI, and main session rebuild still in progress.
+- 🙋 t03_theory: full figure float with caption in the display (01:04) not reported done.
+- 🙋 Appendix: third review results; 36 changes not yet in LaTeX or Word; main session has not read the message.
+- 🙋 t05_results: JL's "he might be busy now, how do you think you can work on it." (2026-11-13 19:20) got no reply (unclear).

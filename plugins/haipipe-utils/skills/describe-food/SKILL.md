@@ -244,7 +244,7 @@ The door (what a SourceFn uses) -- batch, order-preserving, duplicates resolved 
     # Sugar (total sugars, g) is empty, never 0, where no table gave one.
 
 Which output: `normalize()` for a column of food names (one flat dict per row);
-POST /meal/event (haipipe-norm) for one meal as an event (F5-F11 below).
+POST /meal/event (hai-norm) for one meal as an event (F5-F11 below).
 
 The DataFrame-shaped form, for a caller that already holds one and wants the
 columns joined on. It exposes the stage sequence, so prefer the door:
@@ -275,9 +275,9 @@ versioned in ExternalStore -- the same way NDC/NPI reference data works.
 THE FOOD EVENT: WHAT ITS INPUT AND OUTPUT MUST HOLD
 --------------------------------------------------------------------------------
 
-POST /meal/event (haipipe-norm eventnorm) calls this skill's foodnorm/items.py on
+POST /meal/event (hai-norm eventnorm) calls this skill's foodnorm/items.py on
 a meal's items. The event's shared rules (three parts, times, totals left out,
-source, by hour) are haipipe-norm's THE EVENT JSON; these are food's own, from
+source, by hour) are hai-norm's THE EVENT JSON; these are food's own, from
 b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
 (2026-11-02).
 
@@ -314,7 +314,7 @@ b51 s01-food-api.md (s01-Dnn). All 8 of s01's saved meals pass every line
         ml by basis per_meal; another amount multiplies the table's one serving
         (times, all 14 and GL) when its unit is that serving's. A unit that differs
         is never converted: the numbers stay one serving and amount_note says so
-        (haipipe-norm rule 4). total.amounts = {stated, applied} counts them.
+        (hai-norm rule 4). total.amounts = {stated, applied} counts them.
         The partner app's input.total is rows x ServingsConsumed (t13 r05).
     [ ] F8  FatSecret's 14 nutrients, always in four groups with every name
             present: macros (calories, carbs, protein, fat), carb_parts (fiber,

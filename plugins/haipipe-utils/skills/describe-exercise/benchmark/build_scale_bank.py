@@ -10,7 +10,7 @@ app consistently reports less energy than the Compendium predicts for the same
 named activity; multiplying by it moves our answer toward what the device
 actually measured on real people.
 
-THE FENCE IS THE WHOLE DESIGN (haipipe-norm rule 11)
+THE FENCE IS THE WHOLE DESIGN (hai-norm rule 11)
 ================================================================================
 A bank built from the board is a second path to the label. Each tier needs a
 fence that keeps the fit away from the rows it will be scored on, and the two
@@ -65,7 +65,7 @@ from exnorm.constants import SCALE_MAX, SCALE_MIN              # noqa: E402
 # The SPACE root. Tools is shared by every SPACE, so a written-out path is
 # wrong everywhere but one checkout of one SPACE, and it fails SILENTLY:
 # the bank never opens, every lookup returns MISS, and the benchmark blames
-# the resolver. Same walk as haipipe-norm/paths.py:space_root().
+# the resolver. Same walk as hai-norm/paths.py:space_root().
 ROOT = next(a for a in pathlib.Path(__file__).resolve().parents
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 CORPUS = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_ExerciseInfo/2-corpus"

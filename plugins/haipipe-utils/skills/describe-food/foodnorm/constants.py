@@ -35,7 +35,7 @@ import pathlib
 # `code/scripts/haibuilder/0-external/e13_build_external_foodbank.py`.
 import os
 
-# Resolution order, stated once in haipipe-norm/paths.py and repeated here only
+# Resolution order, stated once in hai-norm/paths.py and repeated here only
 # because this module must import with nothing sourced:
 #   1. $FOODNORM_DB          an explicit bank, for an A/B or another host
 #   2. $LOCAL_EXTERNAL_STORE a SPACE declares where its stores are

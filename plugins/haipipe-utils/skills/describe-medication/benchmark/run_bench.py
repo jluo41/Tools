@@ -20,7 +20,7 @@ import pandas as pd
 
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = next(a for a in HERE.parents if (a / "_WorkSpace").is_dir())
-sys.path[:0] = [str(HERE), str(HERE.parent), str(HERE.parents[1] / "haipipe-norm")]
+sys.path[:0] = [str(HERE), str(HERE.parent), str(HERE.parents[1] / "hai-norm")]
 
 import score as S                                                # noqa: E402
 from mednorm import normalize                                    # noqa: E402

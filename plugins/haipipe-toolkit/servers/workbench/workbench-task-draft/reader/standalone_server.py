@@ -54,7 +54,7 @@ PRIVATE_PARTS = page_workspace.PRIVATE_LANES | page_workspace.PRIVATE_FILES
 
 @lru_cache(maxsize=1)
 def _labeling_workbench_module():
-    """Load the labeling domain presenter (skills/2_theme/labeling/engine) without making Page own its code."""
+    """Load the labeling domain presenter (skills/3_theme/labeling/engine) without making Page own its code."""
     from host_paths import skill_dir
     candidate = skill_dir('labeling') / 'engine' / 'page_plugin.py'
     if not candidate.is_file():
@@ -362,7 +362,7 @@ class PageHandler(OutlineMixin, EvidenceTabMixin, ValueMixin, FolderStatMixin,
             if parsed.path == '/w' or parsed.path.startswith('/w/'):
                 return self._workbench_short(parsed)
             route = parsed.path.replace('/_page/', '/_board/', 1)
-            if parsed.path == '/_excalidraw/_haipipe-xcal.js':
+            if parsed.path == '/_excalidraw/_hai-xcal.js':
                 return self.proxy_excalidraw(head_only=self.command == 'HEAD')
             if parsed.path.startswith('/assets/') and not (self.root / parsed.path.lstrip('/')).exists():
                 _relative(parsed.path.lstrip('/'))

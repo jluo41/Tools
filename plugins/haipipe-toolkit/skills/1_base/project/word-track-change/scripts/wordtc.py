@@ -19,7 +19,7 @@ from pathlib import Path
 import yaml
 
 HERE = Path(__file__).resolve()
-sys.path.insert(0, str(HERE.parents[3] / "excalidraw" / "excalidraw-draft" / "ref"))
+sys.path.insert(0, str(HERE.parents[3] / "draw" / "hai-draw" / "gallery" / "draft" / "ref"))
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 WORD_BOX = Path.home() / "Library/Containers/com.microsoft.Word/Data/Documents/word-track-change"
 

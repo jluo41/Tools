@@ -1,0 +1,16 @@
+run: run-add-j01
+kind: soft
+type: add
+scope: Tools/examples/Project-Ladder/insight/Insight-Example
+target: j01
+ticket: run-add-j01.md
+skill: hai-insight
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes:
+- j01_question-v1-example-questions_data-v1
+feeds: []

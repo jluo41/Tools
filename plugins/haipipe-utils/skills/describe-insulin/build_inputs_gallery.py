@@ -5,7 +5,7 @@ Build `_InsInfo/0-inputs/`: one specimen of every SHAPE that can arrive.
     source .venv/bin/activate && source env.sh
     python Tools/plugins/haipipe-utils/skills/describe-insulin/build_inputs_gallery.py
 
-The engine is haipipe-norm/inputs_gallery.py, shared by all four nouns. This
+The engine is hai-norm/inputs_gallery.py, shared by all four nouns. This
 file holds only the list of shapes, because the list is the part that differs:
 insulin is not a table of its own. It hides inside Medication, and each cohort
 buries it differently: OhioT1DM in a JSON record with the name inside, WellDoc in
@@ -22,7 +22,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = next(a for a in HERE.parents
             if (a / "pyproject.toml").exists() and (a / "code").is_dir())
 SKILLS = ROOT / "Tools/plugins/haipipe-utils/skills"
-sys.path[:0] = [str(HERE), str(SKILLS / "haipipe-norm"), str(SKILLS / "describe-medication")]
+sys.path[:0] = [str(HERE), str(SKILLS / "hai-norm"), str(SKILLS / "describe-medication")]
 INFO = ROOT / "_WorkSpace/0-RawDataStore/0-EventNorm/_InsInfo"
 
 import pandas as pd                                       # noqa: E402

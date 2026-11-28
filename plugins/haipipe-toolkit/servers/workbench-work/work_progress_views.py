@@ -192,17 +192,17 @@ def spaces(level, folder, root, sub, theme):
         body = f'<section class=workflow-view data-work-progress="{e(selected)}">{stamp}{body}</section>' + (REFRESH if live else '') + ZOOM
         label, verb = {"Goal": ("Define the goal and completion criteria", "plan"), "Plan": ("Create a run plan", "plan"),
                        "Execution": ("Execute the plan", "execute"), "Results": ("Write the result interpretation", "report")}[selected]
-        prompt = (f"/haipipe-task {verb} {{folder}}" if level == "Task" else
+        prompt = (f"/hai-task {verb} {{folder}}" if level == "Task" else
                   f"Read {{folder}} and its Tasks. {label}. Preserve each Task's own plan, Runs and results.")
         run_name = "rNN_<slug>" if verb == "execute" else f"run-{verb}-{folder.name.split('_')[0]}"
-        kinds = (frame.run_type(run_name, label, prompt, "haipipe-task"),)
+        kinds = (frame.run_type(run_name, label, prompt, "hai-task"),)
         if selected == "Plan" and mode == "Work Details":
             kinds += (frame.run_type(f"run-build-{folder.name.split('_')[0]}", "Prepare code and configuration for the plan",
-                                     "/haipipe-task build {folder}" if level == "Task" else
-                                     "Build the planned Tasks under {folder} through each Task's own workflow.", "haipipe-task"),)
+                                     "/hai-task build {folder}" if level == "Task" else
+                                     "Build the planned Tasks under {folder} through each Task's own workflow.", "hai-task"),)
         if mode == "Audience Report":
             kinds = (frame.run_type(f"run-report-{folder.name.split('_')[0]}", "Update the result interpretation",
-                                   "Read {folder} and its source records. Explain what the results establish and what remains open.", "haipipe-task"),)
+                                   "Read {folder} and its source records. Explain what the results establish and what remains open.", "hai-task"),)
         out[mode] = frame.Space(html=body, subspaces=VIEWS, open=selected, run_types=kinds, page=True,
                                disk=(("workflow/", "saved plan and report, when present"),
                                      ("runs/", "existing Run cards and receipts")))

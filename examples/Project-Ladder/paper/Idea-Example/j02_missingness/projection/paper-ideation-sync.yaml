@@ -1,0 +1,60 @@
+version: 2
+kind: paper-ideation-sync
+source:
+  ideation_job: Idea-Example.j02
+  ideation_manifest: ideation.yaml
+  evidence_bundle: bundle/evidence-bundle.yaml
+  direction_card: cards/direction.yaml
+  test_matrix: null
+stage: I1
+sync_revision: 1
+projection:
+  change_class: structure
+  affected_idea_ids:
+  - i02
+  identity_key: idea_id
+paper_page:
+  state: missing
+  path: null
+  working:
+    state: not-requested
+    revision: null
+    receipt: null
+  release:
+    state: not-requested
+    revision: null
+    receipt: null
+  delivery:
+    state: not-requested
+    revision: null
+    receipt: null
+discovery_landscape:
+  accepted_syntheses: []
+  direct_result_ids: []
+  convergent_signals: []
+  contradictions: []
+  unresolved_territory:
+  - Does masking inputs during training preserve prediction quality when deployment observations are missing?
+opportunity_map: []
+ideas:
+- card: cards/i02_idea.yaml
+  state: open
+  decision_ref: null
+  comparison_order: 1
+  novelty: unverified
+  identification: unknown
+  feasibility: pending
+  journal_fit: pending
+  next_route: discovery
+portfolio_recommendation:
+  status: not-reviewed
+  summary: No scientific ranking or selection has been made.
+  ideas: []
+selection_authority:
+  owner: hai-ideation select
+  status: none
+  receipt: null
+sync_status: stale
+open_gaps:
+- No literature search, experiment or target assessment has been performed for this demonstration.
+updated_at: '2026-11-27T18:39:41-05:00'

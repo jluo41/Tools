@@ -31,7 +31,7 @@ _READS = re.compile(r"(?im)^\s*reads:\s*(.*?)\s*$")
 _ITEM_HEAD = re.compile(r"^##\s+(ITEM\d+)\s*[·:-]\s*(.+?)\s*$")
 _FIELD = re.compile(r"^([a-z][a-z-]*):\s*(.*?)\s*$")
 _SIGNED = re.compile(r"(?im)^\s*signed:\s*(✅|⬜)\s*(.*?)\s*$")
-_UNIT_CHECKER = skill_dir("haipipe-design-unit") / "scripts" / "check_unit.py"
+_UNIT_CHECKER = skill_dir("hai-design-unit") / "scripts" / "check_unit.py"
 _STEP = {"commission": "Commission", "generate": "Generate",
          "verify": "Verify", "adopt": "Adopt (historical)"}
 _ITEM_FIELDS = ("type", "audience", "job", "goal", "stance", "basis", "mode",
@@ -117,7 +117,7 @@ def _unit_gate():
 def _audit(folder: Path) -> list[str]:
     """Run the Design Unit gate read-only; a missing checker is reported, not hidden."""
     if not _UNIT_CHECKER.is_file():
-        return ["check_unit.py not found beside haipipe-design-unit"]
+        return ["check_unit.py not found beside hai-design-unit"]
     try:
         module = _unit_gate()
         return [str(issue).replace(str(folder) + "/", "") for issue in module.audit_folder(folder)]

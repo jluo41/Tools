@@ -1,0 +1,16 @@
+run: run-check-draft-lab
+kind: soft
+type: check
+scope: null
+target: draft-lab
+ticket: run-check-draft-lab.md
+skill: hai-ui
+agent: claude
+signs: null
+status: superseded
+passes:
+- p01-1125
+- p02-1125
+- p03-1125
+writes: []
+feeds: []

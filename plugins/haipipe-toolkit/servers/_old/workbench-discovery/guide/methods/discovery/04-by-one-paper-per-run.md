@@ -27,10 +27,10 @@ limitations: Many papers mean many Runs; the Block's table is how they are liste
 Applied to AI
 -------------
 
-agent: haipipe-discovery-creator-agent writes the Run and its Result; a link that names many papers is split into many Runs.
+agent: hai-discovery-creator-agent writes the Run and its Result; a link that names many papers is split into many Runs.
 steps: 1. Resolve the Subject. 2. Allocate the Run name. 3. Write card, facts, receipt, .bib. 4. Stop for the checker.
 returns: rNN_<...>.sh and results/rNN_<...>/ with four files.
 verify: Run and Result share one name, and the Run has one Subject (T2).
 risk: An agent may read two papers in one Run to save time; the checker counts Subjects (ours).
 evidence on ai: No study tests agents reading one paper per ticket (ours).
-skill: haipipe-discovery-review
+skill: hai-discovery-review

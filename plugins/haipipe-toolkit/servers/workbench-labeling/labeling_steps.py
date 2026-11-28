@@ -4,8 +4,8 @@ skills ... and update the workbench here ... Please make them work").
 The Task's steps are the view-button-list; each view is one numbered list of closed bars: the step itself first (its
 flow In → who works → Out, your sign and its prompt box), then what the step made, then 🙋 Interaction last with that
 step's own forms (the rail's Interactions shows all of them; the step never repeats a form), then the next step. Where
-a Task opens comes from engine/two_loops.py, the same rule /haipipe-labeling <Job> follows. Everything is read from the Task's own folders, in the layout
-haipipe-labeling-interaction (meaning) and haipipe-labeling-expression (expression) write; the meaning layout is
+a Task opens comes from engine/two_loops.py, the same rule /hai-labeling <Job> follows. Everything is read from the Task's own folders, in the layout
+hai-labeling-interaction (meaning) and hai-labeling-expression (expression) write; the meaning layout is
 engine/meaning_versions.py's, so the page and the skill read the same files:
 
     meaning     Frame · Prepare · Preferences · Update    Loop NN makes guideline mNN (a mind map) and labels lNN;
@@ -70,7 +70,7 @@ def view_html(task: Path, root: Path, section: str, key: str) -> str:
 
 def page(theme, root, folder, section: str = "", group: str = ""):
     """The Task's focus page on the shared frame (labeling_focus.task_frame): its steps, then Delivery, in Report;
-    each step whole (the step, what it made, 🙋 Interaction, the next step), then 🧭 Around the Work."""
+    each step whole (the step, what it made, 🙋 Interaction, the next step), then its 🙋 Interactions."""
     from live import labeling_focus as LF
     root, folder = Path(root).resolve(), Path(folder).resolve()
     views = {k: name for k, name, _ in STEPS[kind(folder)]}

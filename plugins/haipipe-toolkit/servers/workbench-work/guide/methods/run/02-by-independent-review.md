@@ -34,7 +34,7 @@ limitations: Two agents of the same model may share blind spots; the review read
 Applied to AI
 -------------
 
-agent: haipipe-task-reviewer-agent, read-only; it never reviews its own work.
+agent: hai-task-reviewer-agent, read-only; it never reviews its own work.
 steps: 1. Read the plan. 2. Read the worker, config and Ticket. 3. Record the verdict and
   each finding with its line.
 returns: the code review beside the code it reviews.
@@ -43,4 +43,4 @@ risk: A reviewer shown the author's reasoning may adopt it; it reads the plan an
   (ours).
 evidence on ai: Self-preference [Panickssery 2024] and failed self-correction [Huang 2023]
   are why the author never reviews its own code.
-skill: haipipe-task
+skill: hai-task

@@ -13,7 +13,7 @@ finding shows it full width. Under a finding, each raw file of `from:` with its 
 is newer than it, ❗ it changed after the finding was made or is gone; the why is the hover), and `how:` as a "How this
 is made" fold, as the paper theme's Values link back to their source Runs (workbench-paper board_evidence.source_status;
 b17 trace 261127/1215). The file stays where the Run wrote it; Findings is an index, never a copy
-(haipipe-run ref/receipts-and-inventory.md).
+(hai-run ref/receipts-and-inventory.md).
 """
 from __future__ import annotations
 

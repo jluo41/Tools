@@ -1,6 +1,0 @@
-interface:
-  display_name: "Chat"
-  short_description: "a Block's chat sessions, cNN_<slug>/, numbered in time order, each naming what it changed"
-  default_prompt: "Use $haipipe-chat to save this session as the Block's next cNN, list its chats, or check them."
-policy:
-  allow_implicit_invocation: true

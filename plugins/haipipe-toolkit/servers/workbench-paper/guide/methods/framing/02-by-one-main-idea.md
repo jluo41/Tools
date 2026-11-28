@@ -40,4 +40,4 @@ returns: the Story's contribution line.
 verify: Every claim answers one question under the contribution (T0).
 risk: A model may list every result as a contribution (ours).
 evidence on ai: No study tests agents structuring a paper around one idea (ours).
-skill: haipipe-paper-story
+skill: hai-paper-story

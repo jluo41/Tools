@@ -27,10 +27,10 @@ limitations: A good paper outside the Task is missed until a Run is added for it
 Applied to AI
 -------------
 
-agent: haipipe-discovery-creator-agent writes the synthesis; the reviewer checks it.
+agent: hai-discovery-creator-agent writes the synthesis; the reviewer checks it.
 steps: 1. Read every Result of the Task. 2. Write the file. 3. Name the Run for each sentence. 4. Stop for the reviewer.
 returns: the Task's summary.md, verdict.md or landscape.md.
 verify: Every sentence names a Run of this Task (T5).
 risk: An agent may add a well-known paper from memory; it adds a Run first (ours).
 evidence on ai: No study tests agents synthesizing from filed Results (ours).
-skill: haipipe-discovery-synthesize
+skill: hai-discovery-synthesize

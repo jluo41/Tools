@@ -52,4 +52,4 @@ risk: Retrieval returns a design that only looks similar; a copy adds nothing ne
   (ours).
 evidence on AI: Data-driven retrieval and mapping of analogies is surveyed [Jiang 2021];
   no study tests an AI designing messages by precedent yet (ours).
-skill: haipipe-design-by-precedent (proposed)
+skill: hai-design-by-precedent (proposed)

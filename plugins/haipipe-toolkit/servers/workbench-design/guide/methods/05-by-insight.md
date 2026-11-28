@@ -52,4 +52,4 @@ verify: Verify checks that each cited row says what its element claims (T1) and 
 risk: A cited row that does not support its element; an insight from past designs that
   does not carry to a new wording (ours).
 evidence on AI: No study tests an AI designing by insight yet (ours).
-skill: haipipe-design-by-insight (proposed)
+skill: hai-design-by-insight (proposed)

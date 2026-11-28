@@ -27,10 +27,10 @@ limitations: A checklist can become a ritual; steps that no longer matter are cl
 Applied to AI
 -------------
 
-agent: haipipe-cowork-agent (planned) drafts; no agent sends.
+agent: hai-cowork-agent (planned) drafts; no agent sends.
 steps: 1. Read the job page and the thread. 2. Draft in the step. 3. Mark status: draft. 4. Stop for the reviewer.
 returns: a draft message with status: draft.
 verify: The draft is marked and no sent-looking copy exists before the person sends (T3).
 risk: An agent may write as if the message were already sent; the draft mark is what stops that (ours).
 evidence on ai: No study tests agents drafting coordination messages (ours).
-skill: haipipe-cowork
+skill: hai-cowork

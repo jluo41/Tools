@@ -259,7 +259,7 @@ TOPIC = re.compile(r"^s\d{2}-[a-z0-9-]+$")
 
 
 def studio_topics(level, root, group, source_url):
-    """A level's studio topics, the haipipe-studio layout: sNN-<topic>/sNN-<topic>.excalidraw beside its Jobs or
+    """A level's studio topics, the hai-studio layout: sNN-<topic>/sNN-<topic>.excalidraw beside its Jobs or
     Tasks (JL 261030), then any in an older studio/, its face's first line as the title, its preview, and the
     sessions saved as its rounds, passes/pNN-<MMDD>/pass.md inside the topic (an older Block's
     runs/run-draw-<sNN>/passes/ only when the topic has none; each title, newest first). A topic's builder keeps

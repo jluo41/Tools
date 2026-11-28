@@ -18,7 +18,7 @@ Switching Report and Work keeps a subview both sides offer.
   completion rule. Optional `goal-scope` and `goal-status` are explicit
   declarations. Run counts never infer goal acceptance or a percentage.
 - Goal comes first, as a to-do list (also on Description): a face's
-  `## Deliverables` (its contract is haipipe-job's `ref/job-contract.md`; an item's `means` may be a
+  `## Deliverables` (its contract is hai-job's `ref/job-contract.md`; an item's `means` may be a
   list, shown as bullets under "What it is"; a fenced yaml `deliverables:` list of `what`, `kind`,
   `files` (glob or list; SPACE-relative from `_WorkSpace/` or `code/`), `count`, `run`,
   optional `task` or `job`), drawn as one tree like the folders: the goal at
@@ -71,17 +71,17 @@ names are Insight's (`assets/css/90-task-workbench.css`).
 | Space › View | Content and source |
 |---|---|
 | Scope › Block · Questions · Resources | The spine, close condition and Jobs; the Question register; the `_WorkSpace` folders the Jobs declare, then Related resources and the add form, which writes the register in `board.md`. |
-| Scope › RoadMap Draw | Folding rows for the Block's drawings (the question map is retired (JL 261031, b35 r02 Q2: "Just delete them"): the Report's MindMap draws each Question with its answer, and `question_map.py` writes nothing now): freeform drawings, edited with the native Excalidraw pen lock, or added; then the studio topics (`sNN-<topic>/`, haipipe-studio), the Block's own and each Job's under the Job's name, each with its saved sessions (`runs/run-draw-<sNN>/passes/`) and its preview picture. |
+| Scope › RoadMap Draw | Folding rows for the Block's drawings (the question map is retired (JL 261031, b35 r02 Q2: "Just delete them"): the Report's MindMap draws each Question with its answer, and `question_map.py` writes nothing now): freeform drawings, edited with the native Excalidraw pen lock, or added; then the studio topics (`sNN-<topic>/`, hai-studio), the Block's own and each Job's under the Job's name, each with its saved sessions (`runs/run-draw-<sNN>/passes/`) and its preview picture. |
 | Task › each group | One table per register `group:` (one, Questions, when there is none), a row per Question: **Logic / Task Work / Report**, as Insight's partition Views. Clicking a row narrows the Task Runs panel to its Runs. |
 | Check › Runs · Tasks · Reports | Every receipt's status; each Task Folder's findings; each report's answer state, evidence warnings and next action. |
 | Delivery › Reports | Each report whose `answer-status` is `answered`, its Opening and Answer word for word, with its evidence. |
 
-On the current focus page (`servers/workbench/page/focus_page.py`, `work_findings`), a work Block's, Job's or Task's
+On the current focus page (`servers/workbench/page/block_index_page/focus_page.py`, `work_findings`), a work Block's, Job's or Task's
 **Findings** opens, on a Block, with **🗄️ Data**: where its data is, one row per store from
 board.md's ```yaml `data:` block, each count read from a Result. Then two sections, drawn as the paper Board's
 Evidence views: **🔢 Values**, the value
-Jobs' newest `tables.json` with the numbers `values.json` lets the text quote (owner `haipipe-evidence`), and
-**🖼️ Displays**, the display Tasks' `preview.pdf` (owner `haipipe-display`). Each keeps its slot when empty;
+Jobs' newest `tables.json` with the numbers `values.json` lets the text quote (owner `hai-evidence`), and
+**🖼️ Displays**, the display Tasks' `preview.pdf` (owner `hai-display`). Each keeps its slot when empty;
 then **🧠 Maps**, only when the work drew maps. Studio topics belong to Around the Work › Studio (JL 261111).
 
 Jobs and Tasks without a Question remain visible under **Not under a Question**, at the
@@ -96,7 +96,7 @@ order follows the Question register; optional `role` is the Task line's hover te
 fields change no execution state. The Report column shows the report's title, opening the
 report in the same pop-out, the first paragraph of its Opening, and a "report qNN" tag.
 A Question id is `Q01` or a named `Q-food-1` (its report folder `q-food-1_<topic>/`).
-A linked drawing with a `.png` beside it shows as that preview picture (skill excalidraw-report).
+A linked drawing with a `.png` beside it shows as that preview picture (skill hai-draw report).
 
 ## Sources and authoring
 
@@ -111,12 +111,12 @@ tasks/bNN_<block>/
 └── jNN_<job>/tNN_<task>/            executable work, Tickets and Results
 ```
 
-See the authoritative [Block Questions contract](../../skills/1_base/project/haipipe-report/ref/block-questions.md)
+See the authoritative [Block Questions contract](../../skills/1_base/project/hai-report/ref/block-questions.md)
 for the optional fenced YAML registers and authoring helper, and the
-[report contract](../../skills/1_base/project/haipipe-report/ref/report-contract.md) for report metadata.
+[report contract](../../skills/1_base/project/hai-report/ref/report-contract.md) for report metadata.
 The helper creates an empty report Page and registers it; it allocates no
 execution and writes no answer or accepted Content. Continue writing through
-`haipipe-draft`. The full report uses the existing Page reader and offers a Page Workbench
+`hai-draft`. The full report uses the existing Page reader and offers a Page Workbench
 link for Draft, evidence and writing. This also works before a Draft exists.
 
 Report Opening supplies the answer summary. Content divisions **Answer**,
@@ -202,22 +202,22 @@ Guide's four Views come from `guide/guide.yaml` (family `task`), loaded by
 `workbench/guide/guide_families.py`. Description is text there. Method is the shared
 method page (`/_board/guide?family=work&mode=method`): the methods drawing
 `guide/methods.excalidraw` first (drawn once by
-`blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/method-canvas.py`, then edited as the source), then
+`b10_project_workbench/s31-guide/method-canvas.py (removed 261126)`, then edited as the source), then
 `guide/method.md` as fold cards with its method cards in `guide/methods/`. RoadMap Draw
 draws the Workbench Table (the skill's `ref/workbench-table.md`, checked by `table-workbench --check`)
 and opens the **Workbench design** drawing; Related Paper shows `related/papers.md`
 (checked by `table-papers --online`), each `group` one method card.
 
-[task-workbench-design.excalidraw](../../../../blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw)
+[task-workbench-design.excalidraw](../../../../examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw)
 is generated; never edit it by hand. Its frames are "Spaces, runs and skills"
 (drawn from the Workbench Table), "The workbench" and "Where things live".
 Change the generator or the table, then regenerate:
 
 ```sh
-.venv/bin/python Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.py
+.venv/bin/python Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.py
 ```
 
 A Block's question map was generated the same way until 261031; the question map is retired (JL 261031, b35 r02 Q2: "Just delete them"): the Report's MindMap draws each Question with its answer, and `question_map.py` writes nothing now.
 
 On a Studio-enabled host, open
-`/_excalidraw/?board=Tools/blueprints/Project-Ladder/work/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.
+`/_excalidraw/?board=Tools/examples/Project-Ladder/blueprint/b17_theme_work/s04-workbench-page-structure/result/merged-s03-work-workbench/task-workbench-design.excalidraw&frame=The workbench`.

@@ -1,0 +1,15 @@
+run: run-coverage
+kind: soft
+type: coverage
+scope: null
+target: every Job
+ticket: null
+skill: hai-insight-check
+agent: hai-insight-agent
+signs:
+- none
+status: done
+passes:
+- p01-1106
+writes: []
+feeds: []

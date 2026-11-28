@@ -1,0 +1,79 @@
+{
+  "views": [
+    {
+      "name": "Structure",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "folder-rules"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "jobs-rules"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "studio-rules"
+        }
+      ]
+    },
+    {
+      "name": "Job types",
+      "items": [
+        {
+          "name": "Prep-code version",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s03-dataprep-structure/delivery/types/job-type--prep-code-version.html"
+        }
+      ]
+    },
+    {
+      "name": "Task types",
+      "items": [
+        {
+          "name": "Prep step",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/s03-dataprep-structure/delivery/types/task-type--prep-step.html"
+        }
+      ]
+    },
+    {
+      "name": "Draw",
+      "items": [
+        {
+          "name": "Folder",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "folder-map"
+        },
+        {
+          "name": "Job-Task",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "jobs-map"
+        },
+        {
+          "name": "Studio",
+          "path": "examples/Project-Ladder/blueprint/b11_theme_insight/delivery/structure/data-prep.html",
+          "fragment": "studio-map"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "items": [
+        {
+          "name": "hai-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight/SKILL.md"
+        },
+        {
+          "name": "hai-insight-workflow",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/hai-insight-workflow/SKILL.md"
+        },
+        {
+          "name": "workbench-insight",
+          "path": "plugins/haipipe-toolkit/skills/3_theme/insight/workbench-insight/SKILL.md"
+        }
+      ]
+    }
+  ]
+}

@@ -411,7 +411,7 @@ def _t_across(x: dict) -> str:
 
 def _delivers(spec: dict) -> str:
     """What the question delivers and the test each part must meet, read from its question file alone
-    (haipipe-insight ref/deliverables.py): a row per live need, then the Task page. "" for an older question file."""
+    (hai-insight ref/deliverables.py): a row per live need, then the Task page. "" for an older question file."""
     if not spec.get("id") or not isinstance(spec.get("needs"), dict):
         return ""
     try:

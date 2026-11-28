@@ -28,14 +28,14 @@ another Workbench family supplies diagrams based on its own contracts.
 
 | Guide View | Drawing explains | Editable scene |
 |---|---|---|
-| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | [Excalidraw](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-skill-set.excalidraw) |
-| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | [Excalidraw](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-methods.excalidraw) |
-| Workbench | UI map: the Guide and each family's working Space / View structure. | [Excalidraw](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-workbench.excalidraw) |
-| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | [Excalidraw](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-folder-map.excalidraw) |
-| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | [View design](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/parts/guide-roadmap-draw.excalidraw) |
+| Skill set | Skill map: named skills, responsibilities, native owners and labeled relationships. | Excalidraw (b10, removed 261126) |
+| Methods | Method flow: question, reasoning, missing evidence, optional Work, interpretation, answer and remaining issues. | Excalidraw (b10, removed 261126) |
+| Workbench | UI map: the Guide and each family's working Space / View structure. | Excalidraw (b10, removed 261126) |
+| Folder map | Linked graph: Space / View → native owner → folder / file, with repository and external paths marked. | Excalidraw (b10, removed 261126) |
+| RoadMap Draw | Expand each of the four explanatory drawing rows to read its embedded canvas or open it full screen. | View design (b10, removed 261126) |
 
-- [All five Guide Views, as they appear in Guide](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/s02-guide-views.excalidraw)
-- [Drawing generator](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/build_s02_guide_views.py)
+- All five Guide Views, as they appear in Guide (b10, removed 261126)
+- Drawing generator (b10, removed 261126)
 
 Diagram nodes are grouped for editing. RoadMap Draw embeds the four existing diagram files in
 their own rows. It explains the
@@ -62,7 +62,7 @@ stores are named as conventions; Guide does not follow them outside the root.
 
 ## Predefined drawing types
 
-[drawing-catalog.json](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/drawing-catalog.json) defines the drawing types. Each
+drawing-catalog.json (b10, removed 261126) defines the drawing types. Each
 entry fixes a reader question, required elements, expected source owners and
 placement. Diagram types are shared across Workbench families; their concrete
 names, relationships, sources and states come from the selected family or
@@ -104,15 +104,15 @@ by their generators; preserve separately edited scenes before regenerating.
 
 ## Current artifacts · Guide v4
 
-- [Editable Excalidraw scene](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/s04-guide-design.excalidraw)
-- [Generator](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/build_s04_guide_design.py)
+- Editable Excalidraw scene (b10, removed 261126)
+- Generator (b10, removed 261126)
 
 The generator owns these generated artifacts. Keep independently edited
 Excalidraw copies under another filename before regenerating.
 
 ```sh
-python3 blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/build_s04_guide_design.py
-python3 blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-views/build_s02_guide_views.py
+python3 b10_project_workbench/s31-guide/history/guide-design/build_s04_guide_design.py (removed 261126)
+python3 b10_project_workbench/s31-guide/history/guide-views/build_s02_guide_views.py (removed 261126)
 ```
 
 `studio/` keeps only the Excalidraw scenes and their generators. Each generator
@@ -127,9 +127,9 @@ Excalidraw font IDs as the existing Paper and Insight drawings.
 These remain for comparison. Their sharing boundaries do not describe the
 current proposal:
 
-- [v3 scene](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-guide-v3.excalidraw): horizontal Views;
+- v3 scene (b10, removed 261126): horizontal Views;
   explanatory and instance Views were both in Guide.
-- [v2 scene](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-guide-v2.excalidraw): the earlier grouped
+- v2 scene (b10, removed 261126): the earlier grouped
   sidebar, with both kinds of Views in Guide.
-- [Original scene](../../../../../blueprints/Project-Ladder/work/b10_project_workbench/s31-guide/history/guide-design/workbench-shared-design.excalidraw): the initial
+- Original scene (b10, removed 261126): the initial
   proposal before the Guide boundary was settled.

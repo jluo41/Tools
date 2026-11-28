@@ -1,0 +1,244 @@
+---
+name: hai-delivery
+description: "Owns the Block's delivery/ folder: where built output goes, the Delivery view, and the rule that only a person marks a delivery sent; also a Page's Delivery Runs. Use to build a PDF, Word file or web page. Trigger: delivery, build the docx, sent, /hai-delivery, /hai-draft-delivery."
+allowed-tools: Bash, Read, Write, Edit, Grep, Glob, Skill
+metadata:
+  version: "0.12.1"
+  last_updated: "2026-11-04"
+  # version history: ./CHANGELOG.md
+---
+
+# /hai-delivery · what a Block hands over
+
+A level thinks in its Studio, answers in its Reports and hands over through its Delivery. The Block
+owns the one `delivery/`: a Job's or Task's output goes to `<Block>/delivery/<its address>/`
+(`delivery_dir`, b01/j01/t01 to b01/delivery/j01/t01), so an item sits under the level that made it,
+and a page shows its own plus everything below it (a Block's Delivery lists its Jobs' and Tasks' too,
+each marked where it lives; JL 261028: "we want to have them in the job level and task level as well").
+The Studio is one sNN numbering per Block too (b35 s01-D05, JL 261029): its topics sit beside the Jobs,
+each naming the rung it hangs from (`**At:** j01`); see hai-studio (0.28.1).
+As before 261028 (JL 261010), delivery lives once per Block; a Block's existing `delivery/` stays where it is.
+What lands here is the clean version only, and only after rounds in a Studio topic (b35 s01-D11, JL 261029: "肯定是
+在我们 studio 腻歪几轮之后，才能够到 delivery"): a Task's result goes round with the person, and the agreed version is
+copied out under its next version number; a topic's own `result/` stays messy and never ships as it is.
+
+```text
+hai-studio    sNN-<topic>/    think       one sNN numbering per Block, beside the Jobs (**At:** a rung)
+hai-report    ## Questions           answer      in the topic that answers it (an older Block: reports/qNN_<topic>/)
+hai-delivery  delivery/              hand over   the Block's, each level under its address; a page rolls up
+```
+
+Decided in b10 (b10_project_workbench (removed 261126)): s02-D14 (storage), s09-D02 (a Report at
+every level), s09-D05 (Delivery is Block-level, like the Studio). Its design topic is
+`s03-delivery-workbench-skill/` (s03-D01 to D04).
+
+
+The folder
+----------
+
+```text
+<block>/delivery/
+├── <lane>/                         the Block's own output (web · latex · word · ...)
+├── jNN_<job>/                      a Job's output
+│   └── tNN_<task>/<lane>/          a Task's output, under its Job
+└── reports/qNN_<topic>/<lane>/     an older Block's Report output
+```
+
+1. **Block only**: Jobs and Tasks make outputs but keep no `delivery/`; they keep their own Report.
+2. **The path is the link**: an output sits under the address of what made it, so each subfolder
+   leads back to its source (JL 261010): `delivery/jNN_<job>/` to the Job folder `jNN_<job>/`,
+   `delivery/jNN_<job>/tNN_<task>/` to the Task folder. `delivery_source(output)` maps a subfolder
+   back; `delivery_dir(folder)` maps a source forward. A Job or Task view shows its own part.
+3. **One helper**: every writer and reader goes through `hai-draft/src/common.py`:
+   `delivery_owner`, `delivery_dir`, `delivery_source`, `delivery_relative`,
+   `delivery_lane_dir`, `delivery_read_lane_dir`. Never build a delivery path by hand.
+4. **Runs stay home**: Runs and Results stay with their source; only built files land here.
+5. **No Block, own root**: a standalone Page without a Block keeps its own output root; an orphan
+   `jNN`/`tNN` must first join a Block.
+
+
+Items and versions
+------------------
+
+One deliverable is one item on screen, however many files and versions it has (b10 s03-D10; JL
+261014: "all of them should one Delivery Item, and within it, we can see different versions").
+
+1. **Lanes fold in**: a Section's `web/`, `word/` and `latex/` builds, or a deck's `slide/` and its
+   picture in `render/`, are one item, named by its part (`t04_methods`) or its file name.
+2. **Name a version `-v<N>`**: save each new version beside the last (`Deck-v1.pptx`, `Deck-v2.pptx`);
+   never write over a version that was sent. A renamed variant that keeps counting
+   (`Deck-Visual-v12`) or an unnumbered variant of a numbered item (`Deck-Symmetric`) joins it.
+3. **No number, no version**: `Paper-SI` stays its own item beside `Paper`; neither has a number.
+4. **On screen**: a row of versions, newest picked, over that version's preview: a PDF, a web page,
+   a render, a deck drawn slide by slide, or a Word file read from its package.
+5. **The code**: `frame.version_roots` (the rule, shared with Related), `frame.delivery_items`,
+   `frame.version_panes`, `frame.pptx_preview` (`?view=pptx`).
+
+
+Live pages
+----------
+
+A page a host serves (an API's try page) is handed over too, and has no file to copy here (JL 261104: "embed this ...
+we can view them in the delivery tab").
+
+1. **One line says it**: a deliverable on a Job's or the Block's face with `url:` (`url: /_api/try/meal`); nothing goes
+   in `delivery/`, so there is no second copy to go stale. `frame._live_pages` reads it.
+2. **Where it shows**: a closed card in Delivery at its Task (`task:`), its Job, its Block and above; opened, the page
+   works in a frame, loaded only then, with an own-tab link. A `url:` on another host gets only the link.
+3. **Say it from this host**: `/_api/...` goes through the host's login to the API host (`api_proxy.py`), so it opens
+   wherever the workbench opens; an API host's own address may not.
+4. **In Findings too**: a Block's Findings has 🌐 Service, one side tab per live page (`service:` names the tab), the
+   site itself on the right (`focus_page.service_section`).
+5. **No versions**: it answers with today's code, so a fix or a bug shows at once. To keep what it answered on a day,
+   freeze that as a Run's result or a gallery, then deliver the file.
+6. **Sent**: it is still a person's word, a row in `delivery/delivery.md`.
+
+
+Models, data and websites
+-------------------------
+
+A work Block can hand over a model, a dataset or a website, not only a document (JL 261104). Their lanes are `model/`, `data/`
+and `web/` (also `models/`, `checkpoints/`, `dataset/`, `datasets/`, `website/`, `site/`), at any address in the folder above. A work
+Block's Report > Findings ends with 📦 Delivery, tabs Models · Data · Website; a live page shows under Website; an empty tab
+says where its files go.
+
+
+Sent is a person's word
+-----------------------
+
+A build makes files; it never sends them. A rebuild, a migration or a passing check grants no
+acceptance, release, send or submission. Only a person marks a delivery sent, and the place
+that records it is the Block's one table of sends, `delivery/delivery.md` (below).
+
+
+On screen
+---------
+
+```text
+Guide · Studio | Block · Job · Task | Delivery        top row: think → do → hand over
+Description · Report · Work Details · Runs            second row: what each level owns (the older tabbed screen;
+                                                      a focus page: Report · Studio · Delivery · Interaction · Related)
+```
+
+1. **Right end of the top row**: Delivery opens like Studio, only it selected, the second row
+   hidden; the level buttons keep the place to go back to.
+2. **From a Job or Task**: it opens the Block's Delivery, as Studio opens the Block's Studio; a
+   source row (Block · jNN · tNN) has the open Job or Task picked and shows that source's part
+   (b10 s03-D06, JL 261011: "apply it to all the workbench").
+3. **From the Block**: its view ends with "By source" (part · from · files), each Job and Task
+   part linking back to its folder (JL 261010; built 261011, `frame.delivery_by_source`).
+4. **Inside the Studio**: the third folding part, under Related (what came in, then what went
+   out): every result of the Block, as the same cards, each opened on its preview (b10 s03-D09,
+   JL 261014; `frame.studio_delivery`).
+5. **Second row**: Delivery is not there; the workbench frame is `servers/workbench/page/block_index_page/frame.py`.
+
+
+Moving old local outputs
+------------------------
+
+1. **Old local lanes**: a Job's or Task's own `delivery/` is a read-only input, never a target.
+2. **Rebuild first**: rebuild from source into the Block, then remove the generated old copy.
+3. **Keep hand-owned files**: a fragment without its `% GENERATED from` first line holds words
+   no source can rebuild; it stays until its words move into the Page and the Page adopts them
+   (the old-layout papers kept 33 such TeX fragments on 261010).
+4. **Find what is left**:
+
+```bash
+find <project> -type d -name delivery -path '*/j[0-9]*' -not -path '*/_archive/*'
+```
+
+
+One row per send: delivery.md
+-----------------------------
+
+A delivery folder keeps its source's name (`delivery/jNN_<job>/`, `tNN_<task>/` under it); there is
+no `dNN` card or prefix (b10 s03-D05, JL 261011). Each send is one row of `delivery/delivery.md`:
+
+```text
+| date   | for        | from        | status |
+| 261009 | NMI        | jNN_<job>/  | sent   |
+| 261012 | co-authors | jNN_<job>/  | draft  |
+| 261019 | back from <co-author> | word/<name>-v9.docx | back |
+```
+
+A resend or a second reader is a new row, never a copy of the folder. A build may add a `draft` row and a
+read back a `back` row; only a person writes `sent`. `related/related.md` lists what came in (b10 s01-D34); this lists what
+went out.
+
+
+A round: send, render, read back
+--------------------------------
+
+A file we share goes round until a person says stop (b32 s41-D21, D23; JL 261019: "the render haved changed a
+while, and we need to read it again, and start another round of changing, and then send it back").
+
+**A co-author round starts with the round folder, always** (Pp-AgreeableRx 261122, JL: "why this doesn't follow the
+structure we want?": a new session followed push and wrote a flat Round3 with a PDF at the top). `RoundN-vMMDD/`
+holds the numbered working files at the top and `previous/`, `track/`, `clean/`, `submission/`; its verbs are
+`open-round --file N=<built.docx>` (a flat folder: `adopt-round`; a new paper folder: `adopt-round <paper> --into <paper>`), `settle`, `refresh`, `take-clean` (a co-author edited clean/), `clean-names`, `submit`, `submitted`,
+`round-status`, and `check` (`scripts/check_round.py`, which every verb runs at its end) ([ref/round-folder.md](ref/round-folder.md)). `push` refuses any target inside a `RoundN-vMMDD/` folder, and
+`round-status` marks a round with none of the four subfolders "❗ old layout".
+
+```text
+open-round ─▶ co-authors edit the numbered files ─▶ settle N (asks keep, accept or each) ─▶ submit ─▶ submitted
+```
+
+The single-file lane below is for one shared file outside a round (a reading copy, a letter to one reader):
+
+```text
+build ─▶ adopt (-v<N>) ─▶ render (pictures) ─▶ ✍ push, at a person's word ─▶ ⏳ they edit OneDrive
+pull: their copy as -v<N+1>, rendered, new comments listed, a `back` row ─▶ the next round's plan
+```
+
+1. **One script**: `scripts/word_round.py` (`status`, `adopt`, `import`, `render`, `push`, `pull`), given the lane
+   folder, the file's name and its OneDrive copy; a Block's own script may pass them fixed (`main(**fixed)`).
+2. **Never written over**: each state is `<name>-v<N>.docx` with its PDF; OneDrive holds one copy, the one people edit.
+3. **Render**: each version's pages go to `render/<name>-v<N>/p-<N>.png` beside the lane, the pictures a Section
+   canvas shows as "the file today"; the same lane the Delivery view's 📱 Render lists.
+4. **Read back** (`pull`): only when OneDrive's copy matches no version; else it says nothing came back. A paper file also gets its citation-order check, and `hai-paper-assemble/scripts/word_compare.py` says whether it matches the build.
+5. **Rows**: `push` adds a `draft` row, `pull` a `back` row; only a person writes `sent`.
+6. **Never into a round**: `push` writes one file outside any `RoundN-vMMDD/`; a round's files come only from its verbs above.
+
+
+A Page's Delivery Runs
+----------------------
+
+A Page's lanes are built by one fixed Run each: `run-delivery-webpage`, `run-delivery-latex`,
+`run-delivery-word`, rerun in place by `page.py export`; the built files are the result. This was the skill
+hai-draft-delivery until 2026-10-16 (s41-D11); the text is `ref/page-delivery.md`, the Run names are
+unchanged, and Pages made before then keep working.
+
+
+Boundary
+--------
+
+| Owner | Owns |
+|---|---|
+| `hai-delivery` | the Block's `delivery/` folder, its paths and helpers, the Delivery view, sent by a person, moving old outputs |
+| `hai-delivery` (`ref/page-delivery.md`) | building one Page's web, LaTeX and Word lanes (`page.py export`) |
+| `hai-paper-assemble` | the whole paper, built from its Sections' lanes |
+| `hai-design-delivery` | releasing a design Job: `designs.json`, `designs.md`, `screens/` |
+| `hai-cowork` | an email or reply drafted and kept at `delivery/jNN_<job>/<date>-<what>/` |
+| `hai-labeling-handoff` | the labeling handoff package |
+| `hai-studio` | the `sNN-<topic>/` topics, Delivery's twin: one numbering per Block, beside the Jobs |
+| `hai-related` | `related/`, the other twin: what came in, one row each in `related.md` |
+| `hai-report` | the Questions and their answers (an older Block's `reports/`) |
+
+
+Files
+-----
+
+```text
+hai-delivery/
+├── SKILL.md
+├── CHANGELOG.md
+├── ref/page-delivery.md
+├── ref/gallery.md            the delivery gallery: every kind of delivery, the newest real one each (b35-s04)
+├── scripts/word_round.py      a round: versions, render, push, read back
+├── scripts/word_round_folder.py  a round as one folder: open-round, settle, refresh, submit
+├── scripts/check_round.py     the round layout check; round_adopt.py: adopt-round
+├── scripts/word_marks.py      the marks in a working file, numbered; accept the picked ones
+├── ref/round-folder.md       the round folder layout and how to settle
+├── ref/history/hai-draft-delivery-CHANGELOG.md
+└── agents/openai.yaml
+```

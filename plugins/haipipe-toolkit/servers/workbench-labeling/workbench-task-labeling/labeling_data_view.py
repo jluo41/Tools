@@ -337,7 +337,7 @@ def _preparation_view(vm: dict) -> str:
     if not vm.get("page_ready", True) and not has_job:
         source = vm["page_src"]
         target = vm["page_candidate"]
-        prompt = (f"Use /haipipe-draft to create the canonical Page folder for {source}. "
+        prompt = (f"Use /hai-draft to create the canonical Page folder for {source}. "
                   f"The Page file should be {target}. Preserve the Board source and its "
                   "existing content. Return to Data → Preparation after the Page folder exists.")
         return _card("Page folder needed", "".join([
@@ -356,7 +356,7 @@ def _preparation_view(vm: dict) -> str:
         if not prep.get("attached"):
             if corpus:
                 return data + _items_flow_card(vm) + rest
-            prompt = ("Use /haipipe-labeling-preparation for the Page whose labeling folder is at "
+            prompt = ("Use /hai-labeling-preparation for the Page whose labeling folder is at "
                       f"{_job_where(vm)}. Identify the transcript JSONL and source owner, attach "
                       "that owner to this Page, then work through the five Corpus Preparation "
                       "Run Types in order. Link the accepted package before creating a Labeling Contract.")

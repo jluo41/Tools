@@ -37,7 +37,7 @@ limitations: A plan can be too narrow for what the data shows; the plan is versi
 Applied to AI
 -------------
 
-agent: haipipe-task-creator-agent writes the plan; haipipe-task-reviewer-agent agrees it.
+agent: hai-task-creator-agent writes the plan; hai-task-reviewer-agent agrees it.
 steps: 1. Read the Question and the Job's defaults. 2. Write the plan. 3. Name the required
   Result files. 4. Stop for the reviewer.
 returns: the Task Folder's plan and its required Result files.
@@ -45,4 +45,4 @@ verify: The Ticket's required Result list matches the plan (T3).
 risk: An agent may write the plan after the code, so the plan describes what was done
   rather than what was asked (ours).
 evidence on ai: No study tests contract-first planning by agents on analysis Tasks (ours).
-skill: haipipe-task
+skill: hai-task

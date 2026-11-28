@@ -3,7 +3,7 @@
 **LOAD `../SKILL.md` (`workbench-task-draft`) FIRST.** This reference owns the
 Delivery Space of the Page workbench: the built files under `<Block>/delivery/<source-relative-path>/`,
 the check that says whether each lane is current, and the fixed Delivery Runs
-listed in its Runs panel. Rebuilding itself is `haipipe-delivery (ref/page-delivery.md)`.
+listed in its Runs panel. Rebuilding itself is `hai-delivery (ref/page-delivery.md)`.
 
 ```text
 the Space     Delivery · tabs Web · LaTeX · Word · Slides, each with its state
@@ -14,10 +14,10 @@ the Runs      one fixed Run per lane in the Runs panel on the right:
 the command   page.py export <page> [--lane web|latex|word|all] [--author "<name>"]
                 [--accept-dropped-keys]
               writes runs/run-delivery-<lane>.sh and the lane's files
-the writers   web    → haipipe-draft/src/page_workspace.py (build_page)
+the writers   web    → hai-draft/src/page_workspace.py (build_page)
               latex  → exporters/md2tex.py + LuaLaTeX      (ExportMixin.export_latex)
               word   → exporters/md2docx.py + docx2pdf.py  (ExportMixin.export_word)
-              slides → servers/workbench/studio/autodeck.py, only on the ✨ press
+              slides → servers/workbench/studio/canvas/autodeck.py, only on the ✨ press
 ```
 
 ## 🗂 Storage · derived, never hand-edited
@@ -66,7 +66,7 @@ Section Pages beside this one, in the same version Job or in the `B?-` groups;
 md2tex `--paper-pages` names them explicitly), or a revise card in
 `draft/records/<page>-revise.md` removed it (its `Original:` cites the key, its
 `Expected:` does not). Any other key stays refused, named. The paper build
-(`haipipe-paper-assemble` 0.14.0) stops on a stale fragment and passes the same
+(`hai-paper-assemble` 0.14.0) stops on a stale fragment and passes the same
 flag to each stale Section's lane.
 
 ## 🔍 Checks · current or stale, by file time
@@ -76,16 +76,16 @@ The Checks view frames `/_board/delivery?path=…&file=…&workspace=1`
 `pass` when its built files are at least as new as the Page, `stale` when one is
 older, and `not built` when it has none; the web copy must also read the same as
 the Page. Each row names the file and its build time. A current lane is
-delivery evidence, not a whole-Page acceptance: `haipipe-draft-review` remains
+delivery evidence, not a whole-Page acceptance: `hai-draft-review` remains
 the only whole-Page close gate. `/_board/delivery` without `workspace=1` is the
 older 📤 tab, kept for old links.
 
 ## 📂 Files
 
-- `../../../project/haipipe-delivery/ref/page-delivery.md` · the fixed Runs and how to rerun them
-- `../../../draft/haipipe-draft/src/page_export.py` · `cli/page.py export` · the command and the ticket writer
-- `../../../../../servers/workbench/workbench-task-draft/space_views.py` · `delivery_space_html`, the Space
-- `../../../../../servers/workbench/workbench-task-draft/delivery.py` · `check_delivery`, `FIXED_RUNS`, the Checks view
-- `../../../../../servers/workbench/workbench-task-draft/runs.py` · `_fixed_delivery_run`, the Runs panel rows
-- `../../../../../servers/workbench/workbench-task-draft/export.py` · `exporters/` · the LaTeX and Word writers
-- `../../../../../servers/workbench/studio/autodeck.py` · the deck's ✨ pen
+- `../../../project/hai-delivery/ref/page-delivery.md` · the fixed Runs and how to rerun them
+- `../../../draft/hai-draft/src/page_export.py` · `cli/page.py export` · the command and the ticket writer
+- `../../../../../servers/workbench/workbench-task-draft/page_shell/space_views.py` · `delivery_space_html`, the Space
+- `../../../../../servers/workbench/workbench-task-draft/delivery_export/delivery.py` · `check_delivery`, `FIXED_RUNS`, the Checks view
+- `../../../../../servers/workbench/workbench-task-draft/run_views/runs.py` · `_fixed_delivery_run`, the Runs panel rows
+- `../../../../../servers/workbench/workbench-task-draft/delivery_export/export.py` · `exporters/` · the LaTeX and Word writers
+- `../../../../../servers/workbench/studio/canvas/autodeck.py` · the deck's ✨ pen

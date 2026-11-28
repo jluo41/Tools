@@ -23,7 +23,7 @@ swap transport without re-reading the response shape.
     POST /event            {"raw": {"type", "rows"}} or {"input": {...}} or both
         -> {"raw", "input", "output": {"<local hour>": {...}}, "step", "version"}:
            one meal event, raw to the input JSON to the output by local hour
-           (skills/haipipe-norm/eventnorm; s01 ⑦ ⑤, JL 261021)
+           (skills/hai-norm/eventnorm; s01 ⑦ ⑤, JL 261021)
     GET  /healthz          the bank it is actually serving, so a caller can tell
                            WHICH corpus answered before trusting a number
 """
@@ -42,8 +42,8 @@ from pydantic import BaseModel, Field
 from foodnorm import NUTRIENTS, PROVENANCE, enrich_food_to_nutrition, normalize
 import sys as _sys
 for _base in (Path(__file__).absolute(), Path(__file__).resolve()):   # the event layer, beside describe-food
-    if (_base.parents[2] / "skills" / "haipipe-norm" / "eventnorm").is_dir():
-        _sys.path.insert(0, str(_base.parents[2] / "skills" / "haipipe-norm"))
+    if (_base.parents[2] / "skills" / "hai-norm" / "eventnorm").is_dir():
+        _sys.path.insert(0, str(_base.parents[2] / "skills" / "hai-norm"))
         break
 import eventnorm
 from foodnorm import observed as _observed

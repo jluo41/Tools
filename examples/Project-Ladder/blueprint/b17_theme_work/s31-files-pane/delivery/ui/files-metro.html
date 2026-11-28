@@ -1,0 +1,80 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Metro files</title>
+<style>
+:root{--line:#e6e6e3;--muted:#6b6b66;--ink:#1d1d1b;--link:#1f5fbf}
+body{margin:0;background:#f4f4f2;font:13px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+.note{max-width:720px;margin:18px auto 0;color:var(--muted);font-size:12px}
+.wrap{display:flex;gap:16px;justify-content:center;align-items:flex-start;margin:10px auto}
+.pane{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px 20px;display:flex;position:relative}
+.tree{flex:none;max-width:250px}.row{height:28px;display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default}
+.row.d{cursor:pointer}.row .tw{width:10px;font-size:10px;flex:none;color:var(--ink)}.row .fn{color:var(--link)}
+.row.part{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.row.ext{font-size:11px;color:var(--muted);letter-spacing:.06em}
+.head{height:44px}
+svg.map{flex:none;overflow:visible}
+.map text{font-size:10px;fill:var(--muted);font-variant-numeric:tabular-nums}
+.map .t{cursor:pointer}.map .t.on text{fill:var(--ink);font-weight:700}
+.map .st{cursor:pointer}
+.map .live{animation:ping 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ping{50%{transform:scale(1.35)}}
+.card{width:280px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 12px 32px rgba(0,0,0,.12);padding:10px 12px;font-size:12px}
+.card h4{margin:0 0 4px;font-size:13px;display:flex;gap:6px;align-items:center}.card small{color:var(--muted)}
+.card b.k{display:block;margin-top:8px;font-size:10.5px;color:var(--muted);letter-spacing:.05em}.card ul{margin:2px 0;padding-left:16px}
+.sw{display:inline-block;width:12px;height:4px;border-radius:2px}
+</style></head><body>
+<div class="wrap"><div class="pane"><div class="tree" id="tree"></div><svg class="map" id="map"></svg></div><div class="card" id="card"></div></div>
+<script>
+const IC={"py": "<svg class=\"file-icon\" width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" aria-hidden=\"true\" focusable=\"false\" style=\"vertical-align:-2px\"><path fill=\"#3776AB\" d=\"M11.9 2C7 2 7.3 4.1 7.3 4.1v2.2h4.7v.7H5.4S2 6.6 2 11.9s3 5.1 3 5.1h1.8v-2.5s-.1-3 2.9-3h4.9s2.8 0 2.8-2.7V4.8S17.8 2 11.9 2zM9.2 3.6a.9.9 0 1 1 0 1.8.9.9 0 0 1 0-1.8z\"/><path fill=\"#FFD43B\" d=\"M12.1 22c4.9 0 4.6-2.1 4.6-2.1v-2.2H12v-.7h6.6S22 17.4 22 12.1s-3-5.1-3-5.1h-1.8v2.5s.1 3-2.9 3H9.4s-2.8 0-2.8 2.7v4S6.2 22 12.1 22zm2.7-1.6a.9.9 0 1 1 0-1.8.9.9 0 0 1 0 1.8z\"/></svg>", "md": "\ud83d\udcdd"};
+const FOLDER='<svg width="17" height="14" viewBox="0 0 24 20" aria-hidden="true" style="flex:none"><path d="M2 5V3a1 1 0 0 1 1-1h6l2 3h10a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1Z" fill="#f8c44f" stroke="#996515" stroke-width="1.4" stroke-linejoin="round"/></svg>';
+const T=[
+ {k:'1051',t:'10:51',n:'trace view',c:'#8e6cc4',s:'done',aim:'A trace\'s files on the real tree, each with its state.',p:['10:51 for a trace, what is the plan?','11:06 please do it'],f:{'trace/1051':'done','side_pane/files_tree/trace_view.py':'done','side_pane/files_tree/file_icons.py':'done','side_pane/files_tree/work_files.py':'done'}},
+ {k:'1110',t:'11:10',n:'folder icons rules',c:'#2a9d8f',s:'done',aim:'The icon and trace rules live in hai-ui\'s constitution.',p:['11:10 please continue'],f:{'trace/1110':'done','ui/CONSTITUTION.md':'done','ui/folder_icons_check.py':'done'}},
+ {k:'1149',t:'11:49',n:'scope fade parts',c:'#e76f51',s:'done',aim:'Only the Block part fades.',p:['11:49 why they are faded?'],f:{'trace/1149':'done','side_pane/files_tree/focus_scope.py':'done'}},
+ {k:'1418',t:'14:18',n:'trace timeline',c:'#2f6fd6',s:'edit',aim:'Many traces read as a timeline.',p:['14:18 this will be more and more','14:30 how could we flag this'],f:{'trace/1418':'edit','side_pane/files_tree/trace_view.py':'edit','side_pane/files_tree/file_icons.py':'off','ui/CONSTITUTION.md':'edit'}},
+ {k:'1505',t:'15:05',n:'tree marks',c:'#d4a017',s:'done',aim:'One tree; the traces mark their files on it.',p:['15:05 go ahead and do it','15:20 the card is still there'],f:{'trace/1505':'done','side_pane/files_tree/trace_view.py':'done','side_pane/files_tree/file_info.py':'done','side_pane/files_tree/work_files.py':'done','side_pane/files_tree/focus_scope.py':'done','ui/CONSTITUTION.md':'done'}},
+ {k:'1512',t:'15:12',n:'files studio',c:'#43aa8b',s:'done',aim:'The Files pane has its own Studio topic.',p:['15:12 go ahead'],f:{'trace/1512':'done','s31/s31-files-pane.md':'done'}},
+ {k:'1518',t:'15:18',n:'studio own snn',c:'#c0392b',s:'done',aim:'Studio lists the page\'s own sNN.',p:['15:16 could you just display these sNN?'],f:{'trace/1518':'done','page/block_index_page/focus_render.py':'done'}},
+];
+const TREE=[
+ {part:'1 · Block'},
+ {d:'b17_theme_work',open:true,kids:[
+   {d:'j01_work_ladder_contract',kids:[]},{d:'j03_work_workbench_pages',kids:[]},
+   {d:'s31-files-pane',kids:[{f:'s31-files-pane.md',id:'s31/s31-files-pane.md',i:'md'}]},
+   {d:'trace / 261125',open:true,kids:['1051','1110','1149','1418','1505','1512','1518'].map(k=>({f:k+'_'+T.find(t=>t.k===k).n.replace(/ /g,'_')+'.md',id:'trace/'+k,i:'md'}))}]},
+ {ext:1},{part:'↳ 2 · UI'},
+ {d:'workbench / page',open:true,kids:['trace_view.py','file_info.py','file_icons.py','work_files.py','focus_scope.py','focus_render.py'].map(n=>({f:n,id:'page/'+n,i:'py'}))},
+ {part:'↳ 3 · Skills'},
+ {d:'hai-ui',open:false,kids:[{f:'CONSTITUTION.md',id:'ui/CONSTITUTION.md',i:'md'},{f:'folder_icons_check.py',id:'ui/folder_icons_check.py',i:'py'}]},
+];
+const ROW=28,COL=24,TOP=44;let pick='1418';
+function ids(n){return n.f?[n.id]:(n.kids||[]).flatMap(ids);}
+function rows(){const out=[];(function walk(list,depth){for(const n of list){out.push({n,depth});if(n.d&&n.open)walk(n.kids,depth+1);}})(TREE,0);return out;}
+function stateOf(t,n){const fs=ids(n);const order=['off','edit','plan','done'];let best=null;for(const id of fs){const s=t.f[id];if(s&&(best===null||order.indexOf(s)<order.indexOf(best)))best=s;}return best;}
+function station(x,y,s,c,big){
+ if(s==='off')return `<path class="st" d="M${x} ${y-6}l6 6-6 6-6-6z" fill="#d98a12" stroke="#fff" stroke-width="1.5"/>`;
+ if(s==='edit')return `<circle class="st live" cx="${x}" cy="${y}" r="6" fill="#fff" stroke="${c}" stroke-width="3"/>`;
+ if(s==='plan')return `<circle class="st" cx="${x}" cy="${y}" r="5.5" fill="#fff" stroke="${c}" stroke-width="2" stroke-dasharray="2 2"/>`;
+ return `<circle class="st" cx="${x}" cy="${y}" r="${big?6:5}" fill="${c}" stroke="#fff" stroke-width="2"/>`;}
+function draw(){
+ const R=rows(),tree=document.getElementById('tree'),svg=document.getElementById('map');
+ tree.innerHTML='<div class="head"></div>'+R.map(({n,depth},i)=>{
+  if(n.part)return `<div class="row part">${n.part}</div>`;if(n.ext)return `<div class="row ext">┄ extends into ┄</div>`;
+  if(n.d)return `<div class="row d" data-i="${i}" style="padding-left:${depth*14}px"><span class="tw">${n.open?'▾':'▸'}</span>${FOLDER}<span>${n.d}</span></div>`;
+  return `<div class="row" style="padding-left:${depth*14+16}px" title="${n.id}">${IC[n.i]}<span class="fn">${n.f}</span></div>`;}).join('');
+ const W=T.length*COL+10,H=TOP+R.length*ROW;svg.setAttribute('width',W);svg.setAttribute('height',H);
+ let g='';
+ T.forEach((t,c)=>{const x=10+c*COL;g+=`<g class="t${t.k===pick?' on':''}" data-k="${t.k}"><text x="${x}" y="${TOP-8}" transform="rotate(-60 ${x} ${TOP-8})">${t.t}</text></g>`;});
+ // file tracks
+ R.forEach(({n},i)=>{if(!n.f&&!n.d)return;const y=TOP+i*ROW+ROW/2;const cs=T.map((t,c)=>stateOf(t,n)?c:-1).filter(c=>c>=0);if(cs.length>1)g+=`<line x1="${10+cs[0]*COL}" x2="${10+cs[cs.length-1]*COL}" y1="${y}" y2="${y}" stroke="#d6d6d1" stroke-width="3" stroke-linecap="round"/>`;});
+ // trace lines
+ T.forEach((t,c)=>{const x=10+c*COL;const ys=R.map(({n},i)=>(n.f||n.d)&&stateOf(t,n)?TOP+i*ROW+ROW/2:null).filter(v=>v!==null);
+  if(ys.length>1)g+=`<line x1="${x}" x2="${x}" y1="${ys[0]}" y2="${ys[ys.length-1]}" stroke="${t.c}" stroke-width="${t.k===pick?5:4}" stroke-linecap="round" opacity="${t.k===pick?1:.55}"/>`;});
+ // stations
+ T.forEach((t,c)=>{const x=10+c*COL;R.forEach(({n},i)=>{if(!(n.f||n.d))return;const s=stateOf(t,n);if(!s)return;
+  g+=`<g data-k="${t.k}">${station(x,TOP+i*ROW+ROW/2,s,t.c,n.d&&!n.open)}</g>`;});});
+ svg.innerHTML=g;card();}
+function card(){const t=T.find(t=>t.k===pick);const mk={done:'●✓',edit:'◐',off:'◆',plan:'◌'};
+ document.getElementById('card').innerHTML=`<h4><span class="sw" style="background:${t.c}"></span>${t.n} <small>11-25 ${t.t}</small></h4><div>${t.aim}</div><b class="k">PROMPTS</b><ul>${t.p.map(x=>`<li><b>${x.slice(0,5)}</b>${x.slice(5)}</li>`).join('')}</ul><b class="k">STATIONS</b><div>${Object.entries(t.f).map(([k,s])=>mk[s]+' '+k.split('/').pop()).join(' · ')}</div>`;}
+document.getElementById('tree').addEventListener('click',e=>{const r=e.target.closest('.row.d');if(!r)return;const n=rows()[+r.dataset.i].n;n.open=!n.open;draw();});
+document.getElementById('map').addEventListener('click',e=>{const g=e.target.closest('[data-k]');if(g){pick=g.dataset.k;draw();}});
+draw();
+</script></body></html>

@@ -21,7 +21,7 @@ from unittest.mock import Mock, patch
 from urllib.parse import urlsplit
 
 SERVER_DIR = Path(__file__).resolve().parents[1]                 # servers/workbench/workbench-task-draft/reader
-PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "haipipe-draft"
+PAGE_ROOT = SERVER_DIR.parents[3] / "skills" / "1_base" / "draft" / "hai-draft"
 sys.path.insert(0, str(PAGE_ROOT))
 sys.path.insert(0, str(SERVER_DIR))
 
@@ -501,7 +501,7 @@ class StandaloneServerTests(unittest.TestCase):
                   'from standalone_server import create_server; '
                   'from src.page_workspace import load_page; '
                   'c=load_page(Path(sys.argv[2])); s=create_server(c); s.server_close(); '
-                  'assert not any("haipipe-block" in str(getattr(m,"__file__","")) '
+                  'assert not any("hai-block" in str(getattr(m,"__file__","")) '
                   'for m in list(sys.modules.values()))')
         result = subprocess.run([sys.executable, '-c', script, str(PAGE_ROOT), str(self.source), str(SERVER_DIR)],
                                 cwd=self.temp.name, capture_output=True, text=True,

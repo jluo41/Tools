@@ -12,6 +12,7 @@ from host_paths import bootstrap
 bootstrap()
 from live import frame, labeling_focus as L
 from test_labeling_theme import project, items_task
+import page_parts as P  # noqa: E402
 import tempfile
 
 
@@ -38,8 +39,9 @@ class LabelingFocusTest(unittest.TestCase):
                 self.assertEqual(re.findall(r'>(Data|Items|Embedding|Delivery)<', views),
                                  ['Data', 'Items', 'Embedding', 'Delivery'])
                 card = page.split('<section class="focus-card">', 1)[1]          # the view itself, not the rails
-                order = [card.index(w) for w in ('📋 Review Content', '<h3 class=fd-h>1 · ', '🧭 Around the Work')]
-                review = card.split('🧭 Around the Work', 1)[0]                  # nothing asked: no 🙋 Interaction section
+                order = [card.index(w) for w in ('📋 Review Content', '<h3 class=fd-h>1 · ')]
+                review = P.review(page)                                          # nothing asked: no 🙋 Interaction section
+                self.assertNotIn('🧭 Around the Work', page)                    # the side pane holds it (hai-block A01)
                 self.assertNotIn('🙋 Interaction', review)
                 self.assertNotIn('⚙️ Process', card)                            # one list, no group headings
                 self.assertEqual(order, sorted(order))
@@ -63,7 +65,7 @@ class LabelingFocusTest(unittest.TestCase):
                 with self.subTest(section=section, view=view):
                     html = L.render(self.theme, self.root, self.task.parent, section, view)
                     self.assertIn('📋 Review Content', html)
-                    self.assertIn('🧭 Around the Work', html)
+                    self.assertNotIn('🧭 Around the Work', html)   # the side pane holds it
                     rail = html.split('class="focus-rail right"', 1)[1].split('</nav>', 1)[0]
                     self.assertNotIn('section=work', rail)
                     self.assertNotIn('section=delivery', rail)
@@ -135,7 +137,7 @@ class LabelingFocusTest(unittest.TestCase):
                                      ('reports', ('Report', 'Findings'))):
             with self.subTest(old=old):
                 page = L.render(self.theme, self.root, self.task.parent, old)
-                self.assertIn(f'">{section}</span></h1>', page)
+                self.assertRegex(page, rf'class="h1-section h1-pick"[^>]*>{section}[^<]*(<(?!/button)[^<]*)*</button></h1>')
                 self.assertIn(f'aria-current="page">{view}</a>', page)
 
     def test_reports_remain_in_the_owning_run_and_do_not_write(self):
